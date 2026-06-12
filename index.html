@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRONOS // Monotone AI Toolchain Suite</title>
+  <meta name="description" content="A curated vertical timeline of advanced AI nodes, engineered for modern workflows. Built with a minimalist grayscale road layout.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Decorative Grid -->
+  <!-- Fullscreen Wizard Overlay -->
+  <div class="wizard-overlay" id="wizard-overlay">
+    <div class="wizard-container">
+      <div class="wizard-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div class="wizard-kicker" style="margin-bottom: 0;">INITIALIZING COMPILATION PROTOCOL</div>
+        <div class="wizard-lang-select-wrap">
+          <select id="wizard-lang-select" class="wizard-lang-select">
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Hinglish" selected>Hinglish (Recommended)</option>
+          </select>
+        </div>
+      </div>
+      <h2 class="wizard-title">Tailor Your Toolchain</h2>
+      <p class="wizard-subtitle">Select your production target and set a threshold to generate a custom system roadmap.</p>
+      
+      <!-- Input 1: Industry Selection -->
+      <div class="wizard-step">
+        <label class="wizard-label">1. SELECT YOUR INDUSTRY</label>
+        <div class="industry-grid">
+          <button class="industry-opt-btn active" data-industry="Content Creation">
+            <span class="opt-dot"></span>
+            <span>Content Creation</span>
+          </button>
+          <button class="industry-opt-btn" data-industry="Customer Support">
+            <span class="opt-dot"></span>
+            <span>Customer Support</span>
+          </button>
+          <button class="industry-opt-btn" data-industry="Education">
+            <span class="opt-dot"></span>
+            <span>Education</span>
+          </button>
+          <button class="industry-opt-btn" data-industry="Healthcare">
+            <span class="opt-dot"></span>
+            <span>Healthcare</span>
+          </button>
+          <button class="industry-opt-btn" data-industry="Software Development">
+            <span class="opt-dot"></span>
+            <span>Software Development</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="wizard-row">
+        <!-- Input 2: Experience Level Selection -->
+        <div class="wizard-step flex-1">
+          <label class="wizard-label">2. EXPERIENCE LEVEL</label>
+          <div class="exp-grid">
+            <button class="exp-opt-btn active" data-exp="Beginner">Beginner</button>
+            <button class="exp-opt-btn" data-exp="Intermediate">Intermediate</button>
+            <button class="exp-opt-btn" data-exp="Advanced">Advanced</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input 3: Goal Selection Dropdown -->
+      <div class="wizard-step">
+        <label class="wizard-label" for="wizard-goal-select">What would you like AI to help you with?</label>
+        <div class="select-wrap">
+          <select id="wizard-goal-select" class="wizard-select">
+            <option value="Exploring the World of AI">Exploring the World of AI</option>
+            <option value="Generating Video">Generating Video</option>
+            <option value="Generating Images">Generating Images</option>
+            <option value="Designing">Designing</option>
+            <option value="Coding">Coding</option>
+            <option value="Building Apps">Building Apps</option>
+            <option value="Tips to Earn Money">Tips to Earn Money</option>
+            <option value="Music Making">Music Making</option>
+            <option value="Voice Over Generation">Voice Over Generation</option>
+            <option value="Brand Building">Brand Building</option>
+            <option value="Personal AI Building">Personal AI Building</option>
+            <option value="Help in Video Editing">Help in Video Editing</option>
+            <option value="Help in Music Editing">Help in Music Editing</option>
+            <option value="Writing Work">Writing Work</option>
+            <option value="Hardware Building">Hardware Building</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Input 4: Budget Tier Tiles -->
+      <div class="wizard-step">
+        <label class="wizard-label">4. BUDGET CAPACITY</label>
+        <div class="budget-tiers-grid">
+          <button class="budget-tier-btn" data-budget="0" data-tier="Free">
+            <span class="tier-name">Free</span>
+            <span class="tier-limit">$0</span>
+            <span class="tier-desc">Only free & freemium tools</span>
+          </button>
+          <button class="budget-tier-btn" data-budget="20" data-tier="Starter">
+            <span class="tier-name">Starter</span>
+            <span class="tier-limit">$20</span>
+            <span class="tier-desc">Best low-cost combinations</span>
+          </button>
+          <button class="budget-tier-btn active" data-budget="100" data-tier="Growth">
+            <span class="tier-name">Growth</span>
+            <span class="tier-limit">$100</span>
+            <span class="tier-desc">Balanced cost & performance</span>
+          </button>
+          <button class="budget-tier-btn" data-budget="500" data-tier="Professional">
+            <span class="tier-name">Professional</span>
+            <span class="tier-limit">$500</span>
+            <span class="tier-desc">Premium production workflows</span>
+          </button>
+          <button class="budget-tier-btn" data-budget="1000" data-tier="Enterprise">
+            <span class="tier-name">Enterprise</span>
+            <span class="tier-limit">$1000</span>
+            <span class="tier-desc">Highest quality stack</span>
+          </button>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary btn-full wizard-submit-btn" id="wizard-submit">
+        <span>COMPILE ROADMAP SYSTEM</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Wrapper (Hidden initially) -->
+  <div class="main-content-wrapper" id="main-content-wrapper">
+
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo">
+        <span class="logo-symbol">●</span>
+        <div class="logo-text-group">
+          <span class="logo-text">AI-OS</span>
+          <span class="logo-subtitle">By Anuj</span>
+        </div>
+      </div>
+      
+      <nav class="main-nav">
+        <a href="#home" class="nav-link active" data-target="home">Home</a>
+        <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section">Roadmaps</a>
+        <a href="#explore-library-section" class="nav-link" data-target="explore-library-section">Explore Tools</a>
+        <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section">Categories</a>
+        <a href="#about-section" class="nav-link" data-target="about-section">About</a>
+      </nav>
+
+      <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+        <div class="header-lang-select-wrap">
+          <select id="header-lang-select" class="header-lang-select">
+            <option value="English">EN</option>
+            <option value="Hindi">HI</option>
+            <option value="Hinglish" selected>HING</option>
+          </select>
+        </div>
+        <button id="reconfigure-btn" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.75rem; border-radius: 30px; height: 36px; font-family: var(--font-mono);">
+          <span>RE-CONFIG</span>
+        </button>
+        <button id="theme-toggle" aria-label="Toggle monochrome theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="kicker">SYSTEM PROTOCOL 0.1a</div>
+      <h1>AI OVERALL SOLUTIONS</h1>
+      <p class="subtitle" style="font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.1em; opacity: 0.8; margin-top: -10px; margin-bottom: 20px;">BY ANUJ</p>
+      <p class="subtitle">Tailored workflow roadmaps and operational directories. Engineered for modern grids.</p>
+    </div>
+    <div class="scroll-prompt">
+      <span>SCROLL DOWN</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Section 1: Roadmap Builder -->
+  <section id="roadmap-builder-section" class="app-section">
+    <div class="section-header">
+      <div class="section-kicker">WORKFLOW PROTOCOLS</div>
+      <h2 class="section-title">Roadmap Builder</h2>
+      <p class="section-subtitle">Inspect the custom-compiled timeline. Filter nodes dynamically by system layer.</p>
+      
+      <!-- Timeline category filters -->
+      <div class="timeline-filter-wrap">
+        <nav class="filter-nav">
+          <button class="filter-btn active" data-filter="all">All Layers</button>
+          <button class="filter-btn" data-filter="creation">Creation</button>
+          <button class="filter-btn" data-filter="engineering">Engineering</button>
+          <button class="filter-btn" data-filter="analytics">Analytics</button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Timeline Container -->
+    <div class="timeline-container">
+      <!-- SVG Winding Road -->
+      <div class="road-svg-container">
+        <svg id="road-svg" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="road-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="var(--road-grad-start)" />
+              <stop offset="100%" stop-color="var(--road-grad-end)" />
+            </linearGradient>
+            <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="var(--glow-color)" flood-opacity="0.15" />
+            </filter>
+          </defs>
+          
+          <!-- Outer Road Border Path -->
+          <path id="road-bg-path" class="road-bg" d="" fill="none" stroke="var(--road-border)" stroke-width="48" stroke-linecap="round"></path>
+          <!-- Inner Road Path -->
+          <path id="road-fill-path" class="road-fill" d="" fill="none" stroke="var(--road-surface)" stroke-width="44" stroke-linecap="round"></path>
+          <!-- Dashed Divider Centerline -->
+          <path id="road-divider-path" class="road-divider" d="" fill="none" stroke="var(--road-dashed-line)" stroke-width="2" stroke-dasharray="8 12" stroke-linecap="round"></path>
+          <!-- Drawn active path showing scroll progress -->
+          <path id="road-progress-path" class="road-progress" d="" fill="none" stroke="var(--accent-color)" stroke-width="4" stroke-linecap="round"></path>
+        </svg>
+        
+        <!-- Moving Traveler Dot -->
+        <div id="road-traveler" class="traveler">
+          <div class="traveler-inner"></div>
+        </div>
+      </div>
+
+      <!-- Timeline Nodes (compiled dynamically via JS) -->
+      <div class="timeline-list">
+        <!-- Replaced at run-time by compilation engine -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Explore Library -->
+  <section id="explore-library-section" class="app-section">
+    <div class="section-header">
+      <div class="section-kicker">SYSTEM DIRECTORY</div>
+      <h2 class="section-title">Explore Library</h2>
+      <p class="section-subtitle">Browse and inspect all operational AI services without timeline compilation constraints.</p>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="library-toolbar">
+      <div class="library-search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="library-search" class="library-search-input" placeholder="Search tools by name, description, tags...">
+      </div>
+
+      <div class="library-controls-panel">
+        <!-- View Mode Switcher -->
+        <div class="control-group">
+          <span class="control-label">VIEW MODE:</span>
+          <div class="view-toggles">
+            <button class="view-btn active" id="view-grid-btn" title="Grid View">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
+            <button class="view-btn" id="view-list-btn" title="List View">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
+            <button class="view-btn" id="view-cat-btn" title="Group by Category">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sorting Selector -->
+        <div class="control-group">
+          <label for="library-sort" class="control-label">SORT BY:</label>
+          <select id="library-sort" class="control-select">
+            <option value="default" selected>Default (Suggested)</option>
+            <option value="name-asc">Name (A - Z)</option>
+            <option value="name-desc">Name (Z - A)</option>
+            <option value="price-low">Price (Low - High)</option>
+            <option value="difficulty">Difficulty (Beginner First)</option>
+          </select>
+        </div>
+
+        <!-- Favorites Switch -->
+        <div class="control-group">
+          <label class="favorites-filter-label" id="fav-filter-wrap">
+            <input type="checkbox" id="library-favorites-toggle">
+            <span class="star-icon">★</span>
+            <span class="lbl-text">FAVORITES ONLY</span>
+          </label>
+        </div>
+        
+        <!-- Compare Tools Action -->
+        <div id="compare-status-wrap" class="compare-status-wrap" style="display: none;">
+          <span class="compare-text"><span id="compare-count">0</span>/3 SELECTED</span>
+          <button id="compare-trigger-btn" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 4px;">COMPARE</button>
+          <button id="compare-clear-btn" class="compare-clear-btn">Clear</button>
+        </div>
+      </div>
+
+      <div class="library-filter-scroll">
+        <div class="library-filter-chips" id="library-filter-chips">
+          <button class="filter-chip active" data-chip="all">All Sectors</button>
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Grid -->
+    <div class="library-grid" id="library-grid">
+      <!-- Generated dynamically in exact dataset sequence -->
+    </div>
+  </section>
+
+  <!-- Section 3: Category Explorer -->
+  <section id="category-explorer-section" class="app-section">
+    <div class="section-header">
+      <div class="section-kicker">SECTOR CLASSIFICATION</div>
+      <h2 class="section-title">Category Explorer</h2>
+      <p class="section-subtitle">Inspect decentralized machine intelligence nodes partitioned by industry sectors.</p>
+    </div>
+
+    <div class="category-explorer-container">
+      <!-- Sidebar containing 12 Categories -->
+      <aside class="category-sidebar">
+        <ul class="category-list" id="category-explorer-list">
+          <!-- Populated by JS -->
+        </ul>
+      </aside>
+
+      <!-- Active tools list panel -->
+      <main class="category-content-panel">
+        <div class="category-active-header">
+          <h3 class="category-active-title" id="category-active-name">Everyday Personal Tasks</h3>
+          <span class="category-active-badge" id="category-active-count">0 Nodes</span>
+        </div>
+        <div class="category-tools-grid" id="category-tools-grid">
+          <!-- Matched nodes will render here -->
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- Section 5: About Section -->
+  <section id="about-section" class="app-section">
+    <div class="section-header">
+      <div class="section-kicker">SYSTEM PROFILE</div>
+      <h2 class="section-title">About AI-OS</h2>
+      <p class="section-subtitle">AI Overall Solutions — Engineered by Anuj.</p>
+    </div>
+
+    <div class="about-container">
+      <div class="about-text-block">
+        <p>AI-OS stands for <strong>Artificial Intelligence Overall Solution</strong>. We are a <strong>lifetime free educational platform</strong> built to help you learn about AI and find the best AI tools for your specific needs. Our goal is to make artificial intelligence easy to understand for everyone—from absolute beginners to advanced developers and creators.</p>
+        <p>Whether you want to automate everyday tasks, generate creative videos and images, or write code, you can easily discover the right tools for your use case. You can explore our extensive database, build custom step-by-step roadmaps tailored to your budget, copy ready-to-use master prompts, and experiment with interactive sandboxes to see how different AI systems work.</p>
+      </div>
+      <div class="about-grid-metrics">
+        <div class="metric-box">
+          <span class="metric-val" id="metric-active-nodes">120+</span>
+          <span class="metric-lbl">ACTIVE SYSTEM NODES</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">12</span>
+          <span class="metric-lbl">INDUSTRY SECTORS</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Centered Footer -->
+  <footer class="app-footer" style="text-align: center; border-top: 1px solid var(--border-color);">
+    <div class="footer-container" style="justify-content: center; width: 100%;">
+      <p style="text-align: center;">© AI-OS — AI Overall Solutions By Anuj. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  </div> <!-- End main-content-wrapper -->
+
+  <!-- Detail Inspect Drawer -->
+  <div id="detail-drawer" class="drawer" aria-hidden="true">
+    <div id="drawer-close-overlay" class="drawer-overlay"></div>
+    <div class="drawer-content">
+      <div class="drawer-header">
+        <span id="drawer-node-id" class="node-id">NODE_00 // SPEC</span>
+        <button id="drawer-close-btn" aria-label="Close panel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="drawer-body">
+        <div class="drawer-hero">
+          <div id="drawer-icon" class="drawer-icon-container">
+            <!-- SVG Icon populated at run-time -->
+          </div>
+          <div>
+            <h3 id="drawer-title" class="drawer-title">Node Title</h3>
+            <span id="drawer-category" class="drawer-category">CREATION ENGINE</span>
+          </div>
+        </div>
+        
+        <div class="drawer-section">
+          <h4>FUNCTIONAL DESCRIPTION</h4>
+          <div id="drawer-desc" class="drawer-description-text">
+            <!-- Description and instructions populated at run-time -->
+          </div>
+        </div>
+        
+        <div class="drawer-section">
+          <h4>INTERACTIVE PLAYGROUND</h4>
+          <div class="playground-wrapper" id="playground-container">
+            <!-- Sandbox UI components populated at run-time -->
+          </div>
+        </div>
+        
+        <div class="drawer-section">
+          <h4>PERFORMANCE SPECIFICATIONS</h4>
+          <div class="spec-grid">
+            <div class="spec-item">
+              <span class="spec-label">PROCESSING RATE</span>
+              <span id="spec-rate" class="spec-val">0 words/s</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">RESPONSE LATENCY</span>
+              <span id="spec-latency" class="spec-val">0ms</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">ACCURACY RATE</span>
+              <span id="spec-accuracy" class="spec-val">0%</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">CONTEXT LAYER</span>
+              <span id="spec-context" class="spec-val">0k</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="drawer-section">
+          <h4>RECOMMENDED ALTERNATIVES</h4>
+          <div id="drawer-alternatives" class="alternatives-grid">
+            <!-- Populated dynamically at run-time -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="drawer-footer">
+        <a id="drawer-link-btn" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-full">
+          <span>DEPLOY ENGINE PIPELINE</span>
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Overlay Modal -->
+  <div id="comparison-overlay" class="drawer" aria-hidden="true">
+    <div id="comparison-close-overlay" class="drawer-overlay"></div>
+    <div class="drawer-content" style="max-width: 900px; width: 90%;">
+      <div class="drawer-header">
+        <span class="node-id">SYSTEM COMPARISON BENCHMARK</span>
+        <button id="comparison-close-btn" aria-label="Close comparison">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="drawer-body" style="overflow-y: auto;">
+        <div style="width: 100%; overflow-x: auto;">
+          <table class="comparison-table" id="comparison-table">
+            <!-- Populated at run-time side-by-side -->
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="toolsData.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
