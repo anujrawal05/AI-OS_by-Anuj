@@ -8,7 +8,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2.1">
+  <link rel="stylesheet" href="style.css?v=2.3">
+  <script>
+    window.myErrors = [];
+    window.onerror = function(message, source, lineno, colno, error) {
+      window.myErrors.push({
+        message: message,
+        source: source,
+        lineno: lineno,
+        colno: colno,
+        error: error ? error.stack : null
+      });
+      console.error("CAP_ERR: ", message, source, lineno);
+    };
+  </script>
 </head>
 <body>
 
@@ -444,8 +457,8 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="toolsData.js?v=2.1"></script>
-  <script src="exploringAIData.js?v=2.1"></script>
-  <script src="app.js?v=2.1"></script>
+  <script src="toolsData.js?v=2.3"></script>
+  <script src="exploringAIData.js?v=2.3"></script>
+  <script src="app.js?v=2.3"></script>
 </body>
 </html>

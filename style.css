@@ -82,6 +82,8 @@
   --card-hover-input-bg: rgba(10, 10, 12, 0.05);
   --card-hover-input-border: rgba(10, 10, 12, 0.12);
   --card-hover-badge-bg-new: rgba(10, 10, 12, 0.06);
+  --select-option-bg: #1c1c1e;
+  --select-option-color: #f5f5f7;
 }
 
 /* Light Theme Variables */
@@ -148,6 +150,8 @@
   --card-hover-input-bg: rgba(255, 255, 255, 0.08);
   --card-hover-input-border: rgba(255, 255, 255, 0.15);
   --card-hover-badge-bg-new: rgba(255, 255, 255, 0.08);
+  --select-option-bg: #ffffff;
+  --select-option-color: #1c1c1e;
 }
 
 /* Transition suppression helper to ensure instant typography/theme color updates */
@@ -2721,6 +2725,10 @@ button, input, select, textarea {
 .wizard-select:focus {
   outline: none;
   border-color: var(--text-primary);
+}
+select option {
+  background-color: var(--select-option-bg) !important;
+  color: var(--select-option-color) !important;
 }
 .select-wrap::after {
   content: '▼';

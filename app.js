@@ -3023,6 +3023,7 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
   let starter = "";
   let advanced = "";
   let pro = "";
+  let eduData = {};
 
   if (isEdu) {
     titleText = tool.title[lang] || tool.title["English"];
@@ -3045,7 +3046,7 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
     advanced = tool.advancedPrompt;
     pro = tool.proPrompt;
   } else {
-    const eduData = getToolEducationalData(tool, lang, stepName);
+    eduData = getToolEducationalData(tool, lang, stepName);
     const promptDetails = generatePrompts(tool.name, state.goalText || '', lang);
     
     const mappedStepKey = resolveGuideKey(stepName, tool.name);
