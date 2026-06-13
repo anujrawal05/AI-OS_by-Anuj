@@ -1098,6 +1098,88 @@ function setupEventListeners() {
         console.error("Failed to copy: ", err);
       });
     }
+
+    const tabBtn = e.target.closest('.course-tab-btn');
+    if (tabBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const tabName = tabBtn.getAttribute('data-tab');
+      const card = tabBtn.closest('.timeline-card') || tabBtn.closest('.library-item-card');
+      if (card) {
+        card.querySelectorAll('.course-tab-btn').forEach(btn => {
+          btn.classList.toggle('active', btn === tabBtn);
+        });
+        card.querySelectorAll('.course-tab-content').forEach(content => {
+          const contentName = content.getAttribute('data-content');
+          content.style.display = (contentName === tabName) ? 'block' : 'none';
+          content.classList.toggle('active', contentName === tabName);
+        });
+      }
+    }
+
+    const quizOptBtn = e.target.closest('.quiz-opt-btn');
+    if (quizOptBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const isCorrect = quizOptBtn.getAttribute('data-correct') === 'true';
+      const container = quizOptBtn.closest('.quiz-container');
+      if (container) {
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.style.borderColor = 'var(--border-color)';
+          btn.style.background = 'var(--input-bg)';
+          btn.style.fontWeight = 'normal';
+        });
+
+        const activeLang = getActiveLanguage();
+        const labels = translationDB[activeLang] || translationDB["Hinglish"];
+        const feedbackBox = container.querySelector('.quiz-feedback-box');
+        const feedbackMsg = container.querySelector('.feedback-msg');
+
+        if (isCorrect) {
+          quizOptBtn.style.borderColor = '#34c759';
+          quizOptBtn.style.background = 'rgba(52, 199, 89, 0.08)';
+          quizOptBtn.style.fontWeight = '700';
+          
+          if (feedbackBox && feedbackMsg) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.border = '1px solid #34c759';
+            feedbackBox.style.background = 'rgba(52, 199, 89, 0.04)';
+            feedbackMsg.style.color = '#34c759';
+            feedbackMsg.textContent = labels.correctFeedback || (activeLang === 'Hindi' ? "सही उत्तर! बहुत बढ़िया।" : activeLang === 'Hinglish' ? "Sahi Jawaab! Bahut badhiya." : "CORRECT! Great job.");
+          }
+          showToast(activeLang === 'Hindi' ? "सही जवाब!" : activeLang === 'Hinglish' ? "Sahi Jawaab!" : "Correct Answer!");
+        } else {
+          quizOptBtn.style.borderColor = '#ff453a';
+          quizOptBtn.style.background = 'rgba(255, 69, 58, 0.08)';
+          quizOptBtn.style.fontWeight = '700';
+          
+          if (feedbackBox && feedbackMsg) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.border = '1px solid #ff453a';
+            feedbackBox.style.background = 'rgba(255, 69, 58, 0.04)';
+            feedbackMsg.style.color = '#ff453a';
+            feedbackMsg.textContent = labels.incorrectFeedback || (activeLang === 'Hindi' ? "गलत उत्तर। कृपया अध्याय को फिर से पढ़ें और पुन: प्रयास करें!" : activeLang === 'Hinglish' ? "Galat Jawaab. Ek baar phir se read karke try karein!" : "INCORRECT. Please review the lesson and try again!");
+          }
+          showToast(activeLang === 'Hindi' ? "गलत जवाब" : activeLang === 'Hinglish' ? "Galat Jawaab" : "Incorrect Answer");
+        }
+      }
+    }
+
+    const completedBtn = e.target.closest('.topic-completed-btn');
+    if (completedBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const isCompleted = completedBtn.classList.toggle('completed');
+      const activeLang = getActiveLanguage();
+      
+      if (isCompleted) {
+        completedBtn.textContent = activeLang === 'Hindi' ? "अध्याय पूर्ण ✓" : activeLang === 'Hinglish' ? "Topic Completed ✓" : "Topic Completed ✓";
+        showToast(activeLang === 'Hindi' ? "विषय पूर्ण के रूप में चिह्नित किया गया" : activeLang === 'Hinglish' ? "Topic completed mark kiya" : "Topic marked as completed");
+      } else {
+        completedBtn.textContent = activeLang === 'Hindi' ? "पूर्ण चिह्नित करें" : activeLang === 'Hinglish' ? "Mark Topic Complete" : "Mark Topic Complete";
+        showToast(activeLang === 'Hindi' ? "अपूर्ण के रूप में चिह्नित" : activeLang === 'Hinglish' ? "Uncompleted mark kiya" : "Marked as uncompleted");
+      }
+    }
   });
 }
 
@@ -1432,6 +1514,7 @@ const translationDB = {
     estimatedCost: "Estimated Cost",
     estimatedTime: "Estimated Time",
     starter: "Starter Prompt",
+    advanced: "Advanced Prompt",
     professional: "Professional Prompt",
     beginnerExplanation: "Beginner Explanation",
     copyBtn: "Copy Prompt",
@@ -1460,6 +1543,7 @@ const translationDB = {
     estimatedCost: "अनुमानित खर्च (Estimated Cost)",
     estimatedTime: "अनुमानित समय (Estimated Time)",
     starter: "शुरुआती प्रॉम्प्ट (Starter)",
+    advanced: "उन्नत प्रॉम्प्ट (Advanced)",
     professional: "प्रोफेशनल प्रॉम्प्ट (Professional)",
     beginnerExplanation: "शुरुआती गाइड (Explanation)",
     copyBtn: "प्रॉम्प्ट कॉपी करें",
@@ -1488,6 +1572,7 @@ const translationDB = {
     estimatedCost: "Estimated Cost (अनुमानित खर्च)",
     estimatedTime: "Estimated Time (समय कितना लगेगा)",
     starter: "Starter Prompt (शुरुआती प्रॉम्प्ट)",
+    advanced: "Advanced Prompt (मीडियम प्रॉम्प्ट)",
     professional: "Professional Prompt (प्रोफेशनल प्रॉम्प्ट)",
     beginnerExplanation: "Beginner Explanation (आसान हिंदी में समझें)",
     copyBtn: "Prompt Copy karein",
@@ -1633,27 +1718,44 @@ const stepsTranslation = {
 };
 
 const goalWorkflows = {
-  "Generating Video": ["Image Generator", "Video Generator", "Voice Generator", "Video Editor", "Publishing Tool"],
-  "Generating Images": ["Image Generator", "Upscaler", "Editor"],
-  "Designing": ["Logo Generator", "Color Palette Designer", "Layout Designer", "Editor"],
-  "Coding": ["Cursor", "GitHub Copilot", "Testing Tool", "Deployment Tool"],
-  "Building Apps": ["Lovable", "Bolt", "Cursor", "Deployment Platform"],
+  "Generating Video": ["Flow AI", "Video Enhancement", "Publishing"],
+  "Generating Images": ["Flow AI Image Generation", "Image Refinement", "Export"],
+  "Designing": ["Canva AI", "Design Refinement", "Export Assets"],
+  "Coding": ["Antigravity 2.0 or Claude", "Code Development", "Testing", "Deployment"],
+  "Building Apps": ["Android Studio Installation", "Environment Setup", "Project Creation", "Development", "Testing", "APK Generation", "Deployment"],
   "Tips to Earn Money": ["Earning Platform", "Monetization Tool", "Marketing Tool", "Automation Tool"],
-  "Music Making": ["Suno", "Audio Enhancement Tool", "Distribution Tool"],
-  "Voice Over Generation": ["Text Reader", "Voice Generator", "Voice Cloning"],
+  "Music Making": ["Suno or ElevenLabs", "Audio Enhancement", "Publishing"],
+  "Voice Over Generation": ["ElevenLabs", "Voice Enhancement", "Export Audio"],
   "Brand Building": ["Logo Generator", "Branding Assistant", "Marketing Tool", "Collaboration Tool"],
-  "Personal AI Building": ["Agent Creator", "Browser Agent", "Integration Platform"],
+  "Personal AI Building": ["Download Antigravity 2.0", "Installation", "Configuration", "Build Personal AI", "Testing", "Optimization"],
   "Help in Video Editing": ["Video Editor", "Audio Enhancement Tool", "Publishing Tool"],
   "Help in Music Editing": ["Audio Enhancement Tool", "Distribution Tool", "Collaboration Tool"],
   "Writing Work": ["Google Docs", "ChatGPT", "Editor"],
   "Hardware Building": ["IoT Platform", "IoT Design", "Predictive Maintenance"]
 };
 
-function findToolForStep(stepName, budgetLimit) {
+function findToolForStep(stepName, budgetLimit, goal = '') {
   const nameLower = stepName.toLowerCase();
+  const goalLower = (goal || "").toLowerCase();
   let matchedTool = null;
   
-  if (nameLower.includes("docs")) {
+  if (goalLower === "personal ai building") {
+    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("antigravity"));
+  } else if (goalLower === "building apps") {
+    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("android"));
+  } else if (nameLower.includes("antigravity 2.0 or claude")) {
+    if (budgetLimit === 0) {
+      matchedTool = toolsData.find(t => t.name.toLowerCase().includes("antigravity"));
+    } else {
+      matchedTool = toolsData.find(t => t.name.toLowerCase() === "claude");
+    }
+  } else if (nameLower.includes("suno or elevenlabs")) {
+    if (budgetLimit === 0) {
+      matchedTool = toolsData.find(t => t.name.toLowerCase() === "suno");
+    } else {
+      matchedTool = toolsData.find(t => t.name.toLowerCase() === "elevenlabs");
+    }
+  } else if (nameLower.includes("docs")) {
     matchedTool = googleDocsTool;
   } else if (nameLower.includes("chatgpt")) {
     matchedTool = chatGptTool;
@@ -1705,6 +1807,14 @@ function findToolForStep(stepName, budgetLimit) {
     matchedTool = toolsData.find(t => t.name.toLowerCase() === "checkmarx");
   } else if (nameLower.includes("upscaler")) {
     matchedTool = toolsData.find(t => t.name.toLowerCase() === "leonardo ai");
+  } else if (nameLower.includes("antigravity")) {
+    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("antigravity"));
+  } else if (nameLower.includes("flow")) {
+    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("flow"));
+  } else if (nameLower.includes("android")) {
+    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("android"));
+  } else if (nameLower.includes("canva")) {
+    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("canva"));
   }
   
   if (!matchedTool) {
@@ -1739,8 +1849,10 @@ function findToolForStep(stepName, budgetLimit) {
 
 function generatePrompts(toolName, goal, lang) {
   const t = toolName.toLowerCase();
+  const goalLower = (goal || "").toLowerCase();
   
   let starter = "";
+  let advanced = "";
   let pro = "";
   let exp = "";
   let purpose = "";
@@ -1752,234 +1864,752 @@ function generatePrompts(toolName, goal, lang) {
   
   const labels = translationDB[lang] || translationDB["Hinglish"];
 
-  if (t.includes("docs")) {
-    purpose = labels.docsPurpose;
-    why = labels.docsWhy;
-    expectedOutput = labels.docsOutput;
-    starter = labels.docsStarterPrompt + ` [Goal: ${goal}]`;
-    pro = labels.docsProPrompt + ` [Goal: ${goal}]`;
-    exp = labels.docsExplanation;
-    cost = labels.free;
-    time = lang === "English" ? "20 mins" : lang === "Hindi" ? "20 मिनट" : "20 mins";
-    alternatives = "Microsoft Word, Notion";
-  } else if (t.includes("chatgpt")) {
-    purpose = labels.chatgptPurpose;
-    why = labels.chatgptWhy;
-    expectedOutput = labels.chatgptOutput;
-    starter = labels.chatgptStarterPrompt + ` [Goal: ${goal}]`;
-    pro = labels.chatgptProPrompt + ` [Goal: ${goal}]`;
-    exp = labels.chatgptExplanation;
-    cost = labels.free;
-    time = lang === "English" ? "15 mins" : lang === "Hindi" ? "15 मिनट" : "15 mins";
-    alternatives = "Google Gemini, Claude";
-  } else {
+  // Category classification
+  const isAudio = ["voice over generation", "music making", "help in music editing", "audio processing"].includes(goalLower);
+  const isEngineering = ["coding", "hardware building"].includes(goalLower);
+  const isMediaPublishing = ["writing work", "brand building", "generating video"].includes(goalLower);
+
+  if (isAudio) {
     cost = "Free / paid options";
-    time = "1 hour";
-    
-    if (t.includes("midjourney") || t.includes("flux") || t.includes("leonardo") || t.includes("image") || t.includes("spectra") || t.includes("ideogram")) {
-      alternatives = "Flux, Midjourney, Stable Diffusion";
-      cost = "$10 - $20 / mo";
-      if (lang === "English") {
-        purpose = "Create stunning visual assets and graphics.";
-        why = `${toolName} generates production-quality visual styles from textual descriptions.`;
-        expectedOutput = "High-resolution JPG/PNG graphic files.";
-        starter = `Generate a realistic image for ${goal}, clean composition, raw style.`;
-        pro = `Generate a cinematic, hyper-detailed render for ${goal}, photorealistic, dramatic lighting, shot on 35mm lens, 8k resolution.`;
-        exp = "Provide clear descriptions of elements, colors, and camera styles.";
-      } else if (lang === "Hindi") {
-        purpose = "शानदार विज़ुअल आर्ट और ग्राफिक्स बनाना।";
-        why = `${toolName} टेक्स्ट विवरण से व्यावसायिक गुणवत्ता वाली छवियां बनाता है।`;
-        expectedOutput = "उच्च रिज़ॉल्यूशन वाली JPG/PNG फ़ाइलें।";
-        starter = `${goal} के लिए एक वास्तविक छवि बनाएं, साफ़ संरचना, स्पष्ट विवरण।`;
-        pro = `${goal} के लिए एक सिनेमाई, अत्यधिक विस्तृत रेंडर, नाटकीय प्रकाश व्यवस्था, 35 मिमी लेंस, 8k रिज़ॉल्यूशन।`;
-        exp = "चित्र के तत्वों, रंगों और कैमरा शैली का स्पष्ट विवरण प्रदान करें।";
-      } else {
-        purpose = "High-quality visual graphics aur illustrations design karna.";
-        why = `${toolName} textual description se creative visual designs generate karta hai.`;
-        expectedOutput = "High-resolution JPG/PNG photo assets.";
-        starter = `Create an image representing ${goal}, dynamic colors, simple layout.`;
-        pro = `Generate a hyper-realistic cinematic photo of ${goal}, photorealistic, 8k render, depth of field, studio lighting.`;
-        exp = "Prompt me image ke elements, theme aur camera angle ko describe karein.";
-      }
-    } else if (t.includes("video") || t.includes("runway") || t.includes("luma") || t.includes("sora") || t.includes("pika") || t.includes("vidu") || t.includes("veo")) {
-      alternatives = "Runway, Sora, Luma, Pika";
-      cost = "Freemium / $15 / mo";
-      if (lang === "English") {
-        purpose = "Animate image keyframes into dynamic video clips.";
-        why = "Translates static concept frames into smooth, motion-consistent cinematic video.";
-        expectedOutput = "4-second MP4 motion clips.";
-        starter = `Animate the scene for ${goal} showing smooth camera panning.`;
-        pro = `Generate a cinematic slow-motion sequence for ${goal}, fluid movement, detailed textures, realistic physics, 4k resolution.`;
-        exp = "Keep animation prompts focused on motion, cameras, and physical actions.";
-      } else if (lang === "Hindi") {
-        purpose = "स्थिर छवियों को चलती हुई सिनेमाई क्लिप्स में बदलना।";
-        why = "स्थिर फ़्रेमों को सहज, गति-संगत सिनेमाई वीडियो में अनुवादित करता है।";
-        expectedOutput = "4-सेकंड की MP4 वीडियो क्लिप्स।";
-        starter = `${goal} के लिए सीन को घुमाते हुए कैमरे के साथ एनिमेट करें।`;
-        pro = `${goal} के लिए एक सिनेमाई धीमी गति का क्रम, तरल गति, विस्तृत बनावट, यथार्थवादी भौतिकी, 4k रिज़ॉल्यूशन।`;
-        exp = "एनिमेशन प्रॉम्प्ट को मुख्य रूप से गति, कैमरे के कोण और भौतिक क्रियाओं पर केंद्रित रखें।";
-      } else {
-        purpose = "Static frames ko clean high-motion videos me convert karna.";
-        why = "Yeh static photos ko motion-consistent smooth cinematic frames me convert karta hai.";
-        expectedOutput = "4-second timeline MP4 video files.";
-        starter = `Animate this frame for ${goal} with soft camera rotation.`;
-        pro = `Generate high-motion cinema tracking shot for ${goal}, hyper-detailed, slow motion, clean animation output.`;
-        exp = "Camera speed, motion directions aur zoom values prompts me likhein.";
-      }
-    } else if (t.includes("voice") || t.includes("elevenlabs") || t.includes("playht") || t.includes("resemble") || t.includes("speechify") || t.includes("wellsaid") || t.includes("vocalise")) {
-      alternatives = "ElevenLabs, Murf, PlayHT";
-      cost = "$5 - $22 / mo";
-      if (lang === "English") {
-        purpose = "Synthesize realistic voice narration tracks.";
-        why = "Converts draft scripts into natural sounding human speech with dynamic emotion.";
-        expectedOutput = "High-fidelity WAV/MP3 sound files.";
-        starter = `Generate a warm narrator voiceover reading the script for ${goal}.`;
-        pro = `Synthesize an authoritative, professional voiceover for ${goal}, medium pace, clear enunciation, natural pauses, optimized for advertising.`;
-        exp = "Input text scripts with commas and punctuation to control pauses and speech pacing.";
-      } else if (lang === "Hindi") {
-        purpose = "यथार्थवादी वॉयस नैरेशन ट्रैक तैयार करना।";
-        why = "ऑडियो ड्राफ्ट स्क्रिप्ट को गतिशील भावनाओं के साथ प्राकृतिक आवाज में बदलता है।";
-        expectedOutput = "उच्च गुणवत्ता वाली WAV/MP3 ऑडियो फ़ाइलें।";
-        starter = `${goal} के लिए स्क्रिप्ट को पढ़ते हुए एक वॉयसओवर जनरेट करें।`;
-        pro = `${goal} के लिए विज्ञापन के अनुकूल व्यावसायिक वॉयसओवर, मध्यम गति, स्पष्ट उच्चारण, प्राकृतिक ठहराव।`;
-        exp = "आवाज के ठहराव और बोलने की गति को नियंत्रित करने के लिए टेक्स्ट में विराम चिह्नों का उपयोग करें।";
-      } else {
-        purpose = "Clean voiceover dubbing aur narration audios generate karna.";
-        why = "Yeh text ko emotional range ke sath realistic human voices me speech convert karta hai.";
-        expectedOutput = "High-fidelity WAV/MP3 voice files.";
-        starter = `Generate a natural voiceover reading this script: ${goal}.`;
-        pro = `Synthesize professional narrator voice for ${goal}, clear accent, balanced pitch, studio quality output.`;
-        exp = "Script me commas aur full stops lagayein taaki voice flow natural sound kare.";
-      }
-    } else if (t.includes("cursor") || t.includes("copilot") || t.includes("code") || t.includes("replit") || t.includes("tabnine") || t.includes("cody") || t.includes("windsurf")) {
-      alternatives = "Cursor, GitHub Copilot, VS Code";
-      cost = "$20 / mo";
-      if (lang === "English") {
-        purpose = "Generate code blocks, script files, and refactor lines.";
-        why = "Autocompletes statements and explains syntax, accelerating coding speeds.";
-        expectedOutput = "Operational program source code files.";
-        starter = `Write a script to implement ${goal} using standard libraries.`;
-        pro = `Construct a highly optimized, fully typed component for ${goal}, include error handling, unit tests, and performance profiles.`;
-        exp = "Provide comments explaining input arguments, return types, and context.";
-      } else if (lang === "Hindi") {
-        purpose = "कोड ब्लॉक, स्क्रिप्ट फ़ाइलें लिखना और लाइनों को व्यवस्थित करना।";
-        why = "यह वाक्यों को पूरा करता है और सिंटैक्स समझाता है, जिससे कोडिंग की गति बढ़ जाती है।";
-        expectedOutput = "परिचालन योग्य प्रोग्राम सोर्स कोड फ़ाइलें।";
-        starter = `${goal} को लागू करने के लिए एक मानक स्क्रिप्ट लिखें।`;
-        pro = `${goal} के लिए अत्यधिक अनुकूलित घटक बनाएं, जिसमें त्रुटि प्रबंधन और यूनिट परीक्षण शामिल हों।`;
-        exp = "इनपुट आर्गुमेंट्स, रिटर्न टाइप और संदर्भ को समझाते हुए टिप्पणियां (Comments) लिखें।";
-      } else {
-        purpose = "Operational code blocks, scripts aur programs write karna.";
-        why = "Yeh code blocks auto-complete karta hai aur complex syntax errors explain karta hai.";
-        expectedOutput = "Operatable backend/frontend code files.";
-        starter = `Write a function to build ${goal} cleanly.`;
-        pro = `Generate production-ready code structure for ${goal}, handle edge cases, write test blocks, keep it performant.`;
-        exp = "Comments likh kar inputs aur parameters detail me specify karein.";
-      }
-    } else if (t.includes("lovable") || t.includes("bolt") || t.includes("v0") || t.includes("replit")) {
-      alternatives = "Lovable, Bolt.new, v0.dev";
-      cost = "Freemium / $20 / mo";
-      if (lang === "English") {
-        purpose = "Build complete web apps directly from conversational prompts.";
-        why = "Generates frontend and backend interfaces, databases, and deployment slots in one tool.";
-        expectedOutput = "Fully interactive deployed web app link.";
-        starter = `Build a web application for ${goal} with modern dark UI.`;
-        pro = `Create a full-stack dashboard for ${goal}, including user authentication, mock database listings, chart analytics, and responsive grid panels.`;
-        exp = "Explain step-by-step what components you need and how they interact.";
-      } else if (lang === "Hindi") {
-        purpose = "संवादात्मक संकेतों से सीधे संपूर्ण वेब ऐप बनाना।";
-        why = "यह एक ही टूल में फ्रंटएंड, बैकएंड इंटरफेस, डेटाबेस और होस्टिंग लिंक तैयार करता है।";
-        expectedOutput = "पूरी तरह से चालू और होस्ट किया गया वेब ऐप लिंक।";
-        starter = `आधुनिक डार्क थीम के साथ ${goal} के लिए एक वेब एप्लीकेशन बनाएं।`;
-        pro = `${goal} के लिए एक फुल-स्टैक डैशबोर्ड बनाएं, जिसमें उपयोगकर्ता प्रमाणीकरण, डेटाबेस और चार्ट शामिल हों।`;
-        exp = "चरण-दर-चरण समझाएं कि आपको कौन से घटकों की आवश्यकता है और वे कैसे काम करेंगे।";
-      } else {
-        purpose = "Conversational chat se direct functional web applications banana.";
-        why = "Yeh full-stack layout, database aur cloud deployment single prompt se manage karta hai.";
-        expectedOutput = "Live working web app URL link.";
-        starter = `Build a complete application for ${goal} using React and Tailwind.`;
-        pro = `Create responsive multi-page dashboard for ${goal}, mock CRUD actions, stats graphs, dark mode toggles.`;
-        exp = "Application modules aur database elements ko point-by-point chat me explain karein.";
-      }
-    } else if (t.includes("suno") || t.includes("aiva") || t.includes("music")) {
-      alternatives = "Suno, Udio, AIVA";
-      cost = "Freemium / $8 / mo";
-      if (lang === "English") {
-        purpose = "Generate complete music tracks, instrumentation, and vocals.";
-        why = "Transforms lyric sheets and genre tags into broadcast-quality stereo music audio.";
-        expectedOutput = "High-quality MP3 audio music tracks.";
-        starter = `Generate a song about ${goal} in dynamic style.`;
-        pro = `Synthesize a high-fidelity stereo track for ${goal}, electronic elements, crisp vocals, studio production master.`;
-        exp = "Specify genre tags (e.g. ambient, cinematic, synthwave) and lyrics outlines.";
-      } else if (lang === "Hindi") {
-        purpose = "संगीत ट्रैक, वाद्ययंत्र और गायन तैयार करना।";
-        why = "गीत और संगीत की शैली के आधार पर प्रसारण-गुणवत्ता वाला संगीत ऑडियो बनाता है।";
-        expectedOutput = "उच्च गुणवत्ता वाले MP3 ऑडियो संगीत ट्रैक।";
-        starter = `गतिशील शैली में ${goal} के बारे में एक गीत बनाएं।`;
-        pro = `${goal} के लिए एक उच्च-गुणवत्ता वाला स्टीरियो ट्रैक, इलेक्ट्रॉनिक बीट्स, स्पष्ट स्वर, स्टूडियो प्रोडक्शन मास्टर।`;
-        exp = "संगीत की शैली (जैसे एम्बिएंट, सिनेमाई, सिंथवेव) और गीतों की रूपरेखा निर्दिष्ट करें।";
-      } else {
-        purpose = "Lyrics aur genre input se high-fidelity music aur vocal audio tracks generate karna.";
-        why = "Yeh dynamic genre descriptions ko studio-mastered vocal stereo tracks me render karta hai.";
-        expectedOutput = "Broadcast-quality MP3 sound files.";
-        starter = `Generate a song about ${goal} in pop rock style.`;
-        pro = `Synthesize a synthwave instrumental track for ${goal}, deep basslines, modular synths, clear melodies.`;
-        exp = "Genre keywords (jaise lo-fi, progressive house, synthwave) prompts me include karein.";
-      }
+    time = "45 mins";
+    alternatives = "boAt Nirvanaa Space (Celestial White), Sennheiser HD, Beyerdynamic DT";
+    if (lang === "English") {
+      purpose = `Process high-quality audio files using ${toolName} with boAt Nirvanaa Space (Celestial White) monitoring.`;
+      why = `Optimizes frequency response curves matching V-curve sound profiles and handles active noise cancellation workflows.`;
+      expectedOutput = `Cleaned and mixed WAV/MP3 files ready for audio monitoring.`;
+      starter = `Set up a basic project in ${toolName} for ${goal} using active noise cancellation to clear background noise.`;
+      advanced = `Configure V-curve sound profiles on ${toolName} to optimize the audio for ${goal}, verifying with active noise cancellation.`;
+      pro = `Establish an advanced audio monitoring pipeline in ${toolName} for ${goal}. Prioritize boAt Nirvanaa Space (Celestial White) references, tune V-curve sound profiles, and execute active noise cancellation workflows for studio mastering.`;
+      exp = `Ensure your playback device is set to boAt Nirvanaa Space (Celestial White). Activate noise cancellation and monitor the output levels.`;
+    } else if (lang === "Hindi") {
+      purpose = `boAt Nirvanaa Space (Celestial White) मॉनिटरिंग के साथ ${toolName} का उपयोग करके उच्च गुणवत्ता वाली ऑडियो फाइलें प्रोसेस करना।`;
+      why = `यह V-curve साउंड प्रोफाइल के साथ फ्रीक्वेंसी रिस्पॉन्स को ऑप्टिमाइज़ करता है और एक्टिव नॉइज़ कैंसलेशन वर्कफ़्लो को संभालता है।`;
+      expectedOutput = `साफ और मिक्स की गई WAV/MP3 फाइलें जो ऑडियो मॉनिटरिंग के लिए तैयार हैं।`;
+      starter = `बैकग्राउंड नॉइज़ को साफ़ करने के लिए एक्टिव नॉइज़ कैंसलेशन का उपयोग करके ${goal} के लिए ${toolName} में एक बुनियादी प्रोजेक्ट सेट करें।`;
+      advanced = `${goal} के लिए ऑडियो को ऑप्टिमाइज़ करने के लिए ${toolName} पर V-curve साउंड प्रोफाइल कॉन्फ़िगर करें, और एक्टिव नॉइज़ कैंसलेशन के साथ इसे सत्यापित करें।`;
+      pro = `${goal} के लिए ${toolName} में एक उन्नत ऑडियो मॉनिटरिंग पाइपलाइन स्थापित करें। boAt Nirvanaa Space (Celestial White) संदर्भों को प्राथमिकता दें, V-curve साउंड प्रोफाइल को ट्यून करें, और स्टूडियो मास्टरिंग के लिए एक्टिव नॉइज़ कैंसलेशन वर्कफ़्लो निष्पादित करें।`;
+      exp = `सुनिश्चित करें कि आपका प्लेबैक डिवाइस boAt Nirvanaa Space (Celestial White) पर सेट है। नॉइज़ कैंसलेशन सक्रिय करें और आउटपुट स्तरों की निगरानी करें।`;
     } else {
-      alternatives = "Similar AI engines in Explore Library";
-      if (lang === "English") {
-        purpose = `Optimize tasks for ${goal} using advanced machine models.`;
-        why = "Automates operational tasks to increase workflow efficiency.";
-        expectedOutput = "Processed data outputs or automated task actions.";
-        starter = `Configure and deploy settings to automate ${goal}.`;
-        pro = `Design an enterprise integration schema for ${goal}, handling exception loops, caching, and analytics outputs.`;
-        exp = "Access settings and connect API keys to sync with external platforms.";
-      } else if (lang === "Hindi") {
-        purpose = `उन्नत मशीन मॉडलों का उपयोग करके ${goal} के कार्यों को अनुकूलित करना।`;
-        why = "कार्यकुशलता बढ़ाने के लिए परिचालन कार्यों को स्वचालित करता है।";
-        expectedOutput = "संसाधित डेटा आउटपुट या स्वचालित कार्य क्रियाएं।";
-        starter = `${goal} को स्वचालित करने के लिए सेटिंग्स को कॉन्फ़िगर और डिप्लॉय करें।`;
-        pro = `${goal} के लिए एक एंटरप्राइज एकीकरण योजना डिज़ाइन करें, जो अपवाद लूप और कैशिंग को संभाल सके।`;
-        exp = "बाहरी प्लेटफ़ॉर्म के साथ सिंक करने के लिए सेटिंग्स तक पहुँचें और एपीआई कुंजियाँ कनेक्ट करें।";
-      } else {
-        purpose = `Advanced models ki madad se ${goal} ke steps automate aur optimize karna.`;
-        why = "Yeh steps ko programmatic rule base se automate karke efficiency badhata hai.";
-        expectedOutput = "Automated workflows aur compiled data.";
-        starter = `Set up automated actions for ${goal} using dynamic configuration.`;
-        pro = `Integrate industrial API hooks to sync ${goal} workflow, log operations, keep dashboards updated.`;
-        exp = "Connect keys aur parameters specify karke database sync set karein.";
+      purpose = `${toolName} aur boAt Nirvanaa Space (Celestial White) monitoring ke sath high-quality audio files process karna.`;
+      why = `Yeh V-curve sound profile ke sath frequency response optimize karta hai aur active noise cancellation workflows handle karta hai.`;
+      expectedOutput = `Clean aur mixed WAV/MP3 files jo audio monitoring ke liye ready hain.`;
+      starter = `${toolName} me ${goal} ke liye basic project setup karein, aur background noise clear karne ke liye active noise cancellation use karein.`;
+      advanced = `${toolName} par V-curve sound profiles configure karein taaki ${goal} ka audio optimize ho, aur active noise cancellation se test karein.`;
+      pro = `${toolName} me ${goal} ke liye advanced audio monitoring pipeline banayein. boAt Nirvanaa Space (Celestial White) reference use karein, V-curve sound profiles tune karein, aur studio mastering ke liye active noise cancellation workflows run karein.`;
+      exp = `Apne playback device ko boAt Nirvanaa Space (Celestial White) par set karein. Noise cancellation on karein aur output levels monitor karein.`;
+    }
+  } else if (isEngineering) {
+    cost = "Free / open source";
+    time = "1 hour";
+    alternatives = "Arduino IDE, VS Code, ModelSim, Keil uVision";
+    if (lang === "English") {
+      purpose = `Develop program code, hardware descriptions, or microcontroller routines using ${toolName}.`;
+      why = `Supports Verilog HDL, 8086 Assembly, and Arduino sensor integration scripts.`;
+      expectedOutput = `Operational source code files, Verilog modules, or microcontroller sketches.`;
+      starter = `Create a simple Arduino sensor integration sketch in ${toolName} for ${goal} that reads data from analog pin A0:\n\`\`\`cpp\nvoid setup() { Serial.begin(9600); }\nvoid loop() { int value = analogRead(A0); Serial.println(value); delay(500); }\n\`\`\``;
+      advanced = `Write an 8086 Assembly routine in ${toolName} for ${goal} to perform a basic register data transfer and interrupt execution:\n\`\`\`assembly\nMOV AX, 2000H\nMOV DS, AX\nMOV AL, [0010H]\nADD AL, 05H\nMOV [0012H], AL\nINT 21H\n\`\`\``;
+      pro = `Design a complete system for ${goal} combining a Verilog HDL module with Arduino sensor integration in ${toolName}. Verilog example:\n\`\`\`verilog\nmodule sensor_processor(clk, rst, sensor_in, alarm);\n  input clk, rst;\n  input [7:0] sensor_in;\n  output reg alarm;\n  always @(posedge clk) begin\n    if (rst) alarm <= 0;\n    else alarm <= (sensor_in > 8'd150) ? 1 : 0;\n  end\nendmodule\n\`\`\``;
+      exp = `Compile and debug code. For microcontroller projects, upload the sketch via the Arduino IDE.`;
+    } else if (lang === "Hindi") {
+      purpose = `${toolName} का उपयोग करके प्रोग्राम कोड, हार्डवेयर विवरण, या माइक्रोकंट्रोलर रूटीन विकसित करना।`;
+      why = `यह Verilog HDL, 8086 Assembly, और Arduino सेंसर इंटीग्रेशन स्क्रिप्ट का समर्थन करता है।`;
+      expectedOutput = `परिचालन योग्य सोर्स कोड फ़ाइलें, Verilog मॉड्यूल, या माइक्रोकंट्रोलर स्केच।`;
+      starter = `${goal} के लिए ${toolName} में एक साधारण Arduino सेंसर इंटीग्रेशन स्केच बनाएं जो एनालॉग पिन A0 से डेटा पढ़ता है:\n\`\`\`cpp\nvoid setup() { Serial.begin(9600); }\nvoid loop() { int value = analogRead(A0); Serial.println(value); delay(500); }\n\`\`\``;
+      advanced = `${goal} के लिए ${toolName} में बुनियादी रजिस्टर डेटा ट्रांसफर और इंटरप्ट निष्पादन करने के लिए एक 8086 Assembly रूटीन लिखें:\n\`\`\`assembly\nMOV AX, 2000H\nMOV DS, AX\nMOV AL, [0010H]\nADD AL, 05H\nMOV [0012H], AL\nINT 21H\n\`\`\``;
+      pro = `${goal} के लिए ${toolName} में Arduino सेंसर इंटीग्रेशन के साथ एक Verilog HDL मॉड्यूल को संयोजित करने वाला एक संपूर्ण सिस्टम डिज़ाइन करें। Verilog उदाहरण:\n\`\`\`verilog\nmodule sensor_processor(clk, rst, sensor_in, alarm);\n  input clk, rst;\n  input [7:0] sensor_in;\n  output reg alarm;\n  always @(posedge clk) begin\n    if (rst) alarm <= 0;\n    else alarm <= (sensor_in > 8'd150) ? 1 : 0;\n  end\nendmodule\n\`\`\``;
+      exp = `Verilog सिमुलेशन को संकलित करके और Arduino IDE के माध्यम से भौतिक सेंसर आउटपुट का परीक्षण करके निष्पादन प्रवाह को सत्यापित करें।`;
+    } else {
+      purpose = `${toolName} use karke program code, hardware descriptions, ya microcontroller routines develop karna.`;
+      why = `Yeh Verilog HDL, 8086 Assembly, aur Arduino sensor integration scripts support karta hai.`;
+      expectedOutput = `Working source code files, Verilog modules, ya microcontroller sketches.`;
+      starter = `${goal} ke liye ${toolName} me simple Arduino sensor integration sketch banayein jo analog pin A0 se data read kare:\n\`\`\`cpp\nvoid setup() { Serial.begin(9600); }\nvoid loop() { int value = analogRead(A0); Serial.println(value); delay(500); }\n\`\`\``;
+      advanced = `${goal} ke liye ${toolName} me register data transfer aur interrupt handling perform karne ke liye 8086 Assembly routine likhein:\n\`\`\`assembly\nMOV AX, 2000H\nMOV DS, AX\nMOV AL, [0010H]\nADD AL, 05H\nMOV [0012H], AL\nINT 21H\n\`\`\``;
+      pro = `${goal} ke liye ${toolName} me Arduino sensor integration ke sath Verilog HDL module combine karke complete system design karein. Verilog code:\n\`\`\`verilog\nmodule sensor_processor(clk, rst, sensor_in, alarm);\n  input clk, rst;\n  input [7:0] sensor_in;\n  output reg alarm;\n  always @(posedge clk) begin\n    if (rst) alarm <= 0;\n    else alarm <= (sensor_in > 8'd150) ? 1 : 0;\n  end\nendmodule\n\`\`\``;
+      exp = `Verilog simulations compile karke aur Arduino IDE ke help se sensor outputs verify karke flow check karein.`;
+    }
+  } else if (isMediaPublishing) {
+    cost = "Freemium / Paid options";
+    time = "1.5 hours";
+    alternatives = "Amazon KDP, Suno AI, Flow AI, Canva";
+    if (lang === "English") {
+      purpose = `Produce and publish digital media content, eBooks, or marketing materials using ${toolName}.`;
+      why = `Optimizes eBook publishing workflows, independent publishing pathways, and Suno AI soundtrack creation.`;
+      expectedOutput = `Formatted eBook manuscripts, Flow AI cinematic trailer storyboards, and Suno AI background audio tracks.`;
+      starter = `Generate an eBook layout outline for ${goal} suitable for self-publishing platforms and independent publishing pathways.`;
+      advanced = `Draft a storyboard script for a Flow AI cinematic trailer workflow to market ${goal} online.`;
+      pro = `Develop a comprehensive media launch strategy for ${goal} using ${toolName}. Format manuscript for eBook publishing workflows, define independent publishing pathways, configure Flow AI cinematic trailer timelines, and generate matching Suno AI soundtracks.`;
+      exp = `Upload formatted files to KDP, render video tracks using Flow AI, and bundle audio tracks generated from Suno AI.`;
+    } else if (lang === "Hindi") {
+      purpose = `${toolName} का उपयोग करके डिजिटल मीडिया सामग्री, ई-बुक्स, या मार्केटिंग सामग्री का उत्पादन और प्रकाशन करना।`;
+      why = `यह ई-बुक प्रकाशन वर्कफ़्लो, स्वतंत्र प्रकाशन मार्गों और Suno AI साउंडट्रैक निर्माण को अनुकूलित करता है।`;
+      expectedOutput = `फ़ॉर्मेट की गई ई-बुक पांडुलिपियां, Flow AI सिनेमाई ट्रेलर स्टोरीबोर्ड, और Suno AI बैकग्राउंड ऑडियो ट्रैक।`;
+      starter = `सेल्फ-पब्लिशिंग प्लेटफॉर्म और स्वतंत्र प्रकाशन मार्गों (independent publishing pathways) के लिए उपयुक्त ${goal} के लिए एक ई-बुक लेआउट रूपरेखा तैयार करें।`;
+      advanced = `${goal} को ऑनलाइन मार्केट करने के लिए Flow AI सिनेमाई ट्रेलर वर्कफ़्लो के लिए एक स्टोरीबोर्ड स्क्रिप्ट का ड्राफ्ट तैयार करें।`;
+      pro = `${toolName} का उपयोग करके ${goal} के लिए एक व्यापक मीडिया लॉन्च रणनीति विकसित करें। ई-बुक प्रकाशन वर्कफ़्लो के लिए पांडुलिपि को फ़ॉर्मेट करें, स्वतंत्र प्रकाशन मार्गों को परिभाषित करें, Flow AI सिनेमाई ट्रेलर समयसीमा को कॉन्फ़िगर करें, और मिलान वाले Suno AI साउंडट्रैक जनरेट करें।`;
+      exp = `KDP पर फ़ॉर्मेट की गई फ़ाइलें अपलोड करें, Flow AI का उपयोग करके वीडियो ट्रैक रेंडर करें, और Suno AI से जनरेट किए गए ऑडियो ट्रैक को बंडल करें।`;
+    } else {
+      purpose = `${toolName} use karke digital media content, eBooks, ya marketing assets produce aur publish karna.`;
+      why = `Yeh eBook publishing workflows, independent publishing pathways aur Suno AI soundtrack creation ko optimize karta hai.`;
+      expectedOutput = `Formatted eBook layouts, Flow AI cinematic trailer scripts, aur Suno AI background tracks.`;
+      starter = `${goal} ke liye eBook layout outline generate karein jo self-publishing platforms aur independent publishing pathways ke liye suitable ho.`;
+      advanced = `${goal} ko online promote karne ke liye Flow AI cinematic trailer workflow ka storyboard script draft karein.`;
+      pro = `${toolName} ke sath ${goal} ke liye media launch strategy design karein. Manuscript ko eBook publishing ke liye format karein, independent publishing pathways specify karein, Flow AI cinematic trailer timelines set karein, aur matching Suno AI soundtracks generate karein.`;
+      exp = `Formatted files ko KDP par upload karein, Flow AI se video tracks render karein, aur Suno AI ke audio tracks compile karein.`;
+    }
+  } else {
+    if (t.includes("docs")) {
+      purpose = labels.docsPurpose;
+      why = labels.docsWhy;
+      expectedOutput = labels.docsOutput;
+      starter = labels.docsStarterPrompt + ` [Goal: ${goal}]`;
+      advanced = labels.docsStarterPrompt + ` [Advanced Setup for Goal: ${goal}]`;
+      pro = labels.docsProPrompt + ` [Goal: ${goal}]`;
+      exp = labels.docsExplanation;
+      cost = labels.free;
+      time = lang === "English" ? "20 mins" : lang === "Hindi" ? "20 मिनट" : "20 mins";
+      alternatives = "Microsoft Word, Notion";
+    } else if (t.includes("chatgpt")) {
+      purpose = labels.chatgptPurpose;
+      why = labels.chatgptWhy;
+      expectedOutput = labels.chatgptOutput;
+      starter = labels.chatgptStarterPrompt + ` [Goal: ${goal}]`;
+      advanced = labels.chatgptStarterPrompt + ` [Advanced Context for Goal: ${goal}]`;
+      pro = labels.chatgptProPrompt + ` [Goal: ${goal}]`;
+      exp = labels.chatgptExplanation;
+      cost = labels.free;
+      time = lang === "English" ? "15 mins" : lang === "Hindi" ? "15 मिनट" : "15 mins";
+      alternatives = "Google Gemini, Claude";
+    } else {
+      cost = "Free / paid options";
+      time = "1 hour";
+      
+      if (t.includes("midjourney") || t.includes("flux") || t.includes("leonardo") || t.includes("image") || t.includes("spectra") || t.includes("ideogram")) {
+        alternatives = "Flux, Midjourney, Stable Diffusion";
+        cost = "$10 - $20 / mo";
+        if (lang === "English") {
+          purpose = "Create stunning visual assets and graphics.";
+          why = `${toolName} generates production-quality visual styles from textual descriptions.`;
+          expectedOutput = "High-resolution JPG/PNG graphic files.";
+          starter = `Generate a realistic image for ${goal}, clean composition, raw style.`;
+          advanced = `Produce an artistic digital painting for ${goal}, featuring detailed contrast and hyper-detailed texturing.`;
+          pro = `Generate a cinematic, hyper-detailed render for ${goal}, photorealistic, dramatic lighting, shot on 35mm lens, 8k resolution.`;
+          exp = "Provide clear descriptions of elements, colors, and camera styles.";
+        } else if (lang === "Hindi") {
+          purpose = "शानदार विज़ुअल आर्ट और ग्राफिक्स बनाना।";
+          why = `${toolName} टेक्स्ट विवरण से व्यावसायिक गुणवत्ता वाली छवियां बनाता है।`;
+          expectedOutput = "उच्च रिज़ॉल्यूशन वाली JPG/PNG फ़ाइलें।";
+          starter = `${goal} के लिए एक वास्तविक छवि बनाएं, साफ़ संरचना, स्पष्ट विवरण।`;
+          advanced = `${goal} के लिए विस्तृत कंट्रास्ट और हाइपर-डिटेल्ड टेक्सचरिंग वाली एक कलात्मक डिजिटल पेंटिंग बनाएं।`;
+          pro = `${goal} के लिए एक सिनेमाई, अत्यधिक विस्तृत रेंडर, नाटकीय प्रकाश व्यवस्था, 35 मिमी लेंस, 8k रिज़ॉल्यूशन।`;
+          exp = "चित्र के तत्वों, रंगों और कैमरा शैली का स्पष्ट विवरण प्रदान करें।";
+        } else {
+          purpose = "High-quality visual graphics aur illustrations design karna.";
+          why = `${toolName} textual description se creative visual designs generate karta hai.`;
+          expectedOutput = "High-resolution JPG/PNG photo assets.";
+          starter = `Create an image representing ${goal}, dynamic colors, simple layout.`;
+          advanced = `Develop an abstract aesthetic concept art representing ${goal}, detailed shaders, octane render.`;
+          pro = `Generate a hyper-realistic cinematic photo of ${goal}, photorealistic, 8k render, depth of field, studio lighting.`;
+          exp = "Prompt me image ke elements, theme aur camera angle ko describe karein.";
+        }
+      } else if (t.includes("video") || t.includes("runway") || t.includes("luma") || t.includes("sora") || t.includes("pika") || t.includes("vidu") || t.includes("veo")) {
+        alternatives = "Runway, Sora, Luma, Pika";
+        cost = "Freemium / $15 / mo";
+        if (lang === "English") {
+          purpose = "Animate image keyframes into dynamic video clips.";
+          why = "Translates static concept frames into smooth, motion-consistent cinematic video.";
+          expectedOutput = "4-second MP4 motion clips.";
+          starter = `Animate the scene for ${goal} showing smooth camera panning.`;
+          advanced = `Animate static frames for ${goal} using dynamic zoom-in effects and physical environment motion.`;
+          pro = `Generate a cinematic slow-motion sequence for ${goal}, fluid movement, detailed textures, realistic physics, 4k resolution.`;
+          exp = "Keep animation prompts focused on motion, cameras, and physical actions.";
+        } else if (lang === "Hindi") {
+          purpose = "स्थिर छवियों को चलती हुई सिनेमाई क्लिप्स में बदलना।";
+          why = "स्थिर फ़्रेमों को सहज, गति-संगत सिनेमाई वीडियो में अनुवादित करता है।";
+          expectedOutput = "4-सेकंड की MP4 वीडियो क्लिप्स।";
+          starter = `${goal} के लिए सीन को घुमाते हुए कैमरे के साथ एनिमेट करें।`;
+          advanced = `गतिशील ज़ूम-इन प्रभावों और भौतिक पर्यावरण गति का उपयोग करके ${goal} के लिए स्थिर फ़्रेमों को एनिमेट करें।`;
+          pro = `${goal} के लिए एक सिनेमाई धीमी गति का क्रम, तरल गति, विस्तृत बनावट, यथार्थवादी भौतिकी, 4k रिज़ॉल्यूशन।`;
+          exp = "एनिमेशन प्रॉम्प्ट को मुख्य रूप से गति, कैमरे के कोण और भौतिक क्रियाओं पर केंद्रित रखें।";
+        } else {
+          purpose = "Static frames ko clean high-motion videos me convert karna.";
+          why = "Yeh static photos ko motion-consistent smooth cinematic frames me convert karta hai.";
+          expectedOutput = "4-second timeline MP4 video files.";
+          starter = `Animate this frame for ${goal} with soft camera rotation.`;
+          advanced = `Render intermediate frame animations for ${goal} with structural motion control.`;
+          pro = `Generate high-motion cinema tracking shot for ${goal}, hyper-detailed, slow motion, clean animation output.`;
+          exp = "Camera speed, motion directions aur zoom values prompts me likhein.";
+        }
+      } else if (t.includes("voice") || t.includes("elevenlabs") || t.includes("playht") || t.includes("resemble") || t.includes("speechify") || t.includes("wellsaid") || t.includes("vocalise")) {
+        alternatives = "ElevenLabs, Murf, PlayHT";
+        cost = "$5 - $22 / mo";
+        if (lang === "English") {
+          purpose = "Synthesize realistic voice narration tracks.";
+          why = "Converts draft scripts into natural sounding human speech with dynamic emotion.";
+          expectedOutput = "High-fidelity WAV/MP3 sound files.";
+          starter = `Generate a warm narrator voiceover reading the script for ${goal}.`;
+          advanced = `Synthesize custom emotional narration voiceover for ${goal}, adjusting energy levels and stress marks.`;
+          pro = `Synthesize an authoritative, professional voiceover for ${goal}, medium pace, clear enunciation, natural pauses, optimized for advertising.`;
+          pro = `Design an enterprise integration schema for ${goal}, handling exception loops, caching, and analytics outputs.`;
+          exp = "Access settings and connect API keys to sync with external platforms.";
+        } else if (lang === "Hindi") {
+          purpose = `उन्नत मशीन मॉडलों का उपयोग करके ${goal} के कार्यों को अनुकूलित करना।`;
+          why = "कार्यकुशलता बढ़ाने के लिए परिचालन कार्यों को स्वचालित करता है।";
+          expectedOutput = "संसाधित डेटा आउटपुट या स्वचालित कार्य क्रियाएं।";
+          starter = `${goal} को स्वचालित करने के लिए सेटिंग्स को कॉन्फ़िगर और डिप्लॉय करें।`;
+          advanced = `${goal} के लिए उप-कार्य निष्पादनों को समन्वित करने के लिए अनुकूलन लूप तैनात करें।`;
+          pro = `${goal} के लिए एक एंटरप्राइज एकीकरण योजना डिज़ाइन करें, जो अपवाद लूप और कैशिंग को संभाल सके।`;
+          exp = "बाहरी प्लेटफ़ॉर्म के साथ सिंक करने के लिए सेटिंग्स तक पहुँचें और एपीआई कुंजियाँ कनेक्ट करें।";
+        } else {
+          purpose = `Advanced models ki madad se ${goal} ke steps automate aur optimize karna.`;
+          why = "Yeh steps ko programmatic rule base se automate karke efficiency badhata hai.";
+          expectedOutput = "Automated workflows aur compiled data.";
+          starter = `Set up automated actions for ${goal} using dynamic configuration.`;
+          advanced = `Configure scheduled automation triggers to route files for ${goal}.`;
+          pro = `Integrate industrial API hooks to sync ${goal} workflow, log operations, keep dashboards updated.`;
+          exp = "Connect keys aur parameters specify karke database sync set karein.";
+        }
       }
     }
   }
 
-  return { starter, pro, exp, purpose, why, expectedOutput, cost, time, alternatives };
+  return { starter, advanced, pro, exp, purpose, why, expectedOutput, cost, time, alternatives };
 }
 
 function getActiveLanguage() {
-  const wizardSelect = document.getElementById('wizard-lang-select');
-  const headerSelect = document.getElementById('header-lang-select');
-  return wizardSelect ? wizardSelect.value : (headerSelect ? headerSelect.value : 'Hinglish');
+  const controlSelect = document.getElementById('control-lang-select');
+  return controlSelect ? controlSelect.value : 'Hinglish';
 }
 
-function syncLanguageSelectors() {
-  const wizardSelect = document.getElementById('wizard-lang-select');
-  const headerSelect = document.getElementById('header-lang-select');
-  
-  if (wizardSelect && headerSelect) {
-    wizardSelect.addEventListener('change', (e) => {
-      headerSelect.value = e.target.value;
-      if (state.goalText) {
-        regenerateActiveRoadmap();
-      }
-    });
-    headerSelect.addEventListener('change', (e) => {
-      wizardSelect.value = e.target.value;
-      if (state.goalText) {
-        regenerateActiveRoadmap();
-      }
-    });
+const appGuidesData = {
+  "Android Studio Installation": {
+    title: { English: "Android Studio Installation", Hindi: "एंड्रॉइड स्टूडियो स्थापना", Hinglish: "Android Studio Installation" },
+    explanation: {
+      English: "Comprehensive guide to download and install Android Studio. Double-click the installer executable and proceed with the setup wizard configurations.",
+      Hindi: "एंड्रॉइड स्टूडियो डाउनलोड और इंस्टॉल करने के लिए विस्तृत गाइड। इंस्टॉलर एक्ज़ीक्यूटेबल पर डबल-क्लिक करें और सेटअप विज़ार्ड कॉन्फ़िगरेशन के साथ आगे बढ़ें।",
+      Hinglish: "Android Studio ko download aur install karne ki guide. Installer exe file par double-click karein aur setup wizard follow karein."
+    },
+    visualFlow: "[Download Installer] ──> [Choose Setup Options] ──> [Install IDE Core] ──> [First Launch Welcome Screen]",
+    prerequisite: { English: "Local computer with minimum 8GB RAM.", Hindi: "न्यूनतम 8GB रैम वाला स्थानीय कंप्यूटर।", Hinglish: "Minimum 8GB RAM wala local computer." },
+    keyConcepts: { English: ["IDE path paths", "Java Virtual Machine configuration"], Hindi: ["आईडीई पथ", "जावा वर्चुअल मशीन कॉन्फ़िगरेशन"], Hinglish: ["IDE paths setups", "Java Virtual Machine settings"] },
+    commonMistakes: { English: ["Installing on slow storage partition."], Hindi: ["धीमी स्टोरेज पर इंस्टॉल करना।"], Hinglish: ["Slow storage partition par install karna."] },
+    applications: { English: ["Setting up Android IDE"], Hindi: ["एंड्रॉइड आईडीई सेट करना"], Hinglish: ["Android IDE setup karna"] },
+    exercises: { English: "Download Android Studio installer from developer.android.com and complete wizard.", Hindi: "developer.android.com से एंड्रॉइड स्टूडियो इंस्टॉलर डाउनलोड करें और विज़ार्ड पूरा करें।", Hinglish: "Official portal se Android Studio installer run karke wizard setup complete karein." },
+    outcome: { English: "Android Studio Welcome window successfully displayed.", Hindi: "एंड्रॉइड स्टूडियो स्वागत विंडो प्रदर्शित हुई।", Hinglish: "Android Studio welcome window screens display ho jayegi." },
+    checkpoint: {
+      question: { English: "What is the recommended minimum RAM to run Android Studio?", Hindi: "एंड्रॉइड स्टूडियो को चलाने के लिए अनुशंसित न्यूनतम रैम क्या है?", Hinglish: "Android Studio ko run karne ke liye minimum kitne RAM ki need hoti hai?" },
+      options: { English: ["2 GB", "4 GB", "8 GB", "16 GB"], Hindi: ["2 जीबी", "4 जीबी", "8 जीबी", "16 जीबी"], Hinglish: ["2 GB", "4 GB", "8 GB", "16 GB"] },
+      correct: 2,
+      explanation: { English: "Android Studio requires at least 8GB RAM to run build tools and emulators smoothly.", Hindi: "बिल्ड टूल्स और एमुलेटर को सुचारू रूप से चलाने के लिए कम से कम 8GB रैम की आवश्यकता होती है।", Hinglish: "build tools aur emulators ko run karne ke liye minimum 8GB RAM recommended hai." }
+    }
+  },
+  "Environment Setup": {
+    title: { English: "Environment & SDK Setup", Hindi: "वातावरण और एसडीके सेटअप", Hinglish: "Environment & SDK Setup" },
+    explanation: {
+      English: "Launch Android SDK Manager to download SDK platforms and build tools. Setup ANDROID_HOME environment variable for compilation paths.",
+      Hindi: "एसडीके प्लेटफॉर्म और बिल्ड टूल्स डाउनलोड करने के लिए एंड्रॉइड एसडीके मैनेजर लॉन्च करें। कंपाइलेशन पाथ के लिए ANDROID_HOME वेरिएबल सेट करें।",
+      Hinglish: "SDK Manager se platforms resources download karein aur environment me ANDROID_HOME paths variables set karein."
+    },
+    visualFlow: "[Open SDK Manager] ──> [Select SDK Platforms] ──> [Download Build Tools] ──> [Set System Env Paths]",
+    prerequisite: { English: "Android Studio installed successfully.", Hindi: "एंड्रॉइड स्टूडियो सफलतापूर्वक इंस्टॉल होना चाहिए।", Hinglish: "Android Studio installation completed." },
+    keyConcepts: { English: ["SDK API levels", "Path environment variables"], Hindi: ["एसडीके एपीआई स्तर", "पथ पर्यावरण वेरिएबल्स"], Hinglish: ["SDK API levels configurations", "System variable PATH paths"] },
+    commonMistakes: { English: ["Mismatched SDK versions.", "Incorrect environment path."], Hindi: ["बेमेल एसडीके संस्करण।", "गलत पर्यावरण पथ।"], Hinglish: ["Different SDK versions conflict.", "Variable PATH syntax errors."] },
+    applications: { English: ["Preparing compilation tools"], Hindi: ["कंपाइलेशन टूल्स को तैयार करना"], Hinglish: ["Compiling environment setup tools"] },
+    exercises: { English: "Open SDK Manager and download Android 13/14 SDK Platform and Build Tools.", Hindi: "एसडीके मैनेजर खोलें और एंड्रॉइड 13/14 एसडीके प्लेटफॉर्म और बिल्ड टूल्स डाउनलोड करें।", Hinglish: "SDK Manager API settings open karke build tools update check verify karein." },
+    outcome: { English: "SDK paths correctly loaded and environment variables verified.", Hindi: "एसडीके पथ लोड किए गए और पर्यावरण वेरिएबल्स सत्यापित किए गए।", Hinglish: "SDK components download update verified." },
+    checkpoint: {
+      question: { English: "Which environment variable defines the root location of Android SDK?", Hindi: "एंड्रॉइड एसडीके के रूट स्थान को परिभाषित करने के लिए किस वेरिएबल का उपयोग किया जाता है?", Hinglish: "Android SDK root path register karne ke liye kis variable name ka use hota hai?" },
+      options: { English: ["ANDROID_SDK_ROOT", "ANDROID_HOME", "SDK_PATH", "ANDROID_DIR"], Hindi: ["ANDROID_SDK_ROOT", "ANDROID_HOME", "SDK_PATH", "ANDROID_DIR"], Hinglish: ["ANDROID_SDK_ROOT", "ANDROID_HOME", "SDK_PATH", "ANDROID_DIR"] },
+      correct: 1,
+      explanation: { English: "ANDROID_HOME is the standard variable used by build engines like Gradle to locate SDK installations.", Hindi: "ANDROID_HOME बिल्ड इंजन (जैसे ग्रैडल) द्वारा एसडीके का पता लगाने के लिए उपयोग किया जाने वाला मानक वेरिएबल है।", Hinglish: "ANDROID_HOME standard variable hai jo system Gradle builds use karte hain SDK locate karne ke liye." }
+    }
+  },
+  "Project Creation": {
+    title: { English: "First Project Template Setup", Hindi: "प्रथम प्रोजेक्ट टेम्पलेट सेटअप", Hinglish: "First Project Template Setup" },
+    explanation: {
+      English: "Create a new project using the Empty Activity template. Sync project parameters with the Gradle build scripts.",
+      Hindi: "खाली गतिविधि टेम्पलेट का उपयोग करके एक नया प्रोजेक्ट बनाएं। ग्रैडल बिल्ड स्क्रिप्ट के साथ प्रोजेक्ट मापदंडों को सिंक करें।",
+      Hinglish: "New Project Wizard se Empty Activity select karke app compile karein aur Gradle dependency sync complete check verify karein."
+    },
+    visualFlow: "[New Project Wizard] ──> [Select Empty Activity] ──> [Set Package Name & Language] ──> [Gradle Sync]",
+    prerequisite: { English: "Android SDK installed.", Hindi: "एंड्रॉइड एसडीके इंस्टॉल होना चाहिए।", Hinglish: "Android SDK configuration completed." },
+    keyConcepts: { English: ["Android project structures", "Gradle build scripts"], Hindi: ["एंड्रॉइड प्रोजेक्ट संरचना", "ग्रैडल बिल्ड स्क्रिप्ट"], Hinglish: ["Android project folder structures", "build.gradle script setups"] },
+    commonMistakes: { English: ["Interrupting Gradle build sync."], Hindi: ["ग्रैडल बिल्ड सिंक को बीच में रोकना।"], Hinglish: ["Gradle sync background process cancel karna."] },
+    applications: { English: ["Initializing application structures"], Hindi: ["एप्लिकेशन संरचना शुरू करना"], Hinglish: ["Application template bootstrapping"] },
+    exercises: { English: "Create an Empty Activity project named 'MyFirstApp' and verify it builds successfully.", Hindi: "'MyFirstApp' नाम से एक खाली गतिविधि प्रोजेक्ट बनाएं और सत्यापित करें कि यह सफलतापूर्वक बनता है।", Hinglish: "'MyFirstApp' project compile check verify setup sync finish." },
+    outcome: { English: "Project template loaded without sync errors.", Hindi: "प्रोजेक्ट टेम्पलेट बिना सिंक त्रुटियों के लोड हो गया।", Hinglish: "Clean project folders ready for development." },
+    checkpoint: {
+      question: { English: "What script file manages app dependencies and compilation options in Android Studio?", Hindi: "एंड्रॉइड स्टूडियो में ऐप की निर्भरता और कंपाइलेशन विकल्पों को कौन सी फ़ाइल संभालती है?", Hinglish: "Dependencies aur libraries management kis file configuration settings me save hoti hai?" },
+      options: { English: ["AndroidManifest.xml", "build.gradle", "settings.json", "MainActivity.java"], Hindi: ["AndroidManifest.xml", "build.gradle", "settings.json", "MainActivity.java"], Hinglish: ["AndroidManifest.xml", "build.gradle", "settings.json", "MainActivity.java"] },
+      correct: 1,
+      explanation: { English: "Gradle build scripts (build.gradle) manage dependencies, compilation options, and packaging configurations.", Hindi: "ग्रैडल बिल्ड स्क्रिप्ट (build.gradle) लाइब्रेरी निर्भरता और कंपाइलेशन सेटिंग्स को नियंत्रित करती हैं।", Hinglish: "build.gradle configurations script control handles libraries settings updates." }
+    }
+  },
+  "Development": {
+    title: { English: "Android App Development", Hindi: "एंड्रॉइड ऐप डेवलपमेंट", Hinglish: "Android App Development" },
+    explanation: {
+      English: "Design user interface views using XML layouts. Bind layout elements in Java or Kotlin controller files and write functional action logic.",
+      Hindi: "एक्सएमएल लेआउट का उपयोग करके यूजर इंटरफेस व्यू डिजाइन करें। जावा या कोटलिन कंट्रोलर फ़ाइलों में लेआउट तत्वों को बांधें और कार्यात्मक एक्शन लॉजिक लिखें।",
+      Hinglish: "XML me UI layout design prepare karein aur Java/Kotlin script controller files me code logica set click actions logic code bind karein."
+    },
+    visualFlow: "[XML Layout Design] ──> [Bind Views in Code] ──> [Implement Event Listeners] ──> [Business Logic]",
+    prerequisite: { English: "Project Gradle sync completed.", Hindi: "प्रोजेक्ट ग्रैडल सिंक पूरा होना चाहिए।", Hinglish: "Project gradle sync status verify complete." },
+    keyConcepts: { English: ["XML layout attributes", "Activity controller bindings"], Hindi: ["एक्सएमएल लेआउट विशेषताएँ", "गतिविधि नियंत्रक बाइंडिंग"], Hinglish: ["XML constraints layouts attributes", "Activity bindings hooks logic"] },
+    commonMistakes: { English: ["Using wrong layout view IDs."], Hindi: ["गलत लेआउट व्यू आईडी का उपयोग करना।"], Hinglish: ["Wrong view ID query reference code crashes."] },
+    applications: { English: ["Coding Android screen controls"], Hindi: ["एंड्रॉइड स्क्रीन नियंत्रण कोडिंग"], Hinglish: ["Coding interactive screen elements configurations"] },
+    exercises: { English: "Add a Button widget in your layout, set an ID, and log a console message when it is clicked.", Hindi: "अपने लेआउट में एक बटन विजेट जोड़ें, एक आईडी सेट करें, और क्लिक होने पर एक कंसोल संदेश लॉग करें।", Hinglish: "xml me Button create karke click listener set verify and check message run." },
+    outcome: { English: "Button interactions register clicks correctly.", Hindi: "बटन इंटरैक्शन क्लिक को सही ढंग से पंजीकृत करते हैं।", Hinglish: "Action triggers working check outputs." },
+    checkpoint: {
+      question: { English: "Which file describes package permissions, entry activities, and metadata for an Android app?", Hindi: "भौतिक अनुमतियों और प्रवेश गतिविधियों का वर्णन करने वाली फ़ाइल कौन सी है?", Hinglish: "Permissions target features register verify karne wali file kaun si hai?" },
+      options: { English: ["build.gradle", "AndroidManifest.xml", "MainActivity.kt", "strings.xml"], Hindi: ["build.gradle", "AndroidManifest.xml", "MainActivity.kt", "strings.xml"], Hinglish: ["build.gradle", "AndroidManifest.xml", "MainActivity.kt", "strings.xml"] },
+      correct: 1,
+      explanation: { English: "AndroidManifest.xml contains all permissions, components (activities, services), and launch parameters metadata.", Hindi: "AndroidManifest.xml में ऐप की अनुमतियाँ, गतिविधियाँ, सेवाएँ और बुनियादी मेटाडेटा शामिल हैं।", Hinglish: "AndroidManifest.xml permissions target components entry details manifest register check." }
+    }
+  },
+  "Testing (Android)": {
+    title: { English: "Emulation & Local Testing", Hindi: "एमुलेशन और स्थानीय परीक्षण", Hinglish: "Emulation & Local Testing" },
+    explanation: {
+      English: "Start the AVD virtual device simulator. Deploy your application instantly and review compiler logs and error outputs in the Logcat window.",
+      Hindi: "एवीडी वर्चुअल डिवाइस सिम्युलेटर शुरू करें। तुरंत अपना एप्लिकेशन तैनात करें और लॉगकैट विंडो में कंपाइलर लॉग और त्रुटि आउटपुट की समीक्षा करें।",
+      Hinglish: "AVD configure device launch screen run click deploy emulator verify inspect Logcat outputs logs warnings."
+    },
+    visualFlow: "[Launch AVD Emulator] ──> [Click Run App (Shift+F10)] ──> [Build & Install APK] ──> [Inspect Logcat Logs]",
+    prerequisite: { English: "Compilation without code errors.", Hindi: "कोड त्रुटियों के बिना कंपाइलेशन होना चाहिए।", Hinglish: "App logic code compiles cleanly." },
+    keyConcepts: { English: ["AVD virtual setups", "Logcat debugger outputs"], Hindi: ["एवीडी वर्चुअल सेटअप", "लॉगकैट डिबगर आउटपुट"], Hinglish: ["AVD layouts simulators profiles", "Logcat search filters warnings"] },
+    commonMistakes: { English: ["Not enabling VT-x virtualization in system BIOS."], Hindi: ["सिस्टम बायोस में VT-x वर्चुअलाइजेशन सक्षम न करना।"], Hinglish: ["System BIOS VT-x options parameters disabled status."] },
+    applications: { English: ["Debugging runtime app exceptions"], Hindi: ["रनटाइम ऐप त्रुटियों को डिबग करना"], Hinglish: ["Debugging runtime layout variables failures"] },
+    exercises: { English: "Launch AVD, run application, and confirm click output registers in Logcat log lists.", Hindi: "एवीडी लॉन्च करें, एप्लिकेशन चलाएं, और पुष्टि करें कि क्लिक आउटपुट लॉगकैट लॉग सूची में पंजीकृत होता है।", Hinglish: "AVD launch karke run compile application log status button clicks monitoring screen check verify." },
+    outcome: { English: "Application runs successfully on emulator screen.", Hindi: "एप्लिकेशन एमुलेटर स्क्रीन पर सफलतापूर्वक चलता है।", Hinglish: "App visual test output interactive emulator launch checks." },
+    checkpoint: {
+      question: { English: "Which window utility inside Android Studio is used to view debug log outputs and crash reports?", Hindi: "डिबग लॉग आउटपुट और क्रैश रिपोर्ट देखने के लिए किस यूटिलिटी का उपयोग किया जाता है?", Hinglish: "Android Studio me application prints stack traces aur debug monitoring console check kya hai?" },
+      options: { English: ["Device File Explorer", "Gradle Console", "Logcat", "SDK Manager"], Hindi: ["डिवाइस फ़ाइल एक्सप्लोरर", "ग्रैडल कंसोल", "लॉगकैट", "एसडीके मैनेजर"], Hinglish: ["Device File Explorer", "Gradle Console", "Logcat", "SDK Manager"] },
+      correct: 2,
+      explanation: { English: "Logcat is the developer utility that displays log statements, stack traces, and runtime exceptions.", Hindi: "लॉगकैट रनटाइम समस्याओं, डिबग स्टेटमेंट और क्रैश रिपोर्ट की निगरानी के लिए उपयोग किया जाता है।", Hinglish: "Logcat runtime debug alerts exceptions logs display check console panel tool." }
+    }
+  },
+  "APK Generation": {
+    title: { English: "Build & Release APK Generation", Hindi: "बिल्ड और रिलीज़ एपीके जनरेशन", Hinglish: "Build & Release APK Generation" },
+    explanation: {
+      English: "Compile production bundles using keystore certifications. Generate signed APK files optimized for physical side-loading installations.",
+      Hindi: "कीस्टोर प्रमाणपत्रों का उपयोग करके उत्पादन बंडल संकलित करें। भौतिक साइड-लोडिंग स्थापनाओं के लिए अनुकूलित हस्ताक्षरित एपीके फ़ाइलें जनरेट करें।",
+      Hinglish: "Generate Signed APK utility settings configure keystore profiles password setup verify targets release APK compile build."
+    },
+    visualFlow: "[Select Build Menu] ──> [Generate Signed APK] ──> [Create Keystore Credentials] ──> [Locate APK File]",
+    prerequisite: { English: "Local emulator tests pass successfully.", Hindi: "स्थानीय एमुलेटर परीक्षण सफलतापूर्वक पास होने चाहिए।", Hinglish: "App local emulation validation tests passed." },
+    keyConcepts: { English: ["Signed keystore files", "Release build variants optimization"], Hindi: ["हस्ताक्षरित कीस्टोर फाइलें", "रिलीज़ बिल्ड वेरिएंट अनुकूलन"], Hinglish: ["Keystore properties verify keys", "Release builds variables parameters signature schemes"] },
+    commonMistakes: { English: ["Losing release keystore passwords."], Hindi: ["रिलीज़ कीस्टोर पासवर्ड भूल जाना या खोना।"], Hinglish: ["Keystore files config lost paths credentials updates ignore."] },
+    applications: { English: ["Generating side-load ready installer files"], Hindi: ["साइड-लोड रेडी इंस्टॉलर फाइलें बनाना"], Hinglish: ["Compiling installable distribution packages files checks"] },
+    exercises: { English: "Execute Generate Signed APK setup wizard, create a temporary test keystore and build release APK.", Hindi: "हस्ताक्षरित एपीके जनरेट करें विज़ार्ड निष्पादित करें, एक परीक्षण कीस्टोर बनाएं और रिलीज़ एपीके बनाएं।", Hinglish: "Generate Signed APK build release keystores key setup compile run locate folder files verify." },
+    outcome: { English: "Signed production release APK package compiled in build outputs directory.", Hindi: "हस्ताक्षरित रिलीज़ एपीके बंडल आउटपुट निर्देशिका में सफलतापूर्वक संकलित हुआ।", Hinglish: "Release APK folder compiled locate path files check." },
+    checkpoint: {
+      question: { English: "Which file format is standard for distributing and installing native applications on Android devices?", Hindi: "देशी अनुप्रयोगों को वितरित और स्थापित करने के लिए कौन सा फ़ाइल स्वरूप मानक है?", Hinglish: "Android phone installable installer check executable compilation target output format kya hota hai?" },
+      options: { English: [".ipa file", ".apk file", ".exe file", ".zip file"], Hindi: [".ipa फ़ाइल", ".apk फ़ाइल", ".exe फ़ाइल", ".zip फ़ाइल"], Hinglish: [".ipa file", ".apk file", ".exe file", ".zip file"] },
+      correct: 1,
+      explanation: { English: "An .apk (Android Package) file is the compilation package used to distribute and install native apps on devices.", Hindi: ".apk एंड्रॉइड पर ऐप्स वितरित और स्थापित करने के लिए उपयोग किया जाने वाला पैकेज प्रारूप है।", Hinglish: ".apk file native package representation compile executable format standard check." }
+    }
+  },
+  "Deployment": {
+    title: { English: "App Deployment", Hindi: "ऐप परिनियोजन (Deployment)", Hinglish: "App Deployment" },
+    explanation: {
+      English: "Publish or sideload your application packages. Setup distribution tracks (Internal Testing vs Production) inside the developer portal.",
+      Hindi: "अपने एप्लिकेशन पैकेज प्रकाशित या साइडलोड करें। डेवलपर पोर्टल के भीतर वितरण ट्रैक स्थापित करें।",
+      Hinglish: "App packages release publish ya local phone me load karein, aur console dashboard par test tracks setup check karein."
+    },
+    visualFlow: "[Signed APK File] ──> [Google Play Console Upload] ──> [Internal Testing Track] ──> [Production Rollout]",
+    prerequisite: { English: "Release APK package built successfully.", Hindi: "रिलीज़ एपीके बंडल तैयार होना चाहिए।", Hinglish: "Signed release APK generated." },
+    keyConcepts: { English: ["Developer console listings", "Release rollout tracks"], Hindi: ["डेवलपर कंसोल लिस्टिंग", "रिलीज़ रोलआउट ट्रैक"], Hinglish: ["Play Console settings", "Internal/Closed testing tracks options"] },
+    commonMistakes: { English: ["Uploading debug builds.", "Exceeding layout package size thresholds."], Hindi: ["डिबग बिल्ड अपलोड करना।", "पैकेज साइज सीमाओं को पार करना।"], Hinglish: ["Debug mode apps upload check fail.", "Target API targets mismatch console reject."] },
+    applications: { English: ["Publishing mobile apps globally"], Hindi: ["वैश्विक स्तर पर मोबाइल ऐप प्रकाशित करना"], Hinglish: ["Deploying Android application modules"] },
+    exercises: { English: "Sideload the generated APK onto a physical Android device and verify it launches correctly.", Hindi: "उत्पन्न एपीके को एक भौतिक एंड्रॉइड डिवाइस पर साइडलोड करें और सत्यापित करें कि यह सही ढंग से लॉन्च होता है।", Hinglish: "APK file local system phone me transfer karke layout launch and runs check verification pass." },
+    outcome: { English: "Native application running on target test hardware.", Hindi: "देशी एप्लिकेशन लक्षित परीक्षण हार्डवेयर पर काम कर रहा है।", Hinglish: "Working native install test pass." },
+    checkpoint: {
+      question: { English: "Which console portal is the official channel to deploy apps publicly to the Google Play Store?", Hindi: "गूगल प्ले स्टोर पर सार्वजनिक रूप से ऐप्स तैनात करने का आधिकारिक चैनल कौन सा है?", Hinglish: "Android apps Play Store par publish karne ka main portal board kya hai?" },
+      options: { English: ["Google Cloud Console", "Firebase Console", "Google Play Console", "Android SDK Manager"], Hindi: ["गूगल क्लाउड कंसोल", "फायरबेस कंसोल", "गूगल प्ले कंसोल", "एंड्रॉइड एसडीके मैनेजर"], Hinglish: ["Google Cloud Console", "Firebase Console", "Google Play Console", "Android SDK Manager"] },
+      correct: 2,
+      explanation: { English: "Google Play Console is the official publisher dashboard to manage app submissions, reviews, and updates.", Hindi: "गूगल प्ले कंसोल ऐप सबमिशन, रिव्यू और स्टोर अपडेट को प्रबंधित करने का आधिकारिक डेवलपर डैशबोर्ड है।", Hinglish: "Google Play Console distribution publisher board portal hai." }
+    }
+  },
+  "Download Antigravity 2.0": {
+    title: { English: "Download Antigravity 2.0", Hindi: "एंटीग्रेविटी 2.0 डाउनलोड करें", Hinglish: "Download Antigravity 2.0" },
+    explanation: {
+      English: "Access official DeepMind repositories. Select target package structures corresponding to OS configurations.",
+      Hindi: "आधिकारिक डीपमाइंड रिपॉजिटरी तक पहुंचें। ओएस विनिर्देशों के अनुसार लक्ष्य पैकेज डाउनलोड करें।",
+      Hinglish: "DeepMind portal releases site select variables binaries zip package path download save configure."
+    },
+    visualFlow: "[Navigate Releases Site] ──> [Select Windows Package] ──> [Initiate Secure Download] ──> [Extract Zip]",
+    prerequisite: { English: "Stable internet connection.", Hindi: "स्थिर इंटरनेट कनेक्शन होना चाहिए।", Hinglish: "Active internet connectivity path links." },
+    keyConcepts: { English: ["Binary package extraction", "SHA-256 validation checksums"], Hindi: ["बाइनरी पैकेज निष्कर्षण", "SHA-256 सत्यापन चेकसम"], Hinglish: ["Binary layouts structure zip", "SHA-256 integrity hash verification check"] },
+    commonMistakes: { English: ["Downloading wrong OS target package versions."], Hindi: ["गलत ओएस लक्ष्य पैकेज संस्करणों को डाउनलोड करना।"], Hinglish: ["Different platforms compatibility check choose wrong paths files."] },
+    applications: { English: ["Acquiring baseline agent platform files"], Hindi: ["बुनियादी एजेंट प्लेटफॉर्म फाइलें प्राप्त करना"], Hinglish: ["Retrieving standalone execution files models checks"] },
+    exercises: { English: "Navigate to releases portal, download local executable archive, and extract files.", Hindi: "रिलीज़ पोर्टल पर जाएं, स्थानीय निष्पादन योग्य संग्रह डाउनलोड करें और फ़ाइलें निकालें।", Hinglish: "Download folder zip file paths local target directory unzip setup inspect check." },
+    outcome: { English: "Extracted standalone binary workspace folder ready.", Hindi: "निकाला गया बाइनरी वर्कस्पेस फोल्डर तैयार।", Hinglish: "Extracted executable contents ready verification check sync." },
+    checkpoint: {
+      question: { English: "Which security validation check proves a downloaded file has not been modified by third parties?", Hindi: "कौन सी सुरक्षा सत्यापन जांच साबित करती है कि डाउनलोड की गई फ़ाइल में बदलाव नहीं किया गया है?", Hinglish: "Downloaded installer modification packages validation parameters matching ke liye kya use check system standard check compile hai?" },
+      options: { English: ["SHA-256 verification hash", "Disk check utilities", "File zip extensions format", "System restore points"], Hindi: ["SHA-256 सत्यापन हैश", "डिस्क चेक यूटिलिटीज", "फाइल ज़िप एक्सटेंशन प्रारूप", "सिस्टम रीस्टोर पॉइंट"], Hinglish: ["SHA-256 verification hash", "Disk check utilities", "File zip extensions format", "System restore points"] },
+      correct: 0,
+      explanation: { English: "A cryptographic hash check (SHA-256) matches file fingerprints to ensure they have not been modified or corrupted.", Hindi: "क्रिप्टोग्राफिक हैश चेक (SHA-256) फ़ाइल फिंगरप्रिंट का मिलान करता है ताकि यह सुनिश्चित हो सके कि इसे बदला नहीं गया है।", Hinglish: "SHA-256 checksum hashes verify check download files validity integrity checks." }
+    }
+  },
+  "Installation": {
+    title: { English: "Antigravity 2.0 Installation", Hindi: "एंटीग्रेविटी 2.0 Installation", Hinglish: "Antigravity 2.0 Installation" },
+    explanation: {
+      English: "Configure local environments and paths. Execute install command lines to register system variables.",
+      Hindi: "स्थानीय वातावरण और पथों को कॉन्फ़िगर करें। सिस्टम वेरिएबल्स को पंजीकृत करने के लिए इंस्टॉलेशन कमांड चलाएं।",
+      Hinglish: "Terminal window me cd karke path verify install script file run run execute configure system paths."
+    },
+    visualFlow: "[Launch Command Prompt] ──> [Cd to extracted folder] ──> [Run installer commands] ──> [Verify Variable paths]",
+    prerequisite: { English: "Antigravity zip package extracted.", Hindi: "एंटीग्रेविटी ज़िप पैकेज निकाला हुआ होना चाहिए।", Hinglish: "Unzip contents package target complete." },
+    keyConcepts: { English: ["System PATH environment variable paths", "Administrator credentials validation"], Hindi: ["सिस्टम PATH पर्यावरण वेरिएबल पथ", "प्रशासक क्रेडेंशियल सत्यापन"], Hinglish: ["PATH env configuration variable paths", "Terminal admin execute permissions check variables"] },
+    commonMistakes: { English: ["Forgetting to restart console session after variable updates."], Hindi: ["वेरिएबल परिवर्तनों के बाद कंसोल सत्र को पुनरारंभ करना भूलना।"], Hinglish: ["PATH variable updates local terminal restart skip check paths fail."] },
+    applications: { English: ["Binding CLI tools dynamically across terminal instances"], Hindi: ["टर्मिनल इंस्टेंस में गतिशील रूप से सीएलआई टूल को बांधना"], Hinglish: ["Universal command console execution set checks"] },
+    exercises: { English: "Run install script config cmd and query version check info using terminal commands.", Hindi: "इंस्टॉल स्क्रिप्ट चलाएं और टर्मिनल कमांड का उपयोग करके संस्करण जांच जानकारी क्वेरी करें।", Hinglish: "Terminal me target directory access setups scripts run execute version validation query check command." },
+    outcome: { English: "System PATH updated and version info outputs verified.", Hindi: "सिस्टम PATH अपडेट हुआ और वर्शन जानकारी आउटपुट सत्यापित हुई।", Hinglish: "PATH verify CLI version validation check pass." },
+    checkpoint: {
+      question: { English: "What terminal query checks that a command utility path is successfully resolved globally?", Hindi: "कौन सी टर्मिनल क्वेरी जांच करती है कि एक कमांड यूटिलिटी पाथ वैश्विक रूप से सफल है?", Hinglish: "System command target globally access checks verify path command instruction run kya standard check parameter hai?" },
+      options: { English: ["systeminfo", "antigravity --version", "dir", "echo %PATH%"], Hindi: ["systeminfo", "antigravity --version", "dir", "echo %PATH%"], Hinglish: ["systeminfo", "antigravity --version", "dir", "echo %PATH%"] },
+      correct: 1,
+      explanation: { English: "Querying tool --version validates that the system PATH contains the directory of the executable, ensuring global console access.", Hindi: "वर्शन फ़्लैग के साथ क्वेरी करने से सत्यापित होता है कि सिस्टम पाथ में निष्पादन योग्य वस्तु उपलब्ध है।", Hinglish: "version flag query executable CLI variable availability check parameters is correct." }
+    }
+  },
+  "Configuration": {
+    title: { English: "System Execution & Configuration", Hindi: "सिस्टम निष्पादन और कॉन्फ़िगरेशन", Hinglish: "System Execution & Configuration" },
+    explanation: {
+      English: "Configure key config files. Register credentials configurations and network values for the agent loop processes.",
+      Hindi: "मुख्य कॉन्फ़िगरेशन फ़ाइलें सेट करें। एजेंट लूप प्रक्रियाओं के लिए क्रेडेंशियल और नेटवर्क मान दर्ज करें।",
+      Hinglish: "config.json config parameters settings secure API developer key access save config files verify loop checks."
+    },
+    visualFlow: "[Open config.json] ──> [Inject Developer API keys] ──> [Save config specifications] ──> [Validate credentials]",
+    prerequisite: { English: "Antigravity cli globally accessible.", Hindi: "एंटीग्रेविटी सीएलआई वैश्विक रूप से सुलभ होनी चाहिए।", Hinglish: "Antigravity cli environment PATH successfully." },
+    keyConcepts: { English: ["JSON structure configurations", "External API authentication tokens configuration"], Hindi: ["JSON संरचना कॉन्फ़िगरेशन", "बाहरी एपीआई प्रमाणीकरण टोकन कॉन्फ़िगरेशन"], Hinglish: ["JSON syntax rules verification", "Secure environment API values configurations variables"] },
+    commonMistakes: { English: ["JSON comma formatting errors.", "Exposing keys publicly."], Hindi: ["JSON कॉमा फ़ॉर्मेटिंग त्रुटियाँ।", "कुंजियों को सार्वजनिक रूप से उजागर करना।"], Hinglish: ["Invalid JSON syntax comma brackets.", "API key strings commit track public repository check leaks."] },
+    applications: { English: ["Protecting development credentials keys"], Hindi: ["विकास क्रेडेंशियल कुंजियों की सुरक्षा करना"], Hinglish: ["Credentials parameters configurations setup security checks"] },
+    exercises: { English: "Edit config.json file, configure port parameter to 8080 and input mockup credentials.", Hindi: "config.json फ़ाइल संपादित करें, पोर्ट पैरामीटर को 8080 पर कॉन्फ़िगर करें और मॉक क्रेडेंशियल दर्ज करें।", Hinglish: "config.json file custom values edit save config check validations formatting errors." },
+    outcome: { English: "Configurations loaded cleanly with no syntax errors.", Hindi: "कॉन्फ़िगरेशन बिना सिंटैक्स त्रुटियों के सफलतापूर्वक लोड हुआ।", Hinglish: "Secure configurations structures parsed correctly check." },
+    checkpoint: {
+      question: { English: "Which format structure syntax is commonly used in Antigravity config files?", Hindi: "एंटीग्रेविटी कॉन्फ़िगरेशन फ़ाइलों में आमतौर पर किस प्रारूप संरचना सिंटैक्स का उपयोग किया जाता है?", Hinglish: "Antigravity settings parameter files save targets structure syntax kya standard format check hai?" },
+      options: { English: ["XML format", "JSON format", "CSV format", "INI format"], Hindi: ["XML प्रारूप", "JSON प्रारूप", "CSV प्रारूप", "INI प्रारूप"], Hinglish: ["XML format", "JSON format", "CSV format", "INI format"] },
+      correct: 1,
+      explanation: { English: "JSON (JavaScript Object Notation) is the standard lightweight format for structured configuration key-value storage.", Hindi: "JSON कॉन्फ़िगरेशन और डेटा विनिमय के लिए सबसे लोकप्रिय हल्के वजन वाला प्रारूप है।", Hinglish: "JSON format configuration specifications save systems key value parameters values support handles." }
+    }
+  },
+  "Build Personal AI": {
+    title: { English: "First AI Agent Setup", Hindi: "प्रथम एआई एजेंट सेटअप", Hinglish: "First AI Agent Setup" },
+    explanation: {
+      English: "Define agent behavior prompt and system parameters. Mount local filesystem context directories and bind system commands to create your first personal assistant.",
+      Hindi: "एजेंट व्यवहार प्रॉम्प्ट और सिस्टम मापदंडों को परिभाषित करें। अपने पहले व्यक्तिगत सहायक को बनाने के लिए स्थानीय फ़ाइल सिस्टम संदर्भ निर्देशिका को माउंट करें और सिस्टम कमांड को बाँधें।",
+      Hinglish: "Agent system prompts instruct check parameters set karein, aur local folders context load settings verify karke agent profile register karein."
+    },
+    visualFlow: "[Define Agent Behavior] ──> [Mount Context Folder] ──> [Bind Command Tools] ──> [Save Agent Blueprint]",
+    prerequisite: { English: "Antigravity configuration verified.", Hindi: "एंटीग्रेविटी कॉन्फ़िगरेशन सत्यापित होनी चाहिए।", Hinglish: "Antigravity config verified successfully." },
+    keyConcepts: { English: ["Agent system prompts rules", "Context files index mappings", "Command tools execution limits"], Hindi: ["एजेंट सिस्टम प्रॉम्प्ट नियम", "संदर्भ फ़ाइलें इंडेक्स मैपिंग", "कमांड टूल्स निष्पादन सीमा"], Hinglish: ["Agent instruction boundaries", "Context directories indexing", "Tool executions permissions"] },
+    commonMistakes: { English: ["Writing too broad instructions.", "Mounting huge folder systems without exclusions."], Hindi: ["बहुत व्यापक निर्देश लिखना।", "बिना बहिष्करण के विशाल फ़ोल्डर सिस्टम को माउंट करना।"], Hinglish: ["Too vague guidelines parameters.", "Large recursive database mount without index pruning."] },
+    applications: { English: ["Building specialized personal email assistants"], Hindi: ["विशिष्ट व्यक्तिगत ईमेल सहायक बनाना"], Hinglish: ["Setting up automated workspace agents"] },
+    exercises: { English: "Write a config profile defining an agent that reads a text folder and returns bullet summaries.", Hindi: "एक कॉन्फ़िगरेशन प्रोफ़ाइल लिखें जो एक एजेंट को परिभाषित करती है जो टेक्स्ट फ़ोल्डर पढ़ता है और बुलेट सारांश देता है।", Hinglish: "Agent profile config document parameters write out bullet summary function verify save." },
+    outcome: { English: "Agent blueprint saved and registered successfully.", Hindi: "एजेंट ब्लूप्रिंट सहेजा गया और सफलतापूर्वक पंजीकृत किया गया।", Hinglish: "Working agent registered model status pass." },
+    checkpoint: {
+      question: { English: "Which component defines the identity, bounds, and behaviors of your personal AI agent?", Hindi: "कौन सा घटक आपके व्यक्तिगत एआई एजेंट की पहचान, सीमाओं और व्यवहारों को परिभाषित करता है?", Hinglish: "Personal agent ke features, rules aur behaviors ko control karne wala main instructions parameter kya hota hai?" },
+      options: { English: ["The GPU cooling hardware configurations", "The system prompt blueprint instructions", "The storage directory size limits", "The compiler script libraries"], Hindi: ["जीपीयू कूलिंग हार्डवेयर कॉन्फ़िगरेशन", "सिस्टम प्रॉम्प्ट ब्लूप्रिंट निर्देश", "स्टोरेज निर्देशिका आकार सीमा", "कंपाइलर स्क्रिप्ट लाइब्रेरी"], Hinglish: ["The GPU cooling hardware configurations", "The system prompt blueprint instructions", "The storage directory size limits", "The compiler script libraries"] },
+      correct: 1,
+      explanation: { English: "The system prompt blueprint defines who the agent is, what tools it can use, and the rules it must follow.", Hindi: "सिस्टम प्रॉम्प्ट ब्लूप्रिंट एजेंट की पहचान, उसके उपलब्ध उपकरण और उसके नियमों को परिभाषित करता है।", Hinglish: "System prompt instructions agent runtime constraints aur identity parameters decide karti hain." }
+    }
+  },
+  "Testing (Antigravity)": {
+    title: { English: "AI Agent Sandbox Testing", Hindi: "एआई एजेंट सैंडबॉक्स परीक्षण", Hinglish: "AI Agent Sandbox Testing" },
+    explanation: {
+      English: "Launch the dry-run console terminal and query the personal assistant with mock developer actions to verify execution flow and compliance.",
+      Hindi: "ड्राय-रन कंसोल टर्मिनल लॉन्च करें और निष्पादन प्रवाह और अनुपालन को सत्यापित करने के लिए मॉक डेवलपर क्रियाओं के साथ व्यक्तिगत सहायक से पूछताछ करें।",
+      Hinglish: "Interactive dry run console trigger query input test commands verify tool executions profiles logs."
+    },
+    visualFlow: "[Launch CLI Sandbox] ──> [Query Agent: 'read folder'] ──> [Inspect Tool Calls] ──> [Validate Output Text]",
+    prerequisite: { English: "Agent setup completed successfully.", Hindi: "एजेंट सेटअप सफलतापूर्वक पूरा होना चाहिए।", Hinglish: "Agent profile successfully saved." },
+    keyConcepts: { English: ["CLI dry-runs commands", "Tool call parameters logging", "Output compliance checks"], Hindi: ["सीएलआई ड्राय-रन कमांड", "टूल कॉल पैरामीटर लॉगिंग", "आउटपुट अनुपालन जांच"], Hinglish: ["CLI test modes", "Tool call validations parsing", "Output verification rules"] },
+    commonMistakes: { English: ["Skipping logs inspections.", "Running dangerous commands without sandbox boundaries."], Hindi: ["लॉग्स के निरीक्षण को छोड़ना।", "सैंडबॉक्स सीमाओं के बिना खतरनाक कमांड चलाना।"], Hinglish: ["Execution log logs bypass check.", "Dangerous shell tools execute without local boundaries restrictions."] },
+    applications: { English: ["Testing execution safety before active deployments"], Hindi: ["सक्रिय परिनियोजन से पहले निष्पादन सुरक्षा का परीक्षण करना"], Hinglish: ["Validating agent action chains integrity checks"] },
+    exercises: { English: "Trigger a chat command query, check the logs, and verify tool usage.", Hindi: "एक चैट कमांड क्वेरी ट्रिगर करें, लॉग की जांच करें और टूल उपयोग सत्यापित करें।", Hinglish: "Chat script trigger command check logs outputs verify matches expected logs." },
+    outcome: { English: "Compliant agent behavior shown in command logs.", Hindi: "कमांड लॉग में अनुपालन एजेंट व्यवहार प्रदर्शित हुआ।", Hinglish: "Valid agent loops logs display output verified." },
+    checkpoint: {
+      question: { English: "Why is it important to perform CLI sandbox dry-runs on new agent configurations?", Hindi: "नए एजेंट कॉन्फ़िगरेशन पर सीएलआई सैंडबॉक्स ड्राय-रन चलाना क्यों महत्वपूर्ण है?", Hinglish: "New agent configurations ko CLI dry run mode me run verify check karna kyu crucial hai?" },
+      options: { English: ["To download external libraries", "To verify tool usage safety and instruction compliance before actual deployment", "To check internet network adapter speeds", "To delete cache files"], Hindi: ["बाहरी लाइब्रेरी डाउनलोड करने के लिए", "वास्तविक परिनियोजन से पहले टूल उपयोग सुरक्षा और निर्देश अनुपालन को सत्यापित करने के लिए", "इंटरनेट नेटवर्क एडाप्टर गति की जांच करने के लिए", "कैश फाइलें हटाने के लिए"], Hinglish: ["To download external libraries", "To verify tool usage safety and instruction compliance before actual deployment", "To check internet network adapter speeds", "To delete cache files"] },
+      correct: 1,
+      explanation: { English: "Testing in a sandbox ensures the agent interprets instructions and uses tools safely without causing unintended actions.", Hindi: "सैंडबॉक्स में परीक्षण यह सुनिश्चित करता है कि एजेंट निर्देशों की सही व्याख्या करता है और अनपेक्षित क्रियाओं के बिना सुरक्षित रूप से उपकरणों का उपयोग करता है।", Hinglish: "Sandbox validation runtime checks perform karke secure tool behavior guarantee karta hai." }
+    }
+  },
+  "Optimization": {
+    title: { English: "Agent Performance Tuning", Hindi: "एजेंट प्रदर्शन ट्यूनिंग", Hinglish: "Agent Performance Tuning" },
+    explanation: {
+      English: "Measure execution latency parameters, prune redundant context directory maps, and adjust temperature configurations for high-speed local processing.",
+      Hindi: "निष्पादन विलंबता मापदंडों को मापें, अनावश्यक संदर्भ निर्देशिका मानचित्रों को छाँटें, और उच्च गति स्थानीय प्रसंस्करण के लिए तापमान कॉन्फ़िगरेशन को समायोजित करें।",
+      Hinglish: "Execution latency time log measure check redundant files prune config limits adjust temperature values check optimize."
+    },
+    visualFlow: "[Track Latency Logs] ──> [Refine Instruction Limits] ──> [Prune Database Indices] ──> [Optimize Output speeds]",
+    prerequisite: { English: "Sandbox validations passed.", Hindi: "सैंडबॉक्स सत्यापन सफल होना चाहिए।", Hinglish: "Agent sandbox dry run tests passed." },
+    keyConcepts: { English: ["Token latency benchmarks", "Context window optimizations", "Temperature and penalty settings"], Hindi: ["टोकन विलंबता बेंचमार्क", "संदर्भ विंडो अनुकूलन", "तापमान और दंड सेटिंग्स"], Hinglish: ["Token generation speed latency", "Context window size adjustments", "Temperature and frequency penalties parameters"] },
+    commonMistakes: { English: ["Leaving huge unindexed files in context paths.", "Setting temperature to maximum, causing hallucinations."], Hindi: ["संदर्भ पथों में विशाल गैर-अनुक्रमित फ़ाइलें छोड़ना।", "तापमान को अधिकतम पर सेट करना, जिससे मतिभ्रम (hallucination) होता है।"], Hinglish: ["Huge raw files ignore context paths.", "Temperature values extreme high hallucinations outputs check failure."] },
+    applications: { English: ["Improving response latency and cohesion"], Hindi: ["प्रतिक्रिया विलंबता और सामंजस्य में सुधार"], Hinglish: ["Speeding up localized processing agents"] },
+    exercises: { English: "Clean out unused documentation files from context paths and evaluate changes in query latencies.", Hindi: "संदर्भ पथों से अप्रयुक्त दस्तावेज़ीकरण फ़ाइलें साफ़ करें और क्वेरी विलंबता में परिवर्तनों का मूल्यांकन करें।", Hinglish: "Unused context documents prune query execution time query performance verify check check." },
+    outcome: { English: "Optimized response latencies and clean coherent responses.", Hindi: "इष्टतम प्रतिक्रिया विलंबता और स्पष्ट सुसंगत प्रतिक्रियाएँ।", Hinglish: "High speed runtime response output results pass check." },
+    checkpoint: {
+      question: { English: "What configuration parameters adjust response randomness vs repetitiveness in Antigravity?", Hindi: "एंटीग्रेविटी में प्रतिक्रिया की यादृच्छिकता बनाम दोहराव को कौन से मापदंड समायोजित करते हैं?", Hinglish: "Output answers repetitive na ho aur balance randomness bani rahe, iske liye kya params adjust hote hain?" },
+      options: { English: ["The system power adapters settings", "The temperature and frequency penalty configurations", "The hard disk storage partition", "The screen resolution limits"], Hindi: ["सिस्टम पावर एडाप्टर सेटिंग्स", "तापमान और आवृत्ति दंड कॉन्फ़िगरेशन", "हार्ड डिस्क स्टोरेज विभाजन", "स्क्रीन रिज़ॉल्यूशन सीमाएँ"], Hinglish: ["The system power adapters settings", "The temperature and frequency penalty configurations", "The hard disk storage partition", "The screen resolution limits"] },
+      correct: 1,
+      explanation: { English: "Temperature adjusts randomness, while frequency/presence penalties help prevent repetitive text patterns.", Hindi: "तापमान यादृच्छिकता (randomness) को समायोजित करता है, जबकि आवृत्ति/उपस्थिति दंड दोहराव वाले टेक्स्ट पैटर्न को रोकने में मदद करते हैं।", Hinglish: "Temperature output creativity adjust karti hai aur frequency penalty repetitiveness restrict karti hai." }
+    }
   }
+};
+
+function resolveGuideKey(stepName, toolName) {
+  if (!stepName) return '';
+  const s = stepName.toLowerCase();
+  const t = (toolName || '').toLowerCase();
+  
+  if (s.includes("android studio installation") || s.includes("एंड्रॉइड स्टूडियो") || s.includes("install")) {
+    if (s.includes("download") || s.includes("antigravity")) {
+      // skip
+    } else {
+      return "Android Studio Installation";
+    }
+  }
+  if (s.includes("download antigravity") || s.includes("एंटीग्रेविटी 2.0 डाउनलोड") || s.includes("antigravity 2.0 download")) {
+    return "Download Antigravity 2.0";
+  }
+  if (s.includes("environment") || s.includes("एसडीके सेटअप") || s.includes("sdk")) {
+    return "Environment Setup";
+  }
+  if (s.includes("project creation") || s.includes("प्रोजेक्ट सेटअप") || s.includes("template setup")) {
+    return "Project Creation";
+  }
+  if (s.includes("development") || s.includes("डेवलपमेंट") || s.includes("app development")) {
+    return "Development";
+  }
+  if (s.includes("apk") || s.includes("एपीके")) {
+    return "APK Generation";
+  }
+  if (s.includes("deployment") || s.includes("परिनियोजन") || s.includes("live")) {
+    return "Deployment";
+  }
+  if (s.includes("installation") || s.includes("स्थापना")) {
+    return "Installation";
+  }
+  if (s.includes("configuration") || s.includes("कॉन्फ़िगरेशन")) {
+    return "Configuration";
+  }
+  if (s.includes("build personal ai") || s.includes("एजेंट सेटअप") || s.includes("first ai agent")) {
+    return "Build Personal AI";
+  }
+  if (s.includes("optimization") || s.includes("अनुकूलन") || s.includes("optimize")) {
+    return "Optimization";
+  }
+  if (s.includes("testing") || s.includes("परीक्षण") || s.includes("emulation")) {
+    if (t.includes("android")) {
+      return "Testing (Android)";
+    } else {
+      return "Testing (Antigravity)";
+    }
+  }
+  
+  if (appGuidesData[stepName]) return stepName;
+  return stepName;
+}
+
+function getToolEducationalData(tool, lang, stepName = '') {
+  const isCreation = tool.category === "CREATION ENGINE";
+  const isEngineering = tool.category === "ENGINEERING ENGINE";
+  const isAnalytics = tool.category === "ANALYTICS ENGINE";
+  
+  const mappedStepKey = resolveGuideKey(stepName, tool.name);
+  
+  if (appGuidesData[mappedStepKey]) {
+    const gd = appGuidesData[mappedStepKey];
+    const targetTitle = gd.title[lang] || gd.title["English"];
+    const targetExplanation = gd.explanation[lang] || gd.explanation["English"];
+    const targetVisualFlow = gd.visualFlow;
+    const targetPrerequisite = gd.prerequisite[lang] || gd.prerequisite["English"];
+    const targetKeyConcepts = gd.keyConcepts[lang] || gd.keyConcepts["English"];
+    const targetCommonMistakes = gd.commonMistakes[lang] || gd.commonMistakes["English"];
+    const targetApplications = gd.applications[lang] || gd.applications["English"];
+    const targetExercises = gd.exercises[lang] || gd.exercises["English"];
+    const targetOutcome = gd.outcome[lang] || gd.outcome["English"];
+    const targetCheckpoint = gd.checkpoint;
+    
+    return {
+      explanation: targetExplanation,
+      summary: targetExplanation.substring(0, 100) + '...',
+      visualFlow: targetVisualFlow,
+      examples: targetApplications,
+      keyConcepts: targetKeyConcepts,
+      commonMistakes: targetCommonMistakes,
+      applications: targetApplications,
+      reading: ["Official tool documentation", "Standard tutorial references"],
+      prerequisite: targetPrerequisite,
+      exercises: targetExercises,
+      outcome: targetOutcome,
+      checkpoint: targetCheckpoint
+    };
+  }
+  
+  const name = tool.name;
+  let explanation = "";
+  let summary = "";
+  let visualFlow = "";
+  let examples = [];
+  let keyConcepts = [];
+  let commonMistakes = [];
+  let applications = [];
+  let reading = [];
+  let prerequisite = "";
+  let exercises = "";
+  let outcome = "";
+  let checkpoint = null;
+
+  if (isCreation) {
+    explanation = `${name} utilizes advanced generative modeling networks (such as transformers or diffusion decoders) to translate semantic specifications into clean high-fidelity creative outputs.`;
+    summary = `A powerful AI generative engine that helps you create scripts, code, graphics, or audio in seconds.`;
+    visualFlow = `[Text Prompt input] ──> [Generative Decoder Net] ──> [Denoising/Synthesis Layer] ──> [High-Fidelity Media Asset]`;
+    examples = ["Generating marketing copies and articles", "Producing custom structural visual designs for campaigns"];
+    keyConcepts = ["Generative output thresholds", "Prompt tuning context bounds", "Feature seed randomness controls"];
+    commonMistakes = ["Writing very short, abstract prompts with vague constraints.", "Expecting exact structural replication without parameter calibration."];
+    applications = ["Rapid content drafting workflows", "Automating baseline asset generations"];
+    reading = ["Modern Generative Systems Guides on huggingface.co", "Prompt Engineering guides for media publishers"];
+    prerequisite = "Basic conceptual outline of your creative targets.";
+    exercises = `Build a detailed 3-paragraph prompt describing your target scenario and execute it in ${name} to inspect output consistency.`;
+    outcome = "A clean production asset or draft structured according to your custom rules.";
+    checkpoint = {
+      question: {
+        English: `What controls the direct balance between model adherence to the prompt vs creative variety?`,
+        Hindi: `प्रॉम्प्ट के प्रति मॉडल के जुड़ाव और रचनात्मक विविधता के बीच सीधे संतुलन को कौन नियंत्रित करता है?`,
+        Hinglish: `Model ke prompt adherence aur creative variety ke beech ka balance kaun handle karta hai?`
+      },
+      options: {
+        English: ["The GPU computing hardware limit", "Parameter values like CFG Scale or Temperature settings", "The internet connection bandrate", "The storage layout file size"],
+        Hindi: ["जीपीयू कंप्यूटिंग हार्डवेयर सीमा", "सीएफजी स्केल या तापमान सेटिंग्स जैसे पैरामीटर मान", "इंटरनेट कनेक्शन बैंडरेट", "स्टोरेज लेआउट फ़ाइल आकार"],
+        Hinglish: ["Processor hardware speed limits", "CFG Scale aur Temperature settings parameters", "Internet connection bandwidth", "Local system storage cache files"]
+      },
+      correct: 1,
+      explanation: {
+        English: "CFG Scale and Temperature adjust how closely the neural network conforms to prompt features vs exploring creative alternative paths.",
+        Hindi: "सीएफजी स्केल और तापमान समायोजित करते हैं कि न्यूरल नेटवर्क प्रॉम्प्ट फीचर्स के कितने करीब रहता है बनाम रचनात्मक वैकल्पिक रास्तों की खोज करता है।",
+        Hinglish: "CFG Scale aur Temperature parameters determine karte hain ki outputs prompt se kitna matching hoga aur kitna creative random variations aayenge."
+      }
+    };
+  } else if (isEngineering) {
+    explanation = `${name} leverages intelligent code analysis, API logic generation, and automated loops to accelerate software, hardware integration, or task orchestration workflows.`;
+    summary = `An engineering automation system designed to structure code, program scripts, or run scheduling loops.`;
+    visualFlow = `[Active Project Files] ──> [Context Compiler / RAG Analysis] ──> [Code completion / Action daemon] ──> [Running Pipeline]`;
+    examples = ["Autogenerating boilerplate classes and functions", "Structuring timeline logic triggers for scheduled data syncs"];
+    keyConcepts = ["Context window boundaries", "Automated syntax validation loops", "Logic compiler constraints"];
+    commonMistakes = ["Blindly running code completions without performing syntax inspections.", "Failing to document boundaries for database connections."];
+    applications = ["Accelerating coding speeds in complex environments", "Automating standard schedule operations"];
+    reading = ["Cloud IDE integrations and RAG tutorials", "Best practices in AI-assisted software developments"];
+    prerequisite = "Understanding baseline logic, compiler scripts, and task paths.";
+    exercises = `Write a broken code segment, trigger the refactoring module of ${name}, and compare its performance to manual optimization.`;
+    outcome = "Refactored, cleanly structured script modules passing syntax validations.";
+    checkpoint = {
+      question: {
+        English: `Why is it critical to audit source code completions generated by tools like ${name}?`,
+        Hindi: `जैसी एआई कोडिंग प्रणालियों द्वारा जनरेट किए गए सोर्स कोड ऑडिट करना क्यों महत्वपूर्ण है?`,
+        Hinglish: `AI software codegen tools dwara generated completions ko verify aur test karna kyu jaruri hai?`
+      },
+      options: {
+        English: [
+          "AI models never generate functional code syntax.",
+          "Generated segments might introduce security bugs or outdated API dependencies.",
+          "The system deletes your files if they are not validated.",
+          "Only human code is accepted by modern compilers."
+        ],
+        Hindi: [
+          "एआई मॉडल कभी भी कार्यात्मक कोड सिंटैक्स उत्पन्न नहीं करते हैं।",
+          "जनरेट किए गए कोड सुरक्षा बग या पुराने एपीआई निर्भरता पेश कर सकते हैं।",
+          "यदि वे मान्य नहीं हैं तो सिस्टम आपकी फ़ाइलों को हटा देता है।",
+          "आधुनिक कंपाइलरों द्वारा केवल मानव कोड ही स्वीकार किया जाता है।"
+        ],
+        Hinglish: [
+          "AI outputs compile nahi ho sakte.",
+          "Generated segments me security loops, bugs ya deprecated libraries reference ho sakti hain.",
+          "Valid check na hone par local codebase delete ho jata hai.",
+          "Modern coding standards non-human codes block kar dete hain."
+        ]
+      },
+      correct: 1,
+      explanation: {
+        English: "AI coding tools optimize for statistical syntax sequence, meaning they can output insecure patterns or refer to deprecated libraries if unverified.",
+        Hindi: "एआई कोडिंग टूल्स सांख्यिकीय सिंटैक्स अनुक्रम के लिए अनुकूलित होते हैं, जिसका अर्थ है कि वे असुरक्षित पैटर्न आउटपुट कर सकते हैं यदि वे सत्यापित नहीं हैं।",
+        Hinglish: "AI code auto-complete syntax probability par compile karta hai, isliye isme bug patterns hone ke chances kafi badh jate hain."
+      }
+    };
+  } else {
+    explanation = `${name} utilizes advanced statistics, time-series anomaly checkers, and vector embeddings to sweep datasets, extract core semantics, and forecast operational trends.`;
+    summary = `An analytical data sweep system providing real-time data analysis, summaries, and forecasts.`;
+    visualFlow = `[Raw Event stream data] ──> [Statistical Anomaly Classifier] ──> [Telemetry Metric graphs] ──> [Actionable System Forecasts]`;
+    examples = ["Scanning clinical logs to map diagnostic signals", "Forecasting project timelines using historical metrics"];
+    keyConcepts = ["Statistical classifier boundaries", "Vector representation maps", "Real-time telemetry streams"];
+    commonMistakes = ["Assuming correlation is causation in statistical trends.", "Injecting unstructured, noisy raw datasets without sorting files first."];
+    applications = ["Detecting exceptions in operational databases", "Filing research summaries with citations"];
+    reading = ["Time-series analytics tutorials", "Introduction to data analysis and vector math"];
+    prerequisite = "Access to structured event logs or database files.";
+    exercises = `Upload a raw dataset sample into ${name}, run the metrics summary, and isolate the top outlier coordinates.`;
+    outcome = "Detailed anomaly tables or semantic forecast charts outlining key system metrics.";
+    checkpoint = {
+      question: {
+        English: `What is the core purpose of a statistical anomaly classifier in systems like ${name}?`,
+        Hindi: `जैसी प्रणालियों में सांख्यिकीय विसंगति (anomaly) क्लासिफायर का मुख्य उद्देश्य क्या है?`,
+        Hinglish: `Telemetry tools me anomaly classifiers ka primary roll kya hota hai?`
+      },
+      options: {
+        English: [
+          "To delete logs automatically after 30 days",
+          "To identify data points that deviate significantly from standard operational patterns",
+          "To translate English texts to other formats",
+          "To download files from standard web sites"
+        ],
+        Hindi: [
+          "30 दिनों के बाद स्वचालित रूप से लॉग हटाने के लिए।",
+          "उन डेटा बिंदुओं की पहचान करना जो मानक परिचालन पैटर्न से काफी भिन्न हैं।",
+          "अंग्रेजी ग्रंथों का अन्य प्रारूपों में अनुवाद करना।",
+          "मानक वेबसाइटों से फाइलें डाउनलोड करना।"
+        ],
+        Hinglish: [
+          "Database logs delete karna.",
+          "Normal pattern behavior se mismatch hone wale data spikes ko trace aur filter karna.",
+          "Language parameters ko convert aur format karna.",
+          "Online web page elements download link generate karna."
+        ]
+      },
+      correct: 1,
+      explanation: {
+        English: "Anomaly classifiers evaluate deviations from statistical baselines to alert operators about outliers or potential bugs.",
+        Hindi: "विसंगति क्लासिफायर सांख्यिकीय आधार रेखाओं से विचलन का मूल्यांकन करते हैं ताकि ऑपरेटरों को विसंगतियों या संभावित बग के बारे में सचेत किया जा सके।",
+        Hinglish: "Anomaly parameters check karte hain ki data flow normal line me hai ya high variations values standard lines cross kar rahi hain."
+      }
+    };
+  }
+
+  if (lang === "Hindi") {
+    explanation = `यह टूल (${name}) इस क्षेत्र के सैद्धांतिक सिद्धांतों, आर्किटेक्चरल डिज़ाइनों और व्यावहारिक कार्यान्वयन मापदंडों को कवर करता है।`;
+    summary = `एक कुशल एआई सिस्टम जो कार्यों को स्वचालित करने और निर्णय लेने में मदद करता है।`;
+    prerequisite = "इस कार्य से संबंधित बुनियादी समझ।";
+    exercises = `अपनी आवश्यकताओं के अनुसार ${name} में एक छोटा प्रोजेक्ट सेट करें और उसके आउटपुट की समीक्षा करें।`;
+    outcome = "एक व्यवस्थित आउटपुट या व्यावहारिक परिणाम जो आपके द्वारा निर्धारित नियमों के अनुकूल हो।";
+  } else if (lang === "Hinglish") {
+    explanation = `${name} advanced algorithms aur mathematical representations use karke system flows aur output targets compile karta hai.`;
+    summary = `Ek smart AI system jo aapke workflows ko speed aur clean logic ke sath automate karta hai.`;
+    prerequisite = "Basic computing rules aur project setup ka knowledge.";
+    exercises = `Apne target workflow me ${name} configure karein aur iske visual feedback ya outputs check karein.`;
+    outcome = "Working model outputs, structured data templates ya code fragments.";
+  }
+
+  return {
+    explanation,
+    summary,
+    visualFlow,
+    examples,
+    keyConcepts,
+    commonMistakes,
+    applications,
+    reading,
+    prerequisite,
+    exercises,
+    outcome,
+    checkpoint
+  };
 }
 
 function regenerateActiveRoadmap() {
@@ -1987,26 +2617,48 @@ function regenerateActiveRoadmap() {
   if (!selectedGoal) return;
   
   const budgetLimit = state.budgetLimit || 100;
+  const activeLang = getActiveLanguage();
   
-  if (selectedGoal === "Exploring the World of AI") {
-    renderLearningJourney();
+  if (selectedGoal === "Exploring AI") {
+    const educationWorkflow = exploringAIRoadmap.map(node => {
+      return {
+        tool: node,
+        mode: "Free",
+        cost: 0,
+        score: 10
+      };
+    });
+    
+    const stepsList = exploringAIRoadmap.map((node, idx) => {
+      return node.title[activeLang] || node.title["English"];
+    });
+
+    const sectionSubtitle = document.querySelector('#roadmap-builder-section .section-subtitle');
+    if (sectionSubtitle) {
+      let text = "";
+      if (activeLang === "English") {
+        text = `AI Learning Curriculum compiled. <strong>40 Interactive Topics</strong> mapped. Current Layer: <strong>All Levels</strong>.`;
+      } else if (activeLang === "Hindi") {
+        text = `एआई लर्निंग पाठ्यक्रम तैयार। <strong>40 इंटरेक्टिव विषय</strong> मैप किए गए। वर्तमान स्तर: <strong>सभी स्तर</strong>।`;
+      } else {
+        text = `AI Learning Curriculum compiled. <strong>40 Interactive Topics</strong> mapped. Level: <strong>All Levels</strong>.`;
+      }
+      sectionSubtitle.innerHTML = text;
+    }
+    
+    renderRoadmap(educationWorkflow, stepsList);
   } else {
     const specSteps = goalWorkflows[selectedGoal] || goalWorkflows["Generating Video"];
     
-    // Construct prefix tools (Google Docs and ChatGPT)
     const prefixTools = [
       findToolForStep("Google Docs", budgetLimit),
       findToolForStep("ChatGPT", budgetLimit)
     ];
     
-    // Map specialized tools
-    const specTools = specSteps.map(s => findToolForStep(s, budgetLimit));
+    const specTools = specSteps.map(s => findToolForStep(s, budgetLimit, selectedGoal));
     const fullWorkflow = [...prefixTools, ...specTools];
     
-    // Construct steps labels matching translations
-    const activeLang = getActiveLanguage();
     const trans = stepsTranslation[activeLang] || stepsTranslation["Hinglish"];
-    
     const stepsList = [
       trans["Google Docs"] || "Google Docs",
       trans["ChatGPT"] || "ChatGPT",
@@ -2016,7 +2668,6 @@ function regenerateActiveRoadmap() {
     const sectionSubtitle = document.querySelector('#roadmap-builder-section .section-subtitle');
     if (sectionSubtitle) {
       const totalCost = fullWorkflow.reduce((sum, item) => sum + item.cost, 0);
-      const activeBudgetBtn = document.querySelector('.budget-tier-btn.active');
       
       let text = "";
       if (activeLang === "English") {
@@ -2033,207 +2684,56 @@ function regenerateActiveRoadmap() {
   }
 }
 
-function renderLearningJourney() {
-  const listContainer = document.querySelector('.timeline-list');
-  if (!listContainer) return;
-  
-  const roadSvg = document.getElementById('road-svg');
-  const roadTraveler = document.getElementById('road-traveler');
-  if (roadSvg) roadSvg.style.display = 'none';
-  if (roadTraveler) roadTraveler.style.display = 'none';
-  
-  const activeLang = getActiveLanguage();
-  
-  let headerTitle = "Exploring the World of AI";
-  let headerDesc = "Navigate the full expanse of artificial intelligence through structured learning pillars.";
-  let futureTitle = "Future of AI";
-  let futureDesc = "The horizon belongs to Agentic Workflows, Autonomous Swarms, and Multimodal World Models. Keep testing, keep building.";
-  
-  if (activeLang === "Hindi") {
-    headerTitle = "एआई की दुनिया की खोज (Exploring the World of AI)";
-    headerDesc = "व्यवस्थित शिक्षा स्तंभों के माध्यम से कृत्रिम बुद्धिमत्ता (AI) के पूर्ण क्षेत्र को समझें।";
-    futureTitle = "एआई का भविष्य (Future of AI)";
-    futureDesc = "भविष्य एजेंटिक वर्कफ़्लो, स्वायत्त प्रणालियों और मल्टीमॉडल विश्व मॉडलों का है। परीक्षण करते रहें, निर्माण करते रहें।";
-  } else if (activeLang === "Hinglish") {
-    headerTitle = "Exploring the World of AI";
-    headerDesc = "Structured learning categories ki madad se Artificial Intelligence ki poori space ko explore karein.";
-    futureTitle = "Future of AI";
-    futureDesc = "Agla frontier Agentic Workflows, Autonomous AI Swarms aur Multimodal Systems ka hai. Naye tools explore karein aur code karte rahein.";
+function initDashboardControls() {
+  const taskSelect = document.getElementById('control-task-select');
+  const budgetSelect = document.getElementById('control-budget-select');
+  const workflowSelect = document.getElementById('control-workflow-select');
+  const langSelect = document.getElementById('control-lang-select');
+  const compileBtn = document.getElementById('control-compile-btn');
+
+  if (compileBtn) {
+    compileBtn.addEventListener('click', () => {
+      state.goalText = taskSelect ? taskSelect.value : 'Exploring AI';
+      
+      let bVal = 100;
+      if (budgetSelect) {
+        const selVal = budgetSelect.value;
+        bVal = parseInt(selVal);
+      }
+      state.budgetLimit = bVal;
+      
+      state.selectedExperience = workflowSelect ? workflowSelect.value : 'Intermediate';
+      
+      regenerateActiveRoadmap();
+      
+      const targetSection = document.getElementById('roadmap-builder-section');
+      if (targetSection) {
+        const offset = 72;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = targetSection.getBoundingClientRect().top;
+        const offsetPosition = elementRect - bodyRect - offset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+      
+      setTimeout(() => {
+        drawRoad();
+      }, 350);
+    });
   }
 
-  const freeTools = toolsData.filter(t => t.freeTier || t.cost === 0).slice(0, 4);
-  const paidTools = toolsData.filter(t => !t.freeTier && t.cost > 0).slice(0, 4);
-  const studentTools = toolsData.filter(t => t.industries && t.industries.includes("Education & Research")).slice(0, 4);
-  const businessTools = toolsData.filter(t => t.industries && t.industries.includes("Business Operations & Productivity")).slice(0, 4);
-  const creativeTools = toolsData.filter(t => t.industries && t.industries.includes("Creative & Media Industries")).slice(0, 4);
-  const devTools = toolsData.filter(t => t.taskTags && (t.taskTags.includes("codegen") || t.taskTags.includes("autocomplete") || t.taskTags.includes("code"))).slice(0, 4);
-  const startupTools = toolsData.filter(t => t.industries && (t.industries.includes("Finance & Banking") || t.industries.includes("Transportation & Logistics"))).slice(0, 4);
-
-  const sectionsData = [
-    {
-      title: activeLang === "English" ? "What is AI" : activeLang === "Hindi" ? "एआई क्या है?" : "What is AI?",
-      desc: activeLang === "English" ? "Artificial Intelligence represents neural networks trained on high-density datasets to resolve logical, visual, and operational queries." : 
-            activeLang === "Hindi" ? "कृत्रिम बुद्धिमत्ता (AI) उच्च-घनत्व डेटासेट पर प्रशिक्षित तंत्रिका नेटवर्क (neural networks) का प्रतिनिधित्व करती है जो तार्किक और परिचालन प्रश्नों को हल करती है।" :
-            "Artificial Intelligence ka matlab neural networks aur deep learning models hain jo complex tasks, automation aur analysis ko easily solve karte hain.",
-      tools: []
-    },
-    {
-      title: activeLang === "English" ? "Best Free AI Tools" : activeLang === "Hindi" ? "सर्वश्रेष्ठ मुफ़्त एआई टूल्स" : "Best Free AI Tools",
-      desc: activeLang === "English" ? "Start immediately without subscription costs using production-grade open endpoints." : 
-            activeLang === "Hindi" ? "बिना किसी सशुल्क सदस्यता के व्यावसायिक-श्रेणी के ओपन एंडपॉइंट्स का उपयोग करके तुरंत शुरुआत करें।" :
-            "Bina subscription cost ke industry-grade free platforms aur sandbox editors ka maza lein.",
-      tools: freeTools
-    },
-    {
-      title: activeLang === "English" ? "Best Paid AI Tools" : activeLang === "Hindi" ? "सर्वश्रेष्ठ सशुल्क एआई टूल्स" : "Best Paid AI Tools",
-      desc: activeLang === "English" ? "Premium workflows and generative outputs unlocking advanced compute and parameter models." : 
-            activeLang === "Hindi" ? "प्रीमियम वर्कफ़्लो और जनरेटिव आउटपुट जो उन्नत कंप्यूटिंग और बड़े पैरामीटर मॉडल की शक्ति का उपयोग करते हैं।" :
-            "Top performance aur premium features wale professional tools jo advanced models use karte hain.",
-      tools: paidTools
-    },
-    {
-      title: activeLang === "English" ? "AI for Students" : activeLang === "Hindi" ? "छात्रों के लिए एआई" : "AI for Students",
-      desc: activeLang === "English" ? "Accelerate learning, literature sweeps, thesis outline drafts, and interactive explanations." : 
-            activeLang === "Hindi" ? "सीखने की प्रक्रिया को तेज़ करें, शोध पत्रों का अध्ययन करें और इंटरैक्टिव स्पष्टीकरण प्राप्त करें।" :
-            "Study helper tools jo learning curves, notes summaries aur coding validation ko aasan banate hain.",
-      tools: studentTools
-    },
-    {
-      title: activeLang === "English" ? "AI for Businesses" : activeLang === "Hindi" ? "व्यवसायों के लिए एआई" : "AI for Businesses",
-      desc: activeLang === "English" ? "Enhance team tracking, CRM ticket automation, audit logs, and meeting telemetries." : 
-            activeLang === "Hindi" ? "टीम ट्रैकिंग, सीआरएम टिकट ऑटोमेशन और मीटिंग के विवरणों को स्वचालित और व्यवस्थित करें।" :
-            "Operations, data tracking aur automatic ticket replies se corporate team productivity badhayein.",
-      tools: businessTools
-    },
-    {
-      title: activeLang === "English" ? "AI for Content Creators" : activeLang === "Hindi" ? "क्रिएटर्स के लिए एआई" : "AI for Content Creators",
-      desc: activeLang === "English" ? "Animate video clips, dub script narration waveforms, and design graphic concept arts." : 
-            activeLang === "Hindi" ? "वीडियो क्लिप्स एनिमेट करें, स्क्रिप्ट नैरेशन डब करें और ग्राफिक्स डिज़ाइन करें।" :
-            "Cinematic scenes animate karein, script writing automate karein aur vocal audio overlays add karein.",
-      tools: creativeTools
-    },
-    {
-      title: activeLang === "English" ? "AI for Developers" : activeLang === "Hindi" ? "डेवलपर्स के लिए एआई" : "AI for Developers",
-      desc: activeLang === "English" ? "Autogenerate block statements, setup cloud-ide sandboxes, and inspect dynamic scripts." : 
-            activeLang === "Hindi" ? "कोड ब्लॉक जनरेट करें, क्लाउड सैंडबॉक्स सेट करें और डायनामिक स्क्रिप्ट का परीक्षण करें।" :
-            "IDE autocomplete extensions, sandbox rapid application builders aur operatable code builders.",
-      tools: devTools
-    },
-    {
-      title: activeLang === "English" ? "AI for Startups" : activeLang === "Hindi" ? "स्टार्टअप्स के लिए एआई" : "AI for Startups",
-      desc: activeLang === "English" ? "Construct multi-agent trigger cron chains and optimize logistics route schedules." : 
-            activeLang === "Hindi" ? "मल्टी-एजेंट शेड्यूलिंग और लॉजिस्टिक्स रूटिंग वर्कफ़्लो को स्वचालित करें।" :
-            "Autonomous multi-agent workflows, API integrations aur dynamic operations automation modules.",
-      tools: startupTools
-    }
-  ];
-
-  let html = `
-    <div class="learning-journey-container">
-      <div class="learning-journey-header">
-        <h1 class="learning-journey-title">${headerTitle}</h1>
-        <p class="learning-journey-subtitle">${headerDesc}</p>
-      </div>
-      
-      <div class="learning-grid">
-  `;
-
-  sectionsData.forEach(section => {
-    let toolsHTML = '';
-    if (section.tools.length > 0) {
-      toolsHTML = `
-        <div class="learning-card-tools">
-          ${section.tools.map(tool => {
-            const originalIdx = toolsData.findIndex(t => t.id === tool.id);
-            return `<span class="learning-tool-badge" data-node="${originalIdx}">${tool.name}</span>`;
-          }).join('')}
-        </div>
-      `;
-    }
+  if (taskSelect && budgetSelect && workflowSelect && langSelect) {
+    state.goalText = taskSelect.value;
+    state.budgetLimit = parseInt(budgetSelect.value);
+    state.selectedExperience = workflowSelect.value;
     
-    html += `
-      <div class="learning-card">
-        <h3 class="learning-card-title">${section.title}</h3>
-        <p class="learning-card-desc">${section.desc}</p>
-        ${toolsHTML}
-      </div>
-    `;
-  });
-
-  html += `
-        <div class="learning-card learning-journey-future-card">
-          <h3 class="learning-card-title">${futureTitle}</h3>
-          <p class="learning-card-desc">${futureDesc}</p>
-        </div>
-      </div>
-    </div>
-  `;
-
-  listContainer.innerHTML = html;
-  
-  const badges = listContainer.querySelectorAll('.learning-tool-badge');
-  badges.forEach(badge => {
-    badge.addEventListener('click', (e) => {
-      const idx = parseInt(badge.getAttribute('data-node'));
-      if (!isNaN(idx)) {
-        openDrawer(idx);
-      }
-    });
-  });
-}
-
-function initWizard() {
-  const wizardOverlay = document.getElementById('wizard-overlay');
-  const submitBtn = document.getElementById('wizard-submit');
-  const mainWrapper = document.getElementById('main-content-wrapper');
-
-  const expBtns = document.querySelectorAll('.exp-opt-btn');
-  expBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      expBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
-
-  const budgetBtns = document.querySelectorAll('.budget-tier-btn');
-  budgetBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      budgetBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
-
-  syncLanguageSelectors();
-
-  document.body.style.overflow = 'hidden';
-
-  submitBtn.addEventListener('click', () => {
-    const goalSelect = document.getElementById('wizard-goal-select');
-    const selectedGoal = goalSelect ? goalSelect.value : 'Exploring the World of AI';
-
-    const activeExpBtn = document.querySelector('.exp-opt-btn.active');
-    const selectedExperience = activeExpBtn ? activeExpBtn.getAttribute('data-exp') : 'Intermediate';
-
-    const activeBudgetBtn = document.querySelector('.budget-tier-btn.active');
-    const budgetLimit = activeBudgetBtn ? parseInt(activeBudgetBtn.getAttribute('data-budget')) : 100;
-
-    state.goalText = selectedGoal;
-    state.selectedExperience = selectedExperience;
-    state.budgetLimit = budgetLimit;
-    
-    regenerateActiveRoadmap();
-
-    wizardOverlay.style.opacity = '0';
     setTimeout(() => {
-      wizardOverlay.style.visibility = 'hidden';
-    }, 800);
-    mainWrapper.classList.add('active');
-    document.body.style.overflow = '';
-
-    setTimeout(() => {
+      regenerateActiveRoadmap();
       drawRoad();
     }, 150);
-  });
+  }
 }
 
 function renderRoadmap(optimalWorkflow, steps) {
@@ -2501,13 +3001,89 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
   } else {
     costStr = tool.cost === 0 ? 'FREE TIER' : `$${tool.cost} / mo`;
   }
+
+  const isEdu = tool.id && tool.id.startsWith("EDU_");
+  const lang = getActiveLanguage();
+  const labels = translationDB[lang] || translationDB["Hinglish"];
   
+  let titleText = tool.title;
+  let descText = tool.desc || tool.description;
+  let difficulty = tool.difficultyLevel || "Intermediate";
+  let time = "30 mins";
+  let prerequisite = "None";
+  let visualFlow = "";
+  let examples = [];
+  let keyConcepts = [];
+  let commonMistakes = [];
+  let applications = [];
+  let reading = [];
+  let exercises = "";
+  let outcome = "";
+  let checkpoint = null;
+  let starter = "";
+  let advanced = "";
+  let pro = "";
+
+  if (isEdu) {
+    titleText = tool.title[lang] || tool.title["English"];
+    descText = tool.summary[lang] || tool.summary["English"];
+    difficulty = tool.difficulty;
+    time = tool.time;
+    prerequisite = tool.prerequisite[lang] || tool.prerequisite["English"];
+    
+    visualFlow = tool.visualFlow;
+    examples = tool.examples[lang] || tool.examples["English"];
+    keyConcepts = tool.keyConcepts[lang] || tool.keyConcepts["English"];
+    commonMistakes = tool.commonMistakes[lang] || tool.commonMistakes["English"];
+    applications = tool.applications[lang] || tool.applications["English"];
+    reading = tool.reading[lang] || tool.reading["English"];
+    exercises = tool.exercises[lang] || tool.exercises["English"];
+    outcome = tool.outcome[lang] || tool.outcome["English"];
+    checkpoint = tool.checkpoint;
+    
+    starter = tool.starterPrompt;
+    advanced = tool.advancedPrompt;
+    pro = tool.proPrompt;
+  } else {
+    const eduData = getToolEducationalData(tool, lang, stepName);
+    const promptDetails = generatePrompts(tool.name, state.goalText || '', lang);
+    
+    const mappedStepKey = resolveGuideKey(stepName, tool.name);
+    
+    if (appGuidesData[mappedStepKey]) {
+      const gd = appGuidesData[mappedStepKey];
+      titleText = gd.title[lang] || gd.title["English"];
+      descText = gd.explanation[lang] || gd.explanation["English"];
+    } else {
+      titleText = tool.title;
+      descText = tool.desc || tool.description;
+    }
+    
+    difficulty = tool.difficultyLevel || "Intermediate";
+    time = promptDetails.time || "30 mins";
+    prerequisite = eduData.prerequisite;
+    
+    visualFlow = eduData.visualFlow;
+    examples = eduData.examples;
+    keyConcepts = eduData.keyConcepts;
+    commonMistakes = eduData.commonMistakes;
+    applications = eduData.applications;
+    reading = eduData.reading;
+    exercises = eduData.exercises;
+    outcome = eduData.outcome;
+    checkpoint = eduData.checkpoint;
+    
+    starter = promptDetails.starter;
+    advanced = promptDetails.advanced;
+    pro = promptDetails.pro;
+  }
+
   const badgeOrNumber = isTimeline 
     ? `
       <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
-        <span class="timeline-step-badge">STEP ${stepIndex} // ${stepName.toUpperCase()}</span>
+        <span class="timeline-step-badge">STEP ${stepIndex} // ${isEdu ? 'EDUCATIONAL' : stepName.toUpperCase()}</span>
         <span class="card-number" style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase;">
-          ${tool.id} // ${costStr} ${effectiveMode ? '(' + effectiveMode + ')' : ''}
+          ${tool.id} // ${isEdu ? 'LEARNING NODE' : costStr} ${effectiveMode ? '(' + effectiveMode + ')' : ''}
         </span>
       </div>
       `
@@ -2520,81 +3096,174 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
 
   let detailsHTML = '';
   if (isTimeline) {
-    const lang = getActiveLanguage();
-    const labels = translationDB[lang] || translationDB["Hinglish"];
-    const details = generatePrompts(tool.name, state.goalText || '', lang);
-    
+    let quizHTML = '';
+    if (checkpoint) {
+      const qText = checkpoint.question[lang] || checkpoint.question.English || checkpoint.question;
+      const opts = checkpoint.options[lang] || checkpoint.options.English || checkpoint.options;
+      const explanation = checkpoint.explanation[lang] || checkpoint.explanation.English || checkpoint.explanation;
+      const correctIdx = checkpoint.correct;
+      
+      quizHTML = `
+        <div class="quiz-container" style="margin-top: 15px; padding: 16px; border: 1px dashed var(--border-color); border-radius: 8px; background: rgba(var(--accent-color), 0.02);">
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">
+            KNOWLEDGE CHECKPOINT
+          </div>
+          <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">${qText}</div>
+          <div class="quiz-options-list" style="display: flex; flex-direction: column; gap: 8px;">
+            ${opts.map((opt, oIdx) => `
+              <button class="quiz-opt-btn" data-correct="${oIdx === correctIdx}" style="text-align: left; padding: 10px 12px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; background: var(--input-bg); border: 1px solid var(--border-color); transition: all 0.2s; color: var(--text-primary);">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback-box" style="display: none; margin-top: 12px; padding: 10px; border-radius: 6px; font-size: 0.8rem; line-height: 1.4;">
+            <strong>Feedback:</strong> <span class="feedback-msg"></span>
+            <div style="margin-top: 4px; color: var(--text-secondary); font-size: 0.75rem;">${explanation}</div>
+          </div>
+        </div>
+      `;
+    }
+
     detailsHTML = `
       <div class="card-details-section">
-        <!-- Purpose -->
-        <div class="card-detail-item">
-          <span class="card-detail-label">${labels.purpose}</span>
-          <span class="card-detail-value">${details.purpose}</span>
-        </div>
         
-        <!-- Why This Tool -->
-        <div class="card-detail-item">
-          <span class="card-detail-label">${labels.whyThisTool}</span>
-          <span class="card-detail-value">${details.why}</span>
+        <div class="card-course-tabs" style="display: flex; gap: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px; overflow-x: auto;">
+          <button class="course-tab-btn active" data-tab="lesson" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">1. LESSON</button>
+          <button class="course-tab-btn" data-tab="concepts" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">2. CONCEPTS</button>
+          <button class="course-tab-btn" data-tab="practice" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">3. PRACTICE</button>
+          <button class="course-tab-btn" data-tab="checkpoint" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">4. QUIZ</button>
         </div>
-        
-        <!-- Expected Output -->
-        <div class="card-detail-item">
-          <span class="card-detail-label">${labels.expectedOutput}</span>
-          <span class="card-detail-value">${details.expectedOutput}</span>
+
+        <div class="course-tab-content active" data-content="lesson" style="display: block;">
+          <div class="card-detail-item">
+            <span class="card-detail-label">${labels.topicExplanation || 'Topic Explanation'}</span>
+            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5;">${isEdu ? tool.explanation[lang] || tool.explanation["English"] : eduData.explanation}</span>
+          </div>
+          <div class="card-detail-item" style="margin-top: 10px;">
+            <span class="card-detail-label">${labels.beginnerFriendlySummary || 'Beginner Summary'}</span>
+            <span class="card-detail-value" style="font-size: 0.82rem; line-height: 1.4; font-style: italic;">${descText}</span>
+          </div>
+          <div class="card-detail-item" style="margin-top: 10px;">
+            <span class="card-detail-label">${labels.visualLearningFlow || 'Visual Learning Flow'}</span>
+            <pre style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(var(--accent-color), 0.03); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: var(--text-primary); margin: 6px 0;">${visualFlow}</pre>
+          </div>
+          ${examples && examples.length > 0 ? `
+          <div class="card-detail-item" style="margin-top: 10px;">
+            <span class="card-detail-label">${labels.realWorldExamples || 'Real World Examples'}</span>
+            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+              ${examples.map(ex => `<li>${ex}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
         </div>
-        
-        <!-- Master Prompt block -->
-        <div class="card-detail-item">
-          <span class="card-detail-label">${labels.masterPrompt}</span>
+
+        <div class="course-tab-content" data-content="concepts" style="display: none;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 12px; padding: 8px; border-radius: 6px; background: rgba(var(--accent-color), 0.015); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.75rem;"><strong style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); display: block; text-transform: uppercase;">${labels.difficulty || 'Difficulty'}</strong>${difficulty}</div>
+            <div style="font-size: 0.75rem;"><strong style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); display: block; text-transform: uppercase;">${labels.estimatedTime || 'Estimated Time'}</strong>${time}</div>
+            <div style="font-size: 0.75rem;"><strong style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); display: block; text-transform: uppercase;">${labels.prerequisite || 'Prerequisites'}</strong>${prerequisite}</div>
+          </div>
+          ${keyConcepts && keyConcepts.length > 0 ? `
+          <div class="card-detail-item">
+            <span class="card-detail-label">${labels.keyConcepts || 'Key Concepts'}</span>
+            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+              ${keyConcepts.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+          ${commonMistakes && commonMistakes.length > 0 ? `
+          <div class="card-detail-item" style="margin-top: 10px;">
+            <span class="card-detail-label" style="color: #ff453a;">${labels.commonMistakes || 'Common Mistakes'}</span>
+            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+              ${commonMistakes.map(m => `<li>${m}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+          ${applications && applications.length > 0 ? `
+          <div class="card-detail-item" style="margin-top: 10px;">
+            <span class="card-detail-label">${labels.practicalApplications || 'Practical Applications'}</span>
+            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+              ${applications.map(app => `<li>${app}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+        </div>
+
+        <div class="course-tab-content" data-content="practice" style="display: none;">
+          ${!isEdu ? `
+          <div class="card-detail-item">
+            <span class="card-detail-label">${labels.estimatedCost || 'Estimated Cost'}</span>
+            <span class="card-detail-value" style="font-weight: 600;">${costStr}</span>
+          </div>
+          ` : ''}
+          <div class="card-detail-item">
+            <span class="card-detail-label">${labels.recommendedAITools || 'Recommended AI Tools'}</span>
+            <span class="card-detail-value" style="font-weight: 600; font-size: 0.82rem;">${isEdu ? tool.recommendedTools.join(", ") : tool.name}</span>
+          </div>
           
-          <!-- Starter Prompt -->
-          <div class="prompt-container">
-            <div class="prompt-header">
-              <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.starter}</span>
-              <button class="prompt-copy-btn" data-text="${escapeHTML(details.starter)}">${labels.copyBtn}</button>
+          <div class="card-detail-item" style="margin-top: 10px;">
+            <span class="card-detail-label">${labels.exercises || 'Practical Exercise'}</span>
+            <span class="card-detail-value" style="font-size: 0.8rem; color: var(--text-secondary); font-style: italic;">${exercises}</span>
+          </div>
+          <div class="card-detail-item" style="margin-top: 10px;">
+            <span class="card-detail-label">${labels.outcome || 'Expected Outcome'}</span>
+            <span class="card-detail-value" style="font-size: 0.8rem; color: var(--text-secondary);">${outcome}</span>
+          </div>
+
+          <div class="card-detail-item" style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+            <span class="card-detail-label">${labels.masterPrompt || 'Master Prompt'}</span>
+            
+            ${starter ? `
+            <div class="prompt-container" style="margin-top: 4px;">
+              <div class="prompt-header">
+                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.starter || 'Starter'}</span>
+                <button class="prompt-copy-btn" data-text="${escapeHTML(starter)}">${labels.copyBtn}</button>
+              </div>
+              <div class="prompt-box">${escapeHTML(starter)}</div>
             </div>
-            <div class="prompt-box">${escapeHTML(details.starter)}</div>
-          </div>
-          
-          <!-- Professional Prompt -->
-          <div class="prompt-container" style="margin-top: 8px;">
-            <div class="prompt-header">
-              <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.professional}</span>
-              <button class="prompt-copy-btn" data-text="${escapeHTML(details.pro)}">${labels.copyBtn}</button>
+            ` : ''}
+            
+            ${advanced ? `
+            <div class="prompt-container" style="margin-top: 8px;">
+              <div class="prompt-header">
+                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.advanced || 'Advanced'}</span>
+                <button class="prompt-copy-btn" data-text="${escapeHTML(advanced)}">${labels.copyBtn}</button>
+              </div>
+              <div class="prompt-box">${escapeHTML(advanced)}</div>
             </div>
-            <div class="prompt-box">${escapeHTML(details.pro)}</div>
-          </div>
-          
-          <!-- Beginner Explanation -->
-          <div style="margin-top: 8px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
-            <strong style="color: var(--text-primary); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;">${labels.beginnerExplanation}:</strong> ${details.exp}
-          </div>
-        </div>
-        
-        <!-- Alternative Tools -->
-        <div class="card-detail-item">
-          <span class="card-detail-label">${labels.alternativeTools}</span>
-          <span class="card-detail-value">${details.alternatives}</span>
-        </div>
-        
-        <!-- Estimated Cost & Time -->
-        <div style="display: flex; gap: 20px; margin-top: 4px;">
-          <div class="card-detail-item" style="flex: 1;">
-            <span class="card-detail-label">${labels.estimatedCost}</span>
-            <span class="card-detail-value" style="font-weight: 600;">${details.cost}</span>
-          </div>
-          <div class="card-detail-item" style="flex: 1;">
-            <span class="card-detail-label">${labels.estimatedTime}</span>
-            <span class="card-detail-value" style="font-weight: 600;">${details.time}</span>
+            ` : ''}
+            
+            ${pro ? `
+            <div class="prompt-container" style="margin-top: 8px;">
+              <div class="prompt-header">
+                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.professional || 'Professional'}</span>
+                <button class="prompt-copy-btn" data-text="${escapeHTML(pro)}">${labels.copyBtn}</button>
+              </div>
+              <div class="prompt-box">${escapeHTML(pro)}</div>
+            </div>
+            ` : ''}
           </div>
         </div>
+
+        <div class="course-tab-content" data-content="checkpoint" style="display: none;">
+          ${quizHTML}
+          ${reading && reading.length > 0 ? `
+          <div class="card-detail-item" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+            <span class="card-detail-label">${labels.furtherReadingResources || 'Further Reading Resources'}</span>
+            <ul style="padding-left: 16px; font-size: 0.78rem; color: var(--text-secondary);">
+              ${reading.map(r => `<li>${r}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+        </div>
+
       </div>
     `;
   }
 
-  return `
-    <div class="card-glow"></div>
+  const actionButtonsHTML = isEdu 
+    ? '' 
+    : `
     <div class="card-fav-compare-actions">
       <button class="card-action-btn fav-star ${isFav ? 'active' : ''}" title="Add to Favorites" data-id="${tool.id}">
         ★
@@ -2605,15 +3274,15 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
         </svg>
       </button>
     </div>
-    <div class="card-header">
-      <div class="card-icon">
-        ${tool.icon}
-      </div>
-      ${badgeOrNumber}
+    `;
+
+  const footerHTML = isEdu
+    ? `
+    <div class="card-footer" style="justify-content: flex-end;">
+      <button class="btn btn-secondary topic-completed-btn" style="width: 100%;" data-id="${tool.id}">Mark Topic Complete</button>
     </div>
-    <h2 class="card-title">${tool.title}</h2>
-    <p class="card-desc">${tool.desc}</p>
-    ${detailsHTML}
+    `
+    : `
     <div class="card-footer">
       <button class="btn btn-secondary inspect-btn">Inspect Engine</button>
       <a href="${tool.officialUrl || tool.link || '#'}" target="_blank" rel="noopener" class="btn btn-icon" aria-label="External Link">
@@ -2623,6 +3292,21 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
         </svg>
       </a>
     </div>
+    `;
+
+  return `
+    <div class="card-glow"></div>
+    ${actionButtonsHTML}
+    <div class="card-header">
+      <div class="card-icon" style="${isEdu ? 'background: #000; color: #fff; font-family: var(--font-mono); font-size: 0.75rem; font-weight:700;' : ''}">
+        ${isEdu ? 'EDU' : tool.icon}
+      </div>
+      ${badgeOrNumber}
+    </div>
+    <h2 class="card-title">${titleText}</h2>
+    ${!isTimeline ? `<p class="card-desc">${descText}</p>` : ''}
+    ${detailsHTML}
+    ${footerHTML}
   `;
 }
 
@@ -2936,7 +3620,7 @@ function initApp() {
     smoothScrollLoop();
     
     // Initialize config overlay wizard
-    initWizard();
+    initDashboardControls();
     
     // Initialize AI-OS platform systems
     initLibrarySection();

@@ -74,6 +74,14 @@
   
   --diff-addition-bg: rgba(255, 255, 255, 0.06);
   --diff-deletion-bg: rgba(255, 0, 0, 0.04);
+
+  /* Scoped card hover tokens */
+  --card-hover-bg: #f5f5f7;
+  --card-hover-text: #0a0a0c;
+  --card-hover-text-secondary: #48484a;
+  --card-hover-input-bg: rgba(10, 10, 12, 0.05);
+  --card-hover-input-border: rgba(10, 10, 12, 0.12);
+  --card-hover-badge-bg-new: rgba(10, 10, 12, 0.06);
 }
 
 /* Light Theme Variables */
@@ -132,6 +140,14 @@
   
   --diff-addition-bg: rgba(0, 0, 0, 0.04);
   --diff-deletion-bg: rgba(255, 0, 0, 0.03);
+
+  /* Scoped card hover tokens */
+  --card-hover-bg: #1c1c1e;
+  --card-hover-text: #f7f7f9;
+  --card-hover-text-secondary: #aeaeb2;
+  --card-hover-input-bg: rgba(255, 255, 255, 0.08);
+  --card-hover-input-border: rgba(255, 255, 255, 0.15);
+  --card-hover-badge-bg-new: rgba(255, 255, 255, 0.08);
 }
 
 /* Transition suppression helper to ensure instant typography/theme color updates */
@@ -704,55 +720,78 @@ button, input, select, textarea {
 /* Card Hover Color Inversion & Micro-Interaction */
 .timeline-card.visible:hover, .library-item-card.visible:hover {
   transform: scale(1.02) !important;
-  background-color: var(--text-primary) !important;
-  color: var(--bg-color) !important;
-  border-color: var(--text-primary) !important;
+  background-color: var(--card-hover-bg) !important;
+  color: var(--card-hover-text) !important;
+  border-color: var(--card-hover-bg) !important;
   box-shadow: 0 30px 60px var(--card-shadow), 0 0 25px var(--glow-color);
+}
+
+.timeline-card:hover,
+.library-item-card:hover {
+  --text-primary: var(--card-hover-text) !important;
+  --text-secondary: var(--card-hover-text-secondary) !important;
+  --text-tertiary: var(--card-hover-text-secondary) !important;
+  --border-color: var(--card-hover-input-border) !important;
+  --input-bg: var(--card-hover-input-bg) !important;
+  --prompt-bg: var(--card-hover-input-bg) !important;
+  --prompt-box-bg: var(--card-hover-input-bg) !important;
+  --prompt-box-border: var(--card-hover-input-border) !important;
+  --accent-color: var(--card-hover-text) !important;
+  --badge-bg: var(--card-hover-badge-bg-new) !important;
 }
 
 .timeline-card:hover .card-title,
 .library-item-card:hover .card-title {
-  color: var(--bg-color) !important;
+  color: var(--card-hover-text) !important;
 }
 
 .timeline-card:hover .card-number,
 .timeline-card:hover .card-desc,
 .library-item-card:hover .card-number,
 .library-item-card:hover .card-desc {
-  color: var(--text-tertiary) !important;
+  color: var(--card-hover-text-secondary) !important;
 }
 
 .timeline-card:hover .card-icon,
 .library-item-card:hover .card-icon {
-  background-color: var(--bg-color) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--bg-color) !important;
+  background-color: var(--card-hover-text) !important;
+  color: var(--card-hover-bg) !important;
+  border-color: var(--card-hover-text) !important;
 }
 
 .timeline-card:hover .btn-secondary,
 .library-item-card:hover .btn-secondary {
-  border-color: var(--bg-color) !important;
-  color: var(--bg-color) !important;
+  border-color: var(--card-hover-text) !important;
+  color: var(--card-hover-text) !important;
 }
 
 .timeline-card:hover .btn-secondary:hover,
 .library-item-card:hover .btn-secondary:hover {
-  background-color: var(--bg-color) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--bg-color) !important;
+  background-color: var(--card-hover-text) !important;
+  color: var(--card-hover-bg) !important;
+  border-color: var(--card-hover-text) !important;
 }
 
 .timeline-card:hover .btn-icon,
 .library-item-card:hover .btn-icon {
-  border-color: var(--bg-color) !important;
-  color: var(--bg-color) !important;
+  border-color: var(--card-hover-text) !important;
+  color: var(--card-hover-text) !important;
 }
 
 .timeline-card:hover .btn-icon:hover,
 .library-item-card:hover .btn-icon:hover {
-  background-color: var(--bg-color) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--bg-color) !important;
+  background-color: var(--card-hover-text) !important;
+  color: var(--card-hover-bg) !important;
+  border-color: var(--card-hover-text) !important;
+}
+
+/* Children transition rules */
+.timeline-card *, 
+.library-item-card * {
+  transition: background-color var(--transition-theme), 
+              color var(--transition-theme), 
+              border-color var(--transition-theme), 
+              box-shadow var(--transition-theme);
 }
 
 .card-glow {
@@ -1372,9 +1411,10 @@ button, input, select, textarea {
   background-color: var(--bg-color);
   z-index: 9999;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 20px;
+  padding: 40px 20px;
+  overflow-y: auto;
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1772,9 +1812,9 @@ button, input, select, textarea {
 }
 
 .timeline-card:hover .timeline-step-badge {
-  color: var(--bg-color);
-  background: var(--card-hover-badge-bg);
-  border-color: var(--card-hover-badge-border);
+  color: var(--card-hover-text);
+  background: var(--card-hover-badge-bg-new);
+  border-color: var(--card-hover-input-border);
 }
 
 /* Main Content Wrapper Fade States */
@@ -1901,9 +1941,9 @@ button, input, select, textarea {
 }
 .timeline-card:hover .card-badge,
 .library-item-card:hover .card-badge {
-  border-color: var(--card-hover-badge-border);
-  color: var(--text-tertiary) !important;
-  background: var(--card-hover-badge-bg);
+  border-color: var(--card-hover-input-border);
+  color: var(--card-hover-text-secondary) !important;
+  background: var(--card-hover-badge-bg-new);
 }
 .price-badge {
   font-weight: 700;
@@ -1912,8 +1952,8 @@ button, input, select, textarea {
 }
 .timeline-card:hover .price-badge,
 .library-item-card:hover .price-badge {
-  color: var(--bg-color);
-  border-color: var(--text-tertiary);
+  color: var(--card-hover-text);
+  border-color: var(--card-hover-text-secondary);
 }
 
 /* ==========================================================================
@@ -2366,28 +2406,29 @@ button, input, select, textarea {
 /* Hover inversion adjustment for actions */
 .timeline-card:hover .card-action-btn,
 .library-item-card:hover .card-action-btn {
-  background: var(--card-hover-badge-bg);
-  border-color: var(--card-hover-badge-border);
-  color: var(--text-tertiary);
+  background: var(--card-hover-input-bg);
+  border-color: var(--card-hover-input-border);
+  color: var(--card-hover-text-secondary);
 }
 
 .timeline-card:hover .card-action-btn:hover,
 .library-item-card:hover .card-action-btn:hover {
-  color: var(--bg-color);
-  border-color: var(--bg-color);
+  color: var(--card-hover-text);
+  border-color: var(--card-hover-text);
+  background: var(--card-hover-input-bg);
 }
 
 .timeline-card:hover .card-action-btn.active.fav-star,
 .library-item-card:hover .card-action-btn.active.fav-star {
-  color: #d49a00 !important;
-  border-color: #d49a00 !important;
+  color: #ffb800 !important;
+  border-color: #ffb800 !important;
 }
 
 .timeline-card:hover .card-action-btn.active.compare-check,
 .library-item-card:hover .card-action-btn.active.compare-check {
-  background: var(--bg-color) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--bg-color) !important;
+  background: var(--card-hover-text) !important;
+  color: var(--card-hover-bg) !important;
+  border-color: var(--card-hover-text) !important;
 }
 
 /* ==========================================================================
@@ -2897,4 +2938,83 @@ button, input, select, textarea {
   border: 1px dashed var(--border-color);
   text-align: center;
   padding: 32px;
+}
+
+/* ==========================================================================
+   Interactive Course & Quiz Elements
+   ========================================================================== */
+
+.course-tab-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all var(--transition-fast) ease;
+  position: relative;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.course-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--input-bg);
+}
+
+.course-tab-btn.active {
+  color: var(--text-primary);
+  background: var(--input-bg);
+  box-shadow: inset 0 0 0 1px var(--border-color);
+}
+
+.quiz-container {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  transition: all var(--transition-fast);
+}
+
+.quiz-opt-btn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+}
+
+.quiz-opt-btn:hover {
+  background: var(--border-color);
+  transform: translateY(-1px);
+}
+
+.quiz-feedback-box {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  transition: all var(--transition-fast);
+}
+
+.topic-completed-btn {
+  transition: all var(--transition-fast);
+}
+
+.topic-completed-btn.completed {
+  background: #34c759 !important;
+  color: #ffffff !important;
+  border-color: #34c759 !important;
+  font-weight: bold;
 }

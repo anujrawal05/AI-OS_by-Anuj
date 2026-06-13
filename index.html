@@ -8,130 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.1">
 </head>
 <body>
 
   <!-- Background Decorative Grid -->
   <!-- Fullscreen Wizard Overlay -->
-  <div class="wizard-overlay" id="wizard-overlay">
-    <div class="wizard-container">
-      <div class="wizard-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <div class="wizard-kicker" style="margin-bottom: 0;">INITIALIZING COMPILATION PROTOCOL</div>
-        <div class="wizard-lang-select-wrap">
-          <select id="wizard-lang-select" class="wizard-lang-select">
-            <option value="English">English</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Hinglish" selected>Hinglish (Recommended)</option>
-          </select>
-        </div>
-      </div>
-      <h2 class="wizard-title">Tailor Your Toolchain</h2>
-      <p class="wizard-subtitle">Select your production target and set a threshold to generate a custom system roadmap.</p>
-      
-      <!-- Input 1: Industry Selection -->
-      <div class="wizard-step">
-        <label class="wizard-label">1. SELECT YOUR INDUSTRY</label>
-        <div class="industry-grid">
-          <button class="industry-opt-btn active" data-industry="Content Creation">
-            <span class="opt-dot"></span>
-            <span>Content Creation</span>
-          </button>
-          <button class="industry-opt-btn" data-industry="Customer Support">
-            <span class="opt-dot"></span>
-            <span>Customer Support</span>
-          </button>
-          <button class="industry-opt-btn" data-industry="Education">
-            <span class="opt-dot"></span>
-            <span>Education</span>
-          </button>
-          <button class="industry-opt-btn" data-industry="Healthcare">
-            <span class="opt-dot"></span>
-            <span>Healthcare</span>
-          </button>
-          <button class="industry-opt-btn" data-industry="Software Development">
-            <span class="opt-dot"></span>
-            <span>Software Development</span>
-          </button>
-        </div>
-      </div>
-      
-      <div class="wizard-row">
-        <!-- Input 2: Experience Level Selection -->
-        <div class="wizard-step flex-1">
-          <label class="wizard-label">2. EXPERIENCE LEVEL</label>
-          <div class="exp-grid">
-            <button class="exp-opt-btn active" data-exp="Beginner">Beginner</button>
-            <button class="exp-opt-btn" data-exp="Intermediate">Intermediate</button>
-            <button class="exp-opt-btn" data-exp="Advanced">Advanced</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Input 3: Goal Selection Dropdown -->
-      <div class="wizard-step">
-        <label class="wizard-label" for="wizard-goal-select">What would you like AI to help you with?</label>
-        <div class="select-wrap">
-          <select id="wizard-goal-select" class="wizard-select">
-            <option value="Exploring the World of AI">Exploring the World of AI</option>
-            <option value="Generating Video">Generating Video</option>
-            <option value="Generating Images">Generating Images</option>
-            <option value="Designing">Designing</option>
-            <option value="Coding">Coding</option>
-            <option value="Building Apps">Building Apps</option>
-            <option value="Tips to Earn Money">Tips to Earn Money</option>
-            <option value="Music Making">Music Making</option>
-            <option value="Voice Over Generation">Voice Over Generation</option>
-            <option value="Brand Building">Brand Building</option>
-            <option value="Personal AI Building">Personal AI Building</option>
-            <option value="Help in Video Editing">Help in Video Editing</option>
-            <option value="Help in Music Editing">Help in Music Editing</option>
-            <option value="Writing Work">Writing Work</option>
-            <option value="Hardware Building">Hardware Building</option>
-          </select>
-        </div>
-      </div>
-      
-      <!-- Input 4: Budget Tier Tiles -->
-      <div class="wizard-step">
-        <label class="wizard-label">4. BUDGET CAPACITY</label>
-        <div class="budget-tiers-grid">
-          <button class="budget-tier-btn" data-budget="0" data-tier="Free">
-            <span class="tier-name">Free</span>
-            <span class="tier-limit">$0</span>
-            <span class="tier-desc">Only free & freemium tools</span>
-          </button>
-          <button class="budget-tier-btn" data-budget="20" data-tier="Starter">
-            <span class="tier-name">Starter</span>
-            <span class="tier-limit">$20</span>
-            <span class="tier-desc">Best low-cost combinations</span>
-          </button>
-          <button class="budget-tier-btn active" data-budget="100" data-tier="Growth">
-            <span class="tier-name">Growth</span>
-            <span class="tier-limit">$100</span>
-            <span class="tier-desc">Balanced cost & performance</span>
-          </button>
-          <button class="budget-tier-btn" data-budget="500" data-tier="Professional">
-            <span class="tier-name">Professional</span>
-            <span class="tier-limit">$500</span>
-            <span class="tier-desc">Premium production workflows</span>
-          </button>
-          <button class="budget-tier-btn" data-budget="1000" data-tier="Enterprise">
-            <span class="tier-name">Enterprise</span>
-            <span class="tier-limit">$1000</span>
-            <span class="tier-desc">Highest quality stack</span>
-          </button>
-        </div>
-      </div>
-      
-      <button class="btn btn-primary btn-full wizard-submit-btn" id="wizard-submit">
-        <span>COMPILE ROADMAP SYSTEM</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Main Content Wrapper (Hidden initially) -->
-  <div class="main-content-wrapper" id="main-content-wrapper">
+  <!-- Main Content Wrapper (shown by default) -->
+  <div class="main-content-wrapper active" id="main-content-wrapper">
 
   <!-- Header / Navigation -->
   <header class="app-header">
@@ -145,7 +29,7 @@
       </div>
       
       <nav class="main-nav">
-        <a href="#home" class="nav-link active" data-target="home">Home</a>
+        <a href="#dashboard-controls" class="nav-link active" data-target="dashboard-controls">Dashboard</a>
         <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section">Roadmaps</a>
         <a href="#explore-library-section" class="nav-link" data-target="explore-library-section">Explore Tools</a>
         <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section">Categories</a>
@@ -153,16 +37,6 @@
       </nav>
 
       <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
-        <div class="header-lang-select-wrap">
-          <select id="header-lang-select" class="header-lang-select">
-            <option value="English">EN</option>
-            <option value="Hindi">HI</option>
-            <option value="Hinglish" selected>HING</option>
-          </select>
-        </div>
-        <button id="reconfigure-btn" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.75rem; border-radius: 30px; height: 36px; font-family: var(--font-mono);">
-          <span>RE-CONFIG</span>
-        </button>
         <button id="theme-toggle" aria-label="Toggle monochrome theme">
           <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
@@ -183,17 +57,85 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero" id="home">
-    <div class="hero-content">
-      <div class="kicker">SYSTEM PROTOCOL 0.1a</div>
-      <h1>AI OVERALL SOLUTIONS</h1>
-      <p class="subtitle" style="font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.1em; opacity: 0.8; margin-top: -10px; margin-bottom: 20px;">BY ANUJ</p>
-      <p class="subtitle">Tailored workflow roadmaps and operational directories. Engineered for modern grids.</p>
-    </div>
-    <div class="scroll-prompt">
-      <span>SCROLL DOWN</span>
-      <div class="scroll-line"></div>
+  <!-- Persistent Controls Dashboard Toolbar -->
+  <section class="dashboard-controls" id="dashboard-controls" style="margin-top: 100px; padding: 20px 40px; z-index: 10; position: relative;">
+    <div class="controls-container" style="max-width: 1200px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; box-shadow: 0 20px 40px var(--card-shadow); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+      <div style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--text-secondary); margin-bottom: 16px; text-transform: uppercase;">
+        OPERATIONAL TARGET CONFIGURATION
+      </div>
+      <div class="controls-inputs-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: flex-end;">
+        
+        <!-- Input 1: Task Selection -->
+        <div class="control-group-input" style="display: flex; flex-direction: column; gap: 8px;">
+          <label class="control-label-style" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); font-weight: 700; text-transform: uppercase;">1. Task / Objective</label>
+          <div class="select-wrap" style="position: relative;">
+            <select id="control-task-select" class="control-dropdown-select" style="width: 100%; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 0.9rem; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); outline: none;">
+              <option value="Exploring AI" selected>Exploring AI</option>
+              <option value="Generating Video">Generating Video</option>
+              <option value="Generating Images">Generating Images</option>
+              <option value="Designing">Designing</option>
+              <option value="Coding">Coding</option>
+              <option value="Building Apps">Building Apps</option>
+              <option value="Tips to Earn Money">Tips to Earn Money</option>
+              <option value="Music Making">Music Making</option>
+              <option value="Voice Over Generation">Voice Over Generation</option>
+              <option value="Brand Building">Brand Building</option>
+              <option value="Personal AI Building">Personal AI Building</option>
+              <option value="Help in Video Editing">Help in Video Editing</option>
+              <option value="Help in Music Editing">Help in Music Editing</option>
+              <option value="Writing Work">Writing Work</option>
+              <option value="Hardware Building">Hardware Building</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Input 2: Budget Selection -->
+        <div class="control-group-input" style="display: flex; flex-direction: column; gap: 8px;">
+          <label class="control-label-style" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); font-weight: 700; text-transform: uppercase;">2. Budget limit</label>
+          <div class="select-wrap" style="position: relative;">
+            <select id="control-budget-select" class="control-dropdown-select" style="width: 100%; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 0.9rem; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); outline: none;">
+              <option value="0">$0 Free</option>
+              <option value="20">$10-$20 Starter</option>
+              <option value="100" selected>$20-$100 Growth</option>
+              <option value="500">$100-$500 Professional</option>
+              <option value="1000">$500-$1000 Advanced</option>
+              <option value="100000">$1000+ Enterprise</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Input 3: Preferred Workflow Type / Experience -->
+        <div class="control-group-input" style="display: flex; flex-direction: column; gap: 8px;">
+          <label class="control-label-style" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); font-weight: 700; text-transform: uppercase;">3. Workflow / Experience</label>
+          <div class="select-wrap" style="position: relative;">
+            <select id="control-workflow-select" class="control-dropdown-select" style="width: 100%; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 0.9rem; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); outline: none;">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate" selected>Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Input 4: Language Selection -->
+        <div class="control-group-input" style="display: flex; flex-direction: column; gap: 8px;">
+          <label class="control-label-style" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); font-weight: 700; text-transform: uppercase;">4. Target Language</label>
+          <div class="select-wrap" style="position: relative;">
+            <select id="control-lang-select" class="control-dropdown-select" style="width: 100%; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 0.9rem; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); outline: none;">
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Hinglish" selected>Hinglish (Recommended)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="control-group-input" style="display: flex; flex-direction: column; gap: 8px;">
+          <button id="control-compile-btn" class="btn btn-primary btn-full" style="height: 44px; font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem; border-radius: 6px; letter-spacing: 0.05em; text-transform: uppercase;">
+            COMPILE ROADMAP
+          </button>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -502,7 +444,8 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="toolsData.js"></script>
-  <script src="app.js"></script>
+  <script src="toolsData.js?v=2.1"></script>
+  <script src="exploringAIData.js?v=2.1"></script>
+  <script src="app.js?v=2.1"></script>
 </body>
 </html>
