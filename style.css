@@ -1325,82 +1325,10 @@ button, input, select, textarea {
 
 /* ==========================================================================
    RESPONSIVE LAYOUT CONFIGURATIONS
+   (Handled comprehensively at the bottom of this file — see 
+    COMPREHENSIVE MOBILE-FIRST RESPONSIVE BREAKPOINTS section)
    ========================================================================== */
 
-@media (max-width: 1024px) {
-  :root {
-    --card-width: 400px;
-  }
-  .hero h1 {
-    font-size: 2.8rem;
-  }
-}
-
-@media (max-width: 1024px) {
-  :root {
-    --card-width: 100%;
-    --road-width: 60px;
-  }
-  
-  .header-container {
-    padding: 0 20px;
-  }
-  .filter-nav {
-    display: none; /* Hide category navigation on small screens to avoid clutter */
-  }
-  
-  .hero h1 {
-    font-size: 2.2rem;
-  }
-  
-  .timeline-container {
-    padding: 60px 20px 100px;
-  }
-
-  /* Single Column Timeline Layout */
-  .timeline-row {
-    grid-template-columns: var(--road-width) 1fr;
-    gap: 20px;
-  }
-  
-  .timeline-dot-anchor {
-    grid-column: 1;
-  }
-  
-  .timeline-spacer {
-    display: none;
-  }
-  
-  .timeline-row.left .timeline-card,
-  .timeline-row.right .timeline-card {
-    grid-column: 2;
-    justify-self: stretch;
-  }
-  
-  .drawer-content {
-    max-width: 100%;
-  }
-  .drawer-header {
-    padding: 20px;
-  }
-  .drawer-body {
-    padding: 20px;
-    gap: 30px;
-  }
-  .drawer-footer {
-    padding: 20px;
-  }
-  .spec-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .footer-container {
-    flex-direction: column;
-    gap: 16px;
-    padding: 0 20px;
-    text-align: center;
-  }
-}
 
 /* ==========================================================================
    WIZARD OVERLAY STYLE (STRICT MONOTONE)
@@ -1834,6 +1762,115 @@ button, input, select, textarea {
 }
 
 /* ==========================================================================
+   APP SECTION BASE STYLES
+   ========================================================================== */
+.app-section {
+  padding: 80px 0;
+  position: relative;
+  z-index: 10;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   DASHBOARD CONTROLS SECTION (moved from inline styles)
+   ========================================================================== */
+.dashboard-controls {
+  margin-top: 100px; /* clears fixed 72px header */
+  padding: 20px 0;
+  z-index: 10;
+  position: relative;
+}
+
+.controls-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 40px var(--card-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.controls-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.controls-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.control-group-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label-style {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.control-dropdown-select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.control-dropdown-select:focus {
+  border-color: var(--border-focus);
+}
+
+/* ==========================================================================
    EXPLORE LIBRARY SECTION
    ========================================================================== */
 .library-toolbar {
@@ -2181,38 +2218,10 @@ button, input, select, textarea {
   color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   ADDITIONAL RESPONSIVE CONFIGURATIONS
-   ========================================================================== */
-@media (max-width: 1024px) {
-  .pricing-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  .about-container {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-}
+/* Responsive rules for above sections are handled in the
+   COMPREHENSIVE MOBILE-FIRST RESPONSIVE BREAKPOINTS section below */
 
-@media (max-width: 1024px) {
-  .app-section {
-    padding: 60px 20px;
-  }
-  .category-explorer-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .category-sidebar {
-    width: 100%;
-  }
-  .nav-link {
-    font-size: 0.75rem;
-  }
-  .main-nav {
-    gap: 12px;
-  }
-}
+
 
 /* ==========================================================================
    PHASE 2 WORKSPACE TOOLBAR CONTROLS
@@ -3036,10 +3045,12 @@ select option {
 }
 
 /* ==========================================================================
-   MOBILE & DESKTOP AD LAYOUT OPTIMIZATIONS
+   MOBILE-FIRST LAYOUT & AD SYSTEM — COMPREHENSIVE RESPONSIVE OVERHAUL
    ========================================================================== */
 
-/* Centered content layout wrapper limiting desktop page width */
+/* -------------------------------------------------------------------------
+   APP LAYOUT WRAPPER — Desktop content centering with sidebar ad columns
+   ------------------------------------------------------------------------- */
 .app-layout-wrapper {
   display: grid;
   grid-template-columns: 1fr;
@@ -3047,7 +3058,7 @@ select option {
   margin: 0 auto;
   position: relative;
   box-sizing: border-box;
-  padding: 0 40px; /* preferredMargin: 40px */
+  padding: 0 16px; /* Mobile-first: start with safe edge padding */
 }
 
 .app-main-content {
@@ -3056,15 +3067,39 @@ select option {
   box-sizing: border-box;
 }
 
-/* Three-column layout on wide screens */
+/* Large phones and up: more breathing room */
+@media (min-width: 481px) {
+  .app-layout-wrapper {
+    padding: 0 24px;
+  }
+}
+
+/* Tablets and up */
+@media (min-width: 769px) {
+  .app-layout-wrapper {
+    padding: 0 32px;
+  }
+}
+
+/* Desktop: preferred 40px margin */
+@media (min-width: 1025px) {
+  .app-layout-wrapper {
+    padding: 0 40px;
+  }
+}
+
+/* Wide desktop: 3-column layout with sidebar ads */
 @media (min-width: 1200px) {
   .app-layout-wrapper {
     grid-template-columns: 200px 1fr 200px;
     gap: 40px;
+    padding: 0 30px;
   }
 }
 
-/* Sidebar Ads: Desktop Only and Sticky */
+/* -------------------------------------------------------------------------
+   SIDEBAR ADS — Desktop only, hidden on mobile/tablet
+   ------------------------------------------------------------------------- */
 .sidebar-ad {
   display: none;
   width: 100%;
@@ -3075,13 +3110,16 @@ select option {
   .sidebar-ad {
     display: block;
     position: sticky;
-    top: 100px; /* aligns below header */
+    top: 100px;
     height: 600px;
     align-self: start;
     z-index: 5;
   }
 }
 
+/* -------------------------------------------------------------------------
+   STICKY AD CARD DESIGN
+   ------------------------------------------------------------------------- */
 .ad-placeholder-sticky {
   border: 1px dashed var(--border-color);
   border-radius: 12px;
@@ -3146,27 +3184,29 @@ select option {
   border-color: var(--text-primary);
 }
 
-/* Banner Ads: Responsive Banners on Top & Bottom */
+/* -------------------------------------------------------------------------
+   BANNER ADS — Responsive top & bottom banners
+   ------------------------------------------------------------------------- */
 .banner-ad {
   max-width: 1200px;
-  margin: 30px auto;
-  padding: 14px 24px;
+  margin: 20px auto;
+  padding: 12px 16px;
   border: 1px dashed var(--border-color);
   background: rgba(var(--accent-color), 0.02);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
   box-sizing: border-box;
 }
 
 .banner-ad-top {
-  margin-top: 100px; /* spacing below fixed header */
+  margin-top: 100px; /* Clears fixed 72px header + extra breathing room */
 }
 
 .banner-ad-bottom {
-  margin-bottom: 50px; /* spacing above footer */
+  margin-bottom: 40px;
 }
 
 .banner-ad .ad-tag {
@@ -3175,12 +3215,14 @@ select option {
   color: var(--text-secondary);
   letter-spacing: 0.12em;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .banner-ad-content {
   font-size: 0.85rem;
   color: var(--text-primary);
   line-height: 1.4;
+  flex-grow: 1;
 }
 
 .banner-ad-content a {
@@ -3190,23 +3232,29 @@ select option {
   margin-left: 6px;
 }
 
-@media (max-width: 1024px) {
+/* Banner stacks on smaller screens */
+@media (max-width: 768px) {
   .banner-ad {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-    margin: 20px auto;
-    padding: 16px;
+    margin: 16px auto;
+    padding: 14px 16px;
+  }
+  .banner-ad-top {
+    margin-top: 88px;
   }
 }
 
-/* Native Inline Section Ads */
+/* -------------------------------------------------------------------------
+   NATIVE INLINE SECTION ADS
+   ------------------------------------------------------------------------- */
 .native-section-ad {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 18px 24px;
-  margin: 35px 0;
+  padding: 16px 20px;
+  margin: 32px 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -3232,15 +3280,16 @@ select option {
 .native-ad-body {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .native-ad-icon-wrap {
   width: 44px;
   height: 44px;
   border-radius: 8px;
-  background: rgba(var(--accent-color), 0.08);
+  background: var(--input-bg);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   display: flex;
@@ -3250,19 +3299,20 @@ select option {
 }
 
 .native-ad-text {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 180px;
 }
 
 .native-ad-text h4 {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .native-ad-text p {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text-secondary);
   line-height: 1.4;
 }
@@ -3284,6 +3334,8 @@ select option {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 44px;
+  flex-shrink: 0;
 }
 
 .native-ad-btn:hover {
@@ -3292,22 +3344,22 @@ select option {
   border-color: var(--text-primary);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 600px) {
   .native-ad-body {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: 12px;
   }
   .native-ad-btn {
     width: 100%;
+    justify-content: center;
   }
 }
 
-/* ==========================================================================
-   MOBILE HAMBURGER MENU & RESPONSIVE TYPOGRAPHY
-   ========================================================================== */
+/* =========================================================================
+   MOBILE HAMBURGER MENU
+   ========================================================================= */
 
-/* Hamburger menu button toggle style */
 .hamburger-toggle {
   display: none;
   background: transparent;
@@ -3367,16 +3419,16 @@ select option {
   visibility: visible;
 }
 
-/* Media Query: Tablets & Mobile collapsing links to drawer */
+/* Tablets & Mobile: collapse nav to slide-in drawer */
 @media (max-width: 1024px) {
   .hamburger-toggle {
     display: flex;
   }
-  
+
   .main-nav {
     position: fixed;
     top: 0;
-    right: -100%; /* completely offscreen */
+    right: -100%;
     width: 290px;
     height: 100vh;
     background-color: var(--bg-color);
@@ -3391,9 +3443,9 @@ select option {
     box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
     box-sizing: border-box;
   }
-  
+
   .main-nav.mobile-active {
-    right: 0; /* slide in smoothly */
+    right: 0;
   }
 
   .nav-link {
@@ -3406,70 +3458,732 @@ select option {
   }
 }
 
-/* Media Query: Touch targets & mobile optimization fixes */
-@media (max-width: 1024px) {
-  /* Enforce touch-friendly tap heights */
+/* ==========================================================================
+   COMPREHENSIVE MOBILE-FIRST RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+/* -------------------------------------------------------------------------
+   BASE MOBILE RULES (applies to ALL screens, mobile-first philosophy)
+   No horizontal scroll — universal enforcement
+   ------------------------------------------------------------------------- */
+body, html {
+  overflow-x: hidden !important;
+  max-width: 100vw;
+  width: 100%;
+}
+
+/* Cards: prevent text overflow everywhere */
+.card-title,
+.card-desc,
+.card-detail-value,
+.drawer-description-text {
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* Badges: allow wrapping */
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.card-badge {
+  white-space: normal;
+  line-height: 1.3;
+}
+
+/* -------------------------------------------------------------------------
+   SMALL PHONES: 320px – 480px
+   The most critical breakpoint — Galaxy Fold, iPhone SE, older Androids
+   ------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+
+  /* --- Header --- */
+  .header-container {
+    padding: 0 14px;
+    height: 64px;
+  }
+
+  .logo-text {
+    font-size: 1.05rem;
+  }
+
+  .logo-subtitle {
+    font-size: 0.65rem;
+  }
+
+  /* --- Hero Typography --- */
+  .hero h1 {
+    font-size: 1.8rem;
+    letter-spacing: -0.03em;
+  }
+
+  .hero .subtitle {
+    font-size: 1rem;
+  }
+
+  /* --- Dashboard Controls Section --- */
+  /* Override the inline margin-top: 100px and padding via class */
+  .dashboard-controls {
+    margin-top: 80px !important;
+    padding: 16px !important;
+  }
+
+  .controls-container {
+    padding: 18px 16px !important;
+  }
+
+  .controls-inputs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Touch-friendly dropdowns and button */
+  .control-dropdown-select,
+  .control-select,
+  .wizard-select {
+    min-height: 52px !important;
+    height: 52px !important;
+    font-size: 1rem !important;
+    padding: 0 12px !important;
+    border-radius: 8px !important;
+  }
+
+  #control-compile-btn,
+  .btn {
+    min-height: 52px !important;
+    height: 52px !important;
+    font-size: 0.9rem !important;
+    border-radius: 8px !important;
+  }
+
+  /* --- App Layout Wrapper --- */
+  .app-layout-wrapper {
+    padding: 0 12px;
+  }
+
+  /* --- Section spacing --- */
+  .app-section {
+    padding: 40px 0 !important;
+  }
+
+  /* --- Timeline / Roadmap on small phones --- */
+  .timeline-container {
+    padding: 40px 0 80px !important;
+  }
+
+  :root {
+    --road-width: 36px;
+  }
+
+  /* Single column: road on left, card takes remaining space */
+  .timeline-row {
+    grid-template-columns: var(--road-width) 1fr !important;
+    gap: 12px !important;
+  }
+
+  .timeline-dot-anchor {
+    grid-column: 1 !important;
+  }
+
+  .timeline-spacer {
+    display: none !important;
+  }
+
+  .timeline-row.left .timeline-card,
+  .timeline-row.right .timeline-card {
+    grid-column: 2 !important;
+    justify-self: stretch !important;
+    max-width: 100% !important;
+  }
+
+  .timeline-list {
+    gap: 60px !important;
+  }
+
+  /* Cards on small phones */
+  .timeline-card,
+  .library-item-card {
+    padding: 18px 14px !important;
+    min-height: auto !important;
+    border-radius: 10px;
+  }
+
+  .card-title {
+    font-size: 1.15rem !important;
+    margin-bottom: 8px;
+  }
+
+  .card-desc {
+    font-size: 0.85rem !important;
+    margin-bottom: 14px;
+  }
+
+  .card-header {
+    padding-right: 70px !important;
+    margin-bottom: 14px;
+  }
+
+  .card-fav-compare-actions {
+    top: 18px;
+    right: 14px;
+  }
+
+  /* --- Library Grid: single column on small phones --- */
+  .library-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .category-tools-grid,
+  .category-group-grid,
+  .learning-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* --- Category Explorer: full stack --- */
+  .category-explorer-container {
+    flex-direction: column !important;
+    gap: 20px !important;
+    margin-top: 20px;
+  }
+
+  .category-sidebar {
+    width: 100% !important;
+  }
+
+  /* --- Library Toolbar --- */
+  .library-controls-panel {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+
+  .control-group {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .library-filter-chips {
+    justify-content: flex-start;
+  }
+
+  /* --- Section headings --- */
+  .section-title {
+    font-size: 1.8rem !important;
+  }
+
+  /* --- Drawer: full screen on small phones --- */
+  .drawer-content {
+    max-width: 100% !important;
+    border-left: none !important;
+  }
+
+  .drawer-header {
+    padding: 16px !important;
+  }
+
+  .drawer-body {
+    padding: 16px !important;
+    gap: 24px !important;
+  }
+
+  .drawer-footer {
+    padding: 16px !important;
+  }
+
+  .drawer-title {
+    font-size: 1.6rem !important;
+  }
+
+  .spec-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* --- About section --- */
+  .about-container {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    margin-top: 20px;
+  }
+
+  .metric-val {
+    font-size: 2.2rem !important;
+  }
+
+  /* --- Footer --- */
+  .footer-container {
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  /* --- Banner ads --- */
+  .banner-ad-top {
+    margin-top: 80px !important;
+  }
+
+  /* --- Native ads --- */
+  .native-section-ad {
+    padding: 14px !important;
+    margin: 20px 0 !important;
+  }
+
+  /* --- Filter nav on roadmap --- */
+  .filter-nav {
+    display: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   LARGE PHONES: 481px – 768px
+   iPhone 12/13/14, Pixel, Galaxy standard sizes
+   ------------------------------------------------------------------------- */
+@media (min-width: 481px) and (max-width: 768px) {
+
+  /* --- Header --- */
+  .header-container {
+    padding: 0 20px;
+  }
+
+  /* --- Hero --- */
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  /* --- Dashboard Controls --- */
+  .dashboard-controls {
+    margin-top: 90px !important;
+    padding: 16px 20px !important;
+  }
+
+  .controls-inputs-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  /* The compile button spans full width */
+  .controls-inputs-grid > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .control-dropdown-select,
+  .control-select,
+  .wizard-select,
+  .btn,
+  #control-compile-btn {
+    min-height: 50px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* --- Timeline --- */
+  .timeline-list {
+    gap: 80px !important;
+  }
+
+  .timeline-card,
+  .library-item-card {
+    min-height: auto !important;
+    padding: 22px 18px !important;
+  }
+
+  .card-title {
+    font-size: 1.25rem !important;
+  }
+
+  /* --- Library Grid: 1 column --- */
+  .library-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .category-tools-grid,
+  .category-group-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  /* --- Section --- */
+  .app-section {
+    padding: 50px 0 !important;
+  }
+
+  /* --- Filter nav on roadmap --- */
+  .filter-nav {
+    display: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   TABLETS: 769px – 1024px
+   iPad, Galaxy Tab, Surface
+   ------------------------------------------------------------------------- */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  /* --- Hero --- */
+  .hero h1 {
+    font-size: 2.8rem;
+  }
+
+  /* --- Dashboard Controls --- */
+  .controls-inputs-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* Compile button spans last 2 cols */
+  .controls-inputs-grid > div:nth-child(4),
+  .controls-inputs-grid > div:last-child {
+    grid-column: auto;
+  }
+
+  /* --- Timeline --- */
+  .timeline-list {
+    gap: 100px !important;
+  }
+
+  /* Single-column timeline */
+  .timeline-row {
+    grid-template-columns: var(--road-width) 1fr !important;
+    gap: 20px !important;
+  }
+
+  .timeline-dot-anchor {
+    grid-column: 1 !important;
+  }
+
+  .timeline-row.left .timeline-card,
+  .timeline-row.right .timeline-card {
+    grid-column: 2 !important;
+    justify-self: stretch !important;
+  }
+
+  /* --- Library Grid: 2-column on tablet --- */
+  .library-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .category-tools-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Touch targets */
   .control-dropdown-select,
   .control-select,
   .wizard-select,
   .btn,
   #control-compile-btn {
     min-height: 48px !important;
-    height: 48px !important;
     font-size: 0.95rem !important;
   }
 
-  /* Increase spacing and prevent cards from touching screen edges */
-  .app-layout-wrapper {
-    padding: 0 30px !important;
+  /* --- Category explorer --- */
+  .category-explorer-container {
+    flex-direction: column !important;
+    gap: 24px !important;
   }
 
-  .timeline-container {
-    padding: 40px 16px 80px !important;
+  .category-sidebar {
+    width: 100% !important;
+  }
+
+  /* Allow category list to go horizontal on tablet */
+  .category-list {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .category-item {
+    width: auto !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   ALL TOUCH DEVICES (≤ 1024px) — Universal rules
+   ------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+
+  /* Single-column timeline (road on left) */
+  :root {
+    --road-width: 52px;
+  }
+
+  .timeline-row {
+    grid-template-columns: var(--road-width) 1fr;
+    gap: 20px;
+  }
+
+  .timeline-dot-anchor {
+    grid-column: 1;
+  }
+
+  .timeline-spacer {
+    display: none;
+  }
+
+  .timeline-row.left .timeline-card,
+  .timeline-row.right .timeline-card {
+    grid-column: 2;
+    justify-self: stretch;
   }
 
   .timeline-card {
     max-width: 100%;
-    margin-bottom: 24px;
-    padding: 24px 20px;
+    min-height: auto;
   }
 
-  /* Typography overflows & badge overlays prevention */
+  /* Typography */
+  .card-title {
+    font-size: 1.35rem;
+    line-height: 1.4;
+  }
+
+  .card-desc,
+  .card-detail-value,
+  .drawer-description-text {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  /* Card badges: wrap nicely */
   .card-badges {
-    display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 12px;
   }
 
   .card-badge {
-    white-space: normal; /* allow badge text wrapping */
+    white-space: normal;
     text-align: center;
     line-height: 1.3;
     padding: 4px 10px;
   }
 
-  .card-title {
-    font-size: 1.35rem !important;
-    line-height: 1.4;
-    word-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
+  /* --- Header & Nav --- */
+  .header-container {
+    padding: 0 20px;
   }
 
-  .card-detail-value,
-  .card-desc,
-  .drawer-description-text {
-    font-size: 0.88rem !important;
-    line-height: 1.5;
-    white-space: normal;
+  /* --- Sections --- */
+  .app-section {
+    padding: 60px 0;
   }
 
-  /* Universal container wrapper to enforce no horizontal scroll */
-  body, html {
-    overflow-x: hidden !important;
-    max-width: 100vw;
-    width: 100%;
-    position: relative;
+  .timeline-container {
+    padding: 60px 12px 100px;
+  }
+
+  /* --- Drawer --- */
+  .drawer-content {
+    max-width: 100%;
+  }
+
+  .drawer-header {
+    padding: 20px;
+  }
+
+  .drawer-body {
+    padding: 20px;
+    gap: 30px;
+  }
+
+  .drawer-footer {
+    padding: 20px;
+  }
+
+  .spec-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* --- About section --- */
+  .about-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  /* --- Footer --- */
+  .footer-container {
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  /* --- Pricing grid --- */
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* --- Filter nav hide on small screens --- */
+  .filter-nav {
+    display: none;
   }
 }
+
+/* -------------------------------------------------------------------------
+   SMALL DESKTOP / BETWEEN TABLET AND SIDEBAR AD BREAKPOINT: 1025px – 1199px
+   No sidebar ads, full-width main content with comfortable padding
+   ------------------------------------------------------------------------- */
+@media (min-width: 1025px) and (max-width: 1199px) {
+  .app-layout-wrapper {
+    grid-template-columns: 1fr;
+    padding: 0 40px;
+  }
+
+  .sidebar-ad {
+    display: none !important;
+  }
+
+  .timeline-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Restore desktop alternating left/right timeline */
+  .timeline-row {
+    grid-template-columns: 1fr var(--road-width) 1fr;
+    gap: 0;
+  }
+
+  .timeline-dot-anchor {
+    grid-column: 2;
+  }
+
+  .timeline-spacer {
+    display: block;
+  }
+
+  .timeline-row.left .timeline-card {
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .timeline-row.right .timeline-card {
+    grid-column: 3;
+    justify-self: start;
+  }
+
+  :root {
+    --road-width: 100px;
+    --card-width: 400px;
+  }
+
+  /* Library stays 2-col at this size */
+  .library-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   DESKTOP: 1200px+  — Full 3-column layout with sidebar ads
+   ------------------------------------------------------------------------- */
+@media (min-width: 1200px) {
+  :root {
+    --road-width: 120px;
+    --card-width: 480px;
+  }
+
+  .timeline-container {
+    max-width: 1200px;
+  }
+
+  /* Restore desktop alternating left/right */
+  .timeline-row {
+    grid-template-columns: 1fr var(--road-width) 1fr;
+    gap: 0;
+  }
+
+  .timeline-dot-anchor {
+    grid-column: 2;
+  }
+
+  .timeline-spacer {
+    display: block;
+  }
+
+  .timeline-row.left .timeline-card {
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .timeline-row.right .timeline-card {
+    grid-column: 3;
+    justify-self: start;
+  }
+
+  /* Filter nav visible on desktop */
+  .filter-nav {
+    display: flex;
+  }
+
+  /* Library 3-column grid on wide screens */
+  .library-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  /* Category tools grid */
+  .category-tools-grid,
+  .category-group-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* -------------------------------------------------------------------------
+   LARGE DESKTOP: 1400px+ — Wider max container
+   ------------------------------------------------------------------------- */
+@media (min-width: 1400px) {
+  .timeline-container {
+    max-width: 1200px;
+    padding: 100px 40px 200px;
+  }
+
+  :root {
+    --card-width: 500px;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   ACCESSIBILITY: Reduced Motion
+   Respect users who prefer no animations
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .traveler {
+    transition: none !important;
+  }
+
+  .road-progress {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   PERFORMANCE: Content visibility for below-fold sections
+   ------------------------------------------------------------------------- */
+#explore-library-section,
+#category-explorer-section,
+#about-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
+}
+
