@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KRONOS // Monotone AI Toolchain Suite</title>
-  <meta name="description" content="A curated vertical timeline of advanced AI nodes, engineered for modern workflows. Built with a minimalist grayscale road layout.">
+  <title>AI-OS By Anuj // Artificial Intelligence Overall Solutions</title>
+  <meta name="description" content="AI-OS is a practical AI execution operating system that helps users accomplish real-world goals using the best AI tools available.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -29,46 +29,78 @@
   <!-- Fullscreen Wizard Overlay -->
   <!-- Main Content Wrapper (shown by default) -->
   <div class="main-content-wrapper active" id="main-content-wrapper">
+ 
+   <!-- Header / Navigation -->
+   <header class="app-header">
+     <div class="header-container">
+       <div class="logo">
+         <span class="logo-symbol">●</span>
+         <div class="logo-text-group">
+           <span class="logo-text">AI-OS</span>
+           <span class="logo-subtitle">By Anuj</span>
+         </div>
+       </div>
+       
+       <nav class="main-nav">
+         <a href="#dashboard-controls" class="nav-link active" data-target="dashboard-controls">Dashboard</a>
+         <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section">Roadmaps</a>
+         <a href="#explore-library-section" class="nav-link" data-target="explore-library-section">Explore Tools</a>
+         <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section">Categories</a>
+         <a href="#about-section" class="nav-link" data-target="about-section">About</a>
+       </nav>
+ 
+       <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+         <button id="theme-toggle" aria-label="Toggle monochrome theme">
+           <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <circle cx="12" cy="12" r="5"></circle>
+             <line x1="12" y1="1" x2="12" y2="3"></line>
+             <line x1="12" y1="21" x2="12" y2="23"></line>
+             <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+             <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+             <line x1="1" y1="12" x2="3" y2="12"></line>
+             <line x1="21" y1="12" x2="23" y2="12"></line>
+             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+           </svg>
+           <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+           </svg>
+         </button>
+       </div>
+       
+       <button class="hamburger-toggle" id="hamburger-toggle" aria-label="Toggle menu">
+         <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+           <line x1="3" y1="12" x2="21" y2="12" class="line-mid"></line>
+           <line x1="3" y1="6" x2="21" y2="6" class="line-top"></line>
+           <line x1="3" y1="18" x2="21" y2="18" class="line-bot"></line>
+         </svg>
+       </button>
+     </div>
+   </header>
+   <div id="mobile-nav-overlay" class="mobile-nav-overlay"></div>
 
-  <!-- Header / Navigation -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="logo">
-        <span class="logo-symbol">●</span>
-        <div class="logo-text-group">
-          <span class="logo-text">AI-OS</span>
-          <span class="logo-subtitle">By Anuj</span>
+  <!-- Top Responsive Banner Ad -->
+  <div class="banner-ad banner-ad-top">
+    <span class="ad-tag">SPONSORED ADVERTISEMENT</span>
+    <div class="banner-ad-content">
+      <strong>Google Workspace:</strong> Plan, write, and organize your files with cloud-synced Google Docs and Drive. <a href="https://workspace.google.com" target="_blank" rel="noopener">Get Started</a>
+    </div>
+  </div>
+
+  <div class="app-layout-wrapper">
+    <!-- Left Sticky Sidebar Ad (Desktop Only) -->
+    <aside class="sidebar-ad sidebar-ad-left">
+      <div class="ad-placeholder-sticky">
+        <span class="ad-tag">SPONSORED</span>
+        <div class="ad-content-box">
+          <h4>Claude 3.5 Sonnet</h4>
+          <p>Accelerate coding tasks, design systems, and generate templates with Claude.</p>
+          <a href="https://anthropic.com" target="_blank" rel="noopener" class="ad-cta">Try Claude</a>
         </div>
       </div>
-      
-      <nav class="main-nav">
-        <a href="#dashboard-controls" class="nav-link active" data-target="dashboard-controls">Dashboard</a>
-        <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section">Roadmaps</a>
-        <a href="#explore-library-section" class="nav-link" data-target="explore-library-section">Explore Tools</a>
-        <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section">Categories</a>
-        <a href="#about-section" class="nav-link" data-target="about-section">About</a>
-      </nav>
+    </aside>
 
-      <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
-        <button id="theme-toggle" aria-label="Toggle monochrome theme">
-          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
+    <main class="app-main-content">
 
   <!-- Persistent Controls Dashboard Toolbar -->
   <section class="dashboard-controls" id="dashboard-controls" style="margin-top: 100px; padding: 20px 40px; z-index: 10; position: relative;">
@@ -84,20 +116,20 @@
           <div class="select-wrap" style="position: relative;">
             <select id="control-task-select" class="control-dropdown-select" style="width: 100%; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 0.9rem; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); outline: none;">
               <option value="Exploring AI" selected>Exploring AI</option>
-              <option value="Generating Video">Generating Video</option>
-              <option value="Generating Images">Generating Images</option>
-              <option value="Designing">Designing</option>
-              <option value="Coding">Coding</option>
-              <option value="Building Apps">Building Apps</option>
-              <option value="Tips to Earn Money">Tips to Earn Money</option>
-              <option value="Music Making">Music Making</option>
-              <option value="Voice Over Generation">Voice Over Generation</option>
-              <option value="Brand Building">Brand Building</option>
-              <option value="Personal AI Building">Personal AI Building</option>
-              <option value="Help in Video Editing">Help in Video Editing</option>
-              <option value="Help in Music Editing">Help in Music Editing</option>
-              <option value="Writing Work">Writing Work</option>
-              <option value="Hardware Building">Hardware Building</option>
+              <option value="Generating Video">Generate a Complete AI Video</option>
+              <option value="Generating Images">Generate Professional AI Images</option>
+              <option value="Designing">Create Digital Designs Using AI</option>
+              <option value="Coding">Build Software Using AI</option>
+              <option value="Building Apps">Build Android Application</option>
+              <option value="Tips to Earn Money">Monetize AI Skills</option>
+              <option value="Music Making">Create Music Using AI</option>
+              <option value="Voice Over Generation">Generate Professional Voice Over</option>
+              <option value="Brand Building">Build a Brand Using AI</option>
+              <option value="Personal AI Building">Build a Personal AI Assistant</option>
+              <option value="Help in Video Editing">Edit Video Production Using AI</option>
+              <option value="Help in Music Editing">Enhance & Edit Audio Tracks</option>
+              <option value="Writing Work">Generate Copy & Written Content</option>
+              <option value="Hardware Building">Design and Prototype Hardware</option>
             </select>
           </div>
         </div>
@@ -107,12 +139,11 @@
           <label class="control-label-style" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary); font-weight: 700; text-transform: uppercase;">2. Budget limit</label>
           <div class="select-wrap" style="position: relative;">
             <select id="control-budget-select" class="control-dropdown-select" style="width: 100%; height: 44px; padding: 0 12px; border-radius: 6px; font-size: 0.9rem; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); outline: none;">
-              <option value="0">$0 Free</option>
-              <option value="20">$10-$20 Starter</option>
-              <option value="100" selected>$20-$100 Growth</option>
-              <option value="500">$100-$500 Professional</option>
-              <option value="1000">$500-$1000 Advanced</option>
-              <option value="100000">$1000+ Enterprise</option>
+              <option value="0">₹0 Free</option>
+              <option value="20" selected>₹10-₹20 Starter</option>
+              <option value="500">₹100-₹500 Professional</option>
+              <option value="1000">₹500-₹1000 Advanced</option>
+              <option value="100000">₹1000+ Enterprise</option>
             </select>
           </div>
         </div>
@@ -151,6 +182,21 @@
       </div>
     </div>
   </section>
+
+  <!-- Native Ad 1: Between Dashboard Controls and Roadmap Builder -->
+  <div class="native-section-ad">
+    <span class="ad-tag">SPONSORED COGNITIVE NODE</span>
+    <div class="native-ad-body">
+      <div class="native-ad-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      </div>
+      <div class="native-ad-text">
+        <h4>Host Your AI Apps on DigitalOcean</h4>
+        <p>Get $200 free credit to deploy Next.js servers, databases, and Python AI models in seconds.</p>
+      </div>
+      <a href="https://digitalocean.com" target="_blank" rel="noopener" class="native-ad-btn">Claim Credit</a>
+    </div>
+  </div>
 
   <!-- Section 1: Roadmap Builder -->
   <section id="roadmap-builder-section" class="app-section">
@@ -207,6 +253,21 @@
       </div>
     </div>
   </section>
+
+  <!-- Native Ad 2: Between Roadmap Builder and Explore Library -->
+  <div class="native-section-ad">
+    <span class="ad-tag">SPONSORED INTEGRATION</span>
+    <div class="native-ad-body">
+      <div class="native-ad-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+      </div>
+      <div class="native-ad-text">
+        <h4>Automate Workflows with Zapier AI</h4>
+        <p>Connect ChatGPT, Claude, and Google Sheets into automated multi-step trigger pipelines without coding.</p>
+      </div>
+      <a href="https://zapier.com" target="_blank" rel="noopener" class="native-ad-btn">Automate Now</a>
+    </div>
+  </div>
 
   <!-- Section 2: Explore Library -->
   <section id="explore-library-section" class="app-section">
@@ -325,8 +386,8 @@
 
     <div class="about-container">
       <div class="about-text-block">
-        <p>AI-OS stands for <strong>Artificial Intelligence Overall Solution</strong>. We are a <strong>lifetime free educational platform</strong> built to help you learn about AI and find the best AI tools for your specific needs. Our goal is to make artificial intelligence easy to understand for everyone—from absolute beginners to advanced developers and creators.</p>
-        <p>Whether you want to automate everyday tasks, generate creative videos and images, or write code, you can easily discover the right tools for your use case. You can explore our extensive database, build custom step-by-step roadmaps tailored to your budget, copy ready-to-use master prompts, and experiment with interactive sandboxes to see how different AI systems work.</p>
+        <p>AI-OS stands for <strong>Artificial Intelligence Overall Solutions</strong>. It is a practical AI execution operating system designed to help users accomplish real-world goals using the best AI tools available.</p>
+        <p>Whether you want to generate creative videos, build applications, draft code, or automate complex business workflows, AI-OS instantly compiles optimized workflow roadmaps, provides single universal master prompts, and recommends world-class tool chains. There are no course syllabus plans, theory chapters, or certification checkpoints here—only pure, step-by-step execution guides to help you achieve your objective.</p>
       </div>
       <div class="about-grid-metrics">
         <div class="metric-box">
@@ -340,6 +401,29 @@
       </div>
     </div>
   </section>
+
+    </main>
+
+    <!-- Right Sticky Sidebar Ad (Desktop Only) -->
+    <aside class="sidebar-ad sidebar-ad-right">
+      <div class="ad-placeholder-sticky">
+        <span class="ad-tag">SPONSORED</span>
+        <div class="ad-content-box">
+          <h4>Cursor Editor</h4>
+          <p>The AI-first code editor designed for pair programming and editing files.</p>
+          <a href="https://cursor.sh" target="_blank" rel="noopener" class="ad-cta">Download</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Bottom Responsive Banner Ad -->
+  <div class="banner-ad banner-ad-bottom">
+    <span class="ad-tag">SPONSORED ADVERTISEMENT</span>
+    <div class="banner-ad-content">
+      <strong>OpenAI Enterprise:</strong> Empower your team with ChatGPT Plus at scale. <a href="https://openai.com" target="_blank" rel="noopener">Learn More</a>
+    </div>
+  </div>
 
   <!-- Centered Footer -->
   <footer class="app-footer" style="text-align: center; border-top: 1px solid var(--border-color);">

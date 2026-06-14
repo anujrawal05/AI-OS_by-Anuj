@@ -1336,7 +1336,7 @@ button, input, select, textarea {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   :root {
     --card-width: 100%;
     --road-width: 60px;
@@ -1735,7 +1735,7 @@ button, input, select, textarea {
   gap: 8px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .budget-tiers-grid {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
@@ -2195,7 +2195,7 @@ button, input, select, textarea {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .app-section {
     padding: 60px 20px;
   }
@@ -3025,4 +3025,451 @@ select option {
   color: #ffffff !important;
   border-color: #34c759 !important;
   font-weight: bold;
+}
+
+.control-dropdown-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--card-bg) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* ==========================================================================
+   MOBILE & DESKTOP AD LAYOUT OPTIMIZATIONS
+   ========================================================================== */
+
+/* Centered content layout wrapper limiting desktop page width */
+.app-layout-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 1600px;
+  margin: 0 auto;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0 40px; /* preferredMargin: 40px */
+}
+
+.app-main-content {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Three-column layout on wide screens */
+@media (min-width: 1200px) {
+  .app-layout-wrapper {
+    grid-template-columns: 200px 1fr 200px;
+    gap: 40px;
+  }
+}
+
+/* Sidebar Ads: Desktop Only and Sticky */
+.sidebar-ad {
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1200px) {
+  .sidebar-ad {
+    display: block;
+    position: sticky;
+    top: 100px; /* aligns below header */
+    height: 600px;
+    align-self: start;
+    z-index: 5;
+  }
+}
+
+.ad-placeholder-sticky {
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  background: var(--card-bg);
+  padding: 16px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.ad-placeholder-sticky .ad-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+
+.ad-content-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.ad-content-box h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 8px;
+}
+
+.ad-content-box p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.ad-cta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  margin-top: auto;
+}
+
+.ad-cta:hover {
+  background: var(--text-primary);
+  color: var(--bg-color);
+  border-color: var(--text-primary);
+}
+
+/* Banner Ads: Responsive Banners on Top & Bottom */
+.banner-ad {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 14px 24px;
+  border: 1px dashed var(--border-color);
+  background: rgba(var(--accent-color), 0.02);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.banner-ad-top {
+  margin-top: 100px; /* spacing below fixed header */
+}
+
+.banner-ad-bottom {
+  margin-bottom: 50px; /* spacing above footer */
+}
+
+.banner-ad .ad-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.banner-ad-content {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.banner-ad-content a {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  margin-left: 6px;
+}
+
+@media (max-width: 1024px) {
+  .banner-ad {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 20px auto;
+    padding: 16px;
+  }
+}
+
+/* Native Inline Section Ads */
+.native-section-ad {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin: 35px 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.native-section-ad:hover {
+  border-color: var(--text-secondary);
+}
+
+.native-section-ad .ad-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.native-ad-body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.native-ad-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(var(--accent-color), 0.08);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.native-ad-text {
+  flex-grow: 1;
+}
+
+.native-ad-text h4 {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.native-ad-text p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.native-ad-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.native-ad-btn:hover {
+  background: var(--text-primary);
+  color: var(--bg-color);
+  border-color: var(--text-primary);
+}
+
+@media (max-width: 1024px) {
+  .native-ad-body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .native-ad-btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   MOBILE HAMBURGER MENU & RESPONSIVE TYPOGRAPHY
+   ========================================================================== */
+
+/* Hamburger menu button toggle style */
+.hamburger-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  z-index: 110;
+  outline: none;
+  border-radius: 6px;
+  transition: background-color var(--transition-fast);
+}
+
+.hamburger-toggle:hover {
+  background-color: var(--input-bg);
+}
+
+.hamburger-icon line {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hamburger-toggle.active .line-mid {
+  opacity: 0;
+}
+
+.hamburger-toggle.active .line-top {
+  transform: translateY(6px) rotate(45deg);
+  transform-origin: center;
+}
+
+.hamburger-toggle.active .line-bot {
+  transform: translateY(-6px) rotate(-45deg);
+  transform-origin: center;
+}
+
+/* Backdrop Blur Overlay when Hamburger Menu is active */
+.mobile-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 104;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.mobile-nav-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Media Query: Tablets & Mobile collapsing links to drawer */
+@media (max-width: 1024px) {
+  .hamburger-toggle {
+    display: flex;
+  }
+  
+  .main-nav {
+    position: fixed;
+    top: 0;
+    right: -100%; /* completely offscreen */
+    width: 290px;
+    height: 100vh;
+    background-color: var(--bg-color);
+    border-left: 1px solid var(--border-color);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 100px 30px 40px;
+    gap: 28px;
+    z-index: 105;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+  }
+  
+  .main-nav.mobile-active {
+    right: 0; /* slide in smoothly */
+  }
+
+  .nav-link {
+    font-size: 1.15rem;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    display: block;
+    text-align: left;
+  }
+}
+
+/* Media Query: Touch targets & mobile optimization fixes */
+@media (max-width: 1024px) {
+  /* Enforce touch-friendly tap heights */
+  .control-dropdown-select,
+  .control-select,
+  .wizard-select,
+  .btn,
+  #control-compile-btn {
+    min-height: 48px !important;
+    height: 48px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Increase spacing and prevent cards from touching screen edges */
+  .app-layout-wrapper {
+    padding: 0 30px !important;
+  }
+
+  .timeline-container {
+    padding: 40px 16px 80px !important;
+  }
+
+  .timeline-card {
+    max-width: 100%;
+    margin-bottom: 24px;
+    padding: 24px 20px;
+  }
+
+  /* Typography overflows & badge overlays prevention */
+  .card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .card-badge {
+    white-space: normal; /* allow badge text wrapping */
+    text-align: center;
+    line-height: 1.3;
+    padding: 4px 10px;
+  }
+
+  .card-title {
+    font-size: 1.35rem !important;
+    line-height: 1.4;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .card-detail-value,
+  .card-desc,
+  .drawer-description-text {
+    font-size: 0.88rem !important;
+    line-height: 1.5;
+    white-space: normal;
+  }
+
+  /* Universal container wrapper to enforce no horizontal scroll */
+  body, html {
+    overflow-x: hidden !important;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
+  }
 }

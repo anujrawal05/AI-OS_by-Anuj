@@ -89,7 +89,7 @@ function drawRoad() {
   // Set viewport width/height attributes for SVG scale mapping
   roadSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   
-  const isMobile = window.innerWidth <= 768;
+  const isMobile = window.innerWidth <= 1024;
   const amplitude = isMobile ? 12 : 75; // Road bend amplitude
   
   // Gather active (visible) anchor points
@@ -389,7 +389,7 @@ function openDrawer(nodeIdx) {
           <h5 class="alternative-card-title">${altTool.name}</h5>
         </div>
         <p class="alternative-card-desc">${altTool.description || altTool.desc}</p>
-        <span class="alternative-card-price">${altTool.pricing}</span>
+        <span class="alternative-card-price">${(altTool.pricing || '').replace('$', '₹')}</span>
       `;
       altCard.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1099,87 +1099,7 @@ function setupEventListeners() {
       });
     }
 
-    const tabBtn = e.target.closest('.course-tab-btn');
-    if (tabBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      const tabName = tabBtn.getAttribute('data-tab');
-      const card = tabBtn.closest('.timeline-card') || tabBtn.closest('.library-item-card');
-      if (card) {
-        card.querySelectorAll('.course-tab-btn').forEach(btn => {
-          btn.classList.toggle('active', btn === tabBtn);
-        });
-        card.querySelectorAll('.course-tab-content').forEach(content => {
-          const contentName = content.getAttribute('data-content');
-          content.style.display = (contentName === tabName) ? 'block' : 'none';
-          content.classList.toggle('active', contentName === tabName);
-        });
-      }
-    }
 
-    const quizOptBtn = e.target.closest('.quiz-opt-btn');
-    if (quizOptBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      const isCorrect = quizOptBtn.getAttribute('data-correct') === 'true';
-      const container = quizOptBtn.closest('.quiz-container');
-      if (container) {
-        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
-          btn.style.borderColor = 'var(--border-color)';
-          btn.style.background = 'var(--input-bg)';
-          btn.style.fontWeight = 'normal';
-        });
-
-        const activeLang = getActiveLanguage();
-        const labels = translationDB[activeLang] || translationDB["Hinglish"];
-        const feedbackBox = container.querySelector('.quiz-feedback-box');
-        const feedbackMsg = container.querySelector('.feedback-msg');
-
-        if (isCorrect) {
-          quizOptBtn.style.borderColor = '#34c759';
-          quizOptBtn.style.background = 'rgba(52, 199, 89, 0.08)';
-          quizOptBtn.style.fontWeight = '700';
-          
-          if (feedbackBox && feedbackMsg) {
-            feedbackBox.style.display = 'block';
-            feedbackBox.style.border = '1px solid #34c759';
-            feedbackBox.style.background = 'rgba(52, 199, 89, 0.04)';
-            feedbackMsg.style.color = '#34c759';
-            feedbackMsg.textContent = labels.correctFeedback || (activeLang === 'Hindi' ? "सही उत्तर! बहुत बढ़िया।" : activeLang === 'Hinglish' ? "Sahi Jawaab! Bahut badhiya." : "CORRECT! Great job.");
-          }
-          showToast(activeLang === 'Hindi' ? "सही जवाब!" : activeLang === 'Hinglish' ? "Sahi Jawaab!" : "Correct Answer!");
-        } else {
-          quizOptBtn.style.borderColor = '#ff453a';
-          quizOptBtn.style.background = 'rgba(255, 69, 58, 0.08)';
-          quizOptBtn.style.fontWeight = '700';
-          
-          if (feedbackBox && feedbackMsg) {
-            feedbackBox.style.display = 'block';
-            feedbackBox.style.border = '1px solid #ff453a';
-            feedbackBox.style.background = 'rgba(255, 69, 58, 0.04)';
-            feedbackMsg.style.color = '#ff453a';
-            feedbackMsg.textContent = labels.incorrectFeedback || (activeLang === 'Hindi' ? "गलत उत्तर। कृपया अध्याय को फिर से पढ़ें और पुन: प्रयास करें!" : activeLang === 'Hinglish' ? "Galat Jawaab. Ek baar phir se read karke try karein!" : "INCORRECT. Please review the lesson and try again!");
-          }
-          showToast(activeLang === 'Hindi' ? "गलत जवाब" : activeLang === 'Hinglish' ? "Galat Jawaab" : "Incorrect Answer");
-        }
-      }
-    }
-
-    const completedBtn = e.target.closest('.topic-completed-btn');
-    if (completedBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      const isCompleted = completedBtn.classList.toggle('completed');
-      const activeLang = getActiveLanguage();
-      
-      if (isCompleted) {
-        completedBtn.textContent = activeLang === 'Hindi' ? "अध्याय पूर्ण ✓" : activeLang === 'Hinglish' ? "Topic Completed ✓" : "Topic Completed ✓";
-        showToast(activeLang === 'Hindi' ? "विषय पूर्ण के रूप में चिह्नित किया गया" : activeLang === 'Hinglish' ? "Topic completed mark kiya" : "Topic marked as completed");
-      } else {
-        completedBtn.textContent = activeLang === 'Hindi' ? "पूर्ण चिह्नित करें" : activeLang === 'Hinglish' ? "Mark Topic Complete" : "Mark Topic Complete";
-        showToast(activeLang === 'Hindi' ? "अपूर्ण के रूप में चिह्नित" : activeLang === 'Hinglish' ? "Uncompleted mark kiya" : "Marked as uncompleted");
-      }
-    }
   });
 }
 
@@ -1717,122 +1637,252 @@ const stepsTranslation = {
   }
 };
 
-const goalWorkflows = {
-  "Generating Video": ["Flow AI", "Video Enhancement", "Publishing"],
-  "Generating Images": ["Flow AI Image Generation", "Image Refinement", "Export"],
-  "Designing": ["Canva AI", "Design Refinement", "Export Assets"],
-  "Coding": ["Antigravity 2.0 or Claude", "Code Development", "Testing", "Deployment"],
-  "Building Apps": ["Android Studio Installation", "Environment Setup", "Project Creation", "Development", "Testing", "APK Generation", "Deployment"],
-  "Tips to Earn Money": ["Earning Platform", "Monetization Tool", "Marketing Tool", "Automation Tool"],
-  "Music Making": ["Suno or ElevenLabs", "Audio Enhancement", "Publishing"],
-  "Voice Over Generation": ["ElevenLabs", "Voice Enhancement", "Export Audio"],
-  "Brand Building": ["Logo Generator", "Branding Assistant", "Marketing Tool", "Collaboration Tool"],
-  "Personal AI Building": ["Download Antigravity 2.0", "Installation", "Configuration", "Build Personal AI", "Testing", "Optimization"],
-  "Help in Video Editing": ["Video Editor", "Audio Enhancement Tool", "Publishing Tool"],
-  "Help in Music Editing": ["Audio Enhancement Tool", "Distribution Tool", "Collaboration Tool"],
-  "Writing Work": ["Google Docs", "ChatGPT", "Editor"],
-  "Hardware Building": ["IoT Platform", "IoT Design", "Predictive Maintenance"]
+const taskToolMatrix = {
+  "Exploring AI": ["ChatGPT", "Gemini", "Claude", "Perplexity", "NotebookLM"],
+  "Generate a Complete AI Video": ["Google Docs", "ChatGPT", "Flow AI", "Google Veo", "Runway", "Kling AI", "ElevenLabs", "CapCut"],
+  "Generate Professional AI Images": ["Google Docs", "ChatGPT", "Google Imagen", "Midjourney", "Adobe Firefly", "Flux", "Canva AI"],
+  "Create Digital Designs Using AI": ["Google Docs", "ChatGPT", "Canva AI", "Adobe Firefly", "Figma AI", "Ideogram"],
+  "Build Software Using AI": ["Google Docs", "ChatGPT", "Claude", "Cursor", "GitHub Copilot", "Windsurf", "Antigravity 2.0"],
+  "Build Android Application": ["Google Docs", "ChatGPT", "Android Studio", "Claude", "Cursor", "GitHub Copilot"],
+  "Monetize AI Skills": ["ChatGPT", "Claude", "Canva AI", "Flow AI", "Suno", "Fiverr Strategy", "LinkedIn"],
+  "Create Music Using AI": ["Google Docs", "ChatGPT", "Suno", "ElevenLabs", "Audacity", "Adobe Podcast"],
+  "Generate Professional Voice Over": ["Google Docs", "ChatGPT", "ElevenLabs", "PlayHT", "Adobe Podcast"],
+  "Build a Brand Using AI": ["ChatGPT", "Canva AI", "Claude", "Midjourney", "Flow AI", "Buffer"],
+  "Build a Personal AI Assistant": ["Google Docs", "ChatGPT", "Antigravity 2.0", "Claude", "Ollama", "Open WebUI"],
+  "Edit Video Production Using AI": ["CapCut", "Runway", "Flow AI", "Adobe Premiere Pro", "Descript"],
+  "Enhance & Edit Audio Tracks": ["Adobe Podcast", "ElevenLabs", "Audacity", "Suno", "Descript"],
+  "Generate Copy & Written Content": ["Google Docs", "ChatGPT", "Claude", "Gemini", "Grammarly"],
+  "Design and Prototype Hardware": ["Google Docs", "ChatGPT", "Claude", "Arduino IDE", "Proteus", "KiCad", "Verilog HDL Tools"]
 };
 
-function findToolForStep(stepName, budgetLimit, goal = '') {
-  const nameLower = stepName.toLowerCase();
-  const goalLower = (goal || "").toLowerCase();
-  let matchedTool = null;
+const topAIToolsDatabase = {
+  "LLMs": ["ChatGPT", "Claude", "Gemini", "Perplexity", "NotebookLM"],
+  "Coding": ["Claude", "Cursor", "GitHub Copilot", "Windsurf", "Antigravity 2.0", "Codeium"],
+  "Video": ["Flow AI", "Google Veo", "Runway", "Kling AI", "Pika", "Luma Dream Machine"],
+  "Image": ["Midjourney", "Google Imagen", "Adobe Firefly", "Flux", "Ideogram", "Canva AI"],
+  "Voice": ["ElevenLabs", "PlayHT", "Murf AI"],
+  "Music": ["Suno", "AIVA", "Udio"],
+  "Design": ["Canva AI", "Adobe Firefly", "Figma AI", "Ideogram"],
+  "Productivity": ["Notion AI", "Motion", "Reclaim", "Zapier", "ClickUp AI"]
+};
+
+const toolSelectionRules = {
+  "Beginner": {
+    "priority": "Ease of use",
+    "workflowLength": "Detailed",
+    "toolComplexity": "Low"
+  },
+  "Intermediate": {
+    "priority": "Balance",
+    "workflowLength": "Moderate",
+    "toolComplexity": "Medium"
+  },
+  "Advanced": {
+    "priority": "Performance",
+    "workflowLength": "Concise",
+    "toolComplexity": "High"
+  }
+};
+
+const optionToMatrixKey = {
+  "Exploring AI": "Exploring AI",
+  "Generating Video": "Generate a Complete AI Video",
+  "Generating Images": "Generate Professional AI Images",
+  "Designing": "Create Digital Designs Using AI",
+  "Coding": "Build Software Using AI",
+  "Building Apps": "Build Android Application",
+  "Tips to Earn Money": "Monetize AI Skills",
+  "Music Making": "Create Music Using AI",
+  "Voice Over Generation": "Generate Professional Voice Over",
+  "Brand Building": "Build a Brand Using AI",
+  "Personal AI Building": "Build a Personal AI Assistant",
+  "Help in Video Editing": "Edit Video Production Using AI",
+  "Help in Music Editing": "Enhance & Edit Audio Tracks",
+  "Writing Work": "Generate Copy & Written Content",
+  "Hardware Building": "Design and Prototype Hardware"
+};
+
+function generateDynamicWorkflow(goalText, budgetLimit, experienceLevel) {
+  const taskKey = optionToMatrixKey[goalText] || goalText;
+  let candidates = taskToolMatrix[taskKey] || taskToolMatrix["Generate a Complete AI Video"];
   
-  if (goalLower === "personal ai building") {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("antigravity"));
-  } else if (goalLower === "building apps") {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("android"));
-  } else if (nameLower.includes("antigravity 2.0 or claude")) {
-    if (budgetLimit === 0) {
-      matchedTool = toolsData.find(t => t.name.toLowerCase().includes("antigravity"));
-    } else {
-      matchedTool = toolsData.find(t => t.name.toLowerCase() === "claude");
+  if (taskKey === "Exploring AI") {
+    let filteredCandidates = [...candidates];
+    let finalWorkflow = [];
+    for (let cName of filteredCandidates) {
+      finalWorkflow.push(findToolForStep(cName, budgetLimit, goalText, experienceLevel));
     }
-  } else if (nameLower.includes("suno or elevenlabs")) {
-    if (budgetLimit === 0) {
-      matchedTool = toolsData.find(t => t.name.toLowerCase() === "suno");
-    } else {
-      matchedTool = toolsData.find(t => t.name.toLowerCase() === "elevenlabs");
-    }
-  } else if (nameLower.includes("docs")) {
-    matchedTool = googleDocsTool;
-  } else if (nameLower.includes("chatgpt")) {
-    matchedTool = chatGptTool;
-  } else if (nameLower.includes("cursor")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "cursor");
-  } else if (nameLower.includes("copilot")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("copilot"));
-  } else if (nameLower.includes("lovable")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "lovable");
-  } else if (nameLower.includes("bolt")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("bolt"));
-  } else if (nameLower.includes("suno")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "suno");
-  } else if (nameLower.includes("lindy")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "lindy");
-  } else if (nameLower.includes("simular") || nameLower.includes("browser agent")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("simular") || t.name.toLowerCase().includes("sai"));
-  } else if (nameLower.includes("looka") || nameLower.includes("logo")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "looka");
-  } else if (nameLower.includes("khroma") || nameLower.includes("color")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "khroma");
-  } else if (nameLower.includes("speechify") || nameLower.includes("reader")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "speechify");
-  } else if (nameLower.includes("elevenlabs") || nameLower.includes("voice generator")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "elevenlabs") || toolsData.find(t => t.name.toLowerCase().includes("playht"));
-  } else if (nameLower.includes("playht") || nameLower.includes("cloning")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "playht") || toolsData.find(t => t.name.toLowerCase().includes("resemble"));
-  } else if (nameLower.includes("resemble")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "resemble");
-  } else if (nameLower.includes("descript") || nameLower.includes("editor")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "descript") || toolsData.find(t => t.name.toLowerCase().includes("canva"));
-  } else if (nameLower.includes("runway") || nameLower.includes("video generator")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "runway ml") || toolsData.find(t => t.name.toLowerCase().includes("luma"));
-  } else if (nameLower.includes("hubspot") || nameLower.includes("marketing")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("hubspot"));
-  } else if (nameLower.includes("zapier") || nameLower.includes("automation")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "zapier") || toolsData.find(t => t.name.toLowerCase().includes("zapier"));
-  } else if (nameLower.includes("monday") || nameLower.includes("collaboration")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "monday ai");
-  } else if (nameLower.includes("siemens") || nameLower.includes("iot platform")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("siemens"));
-  } else if (nameLower.includes("thingworx") || nameLower.includes("iot design")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("thingworx") || t.name.toLowerCase().includes("ptc"));
-  } else if (nameLower.includes("augury") || nameLower.includes("predictive")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "augury");
-  } else if (nameLower.includes("c3.ai")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "c3.ai");
-  } else if (nameLower.includes("checkmarx") || nameLower.includes("testing tool")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "checkmarx");
-  } else if (nameLower.includes("upscaler")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase() === "leonardo ai");
-  } else if (nameLower.includes("antigravity")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("antigravity"));
-  } else if (nameLower.includes("flow")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("flow"));
-  } else if (nameLower.includes("android")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("android"));
-  } else if (nameLower.includes("canva")) {
-    matchedTool = toolsData.find(t => t.name.toLowerCase().includes("canva"));
+    return finalWorkflow;
   }
   
-  if (!matchedTool) {
-    if (nameLower.includes("image")) {
-      matchedTool = toolsData.find(t => t.category === "CREATION ENGINE" && t.taskTags.includes("images")) || toolsData.find(t => t.name.toLowerCase() === "midjourney");
-    } else if (nameLower.includes("video")) {
-      matchedTool = toolsData.find(t => t.category === "CREATION ENGINE" && t.taskTags.includes("video")) || toolsData.find(t => t.name.toLowerCase().includes("runway"));
-    } else if (nameLower.includes("voice") || nameLower.includes("audio")) {
-      matchedTool = toolsData.find(t => t.category === "CREATION ENGINE" && t.taskTags.includes("audio")) || toolsData.find(t => t.name.toLowerCase() === "elevenlabs");
-    } else if (nameLower.includes("code") || nameLower.includes("dev")) {
-      matchedTool = toolsData.find(t => t.category === "ENGINEERING ENGINE" && t.taskTags.includes("codegen")) || toolsData.find(t => t.name.toLowerCase() === "cursor");
+  // Enforce Google Docs & ChatGPT pipeline: Step 1 must be Google Docs and Step 2 must be ChatGPT
+  // Filter out any existing Google Docs or ChatGPT references in the rest of the candidates to prevent duplicates
+  let otherCandidates = candidates.filter(name => {
+    const lower = name.toLowerCase();
+    return lower !== "google docs" && lower !== "chatgpt" && lower !== "google documents";
+  });
+  
+  // Optionally filter other general tools if experience level is Advanced
+  if (experienceLevel === "Advanced") {
+    if (otherCandidates.length > 2) {
+      otherCandidates = otherCandidates.filter(name => {
+        const lower = name.toLowerCase();
+        return lower !== "gemini" && lower !== "google gemini";
+      });
     }
   }
 
+  let finalCandidates = ["Google Docs", "ChatGPT", ...otherCandidates];
+  let finalWorkflow = [];
+  let categoriesSeen = new Set();
+  
+  for (let cName of finalCandidates) {
+    const resolved = findToolForStep(cName, budgetLimit, goalText, experienceLevel);
+    const toolObj = resolved.tool;
+    
+    // Determine category classification group to deduplicate overlapping types
+    let group = toolObj.category;
+    if (toolObj.taskTags && toolObj.taskTags.includes("video")) group = "video";
+    else if (toolObj.taskTags && toolObj.taskTags.includes("image")) group = "image";
+    else if (toolObj.taskTags && (toolObj.taskTags.includes("voiceover") || toolObj.taskTags.includes("audio-to-text"))) group = "voice";
+    else if (toolObj.taskTags && toolObj.taskTags.includes("music")) group = "music";
+    else if (toolObj.name === "Google Docs") group = "docs";
+    else if (toolObj.name === "ChatGPT") group = "chat";
+    
+    if (group === "docs" || group === "chat" || !categoriesSeen.has(group)) {
+      if (group !== "docs" && group !== "chat") {
+        categoriesSeen.add(group);
+      }
+      finalWorkflow.push(resolved);
+    }
+  }
+  
+  return finalWorkflow;
+}
+
+function findToolForStep(stepName, budgetLimit, goal = '', experienceLevel = 'Intermediate') {
+  const nameLower = stepName.toLowerCase();
+  const findByName = (name) => toolsData.find(t => t.name.toLowerCase() === name.toLowerCase()) || toolsData.find(t => t.title.toLowerCase() === name.toLowerCase());
+
+  if (nameLower.includes("docs") || nameLower === "google docs" || nameLower === "google documents") {
+    return { tool: googleDocsTool, mode: "Free", cost: 0 };
+  }
+  if (nameLower === "chatgpt") {
+    return { tool: chatGptTool, mode: "Free", cost: 0 };
+  }
+
+  let matchedTool = null;
+
+  // 1. Music Generation
+  if (nameLower.includes("music") || nameLower.includes("suno") || nameLower.includes("udio") || nameLower.includes("song")) {
+    if (budgetLimit === 0) {
+      matchedTool = findByName("Suno"); // Suno has free tier
+    } else if (budgetLimit <= 20) {
+      matchedTool = findByName("Suno"); // Suno basic plan
+    } else if (budgetLimit <= 500) {
+      matchedTool = findByName("Suno") || findByName("Udio");
+    } else {
+      matchedTool = findByName("Suno") || findByName("Udio");
+    }
+  }
+
+  // 2. Video Generation
+  else if (nameLower.includes("video") || nameLower.includes("runway") || nameLower.includes("luma") || nameLower.includes("sora") || nameLower.includes("pika") || nameLower.includes("vidu") || nameLower.includes("veo") || nameLower.includes("flow")) {
+    if (budgetLimit === 0) {
+      matchedTool = findByName("Flow AI"); // Free tier
+    } else if (budgetLimit <= 20) {
+      matchedTool = findByName("CapCut"); // Free/cheap tier video tools
+    } else if (budgetLimit <= 500) {
+      matchedTool = findByName("Kling AI") || findByName("Pika");
+    } else if (budgetLimit <= 1000) {
+      matchedTool = findByName("Runway ML") || findByName("Luma Dream Machine");
+    } else {
+      matchedTool = findByName("OpenAI Sora") || findByName("Google Veo");
+    }
+  }
+
+  // 3. Image Generation
+  else if (nameLower.includes("image") || nameLower.includes("midjourney") || nameLower.includes("flux") || nameLower.includes("leonardo") || nameLower.includes("spectra") || nameLower.includes("ideogram") || nameLower.includes("imagen") || nameLower.includes("firefly") || nameLower.includes("graphic")) {
+    if (budgetLimit === 0) {
+      matchedTool = findByName("Google Imagen") || findByName("Leonardo AI"); // Free tier options
+    } else if (budgetLimit <= 20) {
+      matchedTool = findByName("Canva AI"); // Starter tier
+    } else if (budgetLimit <= 500) {
+      matchedTool = findByName("Flux") || findByName("Ideogram"); // Professional tier
+    } else if (budgetLimit <= 1000) {
+      matchedTool = findByName("Midjourney"); // Advanced tier
+    } else {
+      matchedTool = findByName("Adobe Firefly"); // Enterprise tier
+    }
+  }
+
+  // 4. Voice Generation
+  else if (nameLower.includes("voice") || nameLower.includes("elevenlabs") || nameLower.includes("playht") || nameLower.includes("resemble") || nameLower.includes("speech") || nameLower.includes("vocalise")) {
+    if (budgetLimit === 0) {
+      matchedTool = findByName("PlayHT"); // Free tier option
+    } else if (budgetLimit <= 20) {
+      matchedTool = findByName("ElevenLabs"); // ElevenLabs Starter
+    } else if (budgetLimit <= 500) {
+      matchedTool = findByName("ElevenLabs"); // Creator plan
+    } else {
+      matchedTool = findByName("ElevenLabs") || findByName("WellSaid Labs");
+    }
+  }
+
+  // 5. Coding & Software Development
+  else if (nameLower.includes("code") || nameLower.includes("coding") || nameLower.includes("dev") || nameLower.includes("cursor") || nameLower.includes("copilot") || nameLower.includes("replit") || nameLower.includes("windsurf")) {
+    if (budgetLimit === 0) {
+      matchedTool = findByName("GitHub Copilot Free") || findByName("Codeium"); // Free tools
+    } else if (budgetLimit <= 20) {
+      matchedTool = findByName("Cursor Free"); // Starter tier
+    } else if (budgetLimit <= 500) {
+      matchedTool = findByName("GitHub Copilot"); // Professional tier
+    } else if (budgetLimit <= 1000) {
+      matchedTool = findByName("Cursor Pro") || findByName("Windsurf"); // Advanced tier
+    } else {
+      matchedTool = findByName("Antigravity 2.0"); // Enterprise tier
+    }
+  }
+
+  // 6. App Builder
+  else if (nameLower.includes("app") || nameLower.includes("apk") || nameLower.includes("android") || nameLower.includes("project") || nameLower.includes("build")) {
+    if (budgetLimit === 0) {
+      matchedTool = findByName("Android Studio");
+    } else if (budgetLimit <= 20) {
+      matchedTool = findByName("Bolt.new");
+    } else if (budgetLimit <= 1000) {
+      matchedTool = findByName("Lovable");
+    } else {
+      matchedTool = findByName("Antigravity 2.0");
+    }
+  }
+
+  // 7. Automation & Integration
+  else if (nameLower.includes("automation") || nameLower.includes("zapier") || nameLower.includes("lindy") || nameLower.includes("webhook") || nameLower.includes("integration")) {
+    if (budgetLimit === 0) {
+      matchedTool = findByName("Lindy");
+    } else if (budgetLimit <= 1000) {
+      matchedTool = findByName("Zapier");
+    } else {
+      matchedTool = findByName("Zapier AI Agents");
+    }
+  }
+
+  // Fallback to name search in dataset
+  if (!matchedTool) {
+    matchedTool = findByName(stepName);
+  }
+  if (!matchedTool) {
+    matchedTool = toolsData.find(t => t.name.toLowerCase() === nameLower || t.title.toLowerCase() === nameLower);
+  }
+  if (!matchedTool) {
+    matchedTool = toolsData.find(t => t.name.toLowerCase().includes(nameLower) || t.title.toLowerCase().includes(nameLower));
+  }
   if (!matchedTool) {
     matchedTool = toolsData[0];
   }
 
+  // Calculate pricing values
   let mode = "Free";
   let cost = 0;
   
@@ -1840,16 +1890,112 @@ function findToolForStep(stepName, budgetLimit, goal = '') {
     mode = "Paid";
     cost = matchedTool.cost;
   } else {
-    mode = matchedTool.freeTier ? "Free" : "Paid";
-    cost = matchedTool.freeTier ? 0 : matchedTool.cost;
+    mode = (matchedTool.cost === 0 || (matchedTool.pricing && matchedTool.pricing.toLowerCase().includes("free"))) ? "Free" : "Paid";
+    cost = mode === "Free" ? 0 : matchedTool.cost;
   }
 
   return { tool: matchedTool, mode, cost };
 }
 
+function getUniversalPromptForTool(toolName, category, tags) {
+  const t = toolName.toLowerCase();
+  const cat = (category || "").toUpperCase();
+  const tgs = tags || [];
+
+  const isVideoGen = cat.includes("CREATION") && (tgs.includes("video") || tgs.includes("animation"));
+  const isImageGen = cat.includes("CREATION") && (tgs.includes("images") || tgs.includes("graphics") || tgs.includes("image") || tgs.includes("logo") || tgs.includes("design"));
+  const isAudioGen = cat.includes("CREATION") && (tgs.includes("voiceover") || tgs.includes("audio") || tgs.includes("speech"));
+  const isMusicGen = cat.includes("CREATION") && (tgs.includes("music") || tgs.includes("music-generation") || tgs.includes("lyrics"));
+  const isCoding = cat.includes("ENGINEERING") || tgs.includes("codegen") || tgs.includes("coding") || tgs.includes("builder") || tgs.includes("editor") || tgs.includes("refactoring");
+
+  if (isVideoGen) {
+    return `[ROLE]: Expert AI Video Director & Prompt Engineer.
+[OBJECTIVE]: Generate a visually stunning, coherent, and motion-consistent video clip for the user's project.
+[USER PROJECT/REQUIREMENTS]:
+===
+[REPLACE WITH YOUR VIDEO CONCEPT, SCENE SCRIPT, OR STORYBOARD HIGHLIGHTS]
+===
+[VISUAL STYLE & CONFIGURATION]:
+- Style: Cinematic, high visual fidelity, photorealistic details, 8k resolution.
+- Camera Movement: Dynamic tracking shot, steady panning, or dramatic zoom.
+- Lighting: Realistic reflections, volumetric lighting, consistent shadows.
+- Physical Consistency: Natural movements, fluid character animation, matching environment physics.
+[INSTRUCTION]: Read the user project, format it into a descriptive video generation command, and optimize engine weights for motion consistency.`;
+  }
+
+  if (isImageGen) {
+    return `[ROLE]: Master Prompt Engineer for Text-to-Image Generation.
+[OBJECTIVE]: Construct a high-density, descriptive prompt for generating premium, production-quality visual assets.
+[USER IMAGE REQUIREMENT]:
+===
+[REPLACE WITH YOUR IMAGE DESCRIPTION, DESIGN STYLE, OR SCENE DETAILS]
+===
+[ARTISTIC DIRECTION & ATTRIBUTES]:
+- Composition: Golden ratio framing, extreme close-up or wide-angle view, hyper-detailed textures.
+- Lighting: Volumetric god rays, soft studio lighting, high contrast chiaroscuro.
+- Resolution Descriptors: Photorealistic, octane render, 8k resolution, crisp focus.
+- Exclude: Deformed limbs, double text, blurry artifacts.
+[INSTRUCTION]: Translate the user concept into a single, cohesive, highly descriptive prompt to maximize visual output quality.`;
+  }
+
+  if (isAudioGen) {
+    return `[ROLE]: Professional Voice Over Artist & Sound Engineer.
+[OBJECTIVE]: Structure text script variables and voice synthesis instructions for realistic, expressive, and human-like voice synthesis.
+[USER SCRIPT & TONE]:
+===
+[REPLACE WITH YOUR VOICE OVER SCRIPT, VOICE TYPE (MALE/FEMALE), AND SPECIFIC TONE EMOTIONS]
+===
+[ACOUSTIC STYLE & PROMPT CONFIGURATION]:
+- Vocal Character: Clear enunciation, natural pacing, professional voiceover narration.
+- Tone/Mood: Dynamic emotional response, high fidelity voice cloning setup, no audio clipping.
+[INSTRUCTION]: Format the script with appropriate pause markers [pause], emotional tags, and emphasis indicators for synthesis.`;
+  }
+
+  if (isMusicGen) {
+    return `[ROLE]: Chart-Topping AI Music Producer & Composer.
+[OBJECTIVE]: Write matching lyrics, structural song layouts, and instrumentation prompts for premium AI music generation.
+[USER LYRICS / GENRE OBJECTIVE]:
+===
+[REPLACE WITH YOUR SONG TOPIC, LYRICS DRAFT, OR GENRE FOCUS (e.g. CYBERPUNK SYNTHWAVE, ACCOUSTIC BALLAD)]
+===
+[SONG STRUCTURE & STYLE DETAILS]:
+- Structure: [Verse 1] -> [Chorus] -> [Verse 2] -> [Chorus] -> [Bridge] -> [Outro].
+- Musical Style: High tempo syncopation, vibrant synth lines, or clean acoustic guitar riffs.
+[INSTRUCTION]: Compile the song details and output structure tags and genre descriptions optimized for music generation models.`;
+  }
+
+  if (isCoding) {
+    return `[ROLE]: Principal AI Software Architect & Senior Code Assistant.
+[OBJECTIVE]: Write modular, production-grade source code, microcontroller sketches, or hardware configurations based on project specifications.
+[USER CODING SPECIFICATIONS]:
+===
+[REPLACE WITH YOUR PROGRAM REQUIREMENTS, API BEHAVIORS, SENSOR TYPES, OR BUG DETAILS]
+===
+[TECHNICAL CONSTRAINTS & PATTERNS]:
+- Design Pattern: Clean architecture, modular interfaces, object-oriented or structured code.
+- Error Handling: Robust try-catch logs, boundary checks, zero leaks.
+- Language/Framework: Use the most suitable standards (e.g. modern C++, Python, Javascript, Assembly, or Verilog HDL).
+[INSTRUCTION]: Analyze the requirements, map database connections, write clean optimized code files, and provide instructions for testing and compiling.`;
+  }
+
+  return `[ROLE]: Expert AI Assistant, Copywriter, & Strategic Planner.
+[OBJECTIVE]: Analyze information, write copy, compile research, or draft distribution plans according to the user's objective.
+[USER GOAL/OBJECTIVE]:
+===
+[REPLACE WITH YOUR WORK DETAILS, ARTICLE OUTLINE, MARKETING STRATEGY, OR EARNING TARGET]
+===
+[GUIDELINES & CONSTRAINTS]:
+- Tone: Professional, structured, persuasive, clear, and highly engaging.
+- Output Format: Modular headings, markdown lists, clean sections, actionable guidelines.
+[INSTRUCTION]: Process the inputs, verify citations if researching, write professional copy, and layout execution steps.`;
+}
+
 function generatePrompts(toolName, goal, lang) {
   const t = toolName.toLowerCase();
   const goalLower = (goal || "").toLowerCase();
+  
+  const matchedTool = toolsData.find(x => x.name.toLowerCase() === t) || {};
+  const universalPrompt = getUniversalPromptForTool(toolName, matchedTool.category, matchedTool.taskTags);
   
   let starter = "";
   let advanced = "";
@@ -2072,7 +2218,7 @@ function generatePrompts(toolName, goal, lang) {
     }
   }
 
-  return { starter, advanced, pro, exp, purpose, why, expectedOutput, cost, time, alternatives };
+  return { starter, advanced, pro, exp, purpose, why, expectedOutput, cost, time, alternatives, universalPrompt };
 }
 
 function getActiveLanguage() {
@@ -2616,7 +2762,7 @@ function regenerateActiveRoadmap() {
   const selectedGoal = state.goalText;
   if (!selectedGoal) return;
   
-  const budgetLimit = state.budgetLimit || 100;
+  const budgetLimit = (state.budgetLimit !== undefined && state.budgetLimit !== null) ? state.budgetLimit : 100;
   const activeLang = getActiveLanguage();
   
   if (selectedGoal === "Exploring AI") {
@@ -2648,22 +2794,13 @@ function regenerateActiveRoadmap() {
     
     renderRoadmap(educationWorkflow, stepsList);
   } else {
-    const specSteps = goalWorkflows[selectedGoal] || goalWorkflows["Generating Video"];
-    
-    const prefixTools = [
-      findToolForStep("Google Docs", budgetLimit),
-      findToolForStep("ChatGPT", budgetLimit)
-    ];
-    
-    const specTools = specSteps.map(s => findToolForStep(s, budgetLimit, selectedGoal));
-    const fullWorkflow = [...prefixTools, ...specTools];
+    const fullWorkflow = generateDynamicWorkflow(selectedGoal, budgetLimit, state.selectedExperience || 'Intermediate');
     
     const trans = stepsTranslation[activeLang] || stepsTranslation["Hinglish"];
-    const stepsList = [
-      trans["Google Docs"] || "Google Docs",
-      trans["ChatGPT"] || "ChatGPT",
-      ...specSteps.map(s => trans[s] || s)
-    ];
+    const stepsList = fullWorkflow.map(item => {
+      const toolName = item.tool.name || item.tool.title;
+      return trans[toolName] || toolName;
+    });
     
     const sectionSubtitle = document.querySelector('#roadmap-builder-section .section-subtitle');
     if (sectionSubtitle) {
@@ -2671,11 +2808,11 @@ function regenerateActiveRoadmap() {
       
       let text = "";
       if (activeLang === "English") {
-        text = `Custom-compiled <strong>${selectedGoal}</strong> toolchain for goal: <em>"${selectedGoal}"</em>.<br>Budget: <strong>$${totalCost} / mo</strong> used of $${budgetLimit} threshold. Language: <strong>${activeLang}</strong>.`;
+        text = `Custom-compiled <strong>${selectedGoal}</strong> toolchain for goal: <em>"${selectedGoal}"</em>.<br>Budget: <strong>₹${totalCost} / mo</strong> used of ₹${budgetLimit} threshold. Language: <strong>${activeLang}</strong>.`;
       } else if (activeLang === "Hindi") {
-        text = `लक्ष्य के लिए कस्टम-कंपाइल की गई <strong>${selectedGoal}</strong> टूलचेन: <em>"${selectedGoal}"</em>.<br>बजट: $${budgetLimit} की सीमा में से <strong>$${totalCost} / महीना</strong> उपयोग किया गया। भाषा: <strong>${activeLang}</strong>।`;
+        text = `लक्ष्य के लिए कस्टम-कंपाइल की गई <strong>${selectedGoal}</strong> टूलचेन: <em>"${selectedGoal}"</em>.<br>बजट: ₹${budgetLimit} की सीमा में से <strong>₹${totalCost} / महीना</strong> उपयोग किया गया। भाषा: <strong>${activeLang}</strong>।`;
       } else {
-        text = `Custom-compiled <strong>${selectedGoal}</strong> toolchain for goal: <em>"${selectedGoal}"</em>.<br>Budget: $${budgetLimit} key limit me se <strong>$${totalCost} / month</strong> use hua. Language: <strong>${activeLang}</strong>.`;
+        text = `Custom-compiled <strong>${selectedGoal}</strong> toolchain for goal: <em>"${selectedGoal}"</em>.<br>Budget: ₹${budgetLimit} key limit me se <strong>₹${totalCost} / month</strong> use hua. Language: <strong>${activeLang}</strong>.`;
       }
       sectionSubtitle.innerHTML = text;
     }
@@ -2690,6 +2827,60 @@ function initDashboardControls() {
   const workflowSelect = document.getElementById('control-workflow-select');
   const langSelect = document.getElementById('control-lang-select');
   const compileBtn = document.getElementById('control-compile-btn');
+
+  function handleModeChange(skipRegen = false) {
+    if (!taskSelect || !budgetSelect || !workflowSelect) return;
+    
+    if (taskSelect.value === "Exploring AI") {
+      // Auto-select "₹0 Free" (value: "0")
+      budgetSelect.value = "0";
+      budgetSelect.disabled = true;
+      if (budgetSelect.parentElement) {
+        budgetSelect.parentElement.setAttribute('title', "Exploring AI uses a fixed Beginner learning path.");
+      }
+      
+      // Auto-select "Beginner" (value: "Beginner")
+      workflowSelect.value = "Beginner";
+      workflowSelect.disabled = true;
+      if (workflowSelect.parentElement) {
+        workflowSelect.parentElement.setAttribute('title', "Exploring AI uses a fixed Beginner learning path.");
+      }
+      
+      // Set variables in state
+      state.goalText = "Exploring AI";
+      state.budgetLimit = 0;
+      state.selectedExperience = "Beginner";
+      
+      if (!skipRegen) {
+        // Generate Exploring AI learning roadmap immediately
+        regenerateActiveRoadmap();
+        setTimeout(() => {
+          drawRoad();
+        }, 150);
+      }
+    } else {
+      // Re-enable Budget selector
+      budgetSelect.disabled = false;
+      if (budgetSelect.parentElement) {
+        budgetSelect.parentElement.removeAttribute('title');
+      }
+      
+      // Re-enable Experience selector
+      workflowSelect.disabled = false;
+      if (workflowSelect.parentElement) {
+        workflowSelect.parentElement.removeAttribute('title');
+      }
+      
+      // Update state with selected values
+      state.goalText = taskSelect.value;
+      state.budgetLimit = parseInt(budgetSelect.value);
+      state.selectedExperience = workflowSelect.value;
+    }
+  }
+
+  if (taskSelect) {
+    taskSelect.addEventListener('change', () => handleModeChange(false));
+  }
 
   if (compileBtn) {
     compileBtn.addEventListener('click', () => {
@@ -2725,9 +2916,8 @@ function initDashboardControls() {
   }
 
   if (taskSelect && budgetSelect && workflowSelect && langSelect) {
-    state.goalText = taskSelect.value;
-    state.budgetLimit = parseInt(budgetSelect.value);
-    state.selectedExperience = workflowSelect.value;
+    // Initial verification on page load
+    handleModeChange(true);
     
     setTimeout(() => {
       regenerateActiveRoadmap();
@@ -2929,7 +3119,7 @@ function renderComparisonTable() {
   // Row 2: Pricing
   html += `<tr><th>Pricing</th>`;
   selectedTools.forEach(tool => {
-    html += `<td><strong>${tool.pricing || `$${tool.cost}`}</strong><br><small>${tool.freeTier ? 'Free Tier Available' : 'Premium Only'}</small></td>`;
+    html += `<td><strong>${(tool.pricing || `₹${tool.cost}`).replace('$', '₹')}</strong><br><small>${tool.freeTier ? 'Free Tier Available' : 'Premium Only'}</small></td>`;
   });
   html += `</tr>`;
   
@@ -2997,9 +3187,9 @@ function renderComparisonTable() {
 function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = false, stepName = '', stepIndex = 0, effectiveCost = null, effectiveMode = '') {
   let costStr = '';
   if (effectiveCost !== null) {
-    costStr = effectiveCost === 0 ? 'FREE TIER' : `$${effectiveCost} / mo`;
+    costStr = effectiveCost === 0 ? 'FREE TIER' : `₹${effectiveCost} / mo`;
   } else {
-    costStr = tool.cost === 0 ? 'FREE TIER' : `$${tool.cost} / mo`;
+    costStr = tool.cost === 0 ? 'FREE TIER' : `₹${tool.cost} / mo`;
   }
 
   const isEdu = tool.id && tool.id.startsWith("EDU_");
@@ -3090,176 +3280,136 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
       `
     : `
       <div class="card-badges">
-        <span class="card-badge price-badge">${tool.cost === 0 ? 'FREE' : `$${tool.cost}`}</span>
+        <span class="card-badge price-badge">${tool.cost === 0 ? 'FREE' : `₹${tool.cost}`}</span>
         ${tool.industries ? tool.industries.map(ind => `<span class="card-badge industry-badge">${ind}</span>`).join('') : ''}
       </div>
     `;
 
   let detailsHTML = '';
   if (isTimeline) {
-    let quizHTML = '';
-    if (checkpoint) {
-      const qText = checkpoint.question[lang] || checkpoint.question.English || checkpoint.question;
-      const opts = checkpoint.options[lang] || checkpoint.options.English || checkpoint.options;
-      const explanation = checkpoint.explanation[lang] || checkpoint.explanation.English || checkpoint.explanation;
-      const correctIdx = checkpoint.correct;
+    if (isEdu) {
+      // Clean educational roadmap timeline representation for "Exploring AI"
+      const whyUseThisTool = descText;
+      const expectedOutcomeVal = outcome || "Understanding of key computational logic.";
+      const universalPrompt = pro || starter || "";
       
-      quizHTML = `
-        <div class="quiz-container" style="margin-top: 15px; padding: 16px; border: 1px dashed var(--border-color); border-radius: 8px; background: rgba(var(--accent-color), 0.02);">
-          <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">
-            KNOWLEDGE CHECKPOINT
+      let promptHTML = '';
+      if (universalPrompt) {
+        promptHTML = `
+          <div class="card-detail-item" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+            <div class="prompt-container">
+              <div class="prompt-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">Universal Master Prompt</span>
+                <button class="prompt-copy-btn" data-text="${escapeHTML(universalPrompt)}" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">Copy Prompt</button>
+              </div>
+              <pre class="prompt-box" style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(var(--accent-color), 0.03); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: var(--text-primary); margin: 6px 0; max-height: 150px; overflow-y: auto; white-space: pre-wrap; text-align: left;">${escapeHTML(universalPrompt)}</pre>
+            </div>
           </div>
-          <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">${qText}</div>
-          <div class="quiz-options-list" style="display: flex; flex-direction: column; gap: 8px;">
-            ${opts.map((opt, oIdx) => `
-              <button class="quiz-opt-btn" data-correct="${oIdx === correctIdx}" style="text-align: left; padding: 10px 12px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; background: var(--input-bg); border: 1px solid var(--border-color); transition: all 0.2s; color: var(--text-primary);">
-                ${opt}
-              </button>
-            `).join('')}
-          </div>
-          <div class="quiz-feedback-box" style="display: none; margin-top: 12px; padding: 10px; border-radius: 6px; font-size: 0.8rem; line-height: 1.4;">
-            <strong>Feedback:</strong> <span class="feedback-msg"></span>
-            <div style="margin-top: 4px; color: var(--text-secondary); font-size: 0.75rem;">${explanation}</div>
-          </div>
-        </div>
-      `;
-    }
+        `;
+      }
 
-    detailsHTML = `
-      <div class="card-details-section">
-        
-        <div class="card-course-tabs" style="display: flex; gap: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px; overflow-x: auto;">
-          <button class="course-tab-btn active" data-tab="lesson" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">1. LESSON</button>
-          <button class="course-tab-btn" data-tab="concepts" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">2. CONCEPTS</button>
-          <button class="course-tab-btn" data-tab="practice" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">3. PRACTICE</button>
-          <button class="course-tab-btn" data-tab="checkpoint" style="background: transparent; border: none; padding: 6px 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; cursor: pointer; border-radius: 4px; color: var(--text-secondary);">4. QUIZ</button>
-        </div>
-
-        <div class="course-tab-content active" data-content="lesson" style="display: block;">
+      detailsHTML = `
+        <div class="card-details-section" style="text-align: left;">
           <div class="card-detail-item">
-            <span class="card-detail-label">${labels.topicExplanation || 'Topic Explanation'}</span>
-            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5;">${isEdu ? tool.explanation[lang] || tool.explanation["English"] : eduData.explanation}</span>
-          </div>
-          <div class="card-detail-item" style="margin-top: 10px;">
-            <span class="card-detail-label">${labels.beginnerFriendlySummary || 'Beginner Summary'}</span>
-            <span class="card-detail-value" style="font-size: 0.82rem; line-height: 1.4; font-style: italic;">${descText}</span>
-          </div>
-          <div class="card-detail-item" style="margin-top: 10px;">
-            <span class="card-detail-label">${labels.visualLearningFlow || 'Visual Learning Flow'}</span>
-            <pre style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(var(--accent-color), 0.03); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: var(--text-primary); margin: 6px 0;">${visualFlow}</pre>
-          </div>
-          ${examples && examples.length > 0 ? `
-          <div class="card-detail-item" style="margin-top: 10px;">
-            <span class="card-detail-label">${labels.realWorldExamples || 'Real World Examples'}</span>
-            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
-              ${examples.map(ex => `<li>${ex}</li>`).join('')}
-            </ul>
-          </div>
-          ` : ''}
-        </div>
-
-        <div class="course-tab-content" data-content="concepts" style="display: none;">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 12px; padding: 8px; border-radius: 6px; background: rgba(var(--accent-color), 0.015); border: 1px solid var(--border-color);">
-            <div style="font-size: 0.75rem;"><strong style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); display: block; text-transform: uppercase;">${labels.difficulty || 'Difficulty'}</strong>${difficulty}</div>
-            <div style="font-size: 0.75rem;"><strong style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); display: block; text-transform: uppercase;">${labels.estimatedTime || 'Estimated Time'}</strong>${time}</div>
-            <div style="font-size: 0.75rem;"><strong style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); display: block; text-transform: uppercase;">${labels.prerequisite || 'Prerequisites'}</strong>${prerequisite}</div>
+            <span class="card-detail-label">Explanation</span>
+            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${whyUseThisTool}</span>
           </div>
           ${keyConcepts && keyConcepts.length > 0 ? `
-          <div class="card-detail-item">
-            <span class="card-detail-label">${labels.keyConcepts || 'Key Concepts'}</span>
-            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+          <div class="card-detail-item" style="margin-top: 12px;">
+            <span class="card-detail-label">Key Concepts</span>
+            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
               ${keyConcepts.map(c => `<li>${c}</li>`).join('')}
             </ul>
           </div>
           ` : ''}
-          ${commonMistakes && commonMistakes.length > 0 ? `
-          <div class="card-detail-item" style="margin-top: 10px;">
-            <span class="card-detail-label" style="color: #ff453a;">${labels.commonMistakes || 'Common Mistakes'}</span>
-            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
-              ${commonMistakes.map(m => `<li>${m}</li>`).join('')}
-            </ul>
+          <div class="card-detail-item" style="margin-top: 12px;">
+            <span class="card-detail-label">Practical Exercise</span>
+            <span class="card-detail-value" style="font-size: 0.8rem; color: var(--text-secondary); font-style: italic; line-height: 1.5;">${exercises}</span>
           </div>
-          ` : ''}
-          ${applications && applications.length > 0 ? `
-          <div class="card-detail-item" style="margin-top: 10px;">
-            <span class="card-detail-label">${labels.practicalApplications || 'Practical Applications'}</span>
-            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary);">
-              ${applications.map(app => `<li>${app}</li>`).join('')}
-            </ul>
+          <div class="card-detail-item" style="margin-top: 12px;">
+            <span class="card-detail-label">Expected Outcome</span>
+            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${expectedOutcomeVal}</span>
           </div>
-          ` : ''}
+          ${promptHTML}
         </div>
+      `;
+    } else {
+      // Standard Roadmap Timeline Node representation (Strictly Practical Execution)
+      const whyUseThisTool = tool.desc || tool.description;
+      const expectedOutputVal = eduData.outcome || "Operational outputs matching project objectives.";
+      const expLevel = state.selectedExperience || 'Intermediate';
 
-        <div class="course-tab-content" data-content="practice" style="display: none;">
-          ${!isEdu ? `
+      // 1. Determine "How To Use It" text based on experience levels
+      let howToUseItHTML = '';
+      const steps = tool.instruction || ["Navigate to the tool dashboard.", "Login using your account credentials.", "Input your project details.", "Download or export the final results."];
+
+      if (tool.id === "TOOL_DOCS") {
+        if (expLevel === "Beginner") {
+          howToUseItHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 4px 0;">Open Google Docs, create a new document, and write down all your raw ideas, scripts, and requirements in detail to create your raw input source file.</p>`;
+        } else if (expLevel === "Advanced") {
+          howToUseItHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 4px 0; font-style: italic;">Concise: Boot a Google Doc and outline the core ideas/scripts.</p>`;
+        } else {
+          howToUseItHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 4px 0;">Use Google Docs to outline project concepts, scripts, and specifications ready for copywriting and prompt transformation.</p>`;
+        }
+      } else if (tool.id === "TOOL_001") {
+        if (expLevel === "Beginner") {
+          howToUseItHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 4px 0;">Copy the Universal Master Prompt below. Paste it into ChatGPT, and replace the bracketed placeholder with your Google Docs outline to get structured system specs.</p>`;
+        } else if (expLevel === "Advanced") {
+          howToUseItHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 4px 0; font-style: italic;">Concise: Run your Google Docs specs through ChatGPT with the Universal Master Prompt.</p>`;
+        } else {
+          howToUseItHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 4px 0;">Paste your raw notes from Google Docs into ChatGPT using the Universal Master Prompt to output detailed configuration variables and prompts.</p>`;
+        }
+      } else {
+        if (expLevel === "Beginner") {
+          howToUseItHTML = `<ol style="padding-left: 20px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin: 6px 0;">
+            ${steps.map(step => `<li>${step}</li>`).join('')}
+          </ol>`;
+        } else if (expLevel === "Advanced") {
+          const conciseStep = steps[0] || "Compile and run configurations in the tool interface.";
+          howToUseItHTML = `<p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; font-style: italic; margin: 4px 0;">Concise: ${conciseStep} Execute configurations and export outputs.</p>`;
+        } else {
+          const sliceSteps = steps.slice(0, 3);
+          howToUseItHTML = `<ol style="padding-left: 20px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin: 6px 0;">
+            ${sliceSteps.map(step => `<li>${step}</li>`).join('')}
+          </ol>`;
+        }
+      }
+
+      // 2. Generate Universal Master Prompt block (except Google Docs)
+      let promptHTML = '';
+      if (tool.id !== "TOOL_DOCS") {
+        const universalPrompt = getUniversalPromptForTool(tool.name, tool.category, tool.taskTags);
+        promptHTML = `
+          <div class="card-detail-item" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+            <div class="prompt-container">
+              <div class="prompt-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">Universal Master Prompt</span>
+                <button class="prompt-copy-btn" data-text="${escapeHTML(universalPrompt)}" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">Copy Prompt</button>
+              </div>
+              <pre class="prompt-box" style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(var(--accent-color), 0.03); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: var(--text-primary); margin: 6px 0; max-height: 150px; overflow-y: auto; white-space: pre-wrap; text-align: left;">${escapeHTML(universalPrompt)}</pre>
+            </div>
+          </div>
+        `;
+      }
+
+      detailsHTML = `
+        <div class="card-details-section" style="text-align: left;">
           <div class="card-detail-item">
-            <span class="card-detail-label">${labels.estimatedCost || 'Estimated Cost'}</span>
-            <span class="card-detail-value" style="font-weight: 600;">${costStr}</span>
+            <span class="card-detail-label">Why Use This Tool</span>
+            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${whyUseThisTool}</span>
           </div>
-          ` : ''}
-          <div class="card-detail-item">
-            <span class="card-detail-label">${labels.recommendedAITools || 'Recommended AI Tools'}</span>
-            <span class="card-detail-value" style="font-weight: 600; font-size: 0.82rem;">${isEdu ? tool.recommendedTools.join(", ") : tool.name}</span>
+          <div class="card-detail-item" style="margin-top: 12px;">
+            <span class="card-detail-label">How To Use It</span>
+            <div class="card-detail-value">${howToUseItHTML}</div>
           </div>
-          
-          <div class="card-detail-item" style="margin-top: 10px;">
-            <span class="card-detail-label">${labels.exercises || 'Practical Exercise'}</span>
-            <span class="card-detail-value" style="font-size: 0.8rem; color: var(--text-secondary); font-style: italic;">${exercises}</span>
+          <div class="card-detail-item" style="margin-top: 12px;">
+            <span class="card-detail-label">Expected Output</span>
+            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${expectedOutputVal}</span>
           </div>
-          <div class="card-detail-item" style="margin-top: 10px;">
-            <span class="card-detail-label">${labels.outcome || 'Expected Outcome'}</span>
-            <span class="card-detail-value" style="font-size: 0.8rem; color: var(--text-secondary);">${outcome}</span>
-          </div>
-
-          <div class="card-detail-item" style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px;">
-            <span class="card-detail-label">${labels.masterPrompt || 'Master Prompt'}</span>
-            
-            ${starter ? `
-            <div class="prompt-container" style="margin-top: 4px;">
-              <div class="prompt-header">
-                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.starter || 'Starter'}</span>
-                <button class="prompt-copy-btn" data-text="${escapeHTML(starter)}">${labels.copyBtn}</button>
-              </div>
-              <div class="prompt-box">${escapeHTML(starter)}</div>
-            </div>
-            ` : ''}
-            
-            ${advanced ? `
-            <div class="prompt-container" style="margin-top: 8px;">
-              <div class="prompt-header">
-                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.advanced || 'Advanced'}</span>
-                <button class="prompt-copy-btn" data-text="${escapeHTML(advanced)}">${labels.copyBtn}</button>
-              </div>
-              <div class="prompt-box">${escapeHTML(advanced)}</div>
-            </div>
-            ` : ''}
-            
-            ${pro ? `
-            <div class="prompt-container" style="margin-top: 8px;">
-              <div class="prompt-header">
-                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${labels.professional || 'Professional'}</span>
-                <button class="prompt-copy-btn" data-text="${escapeHTML(pro)}">${labels.copyBtn}</button>
-              </div>
-              <div class="prompt-box">${escapeHTML(pro)}</div>
-            </div>
-            ` : ''}
-          </div>
+          ${promptHTML}
         </div>
-
-        <div class="course-tab-content" data-content="checkpoint" style="display: none;">
-          ${quizHTML}
-          ${reading && reading.length > 0 ? `
-          <div class="card-detail-item" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 10px;">
-            <span class="card-detail-label">${labels.furtherReadingResources || 'Further Reading Resources'}</span>
-            <ul style="padding-left: 16px; font-size: 0.78rem; color: var(--text-secondary);">
-              ${reading.map(r => `<li>${r}</li>`).join('')}
-            </ul>
-          </div>
-          ` : ''}
-        </div>
-
-      </div>
-    `;
+      `;
+    }
   }
 
   const actionButtonsHTML = isEdu 
@@ -3278,11 +3428,7 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
     `;
 
   const footerHTML = isEdu
-    ? `
-    <div class="card-footer" style="justify-content: flex-end;">
-      <button class="btn btn-secondary topic-completed-btn" style="width: 100%;" data-id="${tool.id}">Mark Topic Complete</button>
-    </div>
-    `
+    ? ''
     : `
     <div class="card-footer">
       <button class="btn btn-secondary inspect-btn">Inspect Engine</button>
@@ -3554,11 +3700,38 @@ function initNavigation() {
   const navLinks = document.querySelectorAll('.main-nav .nav-link');
   const sections = document.querySelectorAll('section[id], header[id]');
   
+  const hamburgerToggle = document.getElementById('hamburger-toggle');
+  const mainNav = document.querySelector('.main-nav');
+  const mobileOverlay = document.getElementById('mobile-nav-overlay');
+
+  function closeMobileMenu() {
+    if (hamburgerToggle) hamburgerToggle.classList.remove('active');
+    if (mainNav) mainNav.classList.remove('mobile-active');
+    if (mobileOverlay) mobileOverlay.classList.remove('active');
+  }
+
+  if (hamburgerToggle && mainNav && mobileOverlay) {
+    hamburgerToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hamburgerToggle.classList.toggle('active');
+      mainNav.classList.toggle('mobile-active');
+      mobileOverlay.classList.toggle('active');
+    });
+
+    mobileOverlay.addEventListener('click', () => {
+      closeMobileMenu();
+    });
+  }
+
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       const targetId = link.getAttribute('href');
       if (targetId.startsWith('#')) {
         e.preventDefault();
+        
+        // Close menu drawer on mobile link clicks
+        closeMobileMenu();
+
         const targetSection = document.querySelector(targetId);
         if (targetSection) {
           window.removeEventListener('scroll', updateActiveNavLink);
