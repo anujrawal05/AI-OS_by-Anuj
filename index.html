@@ -1,17 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI-OS By Anuj // Artificial Intelligence Overall Solutions</title>
-  <meta name="description" content="AI-OS is a practical AI execution operating system that helps users accomplish real-world goals using the best AI tools available.">
+  <meta name="description"
+    content="AI-OS is a practical AI execution operating system that helps users accomplish real-world goals using the best AI tools available.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=3.0">
   <script>
     window.myErrors = [];
-    window.onerror = function(message, source, lineno, colno, error) {
+    window.onerror = function (message, source, lineno, colno, error) {
       window.myErrors.push({
         message: message,
         source: source,
@@ -23,416 +27,589 @@
     };
   </script>
 </head>
+
 <body>
 
   <!-- Background Decorative Grid -->
   <!-- Fullscreen Wizard Overlay -->
   <!-- Main Content Wrapper (shown by default) -->
   <div class="main-content-wrapper active" id="main-content-wrapper">
- 
-   <!-- Header / Navigation -->
-   <header class="app-header">
-     <div class="header-container">
-       <div class="logo">
-         <span class="logo-symbol">●</span>
-         <div class="logo-text-group">
-           <span class="logo-text">AI-OS</span>
-           <span class="logo-subtitle">By Anuj</span>
-         </div>
-       </div>
-       
-       <nav class="main-nav">
-         <a href="#dashboard-controls" class="nav-link active" data-target="dashboard-controls">Dashboard</a>
-         <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section">Roadmaps</a>
-         <a href="#explore-library-section" class="nav-link" data-target="explore-library-section">Explore Tools</a>
-         <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section">Categories</a>
-         <a href="#about-section" class="nav-link" data-target="about-section">About</a>
-       </nav>
- 
-       <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
-         <button id="theme-toggle" aria-label="Toggle monochrome theme">
-           <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-             <circle cx="12" cy="12" r="5"></circle>
-             <line x1="12" y1="1" x2="12" y2="3"></line>
-             <line x1="12" y1="21" x2="12" y2="23"></line>
-             <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-             <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-             <line x1="1" y1="12" x2="3" y2="12"></line>
-             <line x1="21" y1="12" x2="23" y2="12"></line>
-             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-           </svg>
-           <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
-             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-           </svg>
-         </button>
-       </div>
-       
-       <button class="hamburger-toggle" id="hamburger-toggle" aria-label="Toggle menu">
-         <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
-           <line x1="3" y1="12" x2="21" y2="12" class="line-mid"></line>
-           <line x1="3" y1="6" x2="21" y2="6" class="line-top"></line>
-           <line x1="3" y1="18" x2="21" y2="18" class="line-bot"></line>
-         </svg>
-       </button>
-     </div>
-   </header>
-   <div id="mobile-nav-overlay" class="mobile-nav-overlay"></div>
 
-  <!-- Top Responsive Banner Ad -->
-  <div class="banner-ad banner-ad-top" role="complementary" aria-label="Advertisement">
-    <span class="ad-tag">SPONSORED ADVERTISEMENT</span>
-    <div class="banner-ad-content">
-      <strong>Google Workspace:</strong> Plan, write, and organize your files with cloud-synced Google Docs and Drive. <a href="https://workspace.google.com" target="_blank" rel="noopener">Get Started</a>
-    </div>
-  </div>
-
-  <div class="app-layout-wrapper">
-    <!-- Left Sticky Sidebar Ad (Desktop Only) -->
-    <aside class="sidebar-ad sidebar-ad-left">
-      <div class="ad-placeholder-sticky">
-        <span class="ad-tag">SPONSORED</span>
-        <div class="ad-content-box">
-          <h4>Claude 3.5 Sonnet</h4>
-          <p>Accelerate coding tasks, design systems, and generate templates with Claude.</p>
-          <a href="https://anthropic.com" target="_blank" rel="noopener" class="ad-cta">Try Claude</a>
-        </div>
-      </div>
-    </aside>
-
-    <main class="app-main-content">
-
-  <!-- Persistent Controls Dashboard Toolbar -->
-  <section class="dashboard-controls" id="dashboard-controls">
-    <div class="controls-container">
-      <div class="controls-label">
-        OPERATIONAL TARGET CONFIGURATION
-      </div>
-      <div class="controls-inputs-grid">
-        
-        <!-- Input 1: Task Selection -->
-        <div class="control-group-input">
-          <label class="control-label-style">1. Task / Objective</label>
-          <div class="select-wrap">
-            <select id="control-task-select" class="control-dropdown-select">
-              <option value="Exploring AI" selected>Exploring AI</option>
-              <option value="Generating Video">Generate a Complete AI Video</option>
-              <option value="Generating Images">Generate Professional AI Images</option>
-              <option value="Designing">Create Digital Designs Using AI</option>
-              <option value="Coding">Build Software Using AI</option>
-              <option value="Building Apps">Build Android Application</option>
-              <option value="Tips to Earn Money">Monetize AI Skills</option>
-              <option value="Music Making">Create Music Using AI</option>
-              <option value="Voice Over Generation">Generate Professional Voice Over</option>
-              <option value="Brand Building">Build a Brand Using AI</option>
-              <option value="Personal AI Building">Build a Personal AI Assistant</option>
-              <option value="Help in Video Editing">Edit Video Production Using AI</option>
-              <option value="Help in Music Editing">Enhance & Edit Audio Tracks</option>
-              <option value="Writing Work">Generate Copy & Written Content</option>
-              <option value="Hardware Building">Design and Prototype Hardware</option>
-            </select>
+    <!-- Header / Navigation -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="logo">
+          <span class="logo-symbol">●</span>
+          <div class="logo-text-group">
+            <span class="logo-text">AI-OS</span>
+            <span class="logo-subtitle">By Anuj</span>
           </div>
         </div>
 
-        <!-- Input 2: Budget Selection -->
-        <div class="control-group-input">
-          <label class="control-label-style">2. Budget limit</label>
-          <div class="select-wrap">
-            <select id="control-budget-select" class="control-dropdown-select">
-              <option value="0">₹0 Free</option>
-              <option value="20" selected>₹10-₹20 Starter</option>
-              <option value="500">₹100-₹500 Professional</option>
-              <option value="1000">₹500-₹1000 Advanced</option>
-              <option value="100000">₹1000+ Enterprise</option>
-            </select>
-          </div>
-        </div>
+        <nav class="main-nav">
+          <a href="#dashboard-controls" class="nav-link active" data-target="dashboard-controls">Dashboard</a>
+          <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section">Roadmaps</a>
+          <a href="#explore-library-section" class="nav-link" data-target="explore-library-section">Explore Tools</a>
+          <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section">Categories</a>
+          <a href="#about-section" class="nav-link" data-target="about-section">About</a>
+        </nav>
 
-        <!-- Input 3: Preferred Workflow Type / Experience -->
-        <div class="control-group-input">
-          <label class="control-label-style">3. Workflow / Experience</label>
-          <div class="select-wrap">
-            <select id="control-workflow-select" class="control-dropdown-select">
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate" selected>Intermediate</option>
-              <option value="Advanced">Advanced</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Input 4: Language Selection -->
-        <div class="control-group-input">
-          <label class="control-label-style">4. Target Language</label>
-          <div class="select-wrap">
-            <select id="control-lang-select" class="control-dropdown-select">
-              <option value="English">English</option>
-              <option value="Hindi">Hindi</option>
-              <option value="Hinglish" selected>Hinglish (Recommended)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Action Button -->
-        <div class="control-group-input">
-          <button id="control-compile-btn" class="btn btn-primary btn-full">
-            COMPILE ROADMAP
+        <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+          <button id="theme-toggle" aria-label="Toggle monochrome theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              style="display: none;">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
           </button>
         </div>
 
+        <button class="hamburger-toggle" id="hamburger-toggle" aria-label="Toggle menu">
+          <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+            <line x1="3" y1="12" x2="21" y2="12" class="line-mid"></line>
+            <line x1="3" y1="6" x2="21" y2="6" class="line-top"></line>
+            <line x1="3" y1="18" x2="21" y2="18" class="line-bot"></line>
+          </svg>
+        </button>
       </div>
-    </div>
-  </section>
+    </header>
+    <div id="mobile-nav-overlay" class="mobile-nav-overlay"></div>
 
-  <!-- Native Ad 1: Between Dashboard Controls and Roadmap Builder -->
-  <div class="native-section-ad">
-    <span class="ad-tag">SPONSORED COGNITIVE NODE</span>
-    <div class="native-ad-body">
-      <div class="native-ad-icon-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-      </div>
-      <div class="native-ad-text">
-        <h4>Host Your AI Apps on DigitalOcean</h4>
-        <p>Get $200 free credit to deploy Next.js servers, databases, and Python AI models in seconds.</p>
-      </div>
-      <a href="https://digitalocean.com" target="_blank" rel="noopener" class="native-ad-btn">Claim Credit</a>
-    </div>
-  </div>
-
-  <!-- Section 1: Roadmap Builder -->
-  <section id="roadmap-builder-section" class="app-section">
-    <div class="section-header">
-      <div class="section-kicker">WORKFLOW PROTOCOLS</div>
-      <h2 class="section-title">Roadmap Builder</h2>
-      <p class="section-subtitle">Inspect the custom-compiled timeline. Filter nodes dynamically by system layer.</p>
-      
-      <!-- Timeline category filters -->
-      <div class="timeline-filter-wrap">
-        <nav class="filter-nav">
-          <button class="filter-btn active" data-filter="all">All Layers</button>
-          <button class="filter-btn" data-filter="creation">Creation</button>
-          <button class="filter-btn" data-filter="engineering">Engineering</button>
-          <button class="filter-btn" data-filter="analytics">Analytics</button>
-        </nav>
-      </div>
-    </div>
-
-    <!-- Main Timeline Container -->
-    <div class="timeline-container">
-      <!-- SVG Winding Road -->
-      <div class="road-svg-container">
-        <svg id="road-svg" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="road-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="var(--road-grad-start)" />
-              <stop offset="100%" stop-color="var(--road-grad-end)" />
-            </linearGradient>
-            <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="var(--glow-color)" flood-opacity="0.15" />
-            </filter>
-          </defs>
-          
-          <!-- Outer Road Border Path -->
-          <path id="road-bg-path" class="road-bg" d="" fill="none" stroke="var(--road-border)" stroke-width="48" stroke-linecap="round"></path>
-          <!-- Inner Road Path -->
-          <path id="road-fill-path" class="road-fill" d="" fill="none" stroke="var(--road-surface)" stroke-width="44" stroke-linecap="round"></path>
-          <!-- Dashed Divider Centerline -->
-          <path id="road-divider-path" class="road-divider" d="" fill="none" stroke="var(--road-dashed-line)" stroke-width="2" stroke-dasharray="8 12" stroke-linecap="round"></path>
-          <!-- Drawn active path showing scroll progress -->
-          <path id="road-progress-path" class="road-progress" d="" fill="none" stroke="var(--accent-color)" stroke-width="4" stroke-linecap="round"></path>
-        </svg>
-        
-        <!-- Moving Traveler Dot -->
-        <div id="road-traveler" class="traveler">
-          <div class="traveler-inner"></div>
+    <!-- ══════════════════════════════════════════════════════
+       PREMIUM TOP HERO BANNER — The Vankari Debt
+       Netflix-style cinematic strip with muted video bg
+  ═══════════════════════════════════════════════════════ -->
+    <div class="prem-hero-banner" id="promo-top-banner" role="complementary"
+      aria-label="The Vankari Debt — Now Available">
+      <!-- Muted autoplay video background -->
+      <video class="prem-hero-video" autoplay muted loop playsinline preload="none" data-src="./vankari.mp4"
+        id="vankari-hero-video">
+      </video>
+      <div class="prem-hero-overlay"></div>
+      <div class="prem-hero-body">
+        <div class="prem-hero-left">
+          <span class="prem-label-badge">✦ FROM THE CREATOR</span>
+          <span class="prem-genre-pill">🩸 Dark Thriller · 2026</span>
+          <h2 class="prem-hero-title">The Vankari Debt</h2>
+          <p class="prem-hero-tagline">Power protects the guilty — until someone decides to collect. A dark thriller set
+            in modern India where ancient tribal secrets collide with deadly consequences.</p>
+        </div>
+        <div class="prem-hero-right">
+          <img src="./vankari.png" alt="The Vankari Debt" class="prem-hero-poster" loading="lazy">
+          <div class="prem-hero-actions">
+            <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html"
+              target="_blank" rel="noopener" class="prem-btn-primary">Unlock the Mystery ↗</a>
+            <a href="https://play.google.com/store/books/details/Anuj_Rawal_The_Vankari_Debt?id=gSnFEQAAQBAJ"
+              target="_blank" rel="noopener" class="prem-btn-ghost">Google Play Books</a>
+          </div>
         </div>
       </div>
-
-      <!-- Timeline Nodes (compiled dynamically via JS) -->
-      <div class="timeline-list">
-        <!-- Replaced at run-time by compilation engine -->
-      </div>
-    </div>
-  </section>
-
-  <!-- Native Ad 2: Between Roadmap Builder and Explore Library -->
-  <div class="native-section-ad">
-    <span class="ad-tag">SPONSORED INTEGRATION</span>
-    <div class="native-ad-body">
-      <div class="native-ad-icon-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
-      </div>
-      <div class="native-ad-text">
-        <h4>Automate Workflows with Zapier AI</h4>
-        <p>Connect ChatGPT, Claude, and Google Sheets into automated multi-step trigger pipelines without coding.</p>
-      </div>
-      <a href="https://zapier.com" target="_blank" rel="noopener" class="native-ad-btn">Automate Now</a>
-    </div>
-  </div>
-
-  <!-- Section 2: Explore Library -->
-  <section id="explore-library-section" class="app-section">
-    <div class="section-header">
-      <div class="section-kicker">SYSTEM DIRECTORY</div>
-      <h2 class="section-title">Explore Library</h2>
-      <p class="section-subtitle">Browse and inspect all operational AI services without timeline compilation constraints.</p>
     </div>
 
-    <!-- Search & Filter Controls -->
-    <div class="library-toolbar">
-      <div class="library-search-wrap">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="library-search" class="library-search-input" placeholder="Search tools by name, description, tags...">
-      </div>
+    <div class="app-layout-wrapper">
+      <!-- Left Sticky Sidebar — Premium Vankari Card -->
+      <aside class="sidebar-ad sidebar-ad-left" aria-label="The Vankari Debt">
+        <div class="prem-sidebar-card prem-vankari-card" id="promo-left-sidebar">
+          <span class="prem-sidebar-label">✦ FEATURED BOOK</span>
+          <div class="prem-sidebar-img-wrap">
+            <img src="./vankari.png" alt="The Vankari Debt" class="prem-sidebar-img" loading="lazy">
+            <div class="prem-sidebar-glow"></div>
+          </div>
+          <div class="prem-sidebar-info">
+            <span class="prem-sidebar-genre">🩸 Dark Thriller</span>
+            <h3 class="prem-sidebar-title">The Vankari Debt</h3>
+            <p class="prem-sidebar-desc">Five souls, deadly secrets, ancient caves. Volume I — Available Now.</p>
+            <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html"
+              target="_blank" rel="noopener" class="prem-sidebar-cta vankari-cta">Read Now ↗</a>
+          </div>
+        </div>
+      </aside>
 
-      <div class="library-controls-panel">
-        <!-- View Mode Switcher -->
-        <div class="control-group">
-          <span class="control-label">VIEW MODE:</span>
-          <div class="view-toggles">
-            <button class="view-btn active" id="view-grid-btn" title="Grid View">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            </button>
-            <button class="view-btn" id="view-list-btn" title="List View">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-            </button>
-            <button class="view-btn" id="view-cat-btn" title="Group by Category">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-            </button>
+      <main class="app-main-content">
+
+        <!-- Persistent Controls Dashboard Toolbar -->
+        <section class="dashboard-controls" id="dashboard-controls">
+          <div class="controls-container">
+            <div class="controls-label">
+              OPERATIONAL TARGET CONFIGURATION
+            </div>
+            <div class="controls-inputs-grid">
+
+              <!-- Input 1: Task Selection -->
+              <div class="control-group-input">
+                <label class="control-label-style">1. Task / Objective</label>
+                <div class="select-wrap">
+                  <select id="control-task-select" class="control-dropdown-select">
+                    <option value="Exploring AI" selected>Exploring AI</option>
+                    <option value="Generating Video">Generate a Complete AI Video</option>
+                    <option value="Generating Images">Generate Professional AI Images</option>
+                    <option value="Designing">Create Digital Designs Using AI</option>
+                    <option value="Coding">Build Software Using AI</option>
+                    <option value="Building Apps">Build Android Application</option>
+                    <option value="Tips to Earn Money">Monetize AI Skills</option>
+                    <option value="Music Making">Create Music Using AI</option>
+                    <option value="Voice Over Generation">Generate Professional Voice Over</option>
+                    <option value="Brand Building">Build a Brand Using AI</option>
+                    <option value="Personal AI Building">Build a Personal AI Assistant</option>
+                    <option value="Help in Video Editing">Edit Video Production Using AI</option>
+                    <option value="Help in Music Editing">Enhance & Edit Audio Tracks</option>
+                    <option value="Writing Work">Generate Copy & Written Content</option>
+                    <option value="Hardware Building">Design and Prototype Hardware</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Input 2: Budget Selection -->
+              <div class="control-group-input">
+                <label class="control-label-style">2. Budget limit</label>
+                <div class="select-wrap">
+                  <select id="control-budget-select" class="control-dropdown-select">
+                    <option value="0">₹0 Free</option>
+                    <option value="20" selected>₹10-₹20 Starter</option>
+                    <option value="500">₹100-₹500 Professional</option>
+                    <option value="1000">₹500-₹1000 Advanced</option>
+                    <option value="100000">₹1000+ Enterprise</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Input 3: Preferred Workflow Type / Experience -->
+              <div class="control-group-input">
+                <label class="control-label-style">3. Workflow / Experience</label>
+                <div class="select-wrap">
+                  <select id="control-workflow-select" class="control-dropdown-select">
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate" selected>Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Input 4: Language Selection -->
+              <div class="control-group-input">
+                <label class="control-label-style">4. Target Language</label>
+                <div class="select-wrap">
+                  <select id="control-lang-select" class="control-dropdown-select">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Hinglish" selected>Hinglish (Recommended)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Action Button -->
+              <div class="control-group-input">
+                <button id="control-compile-btn" class="btn btn-primary btn-full">
+                  COMPILE ROADMAP
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ══ PREMIUM WIDE BANNER: A.R. Publications ══ -->
+        <div class="prem-wide-banner-container" id="promo-native-1">
+          <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
+            title="Visit A.R. Publications">
+            <img src="ar_pub_banner.png" alt="A.R. Publications Wide Banner"
+              style="width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--border-color);">
+          </a>
+        </div>
+
+        <!-- Section 1: Roadmap Builder -->
+        <section id="roadmap-builder-section" class="app-section">
+          <div class="section-header">
+            <div class="section-kicker">WORKFLOW PROTOCOLS</div>
+            <h2 class="section-title">Roadmap Builder</h2>
+            <p class="section-subtitle">Inspect the custom-compiled timeline. Filter nodes dynamically by system layer.
+            </p>
+
+            <!-- Timeline category filters -->
+            <div class="timeline-filter-wrap">
+              <nav class="filter-nav">
+                <button class="filter-btn active" data-filter="all">All Layers</button>
+                <button class="filter-btn" data-filter="creation">Creation</button>
+                <button class="filter-btn" data-filter="engineering">Engineering</button>
+                <button class="filter-btn" data-filter="analytics">Analytics</button>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Main Timeline Container -->
+          <div class="timeline-container">
+            <!-- SVG Winding Road -->
+            <div class="road-svg-container">
+              <svg id="road-svg" width="100%" height="100%" preserveAspectRatio="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="road-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="var(--road-grad-start)" />
+                    <stop offset="100%" stop-color="var(--road-grad-end)" />
+                  </linearGradient>
+                  <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="var(--glow-color)"
+                      flood-opacity="0.15" />
+                  </filter>
+                </defs>
+
+                <!-- Outer Road Border Path -->
+                <path id="road-bg-path" class="road-bg" d="" fill="none" stroke="var(--road-border)" stroke-width="48"
+                  stroke-linecap="round"></path>
+                <!-- Inner Road Path -->
+                <path id="road-fill-path" class="road-fill" d="" fill="none" stroke="var(--road-surface)"
+                  stroke-width="44" stroke-linecap="round"></path>
+                <!-- Dashed Divider Centerline -->
+                <path id="road-divider-path" class="road-divider" d="" fill="none" stroke="var(--road-dashed-line)"
+                  stroke-width="2" stroke-dasharray="8 12" stroke-linecap="round"></path>
+                <!-- Drawn active path showing scroll progress -->
+                <path id="road-progress-path" class="road-progress" d="" fill="none" stroke="var(--accent-color)"
+                  stroke-width="4" stroke-linecap="round"></path>
+              </svg>
+
+              <!-- Moving Traveler Dot -->
+              <div id="road-traveler" class="traveler">
+                <div class="traveler-inner"></div>
+              </div>
+            </div>
+
+            <!-- Timeline Nodes (compiled dynamically via JS) -->
+            <div class="timeline-list">
+              <!-- Replaced at run-time by compilation engine -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ══ PREMIUM NATIVE PROMO 2: RF Portal + Apps by Anuj dual card ══ -->
+        <div class="prem-dual-strip" id="promo-native-2" role="complementary" aria-label="Projects by Anuj">
+          <span class="prem-label-badge">✦ FROM THE CREATOR</span>
+          <div class="prem-dual-grid">
+
+            <!-- RF Communication Portal -->
+            <div class="prem-dual-card prem-dual-rf">
+              <div class="prem-dual-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="2" />
+                  <path
+                    d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14" />
+                </svg>
+              </div>
+              <div class="prem-dual-text">
+                <span class="prem-dual-cat">Engineering · Education</span>
+                <h4 class="prem-dual-title">RF Communication Portal</h4>
+                <p class="prem-dual-desc">Deep-dive into RF, antenna theory, signal propagation and wireless engineering
+                  concepts with curated resources and interactive content.</p>
+                <a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank"
+                  rel="noopener" class="prem-dual-cta prem-cta-rf">Explore RF Portal ↗</a>
+              </div>
+            </div>
+
+            <!-- Apps by Anuj -->
+            <div class="prem-dual-card prem-dual-apps">
+              <div class="prem-dual-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                  <line x1="12" y1="18" x2="12.01" y2="18" />
+                </svg>
+              </div>
+              <div class="prem-dual-text">
+                <span class="prem-dual-cat">Mobile Apps · Software</span>
+                <h4 class="prem-dual-title">Apps By Anuj Rawal</h4>
+                <p class="prem-dual-desc">A growing collection of mobile applications and software tools developed by
+                  Anuj Rawal — designed to simplify and empower everyday digital tasks.</p>
+                <a href="https://anujrawal05.github.io/apps-by-anujrawal/" target="_blank" rel="noopener"
+                  class="prem-dual-cta prem-cta-apps">Browse Apps ↗</a>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <!-- Sorting Selector -->
-        <div class="control-group">
-          <label for="library-sort" class="control-label">SORT BY:</label>
-          <select id="library-sort" class="control-select">
-            <option value="default" selected>Default (Suggested)</option>
-            <option value="name-asc">Name (A - Z)</option>
-            <option value="name-desc">Name (Z - A)</option>
-            <option value="price-low">Price (Low - High)</option>
-            <option value="difficulty">Difficulty (Beginner First)</option>
-          </select>
-        </div>
+        <!-- Section 2: Explore Library -->
+        <section id="explore-library-section" class="app-section">
+          <div class="section-header">
+            <div class="section-kicker">SYSTEM DIRECTORY</div>
+            <h2 class="section-title">Explore Library</h2>
+            <p class="section-subtitle">Browse and inspect all operational AI services without timeline compilation
+              constraints.</p>
+          </div>
 
-        <!-- Favorites Switch -->
-        <div class="control-group">
-          <label class="favorites-filter-label" id="fav-filter-wrap">
-            <input type="checkbox" id="library-favorites-toggle">
-            <span class="star-icon">★</span>
-            <span class="lbl-text">FAVORITES ONLY</span>
-          </label>
-        </div>
-        
-        <!-- Compare Tools Action -->
-        <div id="compare-status-wrap" class="compare-status-wrap" style="display: none;">
-          <span class="compare-text"><span id="compare-count">0</span>/3 SELECTED</span>
-          <button id="compare-trigger-btn" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 4px;">COMPARE</button>
-          <button id="compare-clear-btn" class="compare-clear-btn">Clear</button>
-        </div>
-      </div>
+          <!-- Search & Filter Controls -->
+          <div class="library-toolbar">
+            <div class="library-search-wrap">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="library-search" class="library-search-input"
+                placeholder="Search tools by name, description, tags...">
+            </div>
 
-      <div class="library-filter-scroll">
-        <div class="library-filter-chips" id="library-filter-chips">
-          <button class="filter-chip active" data-chip="all">All Sectors</button>
-          <!-- Populated by JS -->
-        </div>
-      </div>
-    </div>
+            <div class="library-controls-panel">
+              <!-- View Mode Switcher -->
+              <div class="control-group">
+                <span class="control-label">VIEW MODE:</span>
+                <div class="view-toggles">
+                  <button class="view-btn active" id="view-grid-btn" title="Grid View">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="14" width="7" height="7"></rect>
+                      <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                  </button>
+                  <button class="view-btn" id="view-list-btn" title="List View">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="8" y1="6" x2="21" y2="6"></line>
+                      <line x1="8" y1="12" x2="21" y2="12"></line>
+                      <line x1="8" y1="18" x2="21" y2="18"></line>
+                      <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                      <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                      <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                  </button>
+                  <button class="view-btn" id="view-cat-btn" title="Group by Category">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
 
-    <!-- Card Grid -->
-    <div class="library-grid" id="library-grid">
-      <!-- Generated dynamically in exact dataset sequence -->
-    </div>
-  </section>
+              <!-- Sorting Selector -->
+              <div class="control-group">
+                <label for="library-sort" class="control-label">SORT BY:</label>
+                <select id="library-sort" class="control-select">
+                  <option value="default" selected>Default (Suggested)</option>
+                  <option value="name-asc">Name (A - Z)</option>
+                  <option value="name-desc">Name (Z - A)</option>
+                  <option value="price-low">Price (Low - High)</option>
+                  <option value="difficulty">Difficulty (Beginner First)</option>
+                </select>
+              </div>
 
-  <!-- Section 3: Category Explorer -->
-  <section id="category-explorer-section" class="app-section">
-    <div class="section-header">
-      <div class="section-kicker">SECTOR CLASSIFICATION</div>
-      <h2 class="section-title">Category Explorer</h2>
-      <p class="section-subtitle">Inspect decentralized machine intelligence nodes partitioned by industry sectors.</p>
-    </div>
+              <!-- Favorites Switch -->
+              <div class="control-group">
+                <label class="favorites-filter-label" id="fav-filter-wrap">
+                  <input type="checkbox" id="library-favorites-toggle">
+                  <span class="star-icon">★</span>
+                  <span class="lbl-text">FAVORITES ONLY</span>
+                </label>
+              </div>
 
-    <div class="category-explorer-container">
-      <!-- Sidebar containing 12 Categories -->
-      <aside class="category-sidebar">
-        <ul class="category-list" id="category-explorer-list">
-          <!-- Populated by JS -->
-        </ul>
-      </aside>
+              <!-- Compare Tools Action -->
+              <div id="compare-status-wrap" class="compare-status-wrap" style="display: none;">
+                <span class="compare-text"><span id="compare-count">0</span>/3 SELECTED</span>
+                <button id="compare-trigger-btn" class="btn btn-primary"
+                  style="padding: 6px 12px; font-size: 0.75rem; border-radius: 4px;">COMPARE</button>
+                <button id="compare-clear-btn" class="compare-clear-btn">Clear</button>
+              </div>
+            </div>
 
-      <!-- Active tools list panel -->
-      <main class="category-content-panel">
-        <div class="category-active-header">
-          <h3 class="category-active-title" id="category-active-name">Everyday Personal Tasks</h3>
-          <span class="category-active-badge" id="category-active-count">0 Nodes</span>
-        </div>
-        <div class="category-tools-grid" id="category-tools-grid">
-          <!-- Matched nodes will render here -->
-        </div>
+            <div class="library-filter-scroll">
+              <div class="library-filter-chips" id="library-filter-chips">
+                <button class="filter-chip active" data-chip="all">All Sectors</button>
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Grid -->
+          <div class="library-grid" id="library-grid">
+            <!-- Generated dynamically in exact dataset sequence -->
+          </div>
+        </section>
+
+        <!-- Section 3: Category Explorer -->
+        <section id="category-explorer-section" class="app-section">
+          <div class="section-header">
+            <div class="section-kicker">SECTOR CLASSIFICATION</div>
+            <h2 class="section-title">Category Explorer</h2>
+            <p class="section-subtitle">Inspect decentralized machine intelligence nodes partitioned by industry
+              sectors.</p>
+          </div>
+
+          <div class="category-explorer-container">
+            <!-- Sidebar containing 12 Categories -->
+            <aside class="category-sidebar">
+              <ul class="category-list" id="category-explorer-list">
+                <!-- Populated by JS -->
+              </ul>
+            </aside>
+
+            <!-- Active tools list panel -->
+            <main class="category-content-panel">
+              <div class="category-active-header">
+                <h3 class="category-active-title" id="category-active-name">Everyday Personal Tasks</h3>
+                <span class="category-active-badge" id="category-active-count">0 Nodes</span>
+              </div>
+              <div class="category-tools-grid" id="category-tools-grid">
+                <!-- Matched nodes will render here -->
+              </div>
+            </main>
+          </div>
+        </section>
+
+        <!-- Section 5: About Section -->
+        <section id="about-section" class="app-section">
+          <div class="section-header">
+            <div class="section-kicker">SYSTEM PROFILE</div>
+            <h2 class="section-title">About AI-OS</h2>
+            <p class="section-subtitle">AI Overall Solutions — Engineered by Anuj.</p>
+          </div>
+
+          <div class="about-container">
+            <div class="about-text-block">
+              <p>AI-OS stands for <strong>Artificial Intelligence Overall Solutions</strong>. It is a practical AI
+                execution operating system designed to help users accomplish real-world goals using the best AI tools
+                available.</p>
+              <p>Whether you want to generate creative videos, build applications, draft code, or automate complex
+                business workflows, AI-OS instantly compiles optimized workflow roadmaps, provides single universal
+                master prompts, and recommends world-class tool chains. There are no course syllabus plans, theory
+                chapters, or certification checkpoints here—only pure, step-by-step execution guides to help you achieve
+                your objective.</p>
+            </div>
+            <div class="about-grid-metrics">
+              <div class="metric-box">
+                <span class="metric-val" id="metric-active-nodes">120+</span>
+                <span class="metric-lbl">ACTIVE SYSTEM NODES</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-val">12</span>
+                <span class="metric-lbl">INDUSTRY SECTORS</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
-    </div>
-  </section>
 
-  <!-- Section 5: About Section -->
-  <section id="about-section" class="app-section">
-    <div class="section-header">
-      <div class="section-kicker">SYSTEM PROFILE</div>
-      <h2 class="section-title">About AI-OS</h2>
-      <p class="section-subtitle">AI Overall Solutions — Engineered by Anuj.</p>
-    </div>
-
-    <div class="about-container">
-      <div class="about-text-block">
-        <p>AI-OS stands for <strong>Artificial Intelligence Overall Solutions</strong>. It is a practical AI execution operating system designed to help users accomplish real-world goals using the best AI tools available.</p>
-        <p>Whether you want to generate creative videos, build applications, draft code, or automate complex business workflows, AI-OS instantly compiles optimized workflow roadmaps, provides single universal master prompts, and recommends world-class tool chains. There are no course syllabus plans, theory chapters, or certification checkpoints here—only pure, step-by-step execution guides to help you achieve your objective.</p>
-      </div>
-      <div class="about-grid-metrics">
-        <div class="metric-box">
-          <span class="metric-val" id="metric-active-nodes">120+</span>
-          <span class="metric-lbl">ACTIVE SYSTEM NODES</span>
+      <!-- Right Sticky Sidebar — RF Portal + Apps stacked -->
+      <aside class="sidebar-ad sidebar-ad-right" aria-label="Projects by Anuj">
+        <!-- RF Portal mini card -->
+        <div class="prem-sidebar-card prem-rf-card" id="promo-right-sidebar">
+          <span class="prem-sidebar-label">✦ EXPLORE</span>
+          <div class="prem-sidebar-rf-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+              <circle cx="12" cy="12" r="2" />
+              <path
+                d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14" />
+            </svg>
+          </div>
+          <div class="prem-sidebar-info">
+            <span class="prem-sidebar-genre">📡 Engineering</span>
+            <h3 class="prem-sidebar-title">RF Communication Portal</h3>
+            <p class="prem-sidebar-desc">Antenna theory, signal propagation, wireless systems &amp; RF engineering
+              resources.</p>
+            <a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank" rel="noopener"
+              class="prem-sidebar-cta rf-cta">Visit Portal ↗</a>
+          </div>
         </div>
-        <div class="metric-box">
-          <span class="metric-val">12</span>
-          <span class="metric-lbl">INDUSTRY SECTORS</span>
+        <!-- Apps by Anuj mini card -->
+        <div class="prem-sidebar-card prem-apps-card" style="margin-top: 12px;">
+          <span class="prem-sidebar-label">✦ DOWNLOAD</span>
+          <div class="prem-sidebar-rf-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+              <rect x="5" y="2" width="14" height="20" rx="2" />
+              <line x1="12" y1="18" x2="12.01" y2="18" />
+            </svg>
+          </div>
+          <div class="prem-sidebar-info">
+            <span class="prem-sidebar-genre">📱 Mobile Apps</span>
+            <h3 class="prem-sidebar-title">Apps By Anuj Rawal</h3>
+            <p class="prem-sidebar-desc">Mobile apps and software tools built to simplify your digital life.</p>
+            <a href="https://anujrawal05.github.io/apps-by-anujrawal/" target="_blank" rel="noopener"
+              class="prem-sidebar-cta apps-cta">Explore Apps ↗</a>
+          </div>
         </div>
+      </aside>
+    </div>
+
+    <!-- ══ PREMIUM BOTTOM SHOWCASE BANNER ══ -->
+    <div class="prem-bottom-showcase" id="promo-bottom-banner" role="complementary"
+      aria-label="A.R. Publications Books">
+      <div class="prem-bottom-inner">
+        <div class="prem-bottom-label">
+          <span class="prem-label-badge">✦ A.R. PUBLICATIONS</span>
+          <p class="prem-bottom-tagline">The Literary Universe of Anuj Rawal</p>
+        </div>
+        <div class="prem-bottom-books">
+          <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html" target="_blank"
+            rel="noopener" class="prem-bottom-book prem-book-vankari">
+            <img src="./vankari-book.jpg" alt="The Vankari Debt" loading="lazy">
+            <div class="prem-bottom-book-info">
+              <span>Dark Thriller</span>
+              <strong>The Vankari Debt</strong>
+            </div>
+          </a>
+          <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
+            class="prem-bottom-book">
+            <img src="./sanatan1.jpg" alt="Sanatan Vol 1" loading="lazy">
+            <div class="prem-bottom-book-info">
+              <span>Spiritual</span>
+              <strong>Sanatan: Eternal Way</strong>
+            </div>
+          </a>
+          <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
+            class="prem-bottom-book">
+            <img src="./sanatan2.png" alt="Sanatan Vol 2" loading="lazy">
+            <div class="prem-bottom-book-info">
+              <span>Spiritual</span>
+              <strong>Sanatan: Birth to Death</strong>
+            </div>
+          </a>
+        </div>
+        <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
+          class="prem-btn-primary" style="flex-shrink:0;">Visit Publisher ↗</a>
       </div>
     </div>
-  </section>
 
-    </main>
-
-    <!-- Right Sticky Sidebar Ad (Desktop Only) -->
-    <aside class="sidebar-ad sidebar-ad-right" aria-label="Advertisement">
-      <div class="ad-placeholder-sticky">
-        <span class="ad-tag">SPONSORED</span>
-        <div class="ad-content-box">
-          <h4>Cursor Editor</h4>
-          <p>The AI-first code editor designed for pair programming and editing files.</p>
-          <a href="https://cursor.sh" target="_blank" rel="noopener" class="ad-cta">Download</a>
-        </div>
+    <!-- Centered Footer -->
+    <footer class="app-footer" style="text-align: center; border-top: 1px solid var(--border-color);">
+      <div class="footer-container" style="justify-content: center; width: 100%;">
+        <p style="text-align: center;">© AI-OS — AI Overall Solutions By Anuj. All Rights Reserved.</p>
       </div>
-    </aside>
-  </div>
-
-  <!-- Bottom Responsive Banner Ad -->
-  <div class="banner-ad banner-ad-bottom" role="complementary" aria-label="Advertisement">
-    <span class="ad-tag">SPONSORED ADVERTISEMENT</span>
-    <div class="banner-ad-content">
-      <strong>OpenAI Enterprise:</strong> Empower your team with ChatGPT Plus at scale. <a href="https://openai.com" target="_blank" rel="noopener">Learn More</a>
-    </div>
-  </div>
-
-  <!-- Centered Footer -->
-  <footer class="app-footer" style="text-align: center; border-top: 1px solid var(--border-color);">
-    <div class="footer-container" style="justify-content: center; width: 100%;">
-      <p style="text-align: center;">© AI-OS — AI Overall Solutions By Anuj. All Rights Reserved.</p>
-    </div>
-  </footer>
+    </footer>
 
   </div> <!-- End main-content-wrapper -->
+
+  <!-- ===== CINEMATIC VANKARI DEBT POPUP (EXACT FROM A.R. PUBLICATIONS) ===== -->
+  <div id="vankari-welcome-popup" class="cinematic-modal" role="dialog" aria-modal="true"
+    aria-label="The Vankari Debt — Book Promotion">
+    <div class="cinematic-modal-content">
+      <div class="cinematic-close" id="close-vankari-welcome" aria-label="Close">&times;</div>
+      <div class="cinematic-layout">
+        <div class="cinematic-poster-wrapper">
+          <div class="poster-glow"></div>
+          <img src="./vankari.png" alt="The Vankari Debt Poster" loading="lazy">
+        </div>
+        <div class="cinematic-text">
+          <span class="cinematic-badge">Now Available</span>
+          <h2>The Vankari Debt</h2>
+          <p class="tagline">Step into the darkness. A dark thriller where history, mystery, and deadly tribal secrets
+            collide deep within the ancient caves.</p>
+          <div class="cinematic-action">
+            <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html"
+              target="_blank" rel="noopener" class="btn-cinematic">Unlock the Mystery</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Detail Inspect Drawer -->
   <div id="detail-drawer" class="drawer" aria-hidden="true">
@@ -441,13 +618,14 @@
       <div class="drawer-header">
         <span id="drawer-node-id" class="node-id">NODE_00 // SPEC</span>
         <button id="drawer-close-btn" aria-label="Close panel">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       </div>
-      
+
       <div class="drawer-body">
         <div class="drawer-hero">
           <div id="drawer-icon" class="drawer-icon-container">
@@ -458,21 +636,21 @@
             <span id="drawer-category" class="drawer-category">CREATION ENGINE</span>
           </div>
         </div>
-        
+
         <div class="drawer-section">
           <h4>FUNCTIONAL DESCRIPTION</h4>
           <div id="drawer-desc" class="drawer-description-text">
             <!-- Description and instructions populated at run-time -->
           </div>
         </div>
-        
+
         <div class="drawer-section">
           <h4>INTERACTIVE PLAYGROUND</h4>
           <div class="playground-wrapper" id="playground-container">
             <!-- Sandbox UI components populated at run-time -->
           </div>
         </div>
-        
+
         <div class="drawer-section">
           <h4>PERFORMANCE SPECIFICATIONS</h4>
           <div class="spec-grid">
@@ -494,7 +672,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="drawer-section">
           <h4>RECOMMENDED ALTERNATIVES</h4>
           <div id="drawer-alternatives" class="alternatives-grid">
@@ -502,11 +680,12 @@
           </div>
         </div>
       </div>
-      
+
       <div class="drawer-footer">
         <a id="drawer-link-btn" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-full">
           <span>DEPLOY ENGINE PIPELINE</span>
-          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="7" y1="17" x2="17" y2="7"></line>
             <polyline points="7 7 17 7 17 17"></polyline>
           </svg>
@@ -522,13 +701,14 @@
       <div class="drawer-header">
         <span class="node-id">SYSTEM COMPARISON BENCHMARK</span>
         <button id="comparison-close-btn" aria-label="Close comparison">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       </div>
-      
+
       <div class="drawer-body" style="overflow-y: auto;">
         <div style="width: 100%; overflow-x: auto;">
           <table class="comparison-table" id="comparison-table">
@@ -544,5 +724,128 @@
   <script src="toolsData.js?v=3.0"></script>
   <script src="exploringAIData.js?v=3.0"></script>
   <script src="app.js?v=3.0"></script>
+
+  <!-- ===== CINEMATIC POPUP — SESSION LOGIC ===== -->
+  <script>
+    (function () {
+      'use strict';
+      var SESSION_KEY = 'aios_vankari_popup_shown';
+
+      function openPopup() {
+        var popup = document.getElementById('vankari-welcome-popup');
+        if (!popup) return;
+        document.body.classList.add('modal-open');
+        popup.classList.add('active');
+        sessionStorage.setItem(SESSION_KEY, '1');
+      }
+
+      function closePopup() {
+        var popup = document.getElementById('vankari-welcome-popup');
+        if (!popup) return;
+        popup.classList.remove('active');
+        document.body.classList.remove('modal-open');
+      }
+
+      function init() {
+        // Show only once per session
+        if (sessionStorage.getItem(SESSION_KEY)) return;
+
+        // Delay slightly so the app initialises first
+        setTimeout(openPopup, 1200);
+
+        // Wire close button
+        var closeBtn = document.getElementById('close-vankari-welcome');
+        if (closeBtn) closeBtn.addEventListener('click', closePopup);
+
+        // Click on dark backdrop closes
+        var popup = document.getElementById('vankari-welcome-popup');
+        if (popup) {
+          popup.addEventListener('click', function (e) {
+            if (e.target === popup) closePopup();
+          });
+        }
+
+        // Escape key closes
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') closePopup();
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+
+  <!-- ===== PREMIUM AD MANAGER ===== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ─── Lazy-load Vankari hero video ───────────────────────────────────── */
+      function initHeroVideo() {
+        var video = document.getElementById('vankari-hero-video');
+        if (!video) return;
+        var src = video.getAttribute('data-src');
+        if (!src) return;
+
+        var obs = new IntersectionObserver(function (entries) {
+          if (entries[0].isIntersecting) {
+            video.src = src;
+            video.load();
+            video.play().catch(function () { });
+            obs.disconnect();
+          }
+        }, { threshold: 0.1 });
+        obs.observe(video);
+      }
+
+      /* ─── A.R. Publications book carousel ───────────────────────────────── */
+      function initCarousel() {
+        var track = document.getElementById('prem-carousel-track');
+        var prev = document.getElementById('prem-prev');
+        var next = document.getElementById('prem-next');
+        if (!track || !prev || !next) return;
+
+        var cardWidth = function () {
+          var card = track.querySelector('.prem-carousel-card');
+          return card ? card.offsetWidth + 24 : 320; // 24 = gap
+        };
+
+        prev.addEventListener('click', function () {
+          track.scrollBy({ left: -cardWidth(), behavior: 'smooth' });
+        });
+        next.addEventListener('click', function () {
+          track.scrollBy({ left: cardWidth(), behavior: 'smooth' });
+        });
+
+        // Auto-advance every 6s
+        setInterval(function () {
+          var maxScroll = track.scrollWidth - track.clientWidth;
+          if (track.scrollLeft >= maxScroll - 4) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            track.scrollBy({ left: cardWidth(), behavior: 'smooth' });
+          }
+        }, 6000);
+      }
+
+      /* ─── Boot ───────────────────────────────────────────────────────────── */
+      function boot() {
+        initHeroVideo();
+        initCarousel();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+  </script>
+
 </body>
+
 </html>
