@@ -16,6 +16,7 @@
   /* Card Heights & Grid */
   --card-width: 480px;
   --road-width: 120px;
+  --prem-radius: 12px;
 }
 
 /* Dark Theme Variables (Default) */
@@ -84,6 +85,8 @@
   --card-hover-badge-bg-new: rgba(10, 10, 12, 0.06);
   --select-option-bg: #1c1c1e;
   --select-option-color: #f5f5f7;
+  --promo-bg: rgba(18, 18, 22, 0.55);
+  --promo-border: rgba(255, 255, 255, 0.08);
 }
 
 /* Light Theme Variables */
@@ -152,6 +155,8 @@
   --card-hover-badge-bg-new: rgba(255, 255, 255, 0.08);
   --select-option-bg: #ffffff;
   --select-option-color: #1c1c1e;
+  --promo-bg: rgba(255, 255, 255, 0.7);
+  --promo-border: rgba(0, 0, 0, 0.08);
 }
 
 /* Transition suppression helper to ensure instant typography/theme color updates */
@@ -5999,4 +6004,52 @@ body.modal-open {
   .prem-bottom-book {
     transition: none !important;
   }
+}
+
+/* ── GOOGLE ADSENSE INTEGRATION & LOCAL FALLBACK ───────────────────────── */
+/* Collapse Google Ads placeholder tags unless they are successfully loaded */
+ins.adsbygoogle:not([data-ad-status="filled"]) {
+  display: none !important;
+}
+
+/* Hide fallback local ads content when Google Ads load successfully */
+ins.adsbygoogle[data-ad-status="filled"] + .local-ad-content,
+ins.adsbygoogle[data-ad-status="filled"] ~ .local-ad-content {
+  display: none !important;
+}
+
+/* Style the Google Ads containers to fit nicely */
+ins.adsbygoogle {
+  background: var(--promo-bg);
+  border: 1px solid var(--promo-border);
+  border-radius: var(--prem-radius);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Align ad slots to occupy full container layout properties */
+.sidebar-ad ins.adsbygoogle {
+  min-height: 250px;
+  width: 100%;
+}
+
+.prem-wide-banner-container ins.adsbygoogle {
+  min-height: 90px;
+  width: 100%;
+}
+
+.top-hero-ad-container ins.adsbygoogle {
+  min-height: 250px;
+  width: 100%;
+  margin-top: 72px;
+}
+
+.prem-dual-strip ins.adsbygoogle {
+  min-height: 150px;
+  width: 100%;
+}
+
+.prem-bottom-showcase ins.adsbygoogle {
+  min-height: 90px;
+  width: 100%;
 }
