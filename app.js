@@ -3748,6 +3748,7 @@ function initNavigation() {
   const navLinks = document.querySelectorAll('.main-nav .nav-link');
   const sections = document.querySelectorAll('section[id], header[id]');
   
+  const appHeader = document.querySelector('.app-header');
   const hamburgerToggle = document.getElementById('hamburger-toggle');
   const mainNav = document.querySelector('.main-nav');
   const mobileOverlay = document.getElementById('mobile-nav-overlay');
@@ -3756,6 +3757,7 @@ function initNavigation() {
     if (hamburgerToggle) hamburgerToggle.classList.remove('active');
     if (mainNav) mainNav.classList.remove('mobile-active');
     if (mobileOverlay) mobileOverlay.classList.remove('active');
+    if (appHeader) appHeader.classList.remove('menu-active');
   }
 
   if (hamburgerToggle && mainNav && mobileOverlay) {
@@ -3764,6 +3766,7 @@ function initNavigation() {
       hamburgerToggle.classList.toggle('active');
       mainNav.classList.toggle('mobile-active');
       mobileOverlay.classList.toggle('active');
+      if (appHeader) appHeader.classList.toggle('menu-active');
     });
 
     mobileOverlay.addEventListener('click', () => {
