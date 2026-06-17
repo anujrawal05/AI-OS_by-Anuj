@@ -3552,7 +3552,7 @@ function renderLibraryGrid() {
   if (state.viewMode === 'grid') {
     libraryGrid.removeAttribute('style');
     libraryGrid.className = 'library-grid';
-    filtered.forEach(tool => {
+    filtered.forEach((tool, idx) => {
       const originalIndex = toolsData.findIndex(t => t.id === tool.id);
       const cardEl = document.createElement('div');
       cardEl.className = 'timeline-card library-item-card visible';
@@ -3561,11 +3561,24 @@ function renderLibraryGrid() {
       const isCompared = state.comparisonList.includes(tool.id);
       cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false);
       libraryGrid.appendChild(cardEl);
+
+      // Injected Ads (Code 1 after 4th and 8th tools on Desktop)
+      if (window.AdManager && window.innerWidth >= 1200) {
+        if (idx === 3) {
+          const adCard = window.AdManager.createInlineAdCard('code_1');
+          libraryGrid.appendChild(adCard);
+          window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
+        } else if (idx === 7) {
+          const adCard = window.AdManager.createInlineAdCard('code_1');
+          libraryGrid.appendChild(adCard);
+          window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
+        }
+      }
     });
   } else if (state.viewMode === 'list') {
     libraryGrid.removeAttribute('style');
     libraryGrid.className = 'library-grid list-view';
-    filtered.forEach(tool => {
+    filtered.forEach((tool, idx) => {
       const originalIndex = toolsData.findIndex(t => t.id === tool.id);
       const cardEl = document.createElement('div');
       cardEl.className = 'timeline-card library-item-card visible';
@@ -3574,6 +3587,19 @@ function renderLibraryGrid() {
       const isCompared = state.comparisonList.includes(tool.id);
       cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false);
       libraryGrid.appendChild(cardEl);
+
+      // Injected Ads (Code 1 after 4th and 8th tools on Desktop)
+      if (window.AdManager && window.innerWidth >= 1200) {
+        if (idx === 3) {
+          const adCard = window.AdManager.createInlineAdCard('code_1');
+          libraryGrid.appendChild(adCard);
+          window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
+        } else if (idx === 7) {
+          const adCard = window.AdManager.createInlineAdCard('code_1');
+          libraryGrid.appendChild(adCard);
+          window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
+        }
+      }
     });
   } else if (state.viewMode === 'category') {
     libraryGrid.className = '';
@@ -3583,10 +3609,12 @@ function renderLibraryGrid() {
     libraryGrid.style.width = '100%';
     
     // Output grouped by category in exact order of industriesList
+    let nonElGroupCount = 0;
     industriesList.forEach(category => {
       const catTools = filtered.filter(tool => tool.industries && tool.industries.includes(category));
       
       if (catTools.length > 0) {
+        nonElGroupCount++;
         const groupWrap = document.createElement('div');
         groupWrap.className = 'category-group-wrap';
         
@@ -3612,6 +3640,19 @@ function renderLibraryGrid() {
         });
         
         libraryGrid.appendChild(groupWrap);
+
+        // Injected Ads (Code 1 after 1st and 2nd category groups on Desktop)
+        if (window.AdManager && window.innerWidth >= 1200) {
+          if (nonElGroupCount === 1) {
+            const adCard = window.AdManager.createInlineAdCard('code_1');
+            libraryGrid.appendChild(adCard);
+            window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
+          } else if (nonElGroupCount === 2) {
+            const adCard = window.AdManager.createInlineAdCard('code_1');
+            libraryGrid.appendChild(adCard);
+            window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
+          }
+        }
       }
     });
   }
@@ -3678,7 +3719,7 @@ function renderCategoryExplorer() {
     return;
   }
   
-  matched.forEach(tool => {
+  matched.forEach((tool, idx) => {
     const originalIndex = toolsData.findIndex(t => t.id === tool.id);
     const cardEl = document.createElement('div');
     cardEl.className = 'timeline-card library-item-card visible';
@@ -3687,6 +3728,13 @@ function renderCategoryExplorer() {
     const isCompared = state.comparisonList.includes(tool.id);
     cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false);
     categoryToolsGrid.appendChild(cardEl);
+
+    // Injected Ad (Code 1 after the 2nd card on Desktop)
+    if (window.AdManager && window.innerWidth >= 1200 && idx === 1) {
+      const adCard = window.AdManager.createInlineAdCard('code_1');
+      categoryToolsGrid.appendChild(adCard);
+      window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
+    }
   });
   
   setupCardInteractions();
@@ -3800,6 +3848,11 @@ function initApp() {
     initLibrarySection();
     initCategoryExplorerSection();
     initNavigation();
+
+    // Initialize Advertisement Placements
+    if (window.AdManager) {
+      window.AdManager.init();
+    }
     
     // Populate dynamic platform stats
     const activeNodesMetric = document.getElementById('metric-active-nodes');

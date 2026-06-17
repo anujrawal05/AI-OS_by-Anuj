@@ -6053,3 +6053,133 @@ ins.adsbygoogle {
   min-height: 90px;
   width: 100%;
 }
+
+/* ── ADDITIONAL EXTERNAL AD PLACEMENTS ───────────────────────────────────── */
+
+@media (min-width: 1200px) {
+  .sidebar-ad {
+    display: flex !important;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 96px) !important;
+    align-self: start;
+    z-index: 5;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .sidebar-ad::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Make sure internal ads and new ads stack nicely */
+  .sidebar-ad > * {
+    flex-shrink: 0;
+  }
+}
+
+.native-ad-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--prem-radius, 12px);
+  padding: 14px;
+  margin: 20px auto;
+  box-shadow: 0 8px 32px var(--card-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 100%;
+  transition: border-color var(--transition-theme), background-color var(--transition-theme), box-shadow var(--transition-theme);
+}
+
+.native-ad-card:hover {
+  border-color: var(--text-secondary);
+  box-shadow: 0 12px 40px var(--card-shadow), 0 0 15px var(--glow-color);
+}
+
+.native-ad-card .ad-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  user-select: none;
+  text-align: center;
+  width: 100%;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.native-ad-card .ad-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Specific Sizes to prevent layout shifts */
+.ad-size-code1 {
+  width: 328px; /* 300px + padding */
+  min-height: 310px; /* 250px + label + padding */
+}
+.ad-size-code1 .ad-content {
+  width: 300px;
+  height: 250px;
+}
+
+.ad-size-code2 {
+  width: 348px;
+  min-height: 110px;
+}
+.ad-size-code2 .ad-content {
+  width: 320px;
+  height: 50px;
+}
+
+.ad-size-code3 {
+  width: 756px;
+  min-height: 150px;
+}
+.ad-size-code3 .ad-content {
+  width: 728px;
+  height: 90px;
+}
+
+.ad-size-code4 {
+  width: 188px;
+  min-height: 660px;
+}
+.ad-size-code4 .ad-content {
+  width: 160px;
+  height: 600px;
+}
+
+.ad-size-code5 {
+  width: 100%;
+  max-width: 480px;
+  min-height: 180px;
+}
+.ad-size-code5 .ad-content {
+  width: 100%;
+  min-height: 120px;
+}
+
+/* Responsive banner limits */
+@media (max-width: 768px) {
+  .ad-size-code3 {
+    width: 100%;
+    min-height: 110px;
+  }
+  .ad-size-code3 .ad-content {
+    width: 320px;
+    height: 50px;
+  }
+}
