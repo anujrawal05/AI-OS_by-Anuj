@@ -302,6 +302,25 @@
         bottomBanner.setAttribute('data-ad-loaded', 'true');
       }
     }
+
+
+    // 7. Content Bottom Banner (Code 3)
+    const bottomAd = document.getElementById('adsterra-bottom-banner');
+    if (bottomAd && !bottomAd.hasAttribute('data-ad-loaded') && !bottomAd.hasAttribute('data-ad-pending')) {
+      const card = createAdCardElement('code_3');
+      bottomAd.appendChild(card);
+      registerLazyLoad(card.querySelector('.ad-content'), 'code_3');
+      bottomAd.setAttribute('data-ad-loaded', 'true');
+    }
+
+    // 8. Footer Native Ad (Code 5)
+    const footerNative = document.getElementById('adsterra-footer-native');
+    if (footerNative && !footerNative.hasAttribute('data-ad-loaded') && !footerNative.hasAttribute('data-ad-pending')) {
+      const card = createAdCardElement('code_5');
+      footerNative.appendChild(card);
+      registerLazyLoad(card.querySelector('.ad-content'), 'code_5');
+      footerNative.setAttribute('data-ad-loaded', 'true');
+    }
   }
 
   /**
@@ -337,29 +356,20 @@
         roadmapSection.insertAdjacentElement('afterend', mobileAd2);
       }
       if (!mobileAd2.hasAttribute('data-ad-loaded') && !mobileAd2.hasAttribute('data-ad-pending')) {
-        const card = createAdCardElement('code_5');
+        const card = createAdCardElement('code_2');
         mobileAd2.appendChild(card);
-        registerLazyLoad(card.querySelector('.ad-content'), 'code_5');
+        registerLazyLoad(card.querySelector('.ad-content'), 'code_2');
         mobileAd2.setAttribute('data-ad-loaded', 'true');
       }
     }
 
-    // 3. Before Footer (Positioned above footer elements)
-    const appFooter = document.querySelector('.app-footer');
-    if (appFooter) {
-      let mobileAd3 = document.getElementById('mobile-ad-pos-3');
-      if (!mobileAd3) {
-        mobileAd3 = document.createElement('div');
-        mobileAd3.id = 'mobile-ad-pos-3';
-        mobileAd3.className = 'mobile-ad-unit';
-        appFooter.insertAdjacentElement('beforebegin', mobileAd3);
-      }
-      if (!mobileAd3.hasAttribute('data-ad-loaded') && !mobileAd3.hasAttribute('data-ad-pending')) {
-        const card = createAdCardElement('code_2');
-        mobileAd3.appendChild(card);
-        registerLazyLoad(card.querySelector('.ad-content'), 'code_2');
-        mobileAd3.setAttribute('data-ad-loaded', 'true');
-      }
+    // 3. Footer Native Ad (Code 5)
+    const footerNative = document.getElementById('adsterra-footer-native');
+    if (footerNative && !footerNative.hasAttribute('data-ad-loaded') && !footerNative.hasAttribute('data-ad-pending')) {
+      const card = createAdCardElement('code_5');
+      footerNative.appendChild(card);
+      registerLazyLoad(card.querySelector('.ad-content'), 'code_5');
+      footerNative.setAttribute('data-ad-loaded', 'true');
     }
   }
 
@@ -380,8 +390,13 @@
       });
     });
 
-    const sidebarAdSlots = ['new-ad-left-sidebar', 'new-ad-right-sidebar'];
-    sidebarAdSlots.forEach(id => {
+    const staticAdSlots = [
+      'new-ad-left-sidebar',
+      'new-ad-right-sidebar',
+      'adsterra-bottom-banner',
+      'adsterra-footer-native'
+    ];
+    staticAdSlots.forEach(id => {
       const el = document.getElementById(id);
       if (el) {
         el.innerHTML = '';
