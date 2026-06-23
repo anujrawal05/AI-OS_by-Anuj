@@ -3676,7 +3676,7 @@ function renderPremiumToolCard(mapping) {
         };
         const backendTaskName = taskNameMap[state.goalText] || state.goalText;
 
-        const response = await fetch('http://localhost:5000/api/prompt/generate-aios-prompt', {
+        const response = await fetch('/api/prompt/generate-aios-prompt', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
