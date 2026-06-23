@@ -2914,16 +2914,8 @@ function initDashboardControls() {
   const langSelect = document.getElementById('control-lang-select');
   const compileBtn = document.getElementById('control-compile-btn');
 
-  const resetRedirectFlag = () => {
-    sessionStorage.setItem('aios_redirect_complete', 'false');
-  };
-
   function handleModeChange(skipRegen = false) {
     if (!taskSelect || !budgetSelect || !workflowSelect) return;
-    
-    if (!skipRegen) {
-      resetRedirectFlag();
-    }
     
     // Reset state step indices on mode change
     state.activeStepIndex = 0;
@@ -2984,36 +2976,8 @@ function initDashboardControls() {
     });
   }
 
-  if (budgetSelect) {
-    budgetSelect.addEventListener('change', resetRedirectFlag);
-  }
-
-  if (workflowSelect) {
-    workflowSelect.addEventListener('change', resetRedirectFlag);
-  }
-
   if (compileBtn) {
     compileBtn.addEventListener('click', () => {
-      // Check if redirect is complete for the current configuration
-      const redirectComplete = sessionStorage.getItem('aios_redirect_complete') === 'true';
-      if (!redirectComplete) {
-        sessionStorage.setItem('aios_redirect_complete', 'true');
-        
-        // Remove any existing dynamic adsterra popup scripts
-        const existingScript = document.getElementById('adsterra-dynamic-popup-script');
-        if (existingScript) {
-          existingScript.remove();
-        }
-
-        // Dynamically insert the ad script to trigger the popup
-        const adScript = document.createElement('script');
-        adScript.id = 'adsterra-dynamic-popup-script';
-        adScript.src = 'https://pl29847387.effectivecpmnetwork.com/8a/40/73/8a4073fe3449eb3e2d8c2d83ef6e591f.js';
-        document.body.appendChild(adScript);
-        
-        return;
-      }
-
       state.goalText = taskSelect ? taskSelect.value : 'Exploring AI';
       
       let bVal = 100;
