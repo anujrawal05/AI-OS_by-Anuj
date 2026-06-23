@@ -3590,16 +3590,50 @@ function renderPremiumToolCard(mapping) {
         <div class="prompt-generation-section">
           <h4 class="info-title">Generate Master JSON Prompt</h4>
           <p class="prompt-desc-label">Describe your custom requirements below to generate the structured JSON payload:</p>
-          <textarea id="premium-prompt-desc" class="premium-prompt-textarea" placeholder="Enter your custom details here (e.g., build a portfolio web app with dark mode)...">${state.userIdeaDescription || ''}</textarea>
+          
+          <div class="premium-prompt-wrapper">
+            <textarea id="premium-prompt-desc" class="premium-prompt-textarea" style="padding-right: 48px;" placeholder="Enter your custom details here (e.g., build a portfolio web app with dark mode)...">${state.userIdeaDescription || ''}</textarea>
+            <button id="btn-voice-input" class="voice-input-btn" title="Speak your idea (Local Speech Recognition)">
+              <svg class="mic-icon" viewBox="0 0 24 24">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" fill="currentColor"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="voice-recording-status" class="voice-status-panel" style="display: none;">
+            <div class="voice-status-header">
+              <span class="status-indicator-dot"></span>
+              <span class="status-text">LISTENING...</span>
+            </div>
+            <div class="voice-waveform">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+            <div id="voice-live-transcript" class="voice-live-transcript">"Live transcript will appear here..."</div>
+            <div class="voice-actions">
+              <button id="btn-voice-cancel" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">Cancel</button>
+              <button id="btn-voice-retry" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem; display: none;">Retry</button>
+            </div>
+          </div>
           
           <div class="prompt-actions-row">
             <button id="btn-generate-premium-json" class="btn btn-primary">✨ Generate JSON Prompt</button>
           </div>
 
           <div id="premium-json-output-wrapper" class="premium-json-output-wrapper" style="display: ${state.generatedJSONPrompt ? 'block' : 'none'};">
-            <div class="json-header-row">
-              <span class="json-box-label">GENERATED JSON PROMPT (READY TO COPY)</span>
-              <button id="btn-copy-premium-json" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">📋 Copy JSON</button>
+            <div class="json-header-row" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+              <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+                <span class="json-box-label">GENERATED JSON PROMPT (READY TO COPY)</span>
+                <button id="btn-copy-premium-json" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">📋 Copy JSON</button>
+              </div>
+              <div class="json-header-indicators">
+                <span class="indicator-badge badge-intent">⚡ INTENT UNDERSTOOD</span>
+                <span class="indicator-badge badge-json-ready">✓ PRODUCTION-READY JSON</span>
+              </div>
             </div>
             <pre class="premium-json-display"><code>${escapeHTML(state.generatedJSONPrompt || '')}</code></pre>
           </div>
@@ -3617,22 +3651,79 @@ function renderPremiumToolCard(mapping) {
   // Bind Generate Button
   const genBtn = document.getElementById('btn-generate-premium-json');
   if (genBtn) {
-    genBtn.addEventListener('click', () => {
+    genBtn.addEventListener('click', async () => {
       const textarea = document.getElementById('premium-prompt-desc');
       const desc = textarea ? textarea.value.trim() : '';
       state.userIdeaDescription = desc;
       
-      const jsonStr = generateLocalJSONPrompt(state.goalText, desc);
-      state.generatedJSONPrompt = jsonStr;
+      const originalHTML = genBtn.innerHTML;
+      genBtn.disabled = true;
+      genBtn.innerHTML = `<span>⏳ Generating JSON via Llama...</span>`;
       
-      const outputWrapper = document.getElementById('premium-json-output-wrapper');
-      if (outputWrapper) {
-        outputWrapper.style.display = 'block';
-        const codeEl = outputWrapper.querySelector('pre code');
-        if (codeEl) codeEl.textContent = jsonStr;
+      try {
+        const taskNameMap = {
+          "Generating Video": "Generate AI Video",
+          "Generating Images": "Generate AI Images",
+          "Designing": "Create Digital Designs",
+          "Coding": "Build Software",
+          "Building Apps": "Build Android Application",
+          "Brand Building": "Build Brand",
+          "Personal AI Building": "Build Personal AI Assistant",
+          "Music Making": "Create Music",
+          "Voice Over Generation": "Generate Voice Over",
+          "Hardware Building": "Design Hardware",
+          "Tips to Earn Money": "Monetize AI Skills"
+        };
+        const backendTaskName = taskNameMap[state.goalText] || state.goalText;
+
+        const response = await fetch('http://localhost:5000/api/prompt/generate-aios-prompt', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            taskName: backendTaskName,
+            userInput: desc || "A creative project concept"
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Server returned error status: ' + response.status);
+        }
+        
+        const data = await response.json();
+        if (data.success && data.prompt) {
+          const jsonStr = JSON.stringify(data.prompt, null, 2);
+          state.generatedJSONPrompt = jsonStr;
+          
+          const outputWrapper = document.getElementById('premium-json-output-wrapper');
+          if (outputWrapper) {
+            outputWrapper.style.display = 'block';
+            const codeEl = outputWrapper.querySelector('pre code');
+            if (codeEl) codeEl.textContent = jsonStr;
+          }
+          showToast("JSON Prompt generated via Llama 3.3 successfully!");
+        } else {
+          throw new Error('Invalid response format');
+        }
+      } catch (err) {
+        console.warn('[Prompt Generator API Fail] Falling back to local prompt engine:', err.message);
+        
+        // Local fallback
+        const jsonStr = generateLocalJSONPrompt(state.goalText, desc);
+        state.generatedJSONPrompt = jsonStr;
+        
+        const outputWrapper = document.getElementById('premium-json-output-wrapper');
+        if (outputWrapper) {
+          outputWrapper.style.display = 'block';
+          const codeEl = outputWrapper.querySelector('pre code');
+          if (codeEl) codeEl.textContent = jsonStr;
+        }
+        showToast("Generated static JSON prompt (Offline Fallback)");
+      } finally {
+        genBtn.disabled = false;
+        genBtn.innerHTML = originalHTML;
       }
-      
-      showToast("JSON Prompt generated successfully!");
     });
   }
   
@@ -3646,6 +3737,154 @@ function renderPremiumToolCard(mapping) {
       }).catch(err => {
         console.error("Failed to copy JSON: ", err);
       });
+    });
+  }
+  
+  // Bind Voice Input
+  const micBtn = document.getElementById('btn-voice-input');
+  const statusPanel = document.getElementById('voice-recording-status');
+  const liveTranscript = document.getElementById('voice-live-transcript');
+  const cancelBtn = document.getElementById('btn-voice-cancel');
+  const retryBtn = document.getElementById('btn-voice-retry');
+  const promptTextArea = document.getElementById('premium-prompt-desc');
+  
+  let recognition = null;
+  let isRecording = false;
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  function initSpeechRecognition() {
+    if (!SpeechRecognition) {
+      if (micBtn) micBtn.style.display = 'none'; // Hide if not supported
+      return;
+    }
+    
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    
+    // Set language locale dynamically based on target language select dropdown
+    const langSelect = document.getElementById('control-lang-select');
+    const selectedLang = langSelect ? langSelect.value : 'Hinglish';
+    if (selectedLang === 'English') {
+      recognition.lang = 'en-US';
+    } else if (selectedLang === 'Hindi') {
+      recognition.lang = 'hi-IN';
+    } else {
+      // Hinglish / Mixed
+      recognition.lang = 'hi-IN'; // best dynamic parser
+    }
+    
+    recognition.onstart = () => {
+      isRecording = true;
+      if (micBtn) micBtn.classList.add('recording');
+      if (statusPanel) {
+        statusPanel.style.display = 'flex';
+        statusPanel.classList.add('recording');
+        const headerText = statusPanel.querySelector('.status-text');
+        if (headerText) headerText.textContent = 'LISTENING...';
+      }
+      if (liveTranscript) liveTranscript.textContent = '"Speak your idea now..."';
+      if (cancelBtn) cancelBtn.style.display = 'inline-block';
+      if (retryBtn) retryBtn.style.display = 'none';
+    };
+    
+    recognition.onresult = (event) => {
+      let interimTranscript = '';
+      let finalTranscript = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+      
+      const combined = finalTranscript || interimTranscript;
+      if (liveTranscript && combined) {
+        liveTranscript.textContent = `"${combined}"`;
+      }
+      
+      // Update text area on final output
+      if (finalTranscript && promptTextArea) {
+        const prevVal = promptTextArea.value.trim();
+        promptTextArea.value = prevVal ? `${prevVal} ${finalTranscript}` : finalTranscript;
+        state.userIdeaDescription = promptTextArea.value;
+      }
+    };
+    
+    recognition.onerror = (event) => {
+      console.error('[Web Speech Error]:', event.error);
+      isRecording = false;
+      if (micBtn) micBtn.classList.remove('recording');
+      if (statusPanel) {
+        statusPanel.classList.remove('recording');
+        const headerText = statusPanel.querySelector('.status-text');
+        if (headerText) headerText.textContent = `ERROR: ${event.error.toUpperCase()}`;
+      }
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      if (retryBtn) retryBtn.style.display = 'inline-block';
+    };
+    
+    recognition.onend = () => {
+      isRecording = false;
+      if (micBtn) micBtn.classList.remove('recording');
+      if (statusPanel) {
+        statusPanel.classList.remove('recording');
+        const headerText = statusPanel.querySelector('.status-text');
+        if (headerText) headerText.textContent = 'STOPPED';
+      }
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      if (retryBtn) retryBtn.style.display = 'inline-block';
+    };
+  }
+  
+  if (micBtn) {
+    micBtn.addEventListener('click', () => {
+      if (!recognition) {
+        initSpeechRecognition();
+      }
+      
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch (e) {
+          initSpeechRecognition();
+          recognition.start();
+        }
+      }
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      if (recognition) {
+        recognition.abort();
+      }
+      if (statusPanel) {
+        statusPanel.style.display = 'none';
+      }
+      if (liveTranscript) {
+        liveTranscript.textContent = '';
+      }
+      showToast("Voice recording canceled.");
+    });
+  }
+  
+  if (retryBtn) {
+    retryBtn.addEventListener('click', () => {
+      if (!recognition) {
+        initSpeechRecognition();
+      }
+      try {
+        recognition.start();
+      } catch (e) {
+        initSpeechRecognition();
+        recognition.start();
+      }
     });
   }
 }
@@ -4538,4 +4777,104 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
   initApp();
+}
+
+// --- Legal Drawer Bindings ---
+function openLegalDrawer(type) {
+  const overlay = document.getElementById('legal-overlay');
+  const modalTitle = document.getElementById('legal-modal-title');
+  const modalBody = document.getElementById('legal-modal-body');
+  const modalSubtitle = document.getElementById('legal-modal-subtitle');
+  
+  if (typeof legalData === 'undefined') {
+    console.error('legalData is not defined. Ensure legalData.js is loaded.');
+    return;
+  }
+  
+  const doc = legalData[type];
+  if (!doc) return;
+  
+  if (modalTitle) modalTitle.textContent = doc.title;
+  if (modalSubtitle) modalSubtitle.textContent = `CORPORATE REGULATORY FILE // ${type.toUpperCase()}`;
+  
+  if (modalBody) {
+    let html = '';
+    
+    // Auto-inherit / auto-inject governing law & jurisdiction section if not present
+    const hasJurisdictionSection = doc.sections.some(sec => 
+      sec.heading.toLowerCase().includes('governing law') || 
+      sec.heading.toLowerCase().includes('jurisdiction')
+    );
+    
+    const sectionsToRender = [...doc.sections];
+    
+    if (!hasJurisdictionSection) {
+      const nextIdx = sectionsToRender.length + 1;
+      sectionsToRender.push({
+        heading: `${nextIdx}. GOVERNING LAW & EXCLUSIVE JURISDICTION`,
+        text: "These Terms, Conditions, Policies, Services, Products, Features, APIs, Content, and all interactions with this platform shall be governed and construed exclusively in accordance with the laws of the Republic of India. By accessing or using this website, the user irrevocably agrees that any dispute, claim, controversy, legal proceeding, arbitration, injunction, recovery action, contractual disagreement, statutory interpretation, tort claim, intellectual property dispute, consumer complaint, or any matter whatsoever arising directly or indirectly out of the use of this platform shall be subject solely and exclusively to the competent courts located in Indore, Madhya Pradesh, India. The user expressly waives any objection relating to territorial jurisdiction, venue inconvenience, or forum selection and agrees not to initiate or maintain any legal proceedings in any other jurisdiction, state, district, or country."
+      });
+    }
+    
+    sectionsToRender.forEach(sec => {
+      const isGoverningLaw = sec.heading.toLowerCase().includes('governing law') || sec.heading.toLowerCase().includes('jurisdiction');
+      const isTerms = (type === 'terms');
+      let textContent = sec.text;
+      
+      // Terms and Conditions displays the clause in bold as requested
+      if (isGoverningLaw && isTerms && !textContent.includes('<strong>')) {
+        textContent = `<strong>${textContent}</strong>`;
+      }
+      
+      if (isGoverningLaw) {
+        html += `
+          <div class="legal-section-block highlighted-legal-section">
+            <h3>${sec.heading}</h3>
+            <p>${textContent}</p>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="legal-section-block">
+            <h3>${sec.heading}</h3>
+            <p>${textContent}</p>
+          </div>
+        `;
+      }
+    });
+    modalBody.innerHTML = html;
+  }
+  
+  if (overlay) {
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeLegalDrawer() {
+  const overlay = document.getElementById('legal-overlay');
+  if (overlay) {
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+}
+
+// Bind events globally
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('.legal-trigger');
+  if (trigger) {
+    e.preventDefault();
+    const type = trigger.getAttribute('data-legal');
+    openLegalDrawer(type);
+  }
+});
+
+const legalCloseBtn = document.getElementById('legal-close-btn');
+if (legalCloseBtn) {
+  legalCloseBtn.addEventListener('click', closeLegalDrawer);
+}
+
+const legalCloseOverlay = document.getElementById('legal-close-overlay');
+if (legalCloseOverlay) {
+  legalCloseOverlay.addEventListener('click', closeLegalDrawer);
 }
