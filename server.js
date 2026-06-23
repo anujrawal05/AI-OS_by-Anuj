@@ -249,6 +249,11 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`AI-OS execution platform running on http://localhost:${PORT}`);
-});
+// Only listen when running locally as a standalone process
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`AI-OS execution platform running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
