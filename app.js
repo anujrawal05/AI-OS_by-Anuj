@@ -1637,22 +1637,116 @@ const stepsTranslation = {
   }
 };
 
+const officialTasksMappings = {
+  "Design and Prototype Hardware": {
+    recommended_tool: "Flux AI",
+    reason: "Excellent for industrial design concepts, PCB visualization, product ideation and hardware renders.",
+    official_link: "https://flux.ai",
+    quick_guide: "Describe your hardware idea in ChatGPT to generate a JSON prompt, then use that prompt in Flux AI to visualize your concept."
+  },
+  "Generate a Complete AI Video": {
+    recommended_tool: "Flow AI",
+    reason: "Best for cinematic AI video generation with prompt-based workflows.",
+    official_link: "https://labs.google/fx/tools/flow",
+    quick_guide: "Generate a JSON prompt using ChatGPT and paste it into Flow AI for professional video generation."
+  },
+  "Generate Professional AI Images": {
+    recommended_tool: "Flow AI",
+    reason: "Supports high-quality image generation with structured prompts.",
+    official_link: "https://labs.google/fx/tools/flow",
+    quick_guide: "Use ChatGPT to create a JSON prompt and generate images directly in Flow AI."
+  },
+  "Create Digital Designs Using AI": {
+    recommended_tool: "Canva AI",
+    reason: "Best for presentations, social media posts, banners, posters and marketing creatives.",
+    official_link: "https://www.canva.com/ai-image-generator/",
+    quick_guide: "Generate a design prompt and create editable graphics inside Canva AI."
+  },
+  "Build Software Using AI": {
+    recommended_tool: "Antigravity 2.0",
+    reason: "Agentic coding environment capable of building complete applications.",
+    official_link: "https://antigravity.dev",
+    quick_guide: [
+      "Visit the official website.",
+      "Download the desktop version for Windows/macOS/Linux.",
+      "Install the application.",
+      "Open Antigravity.",
+      "Paste the generated master prompt.",
+      "Allow the agent to generate and edit the project."
+    ]
+  },
+  "Build Android Application": {
+    recommended_tool: "Android Studio",
+    reason: "Official Android development environment from Google.",
+    official_link: "https://developer.android.com/studio",
+    quick_guide: [
+      "Download Android Studio from the official website.",
+      "Install using the default setup.",
+      "Launch Android Studio.",
+      "Open or create a new project.",
+      "Use the generated prompt with your preferred AI coding assistant."
+    ]
+  },
+  "Monetize AI Skills": {
+    recommended_tool: "Fiverr",
+    reason: "One of the largest marketplaces for selling AI services and digital work.",
+    official_link: "https://www.fiverr.com",
+    alternative_tools: [
+      {
+        "name": "Upwork",
+        "link": "https://www.upwork.com"
+      },
+      {
+        "name": "Contra",
+        "link": "https://contra.com"
+      }
+    ],
+    quick_guide: "Create a professional portfolio, publish AI service listings and start acquiring clients."
+  },
+  "Create Music Using AI": {
+    recommended_tool: "Suno AI",
+    reason: "Industry-leading AI music generation platform.",
+    official_link: "https://suno.com",
+    quick_guide: "Generate a structured music prompt and create complete songs with lyrics and vocals."
+  },
+  "Generate Professional Voice Over": {
+    recommended_tool: "ElevenLabs",
+    reason: "High-quality multilingual AI voice synthesis.",
+    official_link: "https://elevenlabs.io",
+    quick_guide: "Generate a voice-over script and paste it into ElevenLabs for natural speech generation."
+  },
+  "Build a Brand Using AI": {
+    recommended_tool: "Pomello by Google",
+    reason: "AI-assisted branding, ideation and creative workflow generation.",
+    official_link: "https://labs.google",
+    quick_guide: "Generate brand strategy, naming ideas and visual identity prompts before creating assets."
+  },
+  "Build a Personal AI Assistant": {
+    recommended_tool: "Antigravity 2.0",
+    reason: "Supports autonomous multi-agent development and local execution.",
+    official_link: "https://antigravity.dev",
+    quick_guide: [
+      "Download Antigravity desktop from the official website.",
+      "Install and launch the application.",
+      "Paste the generated AI assistant prompt.",
+      "Allow the agent to create, test and refine the assistant automatically."
+    ]
+  }
+};
+
 const taskToolMatrix = {
   "Exploring AI": ["ChatGPT", "Gemini", "Claude", "Perplexity", "NotebookLM"],
-  "Generate a Complete AI Video": ["Google Docs", "ChatGPT", "Flow AI", "Google Veo", "Runway", "Kling AI", "ElevenLabs", "CapCut"],
-  "Generate Professional AI Images": ["Google Docs", "ChatGPT", "Google Imagen", "Midjourney", "Adobe Firefly", "Flux", "Canva AI"],
-  "Create Digital Designs Using AI": ["Google Docs", "ChatGPT", "Canva AI", "Adobe Firefly", "Figma AI", "Ideogram"],
-  "Build Software Using AI": ["Google Docs", "ChatGPT", "Claude", "Cursor", "GitHub Copilot", "Windsurf", "Antigravity 2.0"],
-  "Build Android Application": ["Google Docs", "ChatGPT", "Android Studio", "Claude", "Cursor", "GitHub Copilot"],
-  "Monetize AI Skills": ["ChatGPT", "Claude", "Canva AI", "Flow AI", "Suno", "Fiverr Strategy", "LinkedIn"],
-  "Create Music Using AI": ["Google Docs", "ChatGPT", "Suno", "ElevenLabs", "Audacity", "Adobe Podcast"],
-  "Generate Professional Voice Over": ["Google Docs", "ChatGPT", "ElevenLabs", "PlayHT", "Adobe Podcast"],
-  "Build a Brand Using AI": ["ChatGPT", "Canva AI", "Claude", "Midjourney", "Flow AI", "Buffer"],
-  "Build a Personal AI Assistant": ["Google Docs", "ChatGPT", "Antigravity 2.0", "Claude", "Ollama", "Open WebUI"],
-  "Edit Video Production Using AI": ["CapCut", "Runway", "Flow AI", "Adobe Premiere Pro", "Descript"],
-  "Enhance & Edit Audio Tracks": ["Adobe Podcast", "ElevenLabs", "Audacity", "Suno", "Descript"],
-  "Generate Copy & Written Content": ["Google Docs", "ChatGPT", "Claude", "Gemini", "Grammarly"],
-  "Design and Prototype Hardware": ["Google Docs", "ChatGPT", "Claude", "Arduino IDE", "Proteus", "KiCad", "Verilog HDL Tools"]
+  "Generate a Complete AI Video": ["Flow AI"],
+  "Generate Professional AI Images": ["Flow AI"],
+  "Create Digital Designs Using AI": ["Canva AI"],
+  "Build Software Using AI": ["Antigravity 2.0"],
+  "Build Android Application": ["Android Studio"],
+  "Monetize AI Skills": ["Fiverr"],
+  "Create Music Using AI": ["Suno AI"],
+  "Generate Professional Voice Over": ["ElevenLabs"],
+  "Build a Brand Using AI": ["Pomello by Google"],
+  "Build a Personal AI Assistant": ["Antigravity 2.0"],
+  "Design and Prototype Hardware": ["Flux AI"]
 };
 
 const topAIToolsDatabase = {
@@ -1696,9 +1790,6 @@ const optionToMatrixKey = {
   "Voice Over Generation": "Generate Professional Voice Over",
   "Brand Building": "Build a Brand Using AI",
   "Personal AI Building": "Build a Personal AI Assistant",
-  "Help in Video Editing": "Edit Video Production Using AI",
-  "Help in Music Editing": "Enhance & Edit Audio Tracks",
-  "Writing Work": "Generate Copy & Written Content",
   "Hardware Building": "Design and Prototype Hardware"
 };
 
@@ -1715,8 +1806,7 @@ function generateDynamicWorkflow(goalText, budgetLimit, experienceLevel) {
     return finalWorkflow;
   }
   
-  // Enforce Google Docs & ChatGPT pipeline: Step 1 must be Google Docs and Step 2 must be ChatGPT
-  // Filter out any existing Google Docs or ChatGPT references in the rest of the candidates to prevent duplicates
+  // Filter out any existing Google Docs or ChatGPT references to prevent duplicates
   let otherCandidates = candidates.filter(name => {
     const lower = name.toLowerCase();
     return lower !== "google docs" && lower !== "chatgpt" && lower !== "google documents";
@@ -1732,7 +1822,7 @@ function generateDynamicWorkflow(goalText, budgetLimit, experienceLevel) {
     }
   }
 
-  let finalCandidates = ["Google Docs", "ChatGPT", ...otherCandidates];
+  let finalCandidates = [...otherCandidates];
   let finalWorkflow = [];
   let categoriesSeen = new Set();
   
@@ -1746,13 +1836,9 @@ function generateDynamicWorkflow(goalText, budgetLimit, experienceLevel) {
     else if (toolObj.taskTags && toolObj.taskTags.includes("image")) group = "image";
     else if (toolObj.taskTags && (toolObj.taskTags.includes("voiceover") || toolObj.taskTags.includes("audio-to-text"))) group = "voice";
     else if (toolObj.taskTags && toolObj.taskTags.includes("music")) group = "music";
-    else if (toolObj.name === "Google Docs") group = "docs";
-    else if (toolObj.name === "ChatGPT") group = "chat";
     
-    if (group === "docs" || group === "chat" || !categoriesSeen.has(group)) {
-      if (group !== "docs" && group !== "chat") {
-        categoriesSeen.add(group);
-      }
+    if (!categoriesSeen.has(group)) {
+      categoriesSeen.add(group);
       finalWorkflow.push(resolved);
     }
   }
@@ -2839,6 +2925,12 @@ function initDashboardControls() {
       resetRedirectFlag();
     }
     
+    // Reset state step indices on mode change
+    state.activeStepIndex = 0;
+    state.quickStartStep = 1;
+    state.userIdeaDescription = '';
+    state.compiledQuickStartPrompt = '';
+    
     if (taskSelect.value === "Exploring AI") {
       // Auto-select "₹0 Free" (value: "0")
       budgetSelect.value = "0";
@@ -2933,6 +3025,12 @@ function initDashboardControls() {
       
       state.selectedExperience = workflowSelect ? workflowSelect.value : 'Intermediate';
       
+      // Reset active indices on compilation execution
+      state.activeStepIndex = 0;
+      state.quickStartStep = 1;
+      state.userIdeaDescription = '';
+      state.compiledQuickStartPrompt = '';
+      
       regenerateActiveRoadmap();
       
       const targetSection = document.getElementById('roadmap-builder-section');
@@ -2964,73 +3062,639 @@ function initDashboardControls() {
   }
 }
 
+function getMasterPromptTemplate(goalText) {
+  const templates = {
+    image: "You are an expert photographer and prompt engineer. Generate a production-ready JSON prompt for Google Imagine using the user's description. Output only valid JSON.",
+    video: "You are an expert cinematic director. Generate a production-ready JSON prompt for Flow AI based on the user's description. Output only valid JSON.",
+    website: "You are an expert full-stack developer. Generate a production-ready JSON prompt for an AI coding agent using the user's description. Output only valid JSON.",
+    logo: "You are an expert brand designer. Generate a premium minimalist JSON prompt for logo generation based on the user's description. Output only valid JSON.",
+    app: "You are an expert mobile app architect. Generate a production-ready JSON prompt based on the user's description. Output only valid JSON."
+  };
+
+  const goalLower = (goalText || "").toLowerCase();
+  if (goalLower.includes("video") || goalLower.includes("movie")) {
+    return templates.video;
+  }
+  if (goalLower.includes("image") || goalLower.includes("photo") || goalLower.includes("picture")) {
+    return templates.image;
+  }
+  if (goalLower.includes("code") || goalLower.includes("software") || goalLower.includes("assistant") || goalLower.includes("personal ai")) {
+    return templates.website;
+  }
+  if (goalLower.includes("logo") || goalLower.includes("design") || goalLower.includes("brand")) {
+    return templates.logo;
+  }
+  if (goalLower.includes("app") || goalLower.includes("android")) {
+    return templates.app;
+  }
+  
+  // Fallbacks for other specific tasks
+  if (goalLower.includes("music") || goalLower.includes("audio") || goalLower.includes("voice")) {
+    return `You are an expert audio producer. Generate a production-ready JSON prompt for voice/music synthesis based on the user's description. Output only valid JSON.`;
+  }
+  if (goalLower.includes("write") || goalLower.includes("content") || goalLower.includes("copy")) {
+    return `You are an expert copywriter and editor. Generate a production-ready JSON prompt for drafting content based on the user's description. Output only valid JSON.`;
+  }
+  if (goalLower.includes("hardware") || goalLower.includes("prototype")) {
+    return `You are an expert hardware architect. Generate a production-ready JSON prompt for hardware design based on the user's description. Output only valid JSON.`;
+  }
+
+  return `You are an expert AI system architect. Generate a production-ready JSON prompt based on the user's description. Output only valid JSON.`;
+}
+
+function generateLocalJSONPrompt(goalText, description) {
+  const goalLower = (goalText || "").toLowerCase();
+  const desc = (description || "").trim() || "A creative futuristic project";
+  
+  const jsonPrompt = {
+    ai_system: "AI-OS Optimized Prompt",
+    timestamp: new Date().toISOString(),
+    parameters: {
+      temperature: 0.7,
+      max_tokens: 1000,
+      format: "JSON"
+    },
+    prompt_payload: {}
+  };
+  
+  if (goalLower.includes("video") || goalLower.includes("movie")) {
+    jsonPrompt.prompt_payload = {
+      tool: "Flow AI / Video-FX",
+      style: "Cinematic, cinematic lighting, ultra-realistic, 8k resolution, highly detailed, photorealistic",
+      camera_movement: "Slow panning dynamic shot, tracking shot, depth of field",
+      subject: desc,
+      motion_speed: "Normal",
+      aspect_ratio: "16:9",
+      fps: 30,
+      aesthetic_override: {
+        neon_glow: "enabled",
+        volumetric_smoke: "enabled"
+      }
+    };
+  } else if (goalLower.includes("image") || goalLower.includes("photo") || goalLower.includes("picture")) {
+    jsonPrompt.prompt_payload = {
+      tool: "Google Imagen / Image-FX",
+      style: "Hyper-realistic, photorealistic, professional photography, soft lighting, sharp focus",
+      subject: desc,
+      aspect_ratio: "1:1",
+      camera: "85mm lens, f/1.8 aperture",
+      render_settings: {
+        resolution: "4K",
+        contrast: "high"
+      }
+    };
+  } else if (goalLower.includes("code") || goalLower.includes("software") || goalLower.includes("assistant") || goalLower.includes("personal ai") || goalLower.includes("website") || goalLower.includes("web")) {
+    jsonPrompt.prompt_payload = {
+      tool: "AI Coding Assistant",
+      language: "JavaScript / HTML / CSS",
+      framework: "Vanilla JS / TailwindCSS",
+      project_concept: desc,
+      ui_style: "Premium Dark Mode, glassmorphism, responsive, micro-animations",
+      components: [
+        "Header Navigation",
+        "Hero section with dynamic visualizer",
+        "Feature cards grid",
+        "Interactive dashboard interface",
+        "Footer with links"
+      ],
+      ux_requirements: {
+        font_family: "Outfit, Inter, sans-serif",
+        color_scheme: "HSL purple/blue dark gradient",
+        animations: "smooth hover transitions, keyframe fades"
+      }
+    };
+  } else if (goalLower.includes("logo") || goalLower.includes("design") || goalLower.includes("brand")) {
+    jsonPrompt.prompt_payload = {
+      tool: "Vector Graphic AI",
+      design_type: "Minimalist, flat vector, modern tech logo",
+      brand_concept: desc,
+      palette: ["Deep Violet", "Electric Cyan", "Dark Slate"],
+      typography_style: "Sans-serif, geometric, futuristic font",
+      elements: "Clean geometry, abstract logo mark, high contrast background"
+    };
+  } else if (goalLower.includes("app") || goalLower.includes("android")) {
+    jsonPrompt.prompt_payload = {
+      tool: "Android / Flutter AI builder",
+      app_type: "Mobile application",
+      features: [
+        "User authentication flow",
+        "Interactive database dashboard",
+        "Real-time push notifications",
+        "Offline-first synchronization"
+      ],
+      description: desc,
+      theme: "Material Design 3, dynamic color theme matching user wallpaper",
+      architecture: "Clean architecture, MVVM pattern"
+    };
+  } else {
+    jsonPrompt.prompt_payload = {
+      tool: "General AI Assistant",
+      task_description: desc,
+      goal: goalText,
+      instructions: [
+        "Generate a highly detailed response based on the task description.",
+        "Include actionable step-by-step instructions.",
+        "Provide code or text templates where appropriate.",
+        "Refine layout to be visually balanced."
+      ]
+    };
+  }
+  
+  return JSON.stringify(jsonPrompt, null, 2);
+}
+
+
 function renderRoadmap(optimalWorkflow, steps) {
   const listContainer = document.querySelector('.timeline-list');
-  if (!listContainer) return;
+  const timelineContainer = document.querySelector('.timeline-container');
+  const roadSvgContainer = document.querySelector('.road-svg-container');
+  const roadmapUxContainer = document.querySelector('.roadmap-ux-container');
   
-  listContainer.innerHTML = '';
-  
-  if (!optimalWorkflow || optimalWorkflow.length === 0) {
-    listContainer.innerHTML = `
-      <div class="timeline-row left" style="grid-template-columns: 1fr; text-align: center; justify-content: center; padding-top: 100px;">
-        <div class="timeline-card visible" style="margin: 0 auto; max-width: 500px;">
-          <h2 class="card-title">NO NODES COMPILED</h2>
-          <p class="card-desc">No systems match your criteria. Expand your budget threshold or alter your goal target.</p>
-          <button class="btn btn-primary btn-full" onclick="resetWizard()">Re-configure Target</button>
+  if (state.goalText === "Exploring AI") {
+    // Show original detailed timeline layout exactly as it existed before
+    if (timelineContainer) timelineContainer.style.display = 'block';
+    if (roadSvgContainer) roadSvgContainer.style.display = 'block';
+    if (roadmapUxContainer) roadmapUxContainer.style.display = 'none';
+    
+    // Clear any card deck elements
+    const recContainer = document.getElementById('recommended-tool-container');
+    const qsContainer = document.getElementById('quick-start-container');
+    const deckContainer = document.getElementById('step-deck-container');
+    if (recContainer) recContainer.innerHTML = '';
+    if (qsContainer) qsContainer.innerHTML = '';
+    if (deckContainer) deckContainer.innerHTML = '';
+    
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+    
+    if (!optimalWorkflow || optimalWorkflow.length === 0) {
+      listContainer.innerHTML = `
+        <div class="timeline-row left" style="grid-template-columns: 1fr; text-align: center; justify-content: center; padding-top: 100px;">
+          <div class="timeline-card visible" style="margin: 0 auto; max-width: 500px;">
+            <h2 class="card-title">NO NODES COMPILED</h2>
+            <p class="card-desc">No systems match your criteria. Expand your budget threshold or alter your goal target.</p>
+            <button class="btn btn-primary btn-full" onclick="resetWizard()">Re-configure Target</button>
+          </div>
         </div>
-      </div>
-    `;
-    document.getElementById('road-svg').style.display = 'none';
-    document.getElementById('road-traveler').style.display = 'none';
+      `;
+      document.getElementById('road-svg').style.display = 'none';
+      document.getElementById('road-traveler').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('road-svg').style.display = 'block';
+    document.getElementById('road-traveler').style.display = 'block';
+
+    optimalWorkflow.forEach((item, index) => {
+      const tool = item.tool;
+      const originalIndex = toolsData.findIndex(t => t.id === tool.id);
+      const isLeft = index % 2 === 0;
+      const sideClass = isLeft ? 'left' : 'right';
+      
+      const rowEl = document.createElement('div');
+      rowEl.className = `timeline-row ${sideClass}`;
+      rowEl.setAttribute('data-category', tool.timelineCategory);
+      
+      const anchorHTML = `<div class="timeline-dot-anchor" id="anchor-${index}"></div>`;
+      const spacerHTML = `<div class="timeline-spacer"></div>`;
+      const isFav = isFavorite(tool.id);
+      const isCompared = state.comparisonList.includes(tool.id);
+      
+      const stepName = steps[index];
+      const stepIndex = index + 1;
+      
+      const cardHTML = `
+        <div class="timeline-card" data-node="${originalIndex}">
+          ${createCardHTML(tool, originalIndex, isFav, isCompared, true, stepName, stepIndex, item.cost, item.mode)}
+        </div>
+      `;
+      
+      if (isLeft) {
+        rowEl.innerHTML = anchorHTML + cardHTML + spacerHTML;
+      } else {
+        rowEl.innerHTML = spacerHTML + anchorHTML + cardHTML;
+      }
+      
+      listContainer.appendChild(rowEl);
+    });
+    
+    setupCardInteractions();
+    
+    // Draw the road path dynamically
+    setTimeout(() => {
+      drawRoad();
+    }, 50);
     return;
   }
   
-  document.getElementById('road-svg').style.display = 'block';
-  document.getElementById('road-traveler').style.display = 'block';
+  // Otherwise, hide timeline layout and show Card-based layout
+  if (timelineContainer) timelineContainer.style.display = 'none';
+  if (roadSvgContainer) roadSvgContainer.style.display = 'none';
+  if (roadmapUxContainer) roadmapUxContainer.style.display = 'block';
 
-  optimalWorkflow.forEach((item, index) => {
-    const tool = item.tool;
-    const originalIndex = toolsData.findIndex(t => t.id === tool.id);
-    const isLeft = index % 2 === 0;
-    const sideClass = isLeft ? 'left' : 'right';
+  const resolvedTaskKey = optionToMatrixKey[state.goalText] || state.goalText;
+  const mapping = officialTasksMappings[resolvedTaskKey];
+  if (mapping) {
+    renderPremiumToolCard(mapping);
+    return;
+  }
+
+  // 1. Populate the Recommended Tool Card
+  const recContainer = document.getElementById('recommended-tool-container');
+  if (recContainer) {
+    const bestToolObj = optimalWorkflow[0] ? optimalWorkflow[0].tool : null;
+    const bestToolName = bestToolObj ? bestToolObj.name : 'N/A';
     
-    const rowEl = document.createElement('div');
-    rowEl.className = `timeline-row ${sideClass}`;
-    rowEl.setAttribute('data-category', tool.timelineCategory);
+    let difficulty = 'Medium';
+    if (state.selectedExperience === 'Beginner') difficulty = 'Easy';
+    else if (state.selectedExperience === 'Advanced') difficulty = 'Advanced';
     
-    const anchorHTML = `<div class="timeline-dot-anchor" id="anchor-${index}"></div>`;
-    const spacerHTML = `<div class="timeline-spacer"></div>`;
-    const isFav = isFavorite(tool.id);
-    const isCompared = state.comparisonList.includes(tool.id);
+    const estTime = bestToolObj ? (bestToolObj.time || '15 mins') : '10 mins';
     
-    const stepName = steps[index];
-    const stepIndex = index + 1;
+    recContainer.innerHTML = `
+      <div class="recommended-tool-card">
+        <div class="recommended-tool-field">
+          <span class="recommended-tool-label">⭐ Best Tool</span>
+          <span class="recommended-tool-value accent-val">${bestToolName}</span>
+        </div>
+        <div class="recommended-tool-field">
+          <span class="recommended-tool-label">⏱ Difficulty</span>
+          <span class="recommended-tool-value">${difficulty}</span>
+        </div>
+        <div class="recommended-tool-field">
+          <span class="recommended-tool-label">⚡ Estimated Time</span>
+          <span class="recommended-tool-value">${estTime}</span>
+        </div>
+      </div>
+    `;
+  }
+  
+  // 2. Populate the Quick Start Card
+  const qsContainer = document.getElementById('quick-start-container');
+  if (qsContainer) {
+    const activeQS = state.quickStartStep || 1;
+    const bestToolObj = optimalWorkflow[0] ? optimalWorkflow[0].tool : null;
     
-    const cardHTML = `
-      <div class="timeline-card" data-node="${originalIndex}">
-        ${createCardHTML(tool, originalIndex, isFav, isCompared, true, stepName, stepIndex, item.cost, item.mode)}
+    qsContainer.innerHTML = `
+      <div class="quick-start-card">
+        <div class="quick-start-header">
+          <h3 class="quick-start-title">⚡ Quick Start</h3>
+          <p class="quick-start-subtitle">Complete your task in just 3 simple steps.</p>
+        </div>
+        <div class="quick-start-steps">
+          <!-- Step 1 -->
+          <div class="quick-start-step ${activeQS === 1 ? 'active' : ''}">
+            <span class="quick-start-step-num">01</span>
+            <span class="quick-start-step-title">Describe Your Idea</span>
+            <p class="quick-start-step-desc">Enter details of what you want to create.</p>
+            <div class="prompt-idea-input-wrapper">
+              <textarea class="prompt-idea-textarea" id="qs-idea-input" placeholder="Describe your idea (e.g. futuristic cyberpunk city)...">${state.userIdeaDescription || ''}</textarea>
+              <button class="btn btn-primary quick-start-action-btn" id="qs-btn-step1">✨ Generate JSON Prompt</button>
+            </div>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="quick-start-step ${activeQS === 2 ? 'active' : ''}">
+            <span class="quick-start-step-num">02</span>
+            <span class="quick-start-step-title">Copy Generated JSON</span>
+            <p class="quick-start-step-desc">Copy the generated prompt.</p>
+            ${activeQS === 2 && state.generatedJSONPrompt ? `
+              <div class="json-prompt-box-wrapper">
+                <pre class="json-prompt-display"><code>${escapeHTML(state.generatedJSONPrompt)}</code></pre>
+              </div>
+            ` : ''}
+            <button class="btn btn-secondary quick-start-action-btn" id="qs-btn-step2" ${activeQS < 2 ? 'disabled' : ''}>📋 Copy JSON</button>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="quick-start-step ${activeQS === 3 ? 'active' : ''}">
+            <span class="quick-start-step-num">03</span>
+            <span class="quick-start-step-title">Generate</span>
+            <p class="quick-start-step-desc">Open the recommended AI tool and paste the JSON.</p>
+            <button class="btn btn-secondary quick-start-action-btn" id="qs-btn-step3" ${activeQS < 3 ? 'disabled' : ''}>🚀 Open Tool</button>
+          </div>
+        </div>
       </div>
     `;
     
-    if (isLeft) {
-      rowEl.innerHTML = anchorHTML + cardHTML + spacerHTML;
-    } else {
-      rowEl.innerHTML = spacerHTML + anchorHTML + cardHTML;
+    // Bind Quick Start Step 1 Button
+    const btn1 = document.getElementById('qs-btn-step1');
+    if (btn1) {
+      btn1.addEventListener('click', () => {
+        const inputArea = document.getElementById('qs-idea-input');
+        const desc = inputArea ? inputArea.value.trim() : '';
+        state.userIdeaDescription = desc;
+        
+        // Generate local JSON prompt
+        const localJSON = generateLocalJSONPrompt(state.goalText, desc);
+        state.generatedJSONPrompt = localJSON;
+        
+        // Also set the fallback compiled prompt
+        const template = getMasterPromptTemplate(state.goalText);
+        const compiled = `${template}\n\nUser Description: "${desc || 'a beautiful creative project'}"\n\nOutput only valid JSON.`;
+        state.compiledQuickStartPrompt = compiled;
+        
+        showToast("JSON Prompt generated locally! Proceed to Step 2.");
+        state.quickStartStep = 2;
+        renderRoadmap(optimalWorkflow, steps);
+      });
     }
     
-    listContainer.appendChild(rowEl);
-  });
+    // Bind Quick Start Step 2 Button
+    const btn2 = document.getElementById('qs-btn-step2');
+    if (btn2) {
+      btn2.addEventListener('click', () => {
+        const promptToCopy = state.generatedJSONPrompt || state.compiledQuickStartPrompt || getMasterPromptTemplate(state.goalText);
+        navigator.clipboard.writeText(promptToCopy);
+        showToast("JSON Prompt copied to clipboard!");
+        state.quickStartStep = 3;
+        renderRoadmap(optimalWorkflow, steps);
+      });
+    }
+    
+    // Bind Quick Start Step 3 Button
+    const btn3 = document.getElementById('qs-btn-step3');
+    if (btn3) {
+      btn3.addEventListener('click', () => {
+        const toolUrl = bestToolObj ? (bestToolObj.officialUrl || bestToolObj.link || bestToolObj.url) : '#';
+        window.open(toolUrl, '_blank');
+      });
+    }
+  }
+
+  // 3. Populate the Step-by-Step Card Deck
+  const deckContainer = document.getElementById('step-deck-container');
+  if (deckContainer) {
+    deckContainer.innerHTML = '';
+    
+    if (!optimalWorkflow || optimalWorkflow.length === 0) {
+      deckContainer.innerHTML = `
+        <div class="step-card">
+          <h2 class="step-card-title">NO NODES COMPILED</h2>
+          <p class="step-card-desc">No systems match your criteria. Expand your budget threshold or alter your goal target.</p>
+          <button class="btn btn-primary" onclick="resetWizard()">Re-configure Target</button>
+        </div>
+      `;
+      return;
+    }
+    
+    if (state.activeStepIndex === undefined || state.activeStepIndex >= optimalWorkflow.length) {
+      state.activeStepIndex = 0;
+    }
+    
+    const activeIndex = state.activeStepIndex;
+    const currentItem = optimalWorkflow[activeIndex];
+    const tool = currentItem.tool;
+    const originalIndex = toolsData.findIndex(t => t.id === tool.id);
+    const stepName = steps[activeIndex];
+    const stepNumber = activeIndex + 1;
+    const totalSteps = optimalWorkflow.length;
+    
+    let iconHTML = tool.icon || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg>`;
+    const isEdu = tool.id && tool.id.startsWith("EDU_");
+    if (isEdu) {
+      iconHTML = `<span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; color:var(--text-primary);">EDU</span>`;
+    }
+    
+    const titleText = isEdu ? (tool.title[getActiveLanguage()] || tool.title["English"]) : tool.name;
+    let descText = '';
+    if (isEdu) {
+      descText = tool.summary[getActiveLanguage()] || tool.summary["English"];
+    } else {
+      const mappedStepKey = resolveGuideKey(stepName, tool.name);
+      if (appGuidesData[mappedStepKey]) {
+        descText = appGuidesData[mappedStepKey].explanation[getActiveLanguage()] || appGuidesData[mappedStepKey].explanation["English"];
+      } else {
+        descText = tool.description || tool.desc || `Execute actions in ${tool.name} interface.`;
+      }
+    }
+    
+    if (descText.length > 120) {
+      descText = descText.substring(0, 117) + '...';
+    }
+    
+    let primaryActionBtnHTML = '';
+    if (isEdu) {
+      primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-inspect">✨ Inspect Node</button>`;
+    } else {
+      if (tool.id === "TOOL_DOCS") {
+        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">🚀 Open Google Docs</button>`;
+      } else if (tool.id === "TOOL_001") {
+        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">✨ Generate JSON Prompt</button>`;
+      } else {
+        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">🚀 Open Tool</button>`;
+      }
+    }
+    
+    const progressPercent = Math.round(((activeIndex + 1) / totalSteps) * 100);
+    
+    deckContainer.innerHTML = `
+      <div class="step-deck">
+        <div class="step-card-wrapper">
+          <div class="step-card">
+            <div class="step-badge">Step ${stepNumber} of ${totalSteps}</div>
+            <div class="step-card-icon">${iconHTML}</div>
+            <h2 class="step-card-title">${titleText}</h2>
+            <p class="step-card-desc">${descText}</p>
+            ${primaryActionBtnHTML}
+          </div>
+        </div>
+        
+        <div class="stepper-nav">
+          <button class="btn btn-secondary stepper-btn" id="deck-btn-prev" ${activeIndex === 0 ? 'disabled' : ''}>← Previous</button>
+          <div class="stepper-progress">
+            ${Array.from({ length: totalSteps }).map((_, i) => `
+              <div class="stepper-dot ${i === activeIndex ? 'active' : ''}"></div>
+            `).join('')}
+          </div>
+          <button class="btn btn-primary stepper-btn" id="deck-btn-next">${activeIndex === totalSteps - 1 ? 'Finish' : '➡ Continue'}</button>
+        </div>
+        
+        <div class="stepper-progress-bar-wrapper">
+          <div class="stepper-progress-bar" style="width: ${progressPercent}%;"></div>
+        </div>
+      </div>
+    `;
+    
+    const prevBtn = document.getElementById('deck-btn-prev');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (state.activeStepIndex > 0) {
+          state.activeStepIndex--;
+          renderRoadmap(optimalWorkflow, steps);
+        }
+      });
+    }
+    
+    const nextBtn = document.getElementById('deck-btn-next');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        if (state.activeStepIndex < totalSteps - 1) {
+          state.activeStepIndex++;
+          renderRoadmap(optimalWorkflow, steps);
+        } else {
+          showToast("Workflow completed successfully!");
+        }
+      });
+    }
+    
+    const actionOpen = document.getElementById('deck-action-open');
+    if (actionOpen) {
+      actionOpen.addEventListener('click', () => {
+        if (tool.id === "TOOL_001") {
+          const template = getMasterPromptTemplate(state.goalText);
+          navigator.clipboard.writeText(template);
+          showToast("Master Prompt copied! Opening ChatGPT...");
+          window.open('https://chatgpt.com', '_blank');
+        } else {
+          const toolUrl = tool.officialUrl || tool.link || tool.url || '#';
+          window.open(toolUrl, '_blank');
+        }
+      });
+    }
+    
+    const actionInspect = document.getElementById('deck-action-inspect');
+    if (actionInspect) {
+      actionInspect.addEventListener('click', () => {
+        openDrawer(originalIndex);
+      });
+    }
+  }
+}
+
+function renderPremiumToolCard(mapping) {
+  const recContainer = document.getElementById('recommended-tool-container');
+  const qsContainer = document.getElementById('quick-start-container');
+  const deckContainer = document.getElementById('step-deck-container');
   
-  setupCardInteractions();
+  if (qsContainer) qsContainer.innerHTML = '';
+  if (deckContainer) deckContainer.innerHTML = '';
+  
+  if (!recContainer) return;
+  
+  let guideHTML = '';
+  if (Array.isArray(mapping.quick_guide)) {
+    guideHTML = `
+      <ol class="guide-steps-list">
+        ${mapping.quick_guide.map(step => `<li>${step}</li>`).join('')}
+      </ol>
+    `;
+  } else {
+    guideHTML = `<p class="info-text">${mapping.quick_guide}</p>`;
+  }
+  
+  let alternativesHTML = '';
+  if (mapping.alternative_tools && mapping.alternative_tools.length > 0) {
+    alternativesHTML = `
+      <div class="info-section">
+        <h4 class="info-title">Alternative Tools</h4>
+        <div class="alternatives-wrapper">
+          ${mapping.alternative_tools.map(alt => `
+            <a href="${alt.link}" target="_blank" rel="noopener" class="alternative-pill">
+              <span>${alt.name}</span> ↗
+            </a>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+  
+  recContainer.innerHTML = `
+    <div class="premium-tool-card">
+      <div class="premium-tool-card-header">
+        <div class="best-tool-badge">⭐ BEST RECOMMENDED TOOL</div>
+        <h2 class="premium-tool-name">${mapping.recommended_tool}</h2>
+        <div class="premium-tool-link-wrapper">
+          <span class="info-title" style="margin-bottom:0; letter-spacing:0.05em;">Official Website:</span>
+          <a href="${mapping.official_link}" target="_blank" rel="noopener" class="premium-tool-link">${mapping.official_link} ↗</a>
+        </div>
+      </div>
+      
+      <div class="premium-tool-card-body">
+        <div class="info-section">
+          <h4 class="info-title">Why This Tool</h4>
+          <p class="info-text">${mapping.reason}</p>
+        </div>
+        
+        <div class="info-section">
+          <h4 class="info-title">Quick Start Guide</h4>
+          ${guideHTML}
+        </div>
+        
+        ${alternativesHTML}
+        
+        <div class="prompt-generation-section">
+          <h4 class="info-title">Generate Master JSON Prompt</h4>
+          <p class="prompt-desc-label">Describe your custom requirements below to generate the structured JSON payload:</p>
+          <textarea id="premium-prompt-desc" class="premium-prompt-textarea" placeholder="Enter your custom details here (e.g., build a portfolio web app with dark mode)...">${state.userIdeaDescription || ''}</textarea>
+          
+          <div class="prompt-actions-row">
+            <button id="btn-generate-premium-json" class="btn btn-primary">✨ Generate JSON Prompt</button>
+          </div>
+
+          <div id="premium-json-output-wrapper" class="premium-json-output-wrapper" style="display: ${state.generatedJSONPrompt ? 'block' : 'none'};">
+            <div class="json-header-row">
+              <span class="json-box-label">GENERATED JSON PROMPT (READY TO COPY)</span>
+              <button id="btn-copy-premium-json" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">📋 Copy JSON</button>
+            </div>
+            <pre class="premium-json-display"><code>${escapeHTML(state.generatedJSONPrompt || '')}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="premium-tool-card-footer">
+        <a href="${mapping.official_link}" target="_blank" rel="noopener" class="btn btn-primary btn-full-width" id="btn-open-premium-tool" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span>🚀 Open Official Tool (${mapping.recommended_tool})</span>
+        </a>
+      </div>
+    </div>
+  `;
+  
+  // Bind Generate Button
+  const genBtn = document.getElementById('btn-generate-premium-json');
+  if (genBtn) {
+    genBtn.addEventListener('click', () => {
+      const textarea = document.getElementById('premium-prompt-desc');
+      const desc = textarea ? textarea.value.trim() : '';
+      state.userIdeaDescription = desc;
+      
+      const jsonStr = generateLocalJSONPrompt(state.goalText, desc);
+      state.generatedJSONPrompt = jsonStr;
+      
+      const outputWrapper = document.getElementById('premium-json-output-wrapper');
+      if (outputWrapper) {
+        outputWrapper.style.display = 'block';
+        const codeEl = outputWrapper.querySelector('pre code');
+        if (codeEl) codeEl.textContent = jsonStr;
+      }
+      
+      showToast("JSON Prompt generated successfully!");
+    });
+  }
+  
+  // Bind Copy Button
+  const copyBtn = document.getElementById('btn-copy-premium-json');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const promptToCopy = state.generatedJSONPrompt || generateLocalJSONPrompt(state.goalText, state.userIdeaDescription || '');
+      navigator.clipboard.writeText(promptToCopy).then(() => {
+        showToast("Copied JSON prompt to clipboard!");
+      }).catch(err => {
+        console.error("Failed to copy JSON: ", err);
+      });
+    });
+  }
 }
 
 window.resetWizard = function() {
   const wizardOverlay = document.getElementById('wizard-overlay');
   const mainWrapper = document.getElementById('main-content-wrapper');
   
-  mainWrapper.classList.remove('active');
-  wizardOverlay.style.opacity = '1';
-  wizardOverlay.style.visibility = 'visible';
+  if (mainWrapper) mainWrapper.classList.remove('active');
+  if (wizardOverlay) {
+    wizardOverlay.style.opacity = '1';
+    wizardOverlay.style.visibility = 'visible';
+  }
   document.body.style.overflow = 'hidden';
   
   window.scrollTo(0, 0);

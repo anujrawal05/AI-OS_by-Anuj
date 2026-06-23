@@ -30,7 +30,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=3.2">
+  <link rel="stylesheet" href="style.css?v=3.4">
   <script>
     window.myErrors = [];
     window.onerror = function (message, source, lineno, colno, error) {
@@ -175,16 +175,13 @@
                     <option value="Voice Over Generation">Generate Professional Voice Over</option>
                     <option value="Brand Building">Build a Brand Using AI</option>
                     <option value="Personal AI Building">Build a Personal AI Assistant</option>
-                    <option value="Help in Video Editing">Edit Video Production Using AI</option>
-                    <option value="Help in Music Editing">Enhance & Edit Audio Tracks</option>
-                    <option value="Writing Work">Generate Copy & Written Content</option>
                     <option value="Hardware Building">Design and Prototype Hardware</option>
                   </select>
                 </div>
               </div>
 
-              <!-- Input 2: Budget Selection -->
-              <div class="control-group-input">
+              <!-- Input 2: Budget Selection (Hidden) -->
+              <div class="control-group-input" style="display: none;">
                 <label class="control-label-style">2. Budget limit</label>
                 <div class="select-wrap">
                   <select id="control-budget-select" class="control-dropdown-select">
@@ -197,8 +194,8 @@
                 </div>
               </div>
 
-              <!-- Input 3: Preferred Workflow Type / Experience -->
-              <div class="control-group-input">
+              <!-- Input 3: Preferred Workflow Type / Experience (Hidden) -->
+              <div class="control-group-input" style="display: none;">
                 <label class="control-label-style">3. Workflow / Experience</label>
                 <div class="select-wrap">
                   <select id="control-workflow-select" class="control-dropdown-select">
@@ -211,7 +208,7 @@
 
               <!-- Input 4: Language Selection -->
               <div class="control-group-input">
-                <label class="control-label-style">4. Target Language</label>
+                <label class="control-label-style">2. Target Language</label>
                 <div class="select-wrap">
                   <select id="control-lang-select" class="control-dropdown-select">
                     <option value="English">English</option>
@@ -263,10 +260,22 @@
             </div>
           </div>
 
+          <!-- New Premium UX Container -->
+          <div class="roadmap-ux-container">
+            <!-- Recommended Tool Card (⭐ Best Tool, Difficulty, Time) -->
+            <div id="recommended-tool-container"></div>
+            
+            <!-- Quick Start Component (Describe, Copy JSON, Open Tool) -->
+            <div id="quick-start-container"></div>
+
+            <!-- Step-by-Step Card Deck -->
+            <div id="step-deck-container"></div>
+          </div>
+
           <!-- Main Timeline Container -->
-          <div class="timeline-container">
+          <div class="timeline-container" style="display: none;">
             <!-- SVG Winding Road -->
-            <div class="road-svg-container">
+            <div class="road-svg-container" style="display: none;">
               <svg id="road-svg" width="100%" height="100%" preserveAspectRatio="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -748,10 +757,10 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="toolsData.js?v=3.2"></script>
-  <script src="exploringAIData.js?v=3.2"></script>
-  <script src="ad-manager.js?v=3.2"></script>
-  <script src="app.js?v=3.2"></script>
+  <script src="toolsData.js?v=3.4"></script>
+  <script src="exploringAIData.js?v=3.4"></script>
+  <script src="ad-manager.js?v=3.4"></script>
+  <script src="app.js?v=3.4"></script>
 
   <!-- ===== CINEMATIC POPUP — SESSION LOGIC ===== -->
   <script>

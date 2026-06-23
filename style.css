@@ -6452,3 +6452,624 @@ ins.adsbygoogle {
     height: 50px;
   }
 }
+
+/* ==========================================================================
+   REDESIGNED STEP-BY-STEP ROADMAP UX (Apple + Notion + Cursor style)
+   ========================================================================== */
+
+.roadmap-ux-container {
+  max-width: 720px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 0 16px;
+  z-index: 10;
+  position: relative;
+}
+
+/* Recommended Tool Card (Premium Glass) */
+.recommended-tool-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--prem-radius);
+  padding: 24px 32px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 45px var(--card-shadow);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.recommended-tool-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 50px var(--card-shadow), 0 0 20px var(--glow-color);
+}
+
+.recommended-tool-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.recommended-tool-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recommended-tool-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.recommended-tool-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.recommended-tool-value .accent-val {
+  color: var(--accent-color);
+}
+
+@media (max-width: 600px) {
+  .recommended-tool-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px 24px;
+  }
+}
+
+/* Quick Start Card */
+.quick-start-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--prem-radius);
+  padding: 32px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 20px 40px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.quick-start-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quick-start-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-start-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.quick-start-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  position: relative;
+}
+
+.quick-start-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.01);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  transition: all var(--transition-fast);
+}
+
+.quick-start-step:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-color);
+}
+
+.quick-start-step-num {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  opacity: 0.3;
+}
+
+.quick-start-step.active .quick-start-step-num {
+  color: var(--accent-color);
+  opacity: 1;
+}
+
+.quick-start-step-title {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quick-start-step-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  min-height: 40px;
+}
+
+.quick-start-action-btn {
+  margin-top: auto;
+  font-size: 0.75rem;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .quick-start-steps {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Interactive Description Form inside Quick Start Step 1 */
+.prompt-idea-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.prompt-idea-textarea {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  width: 100%;
+}
+
+.prompt-idea-textarea:focus {
+  border-color: var(--text-primary);
+}
+
+/* Step-by-Step Card Deck */
+.step-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.step-card-wrapper {
+  position: relative;
+}
+
+/* Apple/Notion style card look */
+.step-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--prem-radius);
+  padding: 40px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 30px 60px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.step-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 35px 70px var(--card-shadow);
+}
+
+.step-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  background: var(--badge-bg);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.step-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  font-size: 1.8rem;
+  transition: all var(--transition-fast);
+}
+
+.step-card-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.step-card:hover .step-card-icon {
+  background: var(--accent-color);
+  color: var(--accent-bg-invert);
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+.step-card-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.step-card-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+.step-card-action-btn {
+  padding: 12px 28px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Stepper Navigation bar below card */
+.stepper-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.stepper-btn {
+  padding: 10px 18px;
+  font-size: 0.8rem;
+}
+
+.stepper-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepper-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  opacity: 0.4;
+  transition: all var(--transition-fast);
+}
+
+.stepper-dot.active {
+  background: var(--accent-color);
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* Mini Progress Bar */
+.stepper-progress-bar-wrapper {
+  width: 100%;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.stepper-progress-bar {
+  height: 100%;
+  background: var(--accent-color);
+  width: 0%;
+  transition: width var(--transition-medium);
+}
+
+/* JSON Prompt Box in Step 2 */
+.json-prompt-box-wrapper {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.json-prompt-display {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  max-height: 120px;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  text-align: left;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Premium Single Tool Card Layout */
+.premium-tool-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--prem-radius);
+  padding: 32px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 45px var(--card-shadow);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.premium-tool-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 50px var(--card-shadow), 0 0 20px var(--glow-color);
+}
+
+.premium-tool-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+}
+
+.best-tool-badge {
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  align-self: flex-start;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.premium-tool-name {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Space Grotesk', var(--font-mono), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.premium-tool-link-wrapper {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.premium-tool-link {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.premium-tool-link:hover {
+  text-decoration: underline;
+  color: var(--text-primary);
+}
+
+.premium-tool-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-title {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  margin: 0;
+  font-weight: 700;
+}
+
+.info-text {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.guide-steps-list {
+  padding-left: 20px;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.guide-steps-list li {
+  margin-bottom: 6px;
+}
+
+.alternatives-wrapper {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.alternative-pill {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.alternative-pill:hover {
+  border-color: var(--accent-color);
+  background: rgba(124, 58, 237, 0.05);
+}
+
+.prompt-generation-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prompt-desc-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.premium-prompt-textarea {
+  width: 100%;
+  height: 80px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.premium-prompt-textarea:focus {
+  border-color: var(--accent-color);
+  outline: none;
+}
+
+.prompt-actions-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.premium-json-output-wrapper {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  box-sizing: border-box;
+}
+
+.json-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.json-box-label {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.premium-json-display {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.premium-tool-card-footer {
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+  display: flex;
+}
+
+.btn-full-width {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 14px;
+}
