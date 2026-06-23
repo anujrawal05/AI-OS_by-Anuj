@@ -61,17 +61,17 @@
           <span class="logo-symbol">●</span>
           <div class="logo-text-group">
             <span class="logo-text">AI-OS</span>
-            <span class="logo-subtitle">Powered by A.R. Labs</span>
+            <span class="logo-subtitle" data-i18n="logoSub">Powered by A.R. Labs</span>
           </div>
         </div>
 
         <nav class="main-nav">
-          <a href="#dashboard-controls" class="nav-link active" data-target="dashboard-controls">Dashboard</a>
-          <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section">Roadmaps</a>
-          <a href="#explore-library-section" class="nav-link" data-target="explore-library-section">Explore Tools</a>
-          <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section">Categories</a>
-          <a href="#about-section" class="nav-link" data-target="about-section">About</a>
-          <a href="./ar-labs/" class="nav-link" data-target="ar-labs">More from A.R. Labs</a>
+          <a href="#dashboard-controls" class="nav-link active" data-target="dashboard-controls" data-i18n="nav.dashboard">Dashboard</a>
+          <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section" data-i18n="nav.roadmaps">Roadmaps</a>
+          <a href="#explore-library-section" class="nav-link" data-target="explore-library-section" data-i18n="nav.explore">Explore Tools</a>
+          <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section" data-i18n="nav.categories">Categories</a>
+          <a href="#about-section" class="nav-link" data-target="about-section" data-i18n="nav.about">About</a>
+          <a href="./ar-labs/" class="nav-link" data-target="ar-labs" data-i18n="nav.more">More from A.R. Labs</a>
         </nav>
 
         <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
@@ -121,19 +121,19 @@
           <div class="prem-hero-overlay"></div>
           <div class="prem-hero-body">
             <div class="prem-hero-left">
-              <span class="prem-label-badge">✦ FROM THE CREATOR</span>
-              <span class="prem-genre-pill">🩸 Dark Thriller · 2026</span>
-              <h2 class="prem-hero-title">The Vankari Debt</h2>
-              <p class="prem-hero-tagline">Power protects the guilty — until someone decides to collect. A dark thriller set
+              <span class="prem-label-badge" data-i18n="hero.fromCreator">✦ FROM THE CREATOR</span>
+              <span class="prem-genre-pill" data-i18n="hero.genre">🩸 Dark Thriller · 2026</span>
+              <h2 class="prem-hero-title" data-i18n="hero.title">The Vankari Debt</h2>
+              <p class="prem-hero-tagline" data-i18n="hero.tagline">Power protects the guilty — until someone decides to collect. A dark thriller set
                 in modern India where ancient tribal secrets collide with deadly consequences.</p>
             </div>
             <div class="prem-hero-right">
               <img src="./vankari.png" alt="The Vankari Debt" class="prem-hero-poster" loading="lazy">
               <div class="prem-hero-actions">
                 <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html"
-                  target="_blank" rel="noopener" class="prem-btn-primary">Unlock the Mystery ↗</a>
+                  target="_blank" rel="noopener" class="prem-btn-primary" data-i18n="hero.unlock">Unlock the Mystery ↗</a>
                 <a href="https://play.google.com/store/books/details/Anuj_Rawal_The_Vankari_Debt?id=gSnFEQAAQBAJ"
-                  target="_blank" rel="noopener" class="prem-btn-ghost">Google Play Books</a>
+                  target="_blank" rel="noopener" class="prem-btn-ghost" data-i18n="hero.playBooks">Google Play Books</a>
               </div>
             </div>
           </div>
@@ -154,28 +154,28 @@
         <!-- Persistent Controls Dashboard Toolbar -->
         <section class="dashboard-controls" id="dashboard-controls">
           <div class="controls-container">
-            <div class="controls-label">
+            <div class="controls-label" data-i18n="dashboard.title">
               OPERATIONAL TARGET CONFIGURATION
             </div>
             <div class="controls-inputs-grid">
 
               <!-- Input 1: Task Selection -->
               <div class="control-group-input">
-                <label class="control-label-style">1. Task / Objective</label>
+                <label class="control-label-style" data-i18n="dashboard.taskLabel">1. Task / Objective</label>
                 <div class="select-wrap">
                   <select id="control-task-select" class="control-dropdown-select">
-                    <option value="Exploring AI" selected>Exploring AI</option>
-                    <option value="Generating Video">Generate a Complete AI Video</option>
-                    <option value="Generating Images">Generate Professional AI Images</option>
-                    <option value="Designing">Create Digital Designs Using AI</option>
-                    <option value="Coding">Build Software Using AI</option>
-                    <option value="Building Apps">Build Android Application</option>
-                    <option value="Tips to Earn Money">Monetize AI Skills</option>
-                    <option value="Music Making">Create Music Using AI</option>
-                    <option value="Voice Over Generation">Generate Professional Voice Over</option>
-                    <option value="Brand Building">Build a Brand Using AI</option>
-                    <option value="Personal AI Building">Build a Personal AI Assistant</option>
-                    <option value="Hardware Building">Design and Prototype Hardware</option>
+                    <option value="Exploring AI" selected data-i18n="dashboard.tasks.exploring">Exploring AI</option>
+                    <option value="Generating Video" data-i18n="dashboard.tasks.video">Generate a Complete AI Video</option>
+                    <option value="Generating Images" data-i18n="dashboard.tasks.images">Generate Professional AI Images</option>
+                    <option value="Designing" data-i18n="dashboard.tasks.designs">Create Digital Designs Using AI</option>
+                    <option value="Coding" data-i18n="dashboard.tasks.coding">Build Software Using AI</option>
+                    <option value="Building Apps" data-i18n="dashboard.tasks.apps">Build Android Application</option>
+                    <option value="Tips to Earn Money" data-i18n="dashboard.tasks.monetize">Monetize AI Skills</option>
+                    <option value="Music Making" data-i18n="dashboard.tasks.music">Create Music Using AI</option>
+                    <option value="Voice Over Generation" data-i18n="dashboard.tasks.voiceover">Generate Professional Voice Over</option>
+                    <option value="Brand Building" data-i18n="dashboard.tasks.brand">Build a Brand Using AI</option>
+                    <option value="Personal AI Building" data-i18n="dashboard.tasks.personalAi">Build a Personal AI Assistant</option>
+                    <option value="Hardware Building" data-i18n="dashboard.tasks.hardware">Design and Prototype Hardware</option>
                   </select>
                 </div>
               </div>
@@ -208,19 +208,19 @@
 
               <!-- Input 4: Language Selection -->
               <div class="control-group-input">
-                <label class="control-label-style">2. Target Language</label>
+                <label class="control-label-style" data-i18n="dashboard.langLabel">2. Target Language</label>
                 <div class="select-wrap">
                   <select id="control-lang-select" class="control-dropdown-select">
-                    <option value="English">English</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Hinglish" selected>Hinglish (Recommended)</option>
+                    <option value="English" data-i18n="dashboard.langOptions.english">English</option>
+                    <option value="Hindi" data-i18n="dashboard.langOptions.hindi">Hindi</option>
+                    <option value="Hinglish" selected data-i18n="dashboard.langOptions.hinglish">Hinglish (Recommended)</option>
                   </select>
                 </div>
               </div>
 
               <!-- Action Button -->
               <div class="control-group-input">
-                <button id="control-compile-btn" class="btn btn-primary btn-full">
+                <button id="control-compile-btn" class="btn btn-primary btn-full" data-i18n="dashboard.compileBtn">
                   COMPILE ROADMAP
                 </button>
               </div>
@@ -244,18 +244,18 @@
         <!-- Section 1: Roadmap Builder -->
         <section id="roadmap-builder-section" class="app-section">
           <div class="section-header">
-            <div class="section-kicker">WORKFLOW PROTOCOLS</div>
-            <h2 class="section-title">Roadmap Builder</h2>
+            <div class="section-kicker" data-i18n="roadmap.title">WORKFLOW PROTOCOLS</div>
+            <h2 class="section-title" data-i18n="roadmap.subtitle">Roadmap Builder</h2>
             <p class="section-subtitle">Inspect the custom-compiled timeline. Filter nodes dynamically by system layer.
             </p>
 
             <!-- Timeline category filters -->
             <div class="timeline-filter-wrap">
               <nav class="filter-nav">
-                <button class="filter-btn active" data-filter="all">All Layers</button>
-                <button class="filter-btn" data-filter="creation">Creation</button>
-                <button class="filter-btn" data-filter="engineering">Engineering</button>
-                <button class="filter-btn" data-filter="analytics">Analytics</button>
+                <button class="filter-btn active" data-filter="all" data-i18n="roadmap.filters.all">All Layers</button>
+                <button class="filter-btn" data-filter="creation" data-i18n="roadmap.filters.creation">Creation</button>
+                <button class="filter-btn" data-filter="engineering" data-i18n="roadmap.filters.engineering">Engineering</button>
+                <button class="filter-btn" data-filter="analytics" data-i18n="roadmap.filters.analytics">Analytics</button>
               </nav>
             </div>
           </div>
@@ -369,9 +369,9 @@
         <!-- Section 2: Explore Library -->
         <section id="explore-library-section" class="app-section">
           <div class="section-header">
-            <div class="section-kicker">SYSTEM DIRECTORY</div>
-            <h2 class="section-title">Explore Library</h2>
-            <p class="section-subtitle">Browse and inspect all operational AI services without timeline compilation
+            <div class="section-kicker" data-i18n="library.title">SYSTEM DIRECTORY</div>
+            <h2 class="section-title" data-i18n="nav.explore">Explore Library</h2>
+            <p class="section-subtitle" data-i18n="library.subtitle">Browse and inspect all operational AI services without timeline compilation
               constraints.</p>
           </div>
 
@@ -384,15 +384,15 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
               <input type="text" id="library-search" class="library-search-input"
-                placeholder="Search tools by name, description, tags...">
+                placeholder="Search tools by name, description, tags..." data-i18n-placeholder="library.searchPlaceholder">
             </div>
 
             <div class="library-controls-panel">
               <!-- View Mode Switcher -->
               <div class="control-group">
-                <span class="control-label">VIEW MODE:</span>
+                <span class="control-label" data-i18n="library.viewMode">VIEW MODE:</span>
                 <div class="view-toggles">
-                  <button class="view-btn active" id="view-grid-btn" title="Grid View">
+                  <button class="view-btn active" id="view-grid-btn" title="Grid View" data-i18n-title="library.gridView">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <rect x="3" y="3" width="7" height="7"></rect>
                       <rect x="14" y="3" width="7" height="7"></rect>
@@ -400,7 +400,7 @@
                       <rect x="3" y="14" width="7" height="7"></rect>
                     </svg>
                   </button>
-                  <button class="view-btn" id="view-list-btn" title="List View">
+                  <button class="view-btn" id="view-list-btn" title="List View" data-i18n-title="library.listView">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <line x1="8" y1="6" x2="21" y2="6"></line>
                       <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -410,7 +410,7 @@
                       <line x1="3" y1="18" x2="3.01" y2="18"></line>
                     </svg>
                   </button>
-                  <button class="view-btn" id="view-cat-btn" title="Group by Category">
+                  <button class="view-btn" id="view-cat-btn" title="Group by Category" data-i18n-title="library.catView">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                     </svg>
@@ -420,13 +420,13 @@
 
               <!-- Sorting Selector -->
               <div class="control-group">
-                <label for="library-sort" class="control-label">SORT BY:</label>
+                <label for="library-sort" class="control-label" data-i18n="library.sortBy">SORT BY:</label>
                 <select id="library-sort" class="control-select">
-                  <option value="default" selected>Default (Suggested)</option>
-                  <option value="name-asc">Name (A - Z)</option>
-                  <option value="name-desc">Name (Z - A)</option>
-                  <option value="price-low">Price (Low - High)</option>
-                  <option value="difficulty">Difficulty (Beginner First)</option>
+                  <option value="default" selected data-i18n="library.sortOptions.default">Default (Suggested)</option>
+                  <option value="name-asc" data-i18n="library.sortOptions.nameAsc">Name (A - Z)</option>
+                  <option value="name-desc" data-i18n="library.sortOptions.nameDesc">Name (Z - A)</option>
+                  <option value="price-low" data-i18n="library.sortOptions.priceLow">Price (Low - High)</option>
+                  <option value="difficulty" data-i18n="library.sortOptions.difficulty">Difficulty (Beginner First)</option>
                 </select>
               </div>
 
@@ -435,22 +435,22 @@
                 <label class="favorites-filter-label" id="fav-filter-wrap">
                   <input type="checkbox" id="library-favorites-toggle">
                   <span class="star-icon">★</span>
-                  <span class="lbl-text">FAVORITES ONLY</span>
+                  <span class="lbl-text" data-i18n="library.favsLabel">FAVORITES ONLY</span>
                 </label>
               </div>
 
               <!-- Compare Tools Action -->
               <div id="compare-status-wrap" class="compare-status-wrap" style="display: none;">
-                <span class="compare-text"><span id="compare-count">0</span>/3 SELECTED</span>
+                <span class="compare-text" id="compare-text-label"><span id="compare-count">0</span>/3 SELECTED</span>
                 <button id="compare-trigger-btn" class="btn btn-primary"
-                  style="padding: 6px 12px; font-size: 0.75rem; border-radius: 4px;">COMPARE</button>
-                <button id="compare-clear-btn" class="compare-clear-btn">Clear</button>
+                  style="padding: 6px 12px; font-size: 0.75rem; border-radius: 4px;" data-i18n="library.compareBtn">COMPARE</button>
+                <button id="compare-clear-btn" class="compare-clear-btn" data-i18n="library.clearBtn">Clear</button>
               </div>
             </div>
 
             <div class="library-filter-scroll">
               <div class="library-filter-chips" id="library-filter-chips">
-                <button class="filter-chip active" data-chip="all">All Sectors</button>
+                <button class="filter-chip active" data-chip="all" data-i18n="library.allSectors">All Sectors</button>
                 <!-- Populated by JS -->
               </div>
             </div>
@@ -465,9 +465,9 @@
         <!-- Section 3: Category Explorer -->
         <section id="category-explorer-section" class="app-section">
           <div class="section-header">
-            <div class="section-kicker">SECTOR CLASSIFICATION</div>
-            <h2 class="section-title">Category Explorer</h2>
-            <p class="section-subtitle">Inspect decentralized machine intelligence nodes partitioned by industry
+            <div class="section-kicker" data-i18n="categories.kicker">SECTOR CLASSIFICATION</div>
+            <h2 class="section-title" data-i18n="categories.title">Category Explorer</h2>
+            <p class="section-subtitle" data-i18n="categories.subtitle">Inspect decentralized machine intelligence nodes partitioned by industry
               sectors.</p>
           </div>
 
@@ -495,17 +495,17 @@
         <!-- Section 5: About Section -->
         <section id="about-section" class="app-section">
           <div class="section-header">
-            <div class="section-kicker">SYSTEM PROFILE</div>
-            <h2 class="section-title">About AI-OS</h2>
-            <p class="section-subtitle">AI Overall Solutions — Engineered by Anuj.</p>
+            <div class="section-kicker" data-i18n="about.kicker">SYSTEM PROFILE</div>
+            <h2 class="section-title" data-i18n="about.title">About AI-OS</h2>
+            <p class="section-subtitle" data-i18n="about.subtitle">AI Overall Solutions — Engineered by Anuj.</p>
           </div>
 
           <div class="about-container">
             <div class="about-text-block">
-              <p>AI-OS stands for <strong>Artificial Intelligence Overall Solutions</strong>. It is a practical AI
+              <p data-i18n="about.para1">AI-OS stands for <strong>Artificial Intelligence Overall Solutions</strong>. It is a practical AI
                 execution operating system designed to help users accomplish real-world goals using the best AI tools
                 available.</p>
-              <p>Whether you want to generate creative videos, build applications, draft code, or automate complex
+              <p data-i18n="about.para2">Whether you want to generate creative videos, build applications, draft code, or automate complex
                 business workflows, AI-OS instantly compiles optimized workflow roadmaps, provides single universal
                 master prompts, and recommends world-class tool chains. There are no course syllabus plans, theory
                 chapters, or certification checkpoints here—only pure, step-by-step execution guides to help you achieve
@@ -514,11 +514,11 @@
             <div class="about-grid-metrics">
               <div class="metric-box">
                 <span class="metric-val" id="metric-active-nodes">120+</span>
-                <span class="metric-lbl">ACTIVE SYSTEM NODES</span>
+                <span class="metric-lbl" data-i18n="about.activeNodes">ACTIVE SYSTEM NODES</span>
               </div>
               <div class="metric-box">
                 <span class="metric-val">12</span>
-                <span class="metric-lbl">INDUSTRY SECTORS</span>
+                <span class="metric-lbl" data-i18n="about.sectors">INDUSTRY SECTORS</span>
               </div>
             </div>
           </div>
@@ -542,15 +542,15 @@
       <div class="local-ad-content">
         <div class="prem-bottom-inner">
           <div class="prem-bottom-label">
-            <span class="prem-label-badge">✦ A.R. PUBLICATIONS</span>
-            <p class="prem-bottom-tagline">The Literary Universe of Anuj Rawal</p>
+            <span class="prem-label-badge" data-i18n="bottomShowcase.label">✦ A.R. PUBLICATIONS</span>
+            <p class="prem-bottom-tagline" data-i18n="bottomShowcase.tagline">The Literary Universe of Anuj Rawal</p>
           </div>
           <div class="prem-bottom-books">
             <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html" target="_blank"
               rel="noopener" class="prem-bottom-book prem-book-vankari">
               <img src="./vankari-book.jpg" alt="The Vankari Debt" loading="lazy">
               <div class="prem-bottom-book-info">
-                <span>Dark Thriller</span>
+                <span data-i18n="bottomShowcase.darkThriller">Dark Thriller</span>
                 <strong>The Vankari Debt</strong>
               </div>
             </a>
@@ -558,7 +558,7 @@
               class="prem-bottom-book">
               <img src="./sanatan1.jpg" alt="Sanatan Vol 1" loading="lazy">
               <div class="prem-bottom-book-info">
-                <span>Spiritual</span>
+                <span data-i18n="bottomShowcase.spiritual">Spiritual</span>
                 <strong>Sanatan: Eternal Way</strong>
               </div>
             </a>
@@ -566,13 +566,13 @@
               class="prem-bottom-book">
               <img src="./sanatan2.png" alt="Sanatan Vol 2" loading="lazy">
               <div class="prem-bottom-book-info">
-                <span>Spiritual</span>
+                <span data-i18n="bottomShowcase.spiritual">Spiritual</span>
                 <strong>Sanatan: Birth to Death</strong>
               </div>
             </a>
           </div>
           <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
-            class="prem-btn-primary" style="flex-shrink:0;">Visit Publisher ↗</a>
+            class="prem-btn-primary" style="flex-shrink:0;" data-i18n="bottomShowcase.visitPublisher">Visit Publisher ↗</a>
         </div>
       </div>
     </div>
@@ -589,15 +589,15 @@
             <span class="logo-symbol">●</span>
             <div class="logo-text-group">
               <span class="logo-text">AI-OS</span>
-              <span class="logo-subtitle">Powered by A.R. Labs</span>
+              <span class="logo-subtitle" data-i18n="logoSub">Powered by A.R. Labs</span>
             </div>
           </div>
-          <p class="footer-brand-desc">Technology, AI, publishing, and digital products built under a single premium ecosystem.</p>
+          <p class="footer-brand-desc" data-i18n="footer.desc">Technology, AI, publishing, and digital products built under a single premium ecosystem.</p>
           <div class="footer-signature">AI-OS • Powered by A.R. Labs</div>
         </div>
         
         <div class="footer-section-col">
-          <h4 class="footer-col-title">Products</h4>
+          <h4 class="footer-col-title" data-i18n="footer.colProducts">Products</h4>
           <ul class="footer-links">
             <li><a href="https://anujrawal05.github.io/AI-OS_by-Anuj/" class="footer-link">AI-OS</a></li>
             <li><a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank" rel="noopener" class="footer-link">RF Communication Portal</a></li>
@@ -607,7 +607,7 @@
         </div>
         
         <div class="footer-section-col">
-          <h4 class="footer-col-title">Connect</h4>
+          <h4 class="footer-col-title" data-i18n="footer.colConnect">Connect</h4>
           <ul class="footer-links">
             <li><a href="mailto:rawalanuj50@gmail.com" class="footer-link">Email</a></li>
             <li><a href="https://instagram.com/anujrawal.ar/" target="_blank" rel="noopener" class="footer-link">Instagram</a></li>
@@ -617,23 +617,23 @@
         </div>
         
         <div class="footer-section-col">
-          <h4 class="footer-col-title">Legal</h4>
+          <h4 class="footer-col-title" data-i18n="footer.colLegal">Legal</h4>
           <ul class="footer-links">
-            <li><a href="#" class="footer-link legal-trigger" data-legal="terms">Terms & Conditions</a></li>
-            <li><a href="#" class="footer-link legal-trigger" data-legal="userAgreement">User Agreement</a></li>
-            <li><a href="#" class="footer-link legal-trigger" data-legal="privacy">Privacy Policy</a></li>
-            <li><a href="#" class="footer-link legal-trigger" data-legal="cookiePolicy">Cookie Policy</a></li>
-            <li><a href="#" class="footer-link legal-trigger" data-legal="aiUsage">AI Usage Policy</a></li>
-            <li><a href="#" class="footer-link legal-trigger" data-legal="legalNotice">Legal Notice</a></li>
-            <li><a href="#" class="footer-link legal-trigger" data-legal="disclaimer">Disclaimer</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="terms" data-i18n="footer.links.terms">Terms & Conditions</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="userAgreement" data-i18n="footer.links.userAgreement">User Agreement</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="privacy" data-i18n="footer.links.privacy">Privacy Policy</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="cookiePolicy" data-i18n="footer.links.cookie">Cookie Policy</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="aiUsage" data-i18n="footer.links.aiUsage">AI Usage Policy</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="legalNotice" data-i18n="footer.links.legalNotice">Legal Notice</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="disclaimer" data-i18n="footer.links.disclaimer">Disclaimer</a></li>
           </ul>
-          <div class="footer-jurisdiction-notice" style="margin-top: 14px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.45; max-width: 220px; text-align: left;">
+          <div class="footer-jurisdiction-notice" style="margin-top: 14px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.45; max-width: 220px; text-align: left;" data-i18n="footer.jurisdiction">
             <strong>Jurisdiction Notice:</strong> All interactions governed exclusively by the laws of India, under exclusive jurisdiction of the competent courts of Indore, MP, India.
           </div>
         </div>
       </div>
       <div class="footer-bottom-container">
-        <p>© 2026 A.R. Labs. All Rights Reserved.</p>
+        <p data-i18n="footer.copyright">© 2026 A.R. Labs. All Rights Reserved.</p>
       </div>
     </footer>
 

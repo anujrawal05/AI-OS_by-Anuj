@@ -1,0 +1,272 @@
+{
+  "logoSub": "Powered by A.R. Labs",
+  "nav": {
+    "dashboard": "Dashboard",
+    "roadmaps": "Roadmaps",
+    "explore": "Explore Tools",
+    "categories": "Categories",
+    "about": "About Us",
+    "more": "More from A.R. Labs"
+  },
+  "hero": {
+    "fromCreator": "✦ FROM THE CREATOR",
+    "genre": "🩸 Dark Thriller · 2026",
+    "title": "The Vankari Debt",
+    "tagline": "Power protects the guilty — jab tak koi use collect karne ka decide na kare. Ek dark thriller modern India ke backdrop par jahan ancient tribal secrets aur deadly consequences aapas me takrate hain.",
+    "unlock": "Mystery Unlock Karo ↗",
+    "playBooks": "Google Play Books"
+  },
+  "dashboard": {
+    "title": "OPERATIONAL TARGET CONFIGURATION",
+    "taskLabel": "1. Task / Objective Select Karo",
+    "langLabel": "2. Target Language Select Karo",
+    "compileBtn": "ROADMAP COMPILE KARO",
+    "tasks": {
+      "exploring": "Exploring AI",
+      "video": "Complete AI Video Generate Karo",
+      "images": "Professional AI Images Generate Karo",
+      "designs": "AI se Digital Designs Banao",
+      "coding": "AI se Software Banao",
+      "apps": "Android App Banao",
+      "monetize": "AI Skills se Paise Kamao",
+      "music": "AI se Music Banao",
+      "voiceover": "Professional Voice Over Generate Karo",
+      "brand": "AI se Brand Banao",
+      "personalAi": "Personal AI Assistant Banao",
+      "hardware": "Hardware Design aur Prototype Banao"
+    },
+    "langOptions": {
+      "english": "English",
+      "hindi": "Hindi",
+      "hinglish": "Hinglish (Recommended)"
+    }
+  },
+  "roadmap": {
+    "title": "WORKFLOW PROTOCOLS",
+    "subtitle": "Roadmap Builder",
+    "emptyHeader": "Shuru karne ke liye Objective Select Karo",
+    "emptyDesc": "Apna optimized roadmap workflow generate karne ke liye upar control center me primary objective aur language select karein.",
+    "stepHeader": "ROADMAP STEPS",
+    "bestTool": "⭐ Best Tool",
+    "difficulty": "⏱ Difficulty",
+    "estimatedTime": "⚡ Estimated Time",
+    "easy": "Easy",
+    "medium": "Medium",
+    "advanced": "Advanced",
+    "officialWeb": "Official Website:",
+    "whyThisTool": "Why This Tool",
+    "howToUse": "How To Use It",
+    "quickStart": "Quick Start Guide",
+    "altTools": "Alternative Tools",
+    "genPromptHeader": "Master JSON Prompt Generate Karo",
+    "genPromptDesc": "Structured JSON payload generate karne ke liye niche apni requirements details likhein:",
+    "textareaPlaceholder": "Apni custom details yahan enter karo (e.g., dark mode ke sath portfolio web app banao)...",
+    "voiceBtnTitle": "Bol kar likhein (Local Speech Recognition)",
+    "listening": "LISTENING...",
+    "speakNow": "Abhi apna idea boliye...",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "genPromptBtn": "✨ JSON Prompt Generate Karo",
+    "genPromptLoading": "⏳ Llama se JSON generate ho raha hai...",
+    "generatedPromptLabel": "GENERATED JSON PROMPT (COPY KARO)",
+    "copyBtn": "📋 JSON Copy Karo",
+    "intentBadge": "⚡ INTENT UNDERSTOOD",
+    "jsonBadge": "✓ PRODUCTION-READY JSON",
+    "openToolBtn": "🚀 Official Tool Open Karo ({toolName})",
+    "filters": {
+      "all": "All Layers",
+      "creation": "Creation",
+      "engineering": "Engineering",
+      "analytics": "Analytics"
+    },
+    "stepDeck": {
+      "stepOf": "Step {current} of {total}",
+      "prev": "← Previous",
+      "next": "➡ Continue",
+      "finish": "Finish"
+    },
+    "noNodes": "NO NODES COMPILED",
+    "noNodesDesc": "Criteria se match karta koi system nahi mila. Budget limit badhayein ya target goal change karein.",
+    "reconfigure": "Re-configure Target",
+    "toast": {
+      "localGen": "JSON Prompt locally generate ho gaya! Step 2 par jayein.",
+      "copied": "JSON Prompt clipboard par copy ho gaya!",
+      "completed": "Workflow successfully complete ho gaya!",
+      "addedFav": "Favorites me add ho gaya",
+      "removedFav": "Favorites se remove ho gaya",
+      "specCopied": "Specifications copy ho gaye!",
+      "masterCopied": "Master Prompt copy hua! ChatGPT open ho raha hai...",
+      "llamaSuccess": "Llama 3.3 se JSON Prompt successfully generate ho gaya!",
+      "offlineGen": "Static JSON prompt generate kiya (Offline Fallback)",
+      "voiceCanceled": "Voice recording cancel ho gayi.",
+      "removedCompare": "Comparison se remove kiya",
+      "compareLimit": "Aap ek sath 3 se zyada tools compare nahi kar sakte.",
+      "addedCompare": "Comparison me add kiya"
+    }
+  },
+  "library": {
+    "title": "SYSTEM MODULE LIBRARY",
+    "subtitle": "Matched AI Execution Nodes Search & Filter Karo",
+    "searchPlaceholder": "System nodes search karo (e.g. ChatGPT, Midjourney)...",
+    "searchLabel": "Nodes Search",
+    "favsLabel": "Sirf Favorites",
+    "compareLabel": "Comparison Nodes",
+    "sectorLabel": "Industry Sector",
+    "gridView": "Grid View",
+    "listView": "List View",
+    "catView": "Group by Category",
+    "viewMode": "VIEW MODE:",
+    "sortBy": "SORT BY:",
+    "sortOptions": {
+      "default": "Default (Suggested)",
+      "nameAsc": "Name (A - Z)",
+      "nameDesc": "Name (Z - A)",
+      "priceLow": "Price (Low - High)",
+      "difficulty": "Difficulty (Beginner First)"
+    },
+    "emptyState": "Aapki search se match karta koi node nahi mila.",
+    "compareBtn": "COMPARE KARO",
+    "clearBtn": "Clear",
+    "selected": "SELECTED",
+    "noMatch": "FILTER SE MATCH KARTI KOI SERVICE NAHI MILI",
+    "noMatchDesc": "Search terms change karein ya koi dusra industry chip select karein.",
+    "allSectors": "All Sectors"
+  },
+  "categories": {
+    "title": "Node Category Compass",
+    "subtitle": "Industrial Sector ke hisab se Mappings check karo.",
+    "kicker": "SECTOR CLASSIFICATION",
+    "emptyTitle": "Koi System Node Mapped nahi hai",
+    "emptyDesc": "Is sector ke liye koi operational automation configured nahi hai."
+  },
+  "about": {
+    "kicker": "SYSTEM PROFILE",
+    "title": "About AI-OS",
+    "subtitle": "AI Overall Solutions — Engineered by Anuj.",
+    "para1": "AI-OS ek enterprise-grade execution platform hai jise A.R. Labs ne design kiya hai taaki advanced algorithmic tools, workflows, aur automated pipeline generation sabhi ke liye accessible ho sake.",
+    "para2": "Whether you want to generate creative videos, build applications, draft code, or automate complex business workflows, AI-OS dynamically optimized workflow roadmaps compile karta hai, single universal master prompts provide karta hai, aur world-class tool chains recommend karta hai. Yahan koi course syllabus plans, theory chapters, ya certification checkpoints nahi hain—sirf step-by-step execution guides hain taaki aap apna objective achieve kar sakein.",
+    "activeNodes": "ACTIVE SYSTEM NODES",
+    "sectors": "INDUSTRY SECTORS"
+  },
+  "bottomShowcase": {
+    "label": "✦ A.R. PUBLICATIONS",
+    "tagline": "The Literary Universe of Anuj Rawal",
+    "visitPublisher": "Visit Publisher ↗",
+    "darkThriller": "Dark Thriller",
+    "spiritual": "Spiritual"
+  },
+  "footer": {
+    "desc": "Technology, AI, publishing, aur digital products ek hi premium ecosystem ke under built hain.",
+    "colNav": "Navigation",
+    "colConnect": "Connect",
+    "colLegal": "Legal",
+    "colProducts": "Products",
+    "copyright": "© 2026 A.R. Labs. All Rights Reserved.",
+    "jurisdiction": "Jurisdiction Notice: All interactions governed exclusively by India ke laws ke according, under exclusive jurisdiction of Indore, MP, India ke competent courts.",
+    "links": {
+      "terms": "Terms & Conditions",
+      "userAgreement": "User Agreement",
+      "privacy": "Privacy Policy",
+      "cookie": "Cookie Policy",
+      "aiUsage": "AI Usage Policy",
+      "legalNotice": "Legal Notice",
+      "disclaimer": "Disclaimer"
+    }
+  },
+  "sectors": {
+    "Everyday Personal Tasks": "Everyday Personal Tasks",
+    "Customer Service & Communication": "Customer Service & Communication",
+    "Healthcare & Life Sciences": "Healthcare & Life Sciences",
+    "Finance & Banking": "Finance & Banking",
+    "Business Operations & Productivity": "Business Operations & Productivity",
+    "Manufacturing & Industry": "Manufacturing & Industry",
+    "Transportation & Logistics": "Transportation & Logistics",
+    "Retail & Ecommerce": "Retail & Ecommerce",
+    "Education & Research": "Education & Research",
+    "Creative & Media Industries": "Creative & Media Industries",
+    "Agriculture & Environment": "Agriculture & Environment",
+    "Security, Law & Energy": "Security, Law & Energy"
+  },
+  "quickStartCard": {
+    "title": "⚡ Quick Start",
+    "subtitle": "Apna task sirf 3 simple steps me complete karo.",
+    "step1Title": "Apna Idea Describe Karo",
+    "step1Desc": "Aap kya create karna chahte hain uski details enter karo.",
+    "step1Placeholder": "Apna idea describe karo (e.g. futuristic cyberpunk city)...",
+    "step2Title": "Generated JSON Copy Karo",
+    "step2Desc": "Generated prompt ko copy karo.",
+    "step3Title": "Generate Karo",
+    "step3Desc": "Recommended AI tool open karke JSON paste karo."
+  },
+  "openTool": "🚀 Tool Open Karo",
+  "inspectNode": "✨ Node Inspect Karo",
+  "openGoogleDocs": "🚀 Google Docs Open Karo",
+  "stopped": "STOPPED",
+  "inspectEngine": "Engine Inspect Karo",
+  "addFav": "Favorites me add karo",
+  "compare": "Compare karo",
+  "premiumTasks": {
+    "Design and Prototype Hardware": {
+      "reason": "Industrial design concepts, PCB visualization, product ideation aur hardware renders ke liye best hai.",
+      "quick_guide": "Apna hardware idea ChatGPT me describe karke JSON prompt generate karein, fir use concept visualize karne ke liye Flux AI me use karein."
+    },
+    "Generate a Complete AI Video": {
+      "reason": "Prompt-based workflows ke sath cinematic AI video generation ke liye sabse best tool hai.",
+      "quick_guide": "ChatGPT se JSON prompt generate karein aur professional video generation ke liye use Flow AI me paste karein."
+    },
+    "Generate Professional AI Images": {
+      "reason": "Structured prompts ke sath high-quality image generation support karta hai.",
+      "quick_guide": "ChatGPT se JSON prompt create karein aur seedhe Flow AI me images generate karein."
+    },
+    "Create Digital Designs Using AI": {
+      "reason": "Presentations, social media posts, banners, posters aur marketing creatives ke liye best hai.",
+      "quick_guide": "Design prompt generate karein aur Canva AI ke andar editable graphics create karein."
+    },
+    "Build Software Using AI": {
+      "reason": "Agentic coding environment jo complete applications banane me capable hai.",
+      "quick_guide": [
+        "Official website par visit karein.",
+        "Windows/macOS/Linux ke liye desktop version download karein.",
+        "Application install karein.",
+        "Antigravity open karein.",
+        "Generated master prompt paste karein.",
+        "Agent ko project generate aur edit karne dein."
+      ]
+    },
+    "Build Android Application": {
+      "reason": "Google ki taraf se official Android development environment.",
+      "quick_guide": [
+        "Official website se Android Studio download karein.",
+        "Default setup use karke install karein.",
+        "Android Studio launch karein.",
+        "Naya project open ya create karein.",
+        "Apne preferred AI coding assistant ke sath generated prompt use karein."
+      ]
+    },
+    "Monetize AI Skills": {
+      "reason": "AI services aur digital work sell karne ke liye sabse bade marketplaces me se ek.",
+      "quick_guide": "Professional portfolio banao, AI service listings publish karo aur clients acquire karna start karo."
+    },
+    "Create Music Using AI": {
+      "reason": "Industry-leading AI music generation platform.",
+      "quick_guide": "Structured music prompt generate karein aur lyrics aur vocals ke sath complete songs create karein."
+    },
+    "Generate Professional Voice Over": {
+      "reason": "High-quality multilingual AI voice synthesis.",
+      "quick_guide": "Voice-over script generate karein aur natural speech generation ke liye ElevenLabs me paste karein."
+    },
+    "Build a Brand Using AI": {
+      "reason": "AI-assisted branding, ideation aur creative workflow generation.",
+      "quick_guide": "Assets create karne se pehle brand strategy, naming ideas aur visual identity prompts generate karein."
+    },
+    "Build a Personal AI Assistant": {
+      "reason": "Autonomous multi-agent development aur local execution support karta hai.",
+      "quick_guide": [
+        "Official website se Antigravity desktop download karein.",
+        "Application install aur launch karein.",
+        "Generated AI assistant prompt paste karein.",
+        "Agent ko assistant automatically create, test aur refine karne dein."
+      ]
+    }
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "logoSub": "Powered by A.R. Labs",
+  "nav": {
+    "dashboard": "Dashboard",
+    "roadmaps": "Roadmaps",
+    "explore": "Explore Tools",
+    "categories": "Categories",
+    "about": "About",
+    "more": "More from A.R. Labs"
+  },
+  "hero": {
+    "fromCreator": "✦ FROM THE CREATOR",
+    "genre": "🩸 Dark Thriller · 2026",
+    "title": "The Vankari Debt",
+    "tagline": "Power protects the guilty — until someone decides to collect. A dark thriller set in modern India where ancient tribal secrets collide with deadly consequences.",
+    "unlock": "Unlock the Mystery ↗",
+    "playBooks": "Google Play Books"
+  },
+  "dashboard": {
+    "title": "OPERATIONAL TARGET CONFIGURATION",
+    "taskLabel": "1. Task / Objective",
+    "langLabel": "2. Target Language",
+    "compileBtn": "COMPILE ROADMAP",
+    "tasks": {
+      "exploring": "Exploring AI",
+      "video": "Generate a Complete AI Video",
+      "images": "Generate Professional AI Images",
+      "designs": "Create Digital Designs Using AI",
+      "coding": "Build Software Using AI",
+      "apps": "Build Android Application",
+      "monetize": "Monetize AI Skills",
+      "music": "Create Music Using AI",
+      "voiceover": "Generate Professional Voice Over",
+      "brand": "Build a Brand Using AI",
+      "personalAi": "Build a Personal AI Assistant",
+      "hardware": "Design and Prototype Hardware"
+    },
+    "langOptions": {
+      "english": "English",
+      "hindi": "Hindi",
+      "hinglish": "Hinglish (Recommended)"
+    }
+  },
+  "roadmap": {
+    "title": "WORKFLOW PROTOCOLS",
+    "subtitle": "Roadmap Builder",
+    "emptyHeader": "Select Objective to Begin",
+    "emptyDesc": "Select your primary operational objective and preferred execution language in the control center above to generate your optimized roadmap workflow.",
+    "stepHeader": "ROADMAP STEPS",
+    "bestTool": "⭐ Best Tool",
+    "difficulty": "⏱ Difficulty",
+    "estimatedTime": "⚡ Estimated Time",
+    "easy": "Easy",
+    "medium": "Medium",
+    "advanced": "Advanced",
+    "officialWeb": "Official Website:",
+    "whyThisTool": "Why This Tool",
+    "howToUse": "How To Use It",
+    "quickStart": "Quick Start Guide",
+    "altTools": "Alternative Tools",
+    "genPromptHeader": "Generate Master JSON Prompt",
+    "genPromptDesc": "Describe your custom requirements below to generate the structured JSON payload:",
+    "textareaPlaceholder": "Enter your custom details here (e.g., build a portfolio web app with dark mode)...",
+    "voiceBtnTitle": "Speak your idea (Local Speech Recognition)",
+    "listening": "LISTENING...",
+    "speakNow": "Speak your idea now...",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "genPromptBtn": "✨ Generate JSON Prompt",
+    "genPromptLoading": "⏳ Generating JSON via Llama...",
+    "generatedPromptLabel": "GENERATED JSON PROMPT (READY TO COPY)",
+    "copyBtn": "📋 Copy JSON",
+    "intentBadge": "⚡ INTENT UNDERSTOOD",
+    "jsonBadge": "✓ PRODUCTION-READY JSON",
+    "openToolBtn": "🚀 Open Official Tool ({toolName})",
+    "filters": {
+      "all": "All Layers",
+      "creation": "Creation",
+      "engineering": "Engineering",
+      "analytics": "Analytics"
+    },
+    "stepDeck": {
+      "stepOf": "Step {current} of {total}",
+      "prev": "← Previous",
+      "next": "➡ Continue",
+      "finish": "Finish"
+    },
+    "noNodes": "NO NODES COMPILED",
+    "noNodesDesc": "No systems match your criteria. Expand your budget threshold or alter your goal target.",
+    "reconfigure": "Re-configure Target",
+    "toast": {
+      "localGen": "JSON Prompt generated locally! Proceed to Step 2.",
+      "copied": "JSON Prompt copied to clipboard!",
+      "completed": "Workflow completed successfully!",
+      "addedFav": "Added to favorites",
+      "removedFav": "Removed from favorites",
+      "specCopied": "Copied specifications to clipboard!",
+      "masterCopied": "Master Prompt copied! Opening ChatGPT...",
+      "llamaSuccess": "JSON Prompt generated via Llama 3.3 successfully!",
+      "offlineGen": "Generated static JSON prompt (Offline Fallback)",
+      "voiceCanceled": "Voice recording canceled.",
+      "removedCompare": "Removed from comparison",
+      "compareLimit": "Cannot compare more than 3 tools simultaneously.",
+      "addedCompare": "Added to comparison"
+    }
+  },
+  "library": {
+    "title": "SYSTEM MODULE LIBRARY",
+    "subtitle": "Search & Filter Matched AI Execution Nodes",
+    "searchPlaceholder": "Search system nodes (e.g. ChatGPT, Midjourney)...",
+    "searchLabel": "Search Nodes",
+    "favsLabel": "FAVORITES ONLY",
+    "compareLabel": "Comparison Nodes",
+    "sectorLabel": "Industry Sector",
+    "gridView": "Grid View",
+    "listView": "List View",
+    "catView": "Group by Category",
+    "viewMode": "VIEW MODE:",
+    "sortBy": "SORT BY:",
+    "sortOptions": {
+      "default": "Default (Suggested)",
+      "nameAsc": "Name (A - Z)",
+      "nameDesc": "Name (Z - A)",
+      "priceLow": "Price (Low - High)",
+      "difficulty": "Difficulty (Beginner First)"
+    },
+    "emptyState": "No system nodes found matching your query.",
+    "compareBtn": "COMPARE",
+    "clearBtn": "Clear",
+    "selected": "SELECTED",
+    "noMatch": "NO SERVICES MATCH FILTERS",
+    "noMatchDesc": "Modify search keywords or select a different industry chip.",
+    "allSectors": "All Sectors"
+  },
+  "categories": {
+    "title": "Category Explorer",
+    "subtitle": "Inspect decentralized machine intelligence nodes partitioned by industry sectors.",
+    "kicker": "SECTOR CLASSIFICATION",
+    "emptyTitle": "No System Nodes Mapped",
+    "emptyDesc": "There are no operational automation instances configured for this sector."
+  },
+  "about": {
+    "kicker": "SYSTEM PROFILE",
+    "title": "About AI-OS",
+    "subtitle": "AI Overall Solutions — Engineered by Anuj.",
+    "para1": "AI-OS stands for Artificial Intelligence Overall Solutions. It is a practical AI execution operating system designed to help users accomplish real-world goals using the best AI tools available.",
+    "para2": "Whether you want to generate creative videos, build applications, draft code, or automate complex business workflows, AI-OS dynamically compiles optimized workflow roadmaps, provides single universal master prompts, and recommends world-class tool chains. There are no course syllabus plans, theory chapters, or certification checkpoints here—only pure, step-by-step execution guides to help you achieve your objective.",
+    "activeNodes": "ACTIVE SYSTEM NODES",
+    "sectors": "INDUSTRY SECTORS"
+  },
+  "bottomShowcase": {
+    "label": "✦ A.R. PUBLICATIONS",
+    "tagline": "The Literary Universe of Anuj Rawal",
+    "visitPublisher": "Visit Publisher ↗",
+    "darkThriller": "Dark Thriller",
+    "spiritual": "Spiritual"
+  },
+  "footer": {
+    "desc": "Technology, AI, publishing, and digital products built under a single premium ecosystem.",
+    "colNav": "Navigation",
+    "colConnect": "Connect",
+    "colLegal": "Legal",
+    "colProducts": "Products",
+    "copyright": "© 2026 A.R. Labs. All Rights Reserved.",
+    "jurisdiction": "Jurisdiction Notice: All interactions governed exclusively by the laws of India, under exclusive jurisdiction of the competent courts of Indore, MP, India.",
+    "links": {
+      "terms": "Terms & Conditions",
+      "userAgreement": "User Agreement",
+      "privacy": "Privacy Policy",
+      "cookie": "Cookie Policy",
+      "aiUsage": "AI Usage Policy",
+      "legalNotice": "Legal Notice",
+      "disclaimer": "Disclaimer"
+    }
+  },
+  "sectors": {
+    "Everyday Personal Tasks": "Everyday Personal Tasks",
+    "Customer Service & Communication": "Customer Service & Communication",
+    "Healthcare & Life Sciences": "Healthcare & Life Sciences",
+    "Finance & Banking": "Finance & Banking",
+    "Business Operations & Productivity": "Business Operations & Productivity",
+    "Manufacturing & Industry": "Manufacturing & Industry",
+    "Transportation & Logistics": "Transportation & Logistics",
+    "Retail & Ecommerce": "Retail & Ecommerce",
+    "Education & Research": "Education & Research",
+    "Creative & Media Industries": "Creative & Media Industries",
+    "Agriculture & Environment": "Agriculture & Environment",
+    "Security, Law & Energy": "Security, Law & Energy"
+  },
+  "quickStartCard": {
+    "title": "⚡ Quick Start",
+    "subtitle": "Complete your task in just 3 simple steps.",
+    "step1Title": "Describe Your Idea",
+    "step1Desc": "Enter details of what you want to create.",
+    "step1Placeholder": "Describe your idea (e.g. futuristic cyberpunk city)...",
+    "step2Title": "Copy Generated JSON",
+    "step2Desc": "Copy the generated prompt.",
+    "step3Title": "Generate",
+    "step3Desc": "Open the recommended AI tool and paste the JSON."
+  },
+  "openTool": "🚀 Open Tool",
+  "inspectNode": "✨ Inspect Node",
+  "openGoogleDocs": "🚀 Open Google Docs",
+  "stopped": "STOPPED",
+  "inspectEngine": "Inspect Engine",
+  "addFav": "Add to Favorites",
+  "compare": "Compare",
+  "premiumTasks": {
+    "Design and Prototype Hardware": {
+      "reason": "Excellent for industrial design concepts, PCB visualization, product ideation and hardware renders.",
+      "quick_guide": "Describe your hardware idea in ChatGPT to generate a JSON prompt, then use that prompt in Flux AI to visualize your concept."
+    },
+    "Generate a Complete AI Video": {
+      "reason": "Best for cinematic AI video generation with prompt-based workflows.",
+      "quick_guide": "Generate a JSON prompt using ChatGPT and paste it into Flow AI for professional video generation."
+    },
+    "Generate Professional AI Images": {
+      "reason": "Supports high-quality image generation with structured prompts.",
+      "quick_guide": "Use ChatGPT to create a JSON prompt and generate images directly in Flow AI."
+    },
+    "Create Digital Designs Using AI": {
+      "reason": "Best for presentations, social media posts, banners, posters and marketing creatives.",
+      "quick_guide": "Generate a design prompt and create editable graphics inside Canva AI."
+    },
+    "Build Software Using AI": {
+      "reason": "Agentic coding environment capable of building complete applications.",
+      "quick_guide": [
+        "Visit the official website.",
+        "Download the desktop version for Windows/macOS/Linux.",
+        "Install the application.",
+        "Open Antigravity.",
+        "Paste the generated master prompt.",
+        "Allow the agent to generate and edit the project."
+      ]
+    },
+    "Build Android Application": {
+      "reason": "Official Android development environment from Google.",
+      "quick_guide": [
+        "Download Android Studio from the official website.",
+        "Install using the default setup.",
+        "Launch Android Studio.",
+        "Open or create a new project.",
+        "Use the generated prompt with your preferred AI coding assistant."
+      ]
+    },
+    "Monetize AI Skills": {
+      "reason": "One of the largest marketplaces for selling AI services and digital work.",
+      "quick_guide": "Create a professional portfolio, publish AI service listings and start acquiring clients."
+    },
+    "Create Music Using AI": {
+      "reason": "Industry-leading AI music generation platform.",
+      "quick_guide": "Generate a structured music prompt and create complete songs with lyrics and vocals."
+    },
+    "Generate Professional Voice Over": {
+      "reason": "High-quality multilingual AI voice synthesis.",
+      "quick_guide": "Generate a voice-over script and paste it into ElevenLabs for natural speech generation."
+    },
+    "Build a Brand Using AI": {
+      "reason": "AI-assisted branding, ideation and creative workflow generation.",
+      "quick_guide": "Generate brand strategy, naming ideas and visual identity prompts before creating assets."
+    },
+    "Build a Personal AI Assistant": {
+      "reason": "Supports autonomous multi-agent development and local execution.",
+      "quick_guide": [
+        "Download Antigravity desktop from the official website.",
+        "Install and launch the application.",
+        "Paste the generated AI assistant prompt.",
+        "Allow the agent to create, test and refine the assistant automatically."
+      ]
+    }
+  }
+}

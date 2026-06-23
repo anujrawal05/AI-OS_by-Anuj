@@ -294,7 +294,31 @@ function filterNodes(category) {
 // ==========================================================================
 
 function showToast(message) {
-  toastEl.textContent = message;
+  let finalMsg = message;
+  if (state.translations && state.translations.roadmap && state.translations.roadmap.toast) {
+    const toastMap = state.translations.roadmap.toast;
+    const keyMap = {
+      "Added to favorites": "addedFav",
+      "Removed from favorites": "removedFav",
+      "JSON Prompt generated locally! Proceed to Step 2.": "localGen",
+      "JSON Prompt copied to clipboard!": "copied",
+      "Copied JSON prompt to clipboard!": "copied",
+      "Workflow completed successfully!": "completed",
+      "Copied specifications to clipboard!": "specCopied",
+      "Master Prompt copied! Opening ChatGPT...": "masterCopied",
+      "JSON Prompt generated via Llama 3.3 successfully!": "llamaSuccess",
+      "Generated static JSON prompt (Offline Fallback)": "offlineGen",
+      "Voice recording canceled.": "voiceCanceled",
+      "Removed from comparison": "removedCompare",
+      "Cannot compare more than 3 tools simultaneously.": "compareLimit",
+      "Added to comparison": "addedCompare"
+    };
+    const key = keyMap[message];
+    if (key && toastMap[key]) {
+      finalMsg = toastMap[key];
+    }
+  }
+  toastEl.textContent = finalMsg;
   toastEl.classList.add('active');
   setTimeout(() => {
     toastEl.classList.remove('active');
@@ -845,9 +869,89 @@ function playAudioTelemetry() {
   }
 }
 
-// ==========================================================================
-// 6. INITIALIZATION & BINDINGS
-// ==========================================================================
+// --- i18n (Internationalization) System ---
+state.translations = null;
+
+function getNestedTranslation(obj, path) {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+}
+
+function applyTranslations(translations) {
+  if (!translations) return;
+  
+  // Update elements with data-i18n
+  const elements = document.querySelectorAll('[data-i18n]');
+  elements.forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const translation = getNestedTranslation(translations, key);
+    if (translation) {
+      // If element is a placeholder input/textarea
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = translation;
+      } else {
+        el.innerHTML = translation;
+      }
+    }
+  });
+
+  // Update elements with data-i18n-placeholder specifically
+  const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+  placeholderElements.forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const translation = getNestedTranslation(translations, key);
+    if (translation) {
+      el.placeholder = translation;
+    }
+  });
+
+  // Update elements with data-i18n-title
+  const titleElements = document.querySelectorAll('[data-i18n-title]');
+  titleElements.forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    const translation = getNestedTranslation(translations, key);
+    if (translation) {
+      el.title = translation;
+    }
+  });
+}
+
+async function loadTranslations(lang) {
+  const langKey = lang.toLowerCase();
+  const fileMap = {
+    english: 'en',
+    hindi: 'hi',
+    hinglish: 'hinglish'
+  };
+  const fileName = fileMap[langKey] || 'en';
+  try {
+    const response = await fetch(`/locales/${fileName}.json`);
+    if (!response.ok) {
+      throw new Error(`Failed to load locale file: ${response.statusText}`);
+    }
+    state.translations = await response.json();
+    applyTranslations(state.translations);
+    translateLibraryChips();
+    
+    // Dynamically update parts of the UI that depend on active translations
+    updateComparisonUI();
+  } catch (err) {
+    console.error("Error loading translations:", err);
+  }
+}
+
+function translateLibraryChips() {
+  const libraryFilterChipsContainer = document.getElementById('library-filter-chips');
+  if (!libraryFilterChipsContainer) return;
+  const chips = libraryFilterChipsContainer.querySelectorAll('.filter-chip');
+  chips.forEach(chip => {
+    const sector = chip.getAttribute('data-chip');
+    if (sector === 'all') {
+      chip.textContent = (state.translations && state.translations.library && state.translations.library.allSectors) || "All Sectors";
+    } else {
+      chip.textContent = (state.translations && state.translations.sectors && state.translations.sectors[sector]) || sector;
+    }
+  });
+}
 
 function initTheme() {
   const savedTheme = localStorage.getItem('kronos-theme');
@@ -1441,6 +1545,9 @@ const translationDB = {
     copied: "Copied!",
     free: "Free",
     monthly: "/ mo",
+    keyConcepts: "Key Concepts",
+    practicalExercise: "Practical Exercise",
+    expectedOutcome: "Expected Outcome",
     docsPurpose: "Brainstorming, idea collection, planning and writing first draft.",
     docsWhy: "Google Docs provides a clean, cloud-synchronized writing slate to gather unstructured thoughts, copy resources, and outline the initial copy.",
     docsOutput: "A structured text draft containing raw content outline, research fragments, and core objectives.",
@@ -1470,6 +1577,9 @@ const translationDB = {
     copied: "कॉपी हुआ!",
     free: "मुफ़्त",
     monthly: "/ महीना",
+    keyConcepts: "मुख्य अवधारणाएँ (Key Concepts)",
+    practicalExercise: "व्यावहारिक अभ्यास (Exercise)",
+    expectedOutcome: "अपेक्षित परिणाम (Outcome)",
     docsPurpose: "ब्रेनस्टॉर्मिंग, आइडिया कलेक्शन, प्लानिंग और पहला ड्राफ्ट लिखना।",
     docsWhy: "गूगल डॉक्स बिना किसी रुकावट के विचारों को क्लाउड पर सुरक्षित रूप से लिखने और ड्राफ्ट तैयार करने की सुविधा देता है।",
     docsOutput: "एक व्यवस्थित पाठ ड्राफ्ट जिसमें परियोजना की रूपरेखा, शोध के अंश और मुख्य उद्देश्य शामिल हों।",
@@ -1499,6 +1609,9 @@ const translationDB = {
     copied: "Copied!",
     free: "Free",
     monthly: "/ month",
+    keyConcepts: "Key Concepts",
+    practicalExercise: "Practical Exercise",
+    expectedOutcome: "Expected Outcome (नतीजा)",
     docsPurpose: "Brainstorming, ideas collect karna, planning aur first draft likhna.",
     docsWhy: "Google Docs ek cloud-based writing board deta hai jisme bina distraction ke ideas likhe aur save kiye ja sakte hain.",
     docsOutput: "Ek clear text draft jisme project ka outline, research aur core details hon.",
@@ -3016,13 +3129,36 @@ function initDashboardControls() {
   }
 
   if (taskSelect && budgetSelect && workflowSelect && langSelect) {
-    // Initial verification on page load
-    handleModeChange(true);
+    // Restore language selection from localStorage
+    const savedLang = localStorage.getItem('aios_language') || 'English';
+    langSelect.value = savedLang;
     
-    setTimeout(() => {
+    // Initial load of translations asynchronously
+    loadTranslations(savedLang).then(() => {
+      handleModeChange(true);
+      setTimeout(() => {
+        regenerateActiveRoadmap();
+        drawRoad();
+        renderLibraryGrid();
+        renderCategoryExplorer();
+        initCategoryExplorerSection();
+      }, 150);
+    });
+
+    langSelect.addEventListener('change', async (e) => {
+      const selectedLang = e.target.value;
+      localStorage.setItem('aios_language', selectedLang);
+      await loadTranslations(selectedLang);
+      
+      // Update UI components reactively
       regenerateActiveRoadmap();
-      drawRoad();
-    }, 150);
+      renderLibraryGrid();
+      renderCategoryExplorer();
+      initCategoryExplorerSection();
+      setTimeout(() => {
+        drawRoad();
+      }, 150);
+    });
   }
 }
 
@@ -3192,12 +3328,16 @@ function renderRoadmap(optimalWorkflow, steps) {
     listContainer.innerHTML = '';
     
     if (!optimalWorkflow || optimalWorkflow.length === 0) {
+      const noNodesTitle = (state.translations && state.translations.roadmap && state.translations.roadmap.noNodes) || "NO NODES COMPILED";
+      const noNodesDesc = (state.translations && state.translations.roadmap && state.translations.roadmap.noNodesDesc) || "No systems match your criteria. Expand your budget threshold or alter your goal target.";
+      const reconfigureBtn = (state.translations && state.translations.roadmap && state.translations.roadmap.reconfigure) || "Re-configure Target";
+      
       listContainer.innerHTML = `
         <div class="timeline-row left" style="grid-template-columns: 1fr; text-align: center; justify-content: center; padding-top: 100px;">
           <div class="timeline-card visible" style="margin: 0 auto; max-width: 500px;">
-            <h2 class="card-title">NO NODES COMPILED</h2>
-            <p class="card-desc">No systems match your criteria. Expand your budget threshold or alter your goal target.</p>
-            <button class="btn btn-primary btn-full" onclick="resetWizard()">Re-configure Target</button>
+            <h2 class="card-title">${noNodesTitle}</h2>
+            <p class="card-desc">${noNodesDesc}</p>
+            <button class="btn btn-primary btn-full" onclick="resetWizard()">${reconfigureBtn}</button>
           </div>
         </div>
       `;
@@ -3269,24 +3409,29 @@ function renderRoadmap(optimalWorkflow, steps) {
     const bestToolObj = optimalWorkflow[0] ? optimalWorkflow[0].tool : null;
     const bestToolName = bestToolObj ? bestToolObj.name : 'N/A';
     
-    let difficulty = 'Medium';
-    if (state.selectedExperience === 'Beginner') difficulty = 'Easy';
-    else if (state.selectedExperience === 'Advanced') difficulty = 'Advanced';
+    let difficultyKey = 'medium';
+    if (state.selectedExperience === 'Beginner') difficultyKey = 'easy';
+    else if (state.selectedExperience === 'Advanced') difficultyKey = 'advanced';
     
+    const difficulty = (state.translations && state.translations.roadmap && state.translations.roadmap[difficultyKey]) || difficultyKey;
     const estTime = bestToolObj ? (bestToolObj.time || '15 mins') : '10 mins';
+    
+    const bestToolLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.bestTool) || "⭐ Best Tool";
+    const difficultyLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.difficulty) || "⏱ Difficulty";
+    const estTimeLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.estimatedTime) || "⚡ Estimated Time";
     
     recContainer.innerHTML = `
       <div class="recommended-tool-card">
         <div class="recommended-tool-field">
-          <span class="recommended-tool-label">⭐ Best Tool</span>
+          <span class="recommended-tool-label">${bestToolLabel}</span>
           <span class="recommended-tool-value accent-val">${bestToolName}</span>
         </div>
         <div class="recommended-tool-field">
-          <span class="recommended-tool-label">⏱ Difficulty</span>
-          <span class="recommended-tool-value">${difficulty}</span>
+          <span class="recommended-tool-label">${difficultyLabel}</span>
+          <span class="recommended-tool-value" style="text-transform: capitalize;">${difficulty}</span>
         </div>
         <div class="recommended-tool-field">
-          <span class="recommended-tool-label">⚡ Estimated Time</span>
+          <span class="recommended-tool-label">${estTimeLabel}</span>
           <span class="recommended-tool-value">${estTime}</span>
         </div>
       </div>
@@ -3299,43 +3444,57 @@ function renderRoadmap(optimalWorkflow, steps) {
     const activeQS = state.quickStartStep || 1;
     const bestToolObj = optimalWorkflow[0] ? optimalWorkflow[0].tool : null;
     
+    const qsTitle = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.title) || "⚡ Quick Start";
+    const qsSubtitle = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.subtitle) || "Complete your task in just 3 simple steps.";
+    const step1Title = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.step1Title) || "Describe Your Idea";
+    const step1Desc = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.step1Desc) || "Enter details of what you want to create.";
+    const step1Placeholder = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.step1Placeholder) || "Describe your idea (e.g. futuristic cyberpunk city)...";
+    const step2Title = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.step2Title) || "Copy Generated JSON";
+    const step2Desc = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.step2Desc) || "Copy the generated prompt.";
+    const step3Title = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.step3Title) || "Generate";
+    const step3Desc = (state.translations && state.translations.quickStartCard && state.translations.quickStartCard.step3Desc) || "Open the recommended AI tool and paste the JSON.";
+    
+    const genPromptBtnText = (state.translations && state.translations.roadmap && state.translations.roadmap.genPromptBtn) || "✨ Generate JSON Prompt";
+    const copyBtnText = (state.translations && state.translations.roadmap && state.translations.roadmap.copyBtn) || "📋 Copy JSON";
+    const openToolText = (state.translations && state.translations.openTool) || "🚀 Open Tool";
+    
     qsContainer.innerHTML = `
       <div class="quick-start-card">
         <div class="quick-start-header">
-          <h3 class="quick-start-title">⚡ Quick Start</h3>
-          <p class="quick-start-subtitle">Complete your task in just 3 simple steps.</p>
+          <h3 class="quick-start-title">${qsTitle}</h3>
+          <p class="quick-start-subtitle">${qsSubtitle}</p>
         </div>
         <div class="quick-start-steps">
           <!-- Step 1 -->
           <div class="quick-start-step ${activeQS === 1 ? 'active' : ''}">
             <span class="quick-start-step-num">01</span>
-            <span class="quick-start-step-title">Describe Your Idea</span>
-            <p class="quick-start-step-desc">Enter details of what you want to create.</p>
+            <span class="quick-start-step-title">${step1Title}</span>
+            <p class="quick-start-step-desc">${step1Desc}</p>
             <div class="prompt-idea-input-wrapper">
-              <textarea class="prompt-idea-textarea" id="qs-idea-input" placeholder="Describe your idea (e.g. futuristic cyberpunk city)...">${state.userIdeaDescription || ''}</textarea>
-              <button class="btn btn-primary quick-start-action-btn" id="qs-btn-step1">✨ Generate JSON Prompt</button>
+              <textarea class="prompt-idea-textarea" id="qs-idea-input" placeholder="${step1Placeholder}">${state.userIdeaDescription || ''}</textarea>
+              <button class="btn btn-primary quick-start-action-btn" id="qs-btn-step1">${genPromptBtnText}</button>
             </div>
           </div>
           
           <!-- Step 2 -->
           <div class="quick-start-step ${activeQS === 2 ? 'active' : ''}">
             <span class="quick-start-step-num">02</span>
-            <span class="quick-start-step-title">Copy Generated JSON</span>
-            <p class="quick-start-step-desc">Copy the generated prompt.</p>
+            <span class="quick-start-step-title">${step2Title}</span>
+            <p class="quick-start-step-desc">${step2Desc}</p>
             ${activeQS === 2 && state.generatedJSONPrompt ? `
               <div class="json-prompt-box-wrapper">
                 <pre class="json-prompt-display"><code>${escapeHTML(state.generatedJSONPrompt)}</code></pre>
               </div>
             ` : ''}
-            <button class="btn btn-secondary quick-start-action-btn" id="qs-btn-step2" ${activeQS < 2 ? 'disabled' : ''}>📋 Copy JSON</button>
+            <button class="btn btn-secondary quick-start-action-btn" id="qs-btn-step2" ${activeQS < 2 ? 'disabled' : ''}>${copyBtnText}</button>
           </div>
           
           <!-- Step 3 -->
           <div class="quick-start-step ${activeQS === 3 ? 'active' : ''}">
             <span class="quick-start-step-num">03</span>
-            <span class="quick-start-step-title">Generate</span>
-            <p class="quick-start-step-desc">Open the recommended AI tool and paste the JSON.</p>
-            <button class="btn btn-secondary quick-start-action-btn" id="qs-btn-step3" ${activeQS < 3 ? 'disabled' : ''}>🚀 Open Tool</button>
+            <span class="quick-start-step-title">${step3Title}</span>
+            <p class="quick-start-step-desc">${step3Desc}</p>
+            <button class="btn btn-secondary quick-start-action-btn" id="qs-btn-step3" ${activeQS < 3 ? 'disabled' : ''}>${openToolText}</button>
           </div>
         </div>
       </div>
@@ -3392,11 +3551,15 @@ function renderRoadmap(optimalWorkflow, steps) {
     deckContainer.innerHTML = '';
     
     if (!optimalWorkflow || optimalWorkflow.length === 0) {
+      const noNodesTitle = (state.translations && state.translations.roadmap && state.translations.roadmap.noNodes) || "NO NODES COMPILED";
+      const noNodesDesc = (state.translations && state.translations.roadmap && state.translations.roadmap.noNodesDesc) || "No systems match your criteria. Expand your budget threshold or alter your goal target.";
+      const reconfigureBtn = (state.translations && state.translations.roadmap && state.translations.roadmap.reconfigure) || "Re-configure Target";
+      
       deckContainer.innerHTML = `
         <div class="step-card">
-          <h2 class="step-card-title">NO NODES COMPILED</h2>
-          <p class="step-card-desc">No systems match your criteria. Expand your budget threshold or alter your goal target.</p>
-          <button class="btn btn-primary" onclick="resetWizard()">Re-configure Target</button>
+          <h2 class="step-card-title">${noNodesTitle}</h2>
+          <p class="step-card-desc">${noNodesDesc}</p>
+          <button class="btn btn-primary" onclick="resetWizard()">${reconfigureBtn}</button>
         </div>
       `;
       return;
@@ -3437,26 +3600,38 @@ function renderRoadmap(optimalWorkflow, steps) {
       descText = descText.substring(0, 117) + '...';
     }
     
+    const inspectNodeText = (state.translations && state.translations.inspectNode) || "✨ Inspect Node";
+    const openGoogleDocsText = (state.translations && state.translations.openGoogleDocs) || "🚀 Open Google Docs";
+    const genPromptBtnText = (state.translations && state.translations.roadmap && state.translations.roadmap.genPromptBtn) || "✨ Generate JSON Prompt";
+    const openToolText = (state.translations && state.translations.openTool) || "🚀 Open Tool";
+    
     let primaryActionBtnHTML = '';
     if (isEdu) {
-      primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-inspect">✨ Inspect Node</button>`;
+      primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-inspect">${inspectNodeText}</button>`;
     } else {
       if (tool.id === "TOOL_DOCS") {
-        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">🚀 Open Google Docs</button>`;
+        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">${openGoogleDocsText}</button>`;
       } else if (tool.id === "TOOL_001") {
-        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">✨ Generate JSON Prompt</button>`;
+        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">${genPromptBtnText}</button>`;
       } else {
-        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">🚀 Open Tool</button>`;
+        primaryActionBtnHTML = `<button class="btn btn-primary step-card-action-btn" id="deck-action-open">${openToolText}</button>`;
       }
     }
     
     const progressPercent = Math.round(((activeIndex + 1) / totalSteps) * 100);
     
+    let stepOfText = (state.translations && state.translations.roadmap && state.translations.roadmap.stepDeck && state.translations.roadmap.stepDeck.stepOf) || "Step {current} of {total}";
+    stepOfText = stepOfText.replace("{current}", stepNumber).replace("{total}", totalSteps);
+    
+    const prevText = (state.translations && state.translations.roadmap && state.translations.roadmap.stepDeck && state.translations.roadmap.stepDeck.prev) || "← Previous";
+    const nextText = (state.translations && state.translations.roadmap && state.translations.roadmap.stepDeck && state.translations.roadmap.stepDeck.next) || "➡ Continue";
+    const finishText = (state.translations && state.translations.roadmap && state.translations.roadmap.stepDeck && state.translations.roadmap.stepDeck.finish) || "Finish";
+    
     deckContainer.innerHTML = `
       <div class="step-deck">
         <div class="step-card-wrapper">
           <div class="step-card">
-            <div class="step-badge">Step ${stepNumber} of ${totalSteps}</div>
+            <div class="step-badge">${stepOfText}</div>
             <div class="step-card-icon">${iconHTML}</div>
             <h2 class="step-card-title">${titleText}</h2>
             <p class="step-card-desc">${descText}</p>
@@ -3465,13 +3640,13 @@ function renderRoadmap(optimalWorkflow, steps) {
         </div>
         
         <div class="stepper-nav">
-          <button class="btn btn-secondary stepper-btn" id="deck-btn-prev" ${activeIndex === 0 ? 'disabled' : ''}>← Previous</button>
+          <button class="btn btn-secondary stepper-btn" id="deck-btn-prev" ${activeIndex === 0 ? 'disabled' : ''}>${prevText}</button>
           <div class="stepper-progress">
             ${Array.from({ length: totalSteps }).map((_, i) => `
               <div class="stepper-dot ${i === activeIndex ? 'active' : ''}"></div>
             `).join('')}
           </div>
-          <button class="btn btn-primary stepper-btn" id="deck-btn-next">${activeIndex === totalSteps - 1 ? 'Finish' : '➡ Continue'}</button>
+          <button class="btn btn-primary stepper-btn" id="deck-btn-next">${activeIndex === totalSteps - 1 ? finishText : nextText}</button>
         </div>
         
         <div class="stepper-progress-bar-wrapper">
@@ -3536,22 +3711,34 @@ function renderPremiumToolCard(mapping) {
   
   if (!recContainer) return;
   
+  const resolvedTaskKey = optionToMatrixKey[state.goalText] || state.goalText;
+  
+  // Use active translation if available
+  let reasonText = mapping.reason;
+  let quickGuideText = mapping.quick_guide;
+  if (state.translations && state.translations.premiumTasks && state.translations.premiumTasks[resolvedTaskKey]) {
+    const ptTrans = state.translations.premiumTasks[resolvedTaskKey];
+    if (ptTrans.reason) reasonText = ptTrans.reason;
+    if (ptTrans.quick_guide) quickGuideText = ptTrans.quick_guide;
+  }
+  
   let guideHTML = '';
-  if (Array.isArray(mapping.quick_guide)) {
+  if (Array.isArray(quickGuideText)) {
     guideHTML = `
       <ol class="guide-steps-list">
-        ${mapping.quick_guide.map(step => `<li>${step}</li>`).join('')}
+        ${quickGuideText.map(step => `<li>${step}</li>`).join('')}
       </ol>
     `;
   } else {
-    guideHTML = `<p class="info-text">${mapping.quick_guide}</p>`;
+    guideHTML = `<p class="info-text">${quickGuideText}</p>`;
   }
   
   let alternativesHTML = '';
+  const altToolsLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.altTools) || "Alternative Tools";
   if (mapping.alternative_tools && mapping.alternative_tools.length > 0) {
     alternativesHTML = `
       <div class="info-section">
-        <h4 class="info-title">Alternative Tools</h4>
+        <h4 class="info-title">${altToolsLabel}</h4>
         <div class="alternatives-wrapper">
           ${mapping.alternative_tools.map(alt => `
             <a href="${alt.link}" target="_blank" rel="noopener" class="alternative-pill">
@@ -3563,37 +3750,56 @@ function renderPremiumToolCard(mapping) {
     `;
   }
   
+  const bestToolLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.bestTool) || "⭐ BEST RECOMMENDED TOOL";
+  const officialWebLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.officialWeb) || "Official Website:";
+  const whyThisToolLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.whyThisTool) || "Why This Tool";
+  const quickStartLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.quickStart) || "Quick Start Guide";
+  const genPromptHeaderLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.genPromptHeader) || "Generate Master JSON Prompt";
+  const genPromptDescLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.genPromptDesc) || "Describe your custom requirements below to generate the structured JSON payload:";
+  const textareaPlaceholderLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.textareaPlaceholder) || "Enter your custom details here (e.g., build a portfolio web app with dark mode)...";
+  const voiceBtnTitleLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.voiceBtnTitle) || "Speak your idea (Local Speech Recognition)";
+  const listeningLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.listening) || "LISTENING...";
+  const cancelLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.cancel) || "Cancel";
+  const retryLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.retry) || "Retry";
+  const genPromptBtnLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.genPromptBtn) || "✨ Generate JSON Prompt";
+  const generatedPromptLabelText = (state.translations && state.translations.roadmap && state.translations.roadmap.generatedPromptLabel) || "GENERATED JSON PROMPT (READY TO COPY)";
+  const copyBtnLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.copyBtn) || "📋 Copy JSON";
+  const intentBadgeLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.intentBadge) || "⚡ INTENT UNDERSTOOD";
+  const jsonBadgeLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.jsonBadge) || "✓ PRODUCTION-READY JSON";
+  let openToolBtnLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.openToolBtn) || "🚀 Open Official Tool ({toolName})";
+  openToolBtnLabel = openToolBtnLabel.replace("{toolName}", mapping.recommended_tool);
+
   recContainer.innerHTML = `
     <div class="premium-tool-card">
       <div class="premium-tool-card-header">
-        <div class="best-tool-badge">⭐ BEST RECOMMENDED TOOL</div>
+        <div class="best-tool-badge">${bestToolLabel}</div>
         <h2 class="premium-tool-name">${mapping.recommended_tool}</h2>
         <div class="premium-tool-link-wrapper">
-          <span class="info-title" style="margin-bottom:0; letter-spacing:0.05em;">Official Website:</span>
+          <span class="info-title" style="margin-bottom:0; letter-spacing:0.05em;">${officialWebLabel}</span>
           <a href="${mapping.official_link}" target="_blank" rel="noopener" class="premium-tool-link">${mapping.official_link} ↗</a>
         </div>
       </div>
       
       <div class="premium-tool-card-body">
         <div class="info-section">
-          <h4 class="info-title">Why This Tool</h4>
-          <p class="info-text">${mapping.reason}</p>
+          <h4 class="info-title">${whyThisToolLabel}</h4>
+          <p class="info-text">${reasonText}</p>
         </div>
         
         <div class="info-section">
-          <h4 class="info-title">Quick Start Guide</h4>
+          <h4 class="info-title">${quickStartLabel}</h4>
           ${guideHTML}
         </div>
         
         ${alternativesHTML}
         
         <div class="prompt-generation-section">
-          <h4 class="info-title">Generate Master JSON Prompt</h4>
-          <p class="prompt-desc-label">Describe your custom requirements below to generate the structured JSON payload:</p>
+          <h4 class="info-title">${genPromptHeaderLabel}</h4>
+          <p class="prompt-desc-label">${genPromptDescLabel}</p>
           
           <div class="premium-prompt-wrapper">
-            <textarea id="premium-prompt-desc" class="premium-prompt-textarea" style="padding-right: 48px;" placeholder="Enter your custom details here (e.g., build a portfolio web app with dark mode)...">${state.userIdeaDescription || ''}</textarea>
-            <button id="btn-voice-input" class="voice-input-btn" title="Speak your idea (Local Speech Recognition)">
+            <textarea id="premium-prompt-desc" class="premium-prompt-textarea" style="padding-right: 48px;" placeholder="${textareaPlaceholderLabel}">${state.userIdeaDescription || ''}</textarea>
+            <button id="btn-voice-input" class="voice-input-btn" title="${voiceBtnTitleLabel}">
               <svg class="mic-icon" viewBox="0 0 24 24">
                 <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" fill="currentColor"/>
                 <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" fill="currentColor"/>
@@ -3604,7 +3810,7 @@ function renderPremiumToolCard(mapping) {
           <div id="voice-recording-status" class="voice-status-panel" style="display: none;">
             <div class="voice-status-header">
               <span class="status-indicator-dot"></span>
-              <span class="status-text">LISTENING...</span>
+              <span class="status-text">${listeningLabel}</span>
             </div>
             <div class="voice-waveform">
               <div class="wave-bar"></div>
@@ -3615,24 +3821,24 @@ function renderPremiumToolCard(mapping) {
             </div>
             <div id="voice-live-transcript" class="voice-live-transcript">"Live transcript will appear here..."</div>
             <div class="voice-actions">
-              <button id="btn-voice-cancel" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">Cancel</button>
-              <button id="btn-voice-retry" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem; display: none;">Retry</button>
+              <button id="btn-voice-cancel" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">${cancelLabel}</button>
+              <button id="btn-voice-retry" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem; display: none;">${retryLabel}</button>
             </div>
           </div>
           
           <div class="prompt-actions-row">
-            <button id="btn-generate-premium-json" class="btn btn-primary">✨ Generate JSON Prompt</button>
+            <button id="btn-generate-premium-json" class="btn btn-primary">${genPromptBtnLabel}</button>
           </div>
 
           <div id="premium-json-output-wrapper" class="premium-json-output-wrapper" style="display: ${state.generatedJSONPrompt ? 'block' : 'none'};">
             <div class="json-header-row" style="flex-direction: column; align-items: flex-start; gap: 6px;">
               <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
-                <span class="json-box-label">GENERATED JSON PROMPT (READY TO COPY)</span>
-                <button id="btn-copy-premium-json" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">📋 Copy JSON</button>
+                <span class="json-box-label">${generatedPromptLabelText}</span>
+                <button id="btn-copy-premium-json" class="btn btn-secondary btn-small" style="padding: 4px 8px; font-size: 0.75rem;">${copyBtnLabel}</button>
               </div>
               <div class="json-header-indicators">
-                <span class="indicator-badge badge-intent">⚡ INTENT UNDERSTOOD</span>
-                <span class="indicator-badge badge-json-ready">✓ PRODUCTION-READY JSON</span>
+                <span class="indicator-badge badge-intent">${intentBadgeLabel}</span>
+                <span class="indicator-badge badge-json-ready">${jsonBadgeLabel}</span>
               </div>
             </div>
             <pre class="premium-json-display"><code>${escapeHTML(state.generatedJSONPrompt || '')}</code></pre>
@@ -3642,7 +3848,7 @@ function renderPremiumToolCard(mapping) {
 
       <div class="premium-tool-card-footer">
         <a href="${mapping.official_link}" target="_blank" rel="noopener" class="btn btn-primary btn-full-width" id="btn-open-premium-tool" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <span>🚀 Open Official Tool (${mapping.recommended_tool})</span>
+          <span>${openToolBtnLabel}</span>
         </a>
       </div>
     </div>
@@ -3658,7 +3864,9 @@ function renderPremiumToolCard(mapping) {
       
       const originalHTML = genBtn.innerHTML;
       genBtn.disabled = true;
-      genBtn.innerHTML = `<span>⏳ Generating JSON via Llama...</span>`;
+      
+      const genPromptLoadingText = (state.translations && state.translations.roadmap && state.translations.roadmap.genPromptLoading) || "⏳ Generating JSON via Llama...";
+      genBtn.innerHTML = `<span>${genPromptLoadingText}</span>`;
       
       try {
         const taskNameMap = {
@@ -3782,9 +3990,13 @@ function renderPremiumToolCard(mapping) {
         statusPanel.style.display = 'flex';
         statusPanel.classList.add('recording');
         const headerText = statusPanel.querySelector('.status-text');
-        if (headerText) headerText.textContent = 'LISTENING...';
+        
+        const listeningText = (state.translations && state.translations.roadmap && state.translations.roadmap.listening) || "LISTENING...";
+        if (headerText) headerText.textContent = listeningText;
       }
-      if (liveTranscript) liveTranscript.textContent = '"Speak your idea now..."';
+      
+      const speakNowText = (state.translations && state.translations.roadmap && state.translations.roadmap.speakNow) || "Speak your idea now...";
+      if (liveTranscript) liveTranscript.textContent = '"' + speakNowText + '"';
       if (cancelBtn) cancelBtn.style.display = 'inline-block';
       if (retryBtn) retryBtn.style.display = 'none';
     };
@@ -3833,7 +4045,9 @@ function renderPremiumToolCard(mapping) {
       if (statusPanel) {
         statusPanel.classList.remove('recording');
         const headerText = statusPanel.querySelector('.status-text');
-        if (headerText) headerText.textContent = 'STOPPED';
+        
+        const stoppedText = (state.translations && state.translations.stopped) || "STOPPED";
+        if (headerText) headerText.textContent = stoppedText;
       }
       if (cancelBtn) cancelBtn.style.display = 'none';
       if (retryBtn) retryBtn.style.display = 'inline-block';
@@ -3966,6 +4180,12 @@ function updateComparisonUI() {
     } else {
       compareStatusWrap.style.display = 'none';
     }
+  }
+
+  const compareTextLabel = document.getElementById('compare-text-label');
+  if (compareTextLabel) {
+    const selectedLabel = (state.translations && state.translations.library && state.translations.library.selected) || "SELECTED";
+    compareTextLabel.innerHTML = `<span id="compare-count">${count}</span>/3 ${selectedLabel}`;
   }
   
   // Update all compare buttons across the DOM
@@ -4200,12 +4420,15 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
       
       let promptHTML = '';
       if (universalPrompt) {
+        const copyPromptText = labels.copyBtn || "Copy Prompt";
+        const universalMasterPromptLabel = labels.masterPrompt || "Universal Master Prompt";
+        
         promptHTML = `
           <div class="card-detail-item" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
             <div class="prompt-container">
               <div class="prompt-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">Universal Master Prompt</span>
-                <button class="prompt-copy-btn" data-text="${escapeHTML(universalPrompt)}" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">Copy Prompt</button>
+                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${universalMasterPromptLabel}</span>
+                <button class="prompt-copy-btn" data-text="${escapeHTML(universalPrompt)}" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">${copyPromptText}</button>
               </div>
               <pre class="prompt-box" style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(var(--accent-color), 0.03); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: var(--text-primary); margin: 6px 0; max-height: 150px; overflow-y: auto; white-space: pre-wrap; text-align: left;">${escapeHTML(universalPrompt)}</pre>
             </div>
@@ -4213,26 +4436,31 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
         `;
       }
 
+      const explanationLabel = labels.beginnerExplanation || "Explanation";
+      const keyConceptsLabel = labels.keyConcepts || "Key Concepts";
+      const practicalExerciseLabel = labels.practicalExercise || "Practical Exercise";
+      const expectedOutcomeLabel = labels.expectedOutcome || "Expected Outcome";
+
       detailsHTML = `
         <div class="card-details-section" style="text-align: left;">
           <div class="card-detail-item">
-            <span class="card-detail-label">Explanation</span>
+            <span class="card-detail-label">${explanationLabel}</span>
             <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${whyUseThisTool}</span>
           </div>
           ${keyConcepts && keyConcepts.length > 0 ? `
           <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">Key Concepts</span>
+            <span class="card-detail-label">${keyConceptsLabel}</span>
             <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
               ${keyConcepts.map(c => `<li>${c}</li>`).join('')}
             </ul>
           </div>
           ` : ''}
           <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">Practical Exercise</span>
+            <span class="card-detail-label">${practicalExerciseLabel}</span>
             <span class="card-detail-value" style="font-size: 0.8rem; color: var(--text-secondary); font-style: italic; line-height: 1.5;">${exercises}</span>
           </div>
           <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">Expected Outcome</span>
+            <span class="card-detail-label">${expectedOutcomeLabel}</span>
             <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${expectedOutcomeVal}</span>
           </div>
           ${promptHTML}
@@ -4284,12 +4512,15 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
       let promptHTML = '';
       if (tool.id !== "TOOL_DOCS") {
         const universalPrompt = getUniversalPromptForTool(tool.name, tool.category, tool.taskTags);
+        const copyPromptText = labels.copyBtn || "Copy Prompt";
+        const universalMasterPromptLabel = labels.masterPrompt || "Universal Master Prompt";
+        
         promptHTML = `
           <div class="card-detail-item" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
             <div class="prompt-container">
               <div class="prompt-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">Universal Master Prompt</span>
-                <button class="prompt-copy-btn" data-text="${escapeHTML(universalPrompt)}" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">Copy Prompt</button>
+                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${universalMasterPromptLabel}</span>
+                <button class="prompt-copy-btn" data-text="${escapeHTML(universalPrompt)}" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">${copyPromptText}</button>
               </div>
               <pre class="prompt-box" style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(var(--accent-color), 0.03); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: var(--text-primary); margin: 6px 0; max-height: 150px; overflow-y: auto; white-space: pre-wrap; text-align: left;">${escapeHTML(universalPrompt)}</pre>
             </div>
@@ -4297,18 +4528,22 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
         `;
       }
 
+      const whyThisToolLabel = labels.whyThisTool || "Why Use This Tool";
+      const howToUseLabel = (state.translations && state.translations.roadmap && state.translations.roadmap.howToUse) || "How To Use It";
+      const expectedOutputLabel = labels.expectedOutput || "Expected Output";
+
       detailsHTML = `
         <div class="card-details-section" style="text-align: left;">
           <div class="card-detail-item">
-            <span class="card-detail-label">Why Use This Tool</span>
+            <span class="card-detail-label">${whyThisToolLabel}</span>
             <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${whyUseThisTool}</span>
           </div>
           <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">How To Use It</span>
+            <span class="card-detail-label">${howToUseLabel}</span>
             <div class="card-detail-value">${howToUseItHTML}</div>
           </div>
           <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">Expected Output</span>
+            <span class="card-detail-label">${expectedOutputLabel}</span>
             <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${expectedOutputVal}</span>
           </div>
           ${promptHTML}
@@ -4317,14 +4552,17 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
     }
   }
 
+  const addFavTitle = (state.translations && state.translations.addFav) || "Add to Favorites";
+  const compareTitle = (state.translations && state.translations.compare) || "Compare";
+
   const actionButtonsHTML = isEdu 
     ? '' 
     : `
     <div class="card-fav-compare-actions">
-      <button class="card-action-btn fav-star ${isFav ? 'active' : ''}" title="Add to Favorites" data-id="${tool.id}">
+      <button class="card-action-btn fav-star ${isFav ? 'active' : ''}" title="${addFavTitle}" data-id="${tool.id}">
         ★
       </button>
-      <button class="card-action-btn compare-check ${isCompared ? 'active' : ''}" title="Compare" data-id="${tool.id}">
+      <button class="card-action-btn compare-check ${isCompared ? 'active' : ''}" title="${compareTitle}" data-id="${tool.id}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
@@ -4332,11 +4570,13 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
     </div>
     `;
 
+  const inspectEngineLabel = (state.translations && state.translations.inspectEngine) || "Inspect Engine";
+
   const footerHTML = isEdu
     ? ''
     : `
     <div class="card-footer">
-      <button class="btn btn-secondary inspect-btn">Inspect Engine</button>
+      <button class="btn btn-secondary inspect-btn">${inspectEngineLabel}</button>
       <a href="${tool.officialUrl || tool.link || '#'}" target="_blank" rel="noopener" class="btn btn-icon" aria-label="External Link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -4382,7 +4622,8 @@ function initLibrarySection() {
   
   // Render search filter chips dynamically based on mapped tools
   if (libraryFilterChipsContainer) {
-    libraryFilterChipsContainer.innerHTML = `<button class="filter-chip active" data-chip="all">All Sectors</button>`;
+    const allSectorsText = (state.translations && state.translations.library && state.translations.library.allSectors) || "All Sectors";
+    libraryFilterChipsContainer.innerHTML = `<button class="filter-chip active" data-chip="all">${allSectorsText}</button>`;
     
     industriesList.forEach(sector => {
       const count = toolsData.filter(t => t.industries && t.industries.includes(sector)).length;
@@ -4390,7 +4631,9 @@ function initLibrarySection() {
         const chip = document.createElement('button');
         chip.className = 'filter-chip';
         chip.setAttribute('data-chip', sector);
-        chip.textContent = sector;
+        
+        const translatedSector = (state.translations && state.translations.sectors && state.translations.sectors[sector]) || sector;
+        chip.textContent = translatedSector;
         libraryFilterChipsContainer.appendChild(chip);
       }
     });
@@ -4444,11 +4687,13 @@ function renderLibraryGrid() {
   
   // 3. Render output matching state.viewMode
   if (filtered.length === 0) {
+    const noMatchTitle = (state.translations && state.translations.library && state.translations.library.noMatch) || "NO SERVICES MATCH FILTERS";
+    const noMatchDesc = (state.translations && state.translations.library && state.translations.library.noMatchDesc) || "Modify search keywords or select a different industry chip.";
     libraryGrid.removeAttribute('style');
     libraryGrid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; border: 1px dashed var(--border-color); border-radius: 12px; color: var(--text-secondary);">
-        <h4 style="font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase;">NO SERVICES MATCH FILTERS</h4>
-        <p style="font-size: 0.85rem;">Modify search keywords or select a different industry chip.</p>
+        <h4 style="font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase;">${noMatchTitle}</h4>
+        <p style="font-size: 0.85rem;">${noMatchDesc}</p>
       </div>
     `;
     return;
@@ -4522,11 +4767,13 @@ function renderLibraryGrid() {
         nonElGroupCount++;
         const groupWrap = document.createElement('div');
         groupWrap.className = 'category-group-wrap';
+        const translatedCat = (state.translations && state.translations.sectors && state.translations.sectors[category]) || category;
+        const nodeSuffix = (catTools.length === 1) ? "Node" : "Nodes";
         
         groupWrap.innerHTML = `
           <div class="category-group-title">
-            <span>${category}</span>
-            <span class="category-group-count">${catTools.length} Node${catTools.length === 1 ? '' : 's'}</span>
+            <span>${translatedCat}</span>
+            <span class="category-group-count">${catTools.length} ${nodeSuffix}</span>
           </div>
           <div class="category-group-grid"></div>
         `;
@@ -4578,12 +4825,13 @@ function initCategoryExplorerSection() {
   categoryExplorerList.innerHTML = '';
   industriesList.forEach(sector => {
     const count = toolsData.filter(t => t.industries && t.industries.includes(sector)).length;
+    const translatedSector = (state.translations && state.translations.sectors && state.translations.sectors[sector]) || sector;
     
     const li = document.createElement('li');
     li.className = `category-item ${sector === activeCategoryName ? 'active' : ''}`;
     li.setAttribute('data-category', sector);
     li.innerHTML = `
-      <span>${sector}</span>
+      <span>${translatedSector}</span>
       <span class="category-item-count">${count}</span>
     `;
     
@@ -4608,17 +4856,24 @@ function initCategoryExplorerSection() {
 function renderCategoryExplorer() {
   if (!categoryToolsGrid || !categoryActiveName || !categoryActiveCount) return;
   
-  categoryActiveName.textContent = activeCategoryName;
+  const translatedActiveName = (state.translations && state.translations.sectors && state.translations.sectors[activeCategoryName]) || activeCategoryName;
+  categoryActiveName.textContent = translatedActiveName;
   categoryToolsGrid.innerHTML = '';
   
   const matched = toolsData.filter(t => t.industries && t.industries.includes(activeCategoryName));
-  categoryActiveCount.textContent = `${matched.length} Node${matched.length === 1 ? '' : 's'}`;
+  const nodeSuffix = (matched.length === 1) ? "Node" : "Nodes";
+  categoryActiveCount.textContent = `${matched.length} ${nodeSuffix}`;
   
   if (matched.length === 0) {
+    const emptyTitle = (state.translations && state.translations.categories && state.translations.categories.emptyTitle) || "No System Nodes Mapped";
+    let emptyDesc = (state.translations && state.translations.categories && state.translations.categories.emptyDesc) || "There are no operational automation instances configured for this sector.";
+    if (emptyDesc.includes("this sector") || emptyDesc.includes("sector")) {
+      emptyDesc = emptyDesc.replace("this sector", translatedActiveName).replace("sector", translatedActiveName);
+    }
     categoryToolsGrid.innerHTML = `
       <div class="category-empty-state">
-        <h4 class="category-empty-state-title">No System Nodes Mapped</h4>
-        <p class="category-empty-state-desc">There are no operational automation instances configured for the ${activeCategoryName} sector.</p>
+        <h4 class="category-empty-state-title">${emptyTitle}</h4>
+        <p class="category-empty-state-desc">${emptyDesc}</p>
       </div>
     `;
     return;
