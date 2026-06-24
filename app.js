@@ -219,6 +219,7 @@ function smoothScrollLoop() {
 
 function setupCardInteractions() {
   const cards = document.querySelectorAll('.timeline-card');
+  const lang = getActiveLanguage();
   
   // Mouse Glow Spotlight Effect
   cards.forEach(card => {
@@ -248,6 +249,96 @@ function setupCardInteractions() {
   }, observerOptions);
   
   cards.forEach(card => revealObserver.observe(card));
+
+  // Next Lesson buttons smooth scroll
+  const nextLessonBtns = document.querySelectorAll('.next-lesson-btn');
+  nextLessonBtns.forEach(btn => {
+    // Prevent duplicate binding
+    if (btn.getAttribute('data-bound')) return;
+    btn.setAttribute('data-bound', 'true');
+    
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nextIdx = parseInt(btn.getAttribute('data-next-idx'));
+      const nextAnchor = document.getElementById(`anchor-${nextIdx}`);
+      if (nextAnchor) {
+        nextAnchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Find the next card and trigger a temporary highlight/glow pulse
+        const nextCard = nextAnchor.parentElement.querySelector('.timeline-card');
+        if (nextCard) {
+          nextCard.classList.add('highlight-pulse');
+          setTimeout(() => {
+            nextCard.classList.remove('highlight-pulse');
+          }, 2000);
+        }
+      } else {
+        // finished last card
+        showToast(lang === "Hindi" ? "बधाई हो! आपने पाठ्यक्रम पूरा कर लिया है!" : "Congratulations! You completed the learning journey!");
+      }
+    });
+  });
+
+  // Quiz Option buttons interaction
+  const optionBtns = document.querySelectorAll('.edu-quiz-option-btn');
+  optionBtns.forEach(btn => {
+    if (btn.getAttribute('data-bound')) return;
+    btn.setAttribute('data-bound', 'true');
+    
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const cardId = btn.getAttribute('data-card-id');
+      const optIdx = parseInt(btn.getAttribute('data-opt-idx'));
+      const correctIdx = parseInt(btn.getAttribute('data-correct-idx'));
+      
+      const container = btn.parentElement;
+      const buttons = container.querySelectorAll('.edu-quiz-option-btn');
+      
+      buttons.forEach(b => {
+        b.disabled = true;
+        b.style.cursor = 'not-allowed';
+        b.style.opacity = '0.6';
+      });
+      
+      buttons.forEach((b, idx) => {
+        if (idx === correctIdx) {
+          b.style.background = 'rgba(46, 204, 113, 0.2)';
+          b.style.borderColor = '#2ecc71';
+          b.style.color = '#2ecc71';
+          b.innerHTML += ' (✅ Correct)';
+        } else if (idx === optIdx) {
+          b.style.background = 'rgba(231, 76, 60, 0.2)';
+          b.style.borderColor = '#e74c3c';
+          b.style.color = '#e74c3c';
+          b.innerHTML += ' (❌ Incorrect)';
+        }
+      });
+      
+      const cardData = window.exploringAIRoadmap ? window.exploringAIRoadmap.find(c => c.id === cardId) : null;
+      if (cardData && cardData.checkpoint && cardData.checkpoint.explanation) {
+        const feedbackDiv = document.getElementById(`feedback-${cardId}`);
+        if (feedbackDiv) {
+          const explanationText = cardData.checkpoint.explanation[lang] || cardData.checkpoint.explanation["English"];
+          const isCorrect = (optIdx === correctIdx);
+          feedbackDiv.style.display = 'block';
+          feedbackDiv.style.padding = '10px';
+          feedbackDiv.style.borderRadius = '6px';
+          feedbackDiv.style.marginTop = '12px';
+          
+          if (isCorrect) {
+            feedbackDiv.style.background = 'rgba(46, 204, 113, 0.1)';
+            feedbackDiv.style.border = '1px solid rgba(46, 204, 113, 0.2)';
+            feedbackDiv.style.color = '#2ecc71';
+            feedbackDiv.innerHTML = `<strong>Correct!</strong> ${explanationText}`;
+          } else {
+            feedbackDiv.style.background = 'rgba(231, 76, 60, 0.1)';
+            feedbackDiv.style.border = '1px solid rgba(231, 76, 60, 0.2)';
+            feedbackDiv.style.color = '#ff6b6b';
+            feedbackDiv.innerHTML = `<strong>Not quite!</strong> ${explanationText}`;
+          }
+        }
+      }
+    });
+  });
 }
 
 // ==========================================================================
@@ -347,8 +438,8 @@ function getRecommendedAlternatives(tool, limit = 3) {
     .map(item => item.tool);
 }
 
-function openDrawer(nodeIdx) {
-  const data = toolsData[nodeIdx];
+function openDrawer(nodeIdx, isEduNode = false, eduNodeData = null) {
+  const data = isEduNode ? eduNodeData : toolsData[nodeIdx];
   if (!data) return;
 
   // Clean previous playground hooks
@@ -359,68 +450,138 @@ function openDrawer(nodeIdx) {
 
   // Populate basic text details
   document.getElementById('drawer-node-id').textContent = data.id;
-  document.getElementById('drawer-title').textContent = data.title;
-  document.getElementById('drawer-category').textContent = data.category;
+  const lang = getActiveLanguage();
+  const isEdu = data.id && data.id.startsWith("EDU_");
+
+  if (isEdu) {
+    document.getElementById('drawer-title').textContent = data.title[lang] || data.title["English"];
+    document.getElementById('drawer-category').textContent = "EDUCATIONAL NODE";
+  } else {
+    document.getElementById('drawer-title').textContent = data.title;
+    document.getElementById('drawer-category').textContent = data.category;
+  }
   
   // Format description along with workflow sequence instructions
   const descEl = document.getElementById('drawer-desc');
-  let descHTML = `<p>${data.description || data.desc}</p>`;
-  if (data.instruction && data.instruction.length > 0) {
-    descHTML += `
-      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
-        <h5 style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text-primary); margin-bottom: 12px; font-weight:700;">WORKFLOW SEQUENCE</h5>
-        <ol style="padding-left: 20px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
-          ${data.instruction.map(step => `<li>${step}</li>`).join('')}
-        </ol>
+  let descHTML = '';
+  
+  if (isEdu) {
+    const summaryVal = data.summary[lang] || data.summary["English"] || "";
+    const explanationVal = data.explanation[lang] || data.explanation["English"] || "";
+    const examplesList = data.examples[lang] || data.examples["English"] || [];
+    const keyPointsList = data.keyConcepts[lang] || data.keyConcepts["English"] || [];
+    const mythRealityVal = data.myth_vs_reality[lang] || data.myth_vs_reality["English"] || {};
+    const rememberVal = data.remember[lang] || data.remember["English"] || "";
+    
+    descHTML = `
+      <div class="edu-card-container">
+        <div class="edu-summary-box" style="margin-bottom: 16px; padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent-color); background: rgba(var(--accent-color), 0.08); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.25rem;">💡</span>
+          <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin: 0; line-height: 1.4;">${summaryVal}</div>
+        </div>
+        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 16px;">${explanationVal}</p>
+        
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text-primary); text-transform: uppercase; margin-top: 16px; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-weight: 700;">🌟 Real-Life Examples</div>
+        <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px;">
+          ${examplesList.map(ex => `<li>${ex}</li>`).join('')}
+        </ul>
+        
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text-primary); text-transform: uppercase; margin-top: 16px; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-weight: 700;">📌 Key Points</div>
+        <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px;">
+          ${keyPointsList.map(c => `<li>${c}</li>`).join('')}
+        </ul>
+        
+        <div style="margin-bottom: 16px; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
+          <div style="margin-bottom: 8px; color: #ff6b6b; font-size: 0.85rem;">
+            <strong>❌ Myth:</strong> ${mythRealityVal.myth || ""}
+          </div>
+          <div style="color: #2ecc71; font-size: 0.85rem;">
+            <strong>✅ Reality:</strong> ${mythRealityVal.reality || ""}
+          </div>
+        </div>
+        
+        <div style="padding: 12px; border-radius: 8px; border: 1px dashed rgba(230, 126, 34, 0.4); background: rgba(230, 126, 34, 0.05); color: var(--text-primary);">
+          <div style="font-weight: 700; color: #e67e22; font-size: 0.85rem; margin-bottom: 4px;">🧠 Remember:</div>
+          <p style="font-size: 0.85rem; margin: 0; font-style: italic; line-height: 1.4;">${rememberVal}</p>
+        </div>
       </div>
     `;
+  } else {
+    descHTML = `<p>${data.description || data.desc}</p>`;
+    if (data.instruction && data.instruction.length > 0) {
+      descHTML += `
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <h5 style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text-primary); margin-bottom: 12px; font-weight:700;">WORKFLOW SEQUENCE</h5>
+          <ol style="padding-left: 20px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+            ${data.instruction.map(step => `<li>${step}</li>`).join('')}
+          </ol>
+        </div>
+      `;
+    }
   }
   descEl.innerHTML = descHTML;
   
   // Set Technical Specs
-  document.getElementById('spec-rate').textContent = data.specs.rate;
-  document.getElementById('spec-latency').textContent = data.specs.latency;
-  document.getElementById('spec-accuracy').textContent = data.specs.accuracy;
-  document.getElementById('spec-context').textContent = data.specs.context;
+  if (isEdu) {
+    document.getElementById('spec-rate').textContent = "1 min";
+    document.getElementById('spec-latency').textContent = "0ms";
+    document.getElementById('spec-accuracy').textContent = "100%";
+    document.getElementById('spec-context').textContent = "N/A";
+  } else {
+    document.getElementById('spec-rate').textContent = (data.specs && data.specs.rate) || "0 words/s";
+    document.getElementById('spec-latency').textContent = (data.specs && data.specs.latency) || "0ms";
+    document.getElementById('spec-accuracy').textContent = (data.specs && data.specs.accuracy) || "0%";
+    document.getElementById('spec-context').textContent = (data.specs && data.specs.context) || "0k";
+  }
 
   // Re-inject Card Icon in drawer hero with fallback
   const originalCard = document.querySelector(`.timeline-card[data-node="${nodeIdx}"]`);
-  const originalIconSvg = originalCard ? originalCard.querySelector('.card-icon').innerHTML : (data.icon || '');
+  const originalIconSvg = originalCard ? originalCard.querySelector('.card-icon').innerHTML : (isEdu ? 'EDU' : (data.icon || ''));
   document.getElementById('drawer-icon').innerHTML = originalIconSvg;
 
   // Configure deploy/external button link
-  document.getElementById('drawer-link-btn').setAttribute('href', data.link || data.officialUrl);
+  const deployBtn = document.getElementById('drawer-link-btn');
+  if (isEdu) {
+    deployBtn.style.display = 'none';
+  } else {
+    deployBtn.style.display = 'flex';
+    deployBtn.setAttribute('href', data.link || data.officialUrl || '#');
+  }
 
   // Setup interactive playground container
   const playgroundContainer = document.getElementById('playground-container');
   playgroundContainer.innerHTML = ''; // reset
 
   // Load specific module UI & Handlers
-  mountPlayground(data.playground, playgroundContainer);
+  if (!isEdu && data.playground) {
+    mountPlayground(data.playground, playgroundContainer);
+  }
 
   // Render Recommended Alternatives
   const alternativesContainer = document.getElementById('drawer-alternatives');
   if (alternativesContainer) {
     alternativesContainer.innerHTML = '';
-    const alternatives = getRecommendedAlternatives(data, 3);
-    alternatives.forEach(altTool => {
-      const altIdx = toolsData.findIndex(t => t.id === altTool.id);
-      const altCard = document.createElement('div');
-      altCard.className = 'alternative-card';
-      altCard.innerHTML = `
-        <div class="alternative-card-header">
-          <div class="alternative-card-icon">${altTool.icon}</div>
-          <h5 class="alternative-card-title">${altTool.name}</h5>
-        </div>
-        <p class="alternative-card-desc">${altTool.description || altTool.desc}</p>
-        <span class="alternative-card-price">${(altTool.pricing || '').replace('$', '₹')}</span>
-      `;
-      altCard.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openDrawer(altIdx);
+    if (!isEdu) {
+      const alternatives = getRecommendedAlternatives(data, 3);
+      alternatives.forEach(altTool => {
+        const altIdx = toolsData.findIndex(t => t.id === altTool.id);
+        const altCard = document.createElement('div');
+        altCard.className = 'alternative-card';
+        altCard.innerHTML = `
+          <div class="alternative-card-header">
+            <div class="alternative-card-icon">${altTool.icon}</div>
+            <h5 class="alternative-card-title">${altTool.name}</h5>
+          </div>
+          <p class="alternative-card-desc">${altTool.description || altTool.desc}</p>
+          <span class="alternative-card-price">${(altTool.pricing || '').replace('$', '₹')}</span>
+        `;
+        altCard.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openDrawer(altIdx);
+        });
+        alternativesContainer.appendChild(altCard);
       });
-      alternativesContainer.appendChild(altCard);
-    });
+    }
   }
 
   // Open Drawer UI
@@ -3695,7 +3856,11 @@ function renderRoadmap(optimalWorkflow, steps) {
     const actionInspect = document.getElementById('deck-action-inspect');
     if (actionInspect) {
       actionInspect.addEventListener('click', () => {
-        openDrawer(originalIndex);
+        if (isEdu) {
+          openDrawer(-1, true, tool);
+        } else {
+          openDrawer(originalIndex);
+        }
       });
     }
   }
@@ -4341,25 +4506,25 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
   let eduData = {};
 
   if (isEdu) {
-    titleText = tool.title[lang] || tool.title["English"];
-    descText = tool.summary[lang] || tool.summary["English"];
-    difficulty = tool.difficulty;
-    time = tool.time;
-    prerequisite = tool.prerequisite[lang] || tool.prerequisite["English"];
+    titleText = tool.title ? (tool.title[lang] || tool.title["English"]) : "";
+    descText = tool.summary ? (tool.summary[lang] || tool.summary["English"]) : "";
+    difficulty = tool.difficulty || "Beginner";
+    time = tool.time || "1 min";
+    prerequisite = tool.prerequisite ? (tool.prerequisite[lang] || tool.prerequisite["English"]) : "None";
     
-    visualFlow = tool.visualFlow;
-    examples = tool.examples[lang] || tool.examples["English"];
-    keyConcepts = tool.keyConcepts[lang] || tool.keyConcepts["English"];
-    commonMistakes = tool.commonMistakes[lang] || tool.commonMistakes["English"];
-    applications = tool.applications[lang] || tool.applications["English"];
-    reading = tool.reading[lang] || tool.reading["English"];
-    exercises = tool.exercises[lang] || tool.exercises["English"];
-    outcome = tool.outcome[lang] || tool.outcome["English"];
+    visualFlow = tool.visualFlow || "";
+    examples = tool.examples ? (tool.examples[lang] || tool.examples["English"] || []) : [];
+    keyConcepts = tool.keyConcepts ? (tool.keyConcepts[lang] || tool.keyConcepts["English"] || []) : [];
+    commonMistakes = tool.commonMistakes ? (tool.commonMistakes[lang] || tool.commonMistakes["English"] || []) : [];
+    applications = tool.applications ? (tool.applications[lang] || tool.applications["English"] || []) : [];
+    reading = tool.reading ? (tool.reading[lang] || tool.reading["English"] || []) : [];
+    exercises = tool.exercises ? (tool.exercises[lang] || tool.exercises["English"] || "") : "";
+    outcome = tool.outcome ? (tool.outcome[lang] || tool.outcome["English"] || "") : "";
     checkpoint = tool.checkpoint;
     
-    starter = tool.starterPrompt;
-    advanced = tool.advancedPrompt;
-    pro = tool.proPrompt;
+    starter = tool.starterPrompt || "";
+    advanced = tool.advancedPrompt || "";
+    pro = tool.proPrompt || "";
   } else {
     eduData = getToolEducationalData(tool, lang, stepName);
     const promptDetails = generatePrompts(tool.name, state.goalText || '', lang);
@@ -4414,56 +4579,140 @@ function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = fal
   if (isTimeline) {
     if (isEdu) {
       // Clean educational roadmap timeline representation for "Exploring AI"
-      const whyUseThisTool = descText;
-      const expectedOutcomeVal = outcome || "Understanding of key computational logic.";
-      const universalPrompt = pro || starter || "";
+      const summaryVal = tool.summary[lang] || tool.summary["English"] || "";
+      const explanationVal = tool.explanation[lang] || tool.explanation["English"] || "";
+      const examplesList = tool.examples[lang] || tool.examples["English"] || [];
+      const keyPointsList = tool.keyConcepts[lang] || tool.keyConcepts["English"] || [];
+      const mythRealityVal = tool.myth_vs_reality[lang] || tool.myth_vs_reality["English"] || {};
+      const rememberVal = tool.remember[lang] || tool.remember["English"] || "";
       
-      let promptHTML = '';
-      if (universalPrompt) {
-        const copyPromptText = labels.copyBtn || "Copy Prompt";
-        const universalMasterPromptLabel = labels.masterPrompt || "Universal Master Prompt";
+      const labelsHeader = {
+        English: {
+          examples: "Real-Life Examples",
+          keyPoints: "Key Points",
+          myth: "Myth",
+          reality: "Reality",
+          remember: "Remember",
+          continue: "Continue to Next Lesson",
+          difficulty: "Level",
+          time: "Read Time"
+        },
+        Hindi: {
+          examples: "वास्तविक उदाहरण",
+          keyPoints: "मुख्य बिंदु",
+          myth: "भ्रम",
+          reality: "सच्चाई",
+          remember: "याद रखें",
+          continue: "अगले पाठ पर जाएं",
+          difficulty: "स्तर",
+          time: "पढ़ने का समय"
+        },
+        Hinglish: {
+          examples: "Real-Life Examples",
+          keyPoints: "Key Points",
+          myth: "Myth",
+          reality: "Reality",
+          remember: "Remember",
+          continue: "Continue to Next Lesson",
+          difficulty: "Level",
+          time: "Read Time"
+        }
+      };
+      
+      const cardLabels = labelsHeader[lang] || labelsHeader["Hinglish"];
+
+      let quizHTML = '';
+      if (checkpoint) {
+        const checkQuestion = checkpoint.question[lang] || checkpoint.question["English"];
+        const checkOptions = checkpoint.options[lang] || checkpoint.options["English"] || [];
         
-        promptHTML = `
-          <div class="card-detail-item" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
-            <div class="prompt-container">
-              <div class="prompt-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span class="card-detail-label" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0; text-transform: uppercase;">${universalMasterPromptLabel}</span>
-                <button class="prompt-copy-btn" data-text="${escapeHTML(universalPrompt)}" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">${copyPromptText}</button>
-              </div>
-              <pre class="prompt-box" style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(var(--accent-color), 0.03); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: var(--text-primary); margin: 6px 0; max-height: 150px; overflow-y: auto; white-space: pre-wrap; text-align: left;">${escapeHTML(universalPrompt)}</pre>
+        quizHTML = `
+          <div class="edu-quiz-box" id="quiz-${tool.id}" style="margin-top: 20px; padding: 14px; border-radius: 10px; border: 1px solid var(--border-color); background: rgba(var(--accent-color), 0.02);">
+            <div class="edu-quiz-title" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+              <span>📝</span> <span>Quick Checkpoint Quiz:</span>
             </div>
+            <div class="edu-quiz-question" style="font-size: 0.85rem; margin-bottom: 12px; line-height: 1.4; color: var(--text-primary); font-weight: 600;">${checkQuestion}</div>
+            <div class="edu-quiz-options" style="display: flex; flex-direction: column; gap: 8px;">
+              ${checkOptions.map((opt, oIdx) => `
+                <button class="edu-quiz-option-btn" data-card-id="${tool.id}" data-opt-idx="${oIdx}" data-correct-idx="${checkpoint.correct}" style="width: 100%; text-align: left; padding: 10px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+            <div class="edu-quiz-feedback" id="feedback-${tool.id}" style="margin-top: 12px; font-size: 0.8rem; line-height: 1.4; display: none;"></div>
           </div>
         `;
       }
 
-      const explanationLabel = labels.beginnerExplanation || "Explanation";
-      const keyConceptsLabel = labels.keyConcepts || "Key Concepts";
-      const practicalExerciseLabel = labels.practicalExercise || "Practical Exercise";
-      const expectedOutcomeLabel = labels.expectedOutcome || "Expected Outcome";
-
       detailsHTML = `
-        <div class="card-details-section" style="text-align: left;">
-          <div class="card-detail-item">
-            <span class="card-detail-label">${explanationLabel}</span>
-            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${whyUseThisTool}</span>
+        <div class="edu-card-container" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
+          <!-- Difficulty & Time Badges -->
+          <div class="edu-card-header" style="display: flex; gap: 8px; font-family: var(--font-mono); font-size: 0.75rem;">
+            <span class="edu-badge-difficulty ${tool.difficulty.toLowerCase()}" style="padding: 4px 10px; border-radius: 12px; font-weight: 600; text-transform: uppercase;">
+              ${tool.difficulty}
+            </span>
+            <span class="edu-badge-time" style="color: var(--text-secondary); background: rgba(255, 255, 255, 0.05); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color);">
+              ⏱ ${tool.time}
+            </span>
           </div>
-          ${keyConcepts && keyConcepts.length > 0 ? `
-          <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">${keyConceptsLabel}</span>
-            <ul style="padding-left: 16px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
-              ${keyConcepts.map(c => `<li>${c}</li>`).join('')}
-            </ul>
+
+          <!-- One-Line Summary Box -->
+          <div class="edu-summary-box" style="display: flex; gap: 12px; background: rgba(var(--accent-color), 0.08); border-left: 4px solid var(--accent-color); padding: 12px 16px; border-radius: 8px; align-items: center;">
+            <span style="font-size: 1.25rem;">💡</span>
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin: 0; line-height: 1.4;">${summaryVal}</div>
           </div>
-          ` : ''}
-          <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">${practicalExerciseLabel}</span>
-            <span class="card-detail-value" style="font-size: 0.8rem; color: var(--text-secondary); font-style: italic; line-height: 1.5;">${exercises}</span>
+
+          <!-- Simple Explanation -->
+          <div class="edu-explanation-section">
+            <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); margin: 0;">${explanationVal}</p>
           </div>
-          <div class="card-detail-item" style="margin-top: 12px;">
-            <span class="card-detail-label">${expectedOutcomeLabel}</span>
-            <span class="card-detail-value" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">${expectedOutcomeVal}</span>
+
+          <!-- Examples Grid -->
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--text-primary); text-transform: uppercase; margin-top: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-weight: 700;">
+            🌟 ${cardLabels.examples}
           </div>
-          ${promptHTML}
+          <div class="edu-examples-grid" style="display: flex; flex-direction: column; gap: 6px;">
+            ${examplesList.map(ex => `
+              <div class="edu-example-item" style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px;">
+                <span style="font-size: 1rem;">🚀</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">${ex}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Key Points -->
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--text-primary); text-transform: uppercase; margin-top: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-weight: 700;">
+            📌 ${cardLabels.keyPoints}
+          </div>
+          <ul class="edu-keypoints-list" style="padding-left: 20px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin: 0;">
+            ${keyPointsList.map(c => `<li>${c}</li>`).join('')}
+          </ul>
+
+          <!-- Myth vs Reality Box -->
+          <div class="edu-myth-reality-box" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
+            <div class="edu-myth" style="margin-bottom: 8px; color: #ff6b6b; font-size: 0.85rem;">
+              <strong>❌ ${cardLabels.myth}:</strong> ${mythRealityVal.myth || ""}
+            </div>
+            <div class="edu-reality" style="color: #2ecc71; font-size: 0.85rem;">
+              <strong>✅ ${cardLabels.reality}:</strong> ${mythRealityVal.reality || ""}
+            </div>
+          </div>
+
+          <!-- Remember Takeaway Box -->
+          <div class="edu-remember-box" style="padding: 12px; border-radius: 8px; border: 1px dashed rgba(230, 126, 34, 0.4); background: rgba(230, 126, 34, 0.05); color: var(--text-primary);">
+            <div style="font-weight: 700; color: #e67e22; font-size: 0.85rem; margin-bottom: 4px;">🧠 ${cardLabels.remember}:</div>
+            <p style="font-size: 0.85rem; margin: 0; font-style: italic; line-height: 1.4;">${rememberVal}</p>
+          </div>
+
+          <!-- Quiz -->
+          ${quizHTML}
+
+          <!-- Next Lesson Button -->
+          <div class="edu-card-footer" style="margin-top: 12px;">
+            <button class="btn btn-primary next-lesson-btn" data-next-idx="${stepIndex}" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <span>${cardLabels.continue}</span>
+            </button>
+          </div>
         </div>
       `;
     } else {
