@@ -911,24 +911,6 @@
         <button id="btn-auth-coupon-trigger" class="btn btn-secondary btn-full-width" style="width: 100%;">
           🎫 Use Coupon Code
         </button>
-
-        <div class="auth-divider" style="margin: 16px 0; text-align: center; font-size: 0.8rem; color: var(--text-secondary); position: relative; font-family: var(--font-mono);">
-          <span style="background: #111; padding: 0 8px; position: relative; z-index: 1;">REVIEWER SIGN IN</span>
-          <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-color); z-index: 0;"></div>
-        </div>
-
-        <form id="reviewer-signin-form" style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 10px;">
-          <div class="form-group">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-secondary);">Email Address</label>
-            <input type="email" id="rev-email" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;" placeholder="review@arlabs.com" value="review@arlabs.com">
-          </div>
-          <div class="form-group">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-secondary);">Password</label>
-            <input type="password" id="rev-password" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;" placeholder="••••••••" value="Review@12345">
-          </div>
-          <div id="reviewer-error-msg" style="display: none; color: #ff4a4a; font-size: 0.8rem; margin-top: 4px; font-weight: 500;"></div>
-          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600; justify-content: center; background: linear-gradient(135deg, #7f00ff, #ff007f); border: none; box-shadow: 0 0 10px rgba(127,0,255,0.3);">Sign In as Reviewer</button>
-        </form>
       </div>
     </div>
   </div>
@@ -976,7 +958,8 @@
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
-              <option value="Prefer not to say">Prefer not to say</option>
+              <option value="Prefer Not To Say">Prefer Not To Say</option>
+              <option value="Not Available">Not Available</option>
             </select>
           </div>
         </div>
@@ -992,21 +975,22 @@
             <option value="Homemaker">Homemaker</option>
             <option value="Business">Business</option>
             <option value="Startup">Startup</option>
+            <option value="Not Available">Not Available</option>
           </select>
         </div>
         
         <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 0.85rem;">
           <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
             <input type="checkbox" id="ob-cb-terms" required style="margin-top: 3px;">
-            <span>I have read the <a href="#" class="legal-trigger" data-legal="terms" style="color: var(--accent-color); text-decoration: underline;">Terms & Conditions</a> *</span>
+            <span>I have read and agree to the <a href="#" class="legal-trigger" data-legal="terms" style="color: var(--accent-color); text-decoration: underline;">Terms and Conditions</a>. *</span>
           </label>
           <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
             <input type="checkbox" id="ob-cb-privacy" required style="margin-top: 3px;">
-            <span>I acknowledge the <a href="#" class="legal-trigger" data-legal="privacy" style="color: var(--accent-color); text-decoration: underline;">Privacy Policy</a> *</span>
+            <span>I acknowledge and agree to the <a href="#" class="legal-trigger" data-legal="privacy" style="color: var(--accent-color); text-decoration: underline;">Privacy Policy</a>. *</span>
           </label>
           <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
             <input type="checkbox" id="ob-cb-survey" required style="margin-top: 3px;">
-            <span>I consent to sharing these details for future A.R. Labs surveys *</span>
+            <span>I agree that A.R. Labs may use my profile information for future surveys, research, analytics and product improvement purposes. *</span>
           </label>
         </div>
         
@@ -1030,7 +1014,7 @@
           <thead>
             <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
               <th style="padding: 16px;">Features</th>
-              <th style="padding: 16px; text-align: center; color: var(--text-secondary);">Basic<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹0</span></th>
+              <th style="padding: 16px; text-align: center; color: var(--text-secondary);">Free<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹0</span></th>
               <th style="padding: 16px; text-align: center; color: var(--accent-color);">Premium<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹99/mo</span></th>
             </tr>
           </thead>
@@ -1065,6 +1049,7 @@
       </div>
 
       <div style="display: flex; flex-wrap: wrap; gap: 12px; width: 100%;">
+        <button id="btn-pricing-free" class="btn btn-secondary" style="flex: 1; min-width: 150px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px;">Choose Free Plan (₹0)</button>
         <button id="btn-pricing-monthly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #7f00ff, #ff007f); border: none; box-shadow: 0 0 10px rgba(127,0,255,0.3);">Subscribe Monthly (₹99)</button>
         <button id="btn-pricing-yearly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #00c6ff, #0072ff); border: none; box-shadow: 0 0 10px rgba(0,198,255,0.3);">Subscribe Yearly (₹999)</button>
         <button id="btn-pricing-coupon" class="btn btn-secondary" style="flex: 1; min-width: 150px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px;">Redeem Coupon</button>
@@ -1104,7 +1089,8 @@
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
-              <option value="Prefer not to say">Prefer not to say</option>
+              <option value="Prefer Not To Say">Prefer Not To Say</option>
+              <option value="Not Available">Not Available</option>
             </select>
           </div>
         </div>
@@ -1120,14 +1106,29 @@
             <option value="Homemaker">Homemaker</option>
             <option value="Business">Business</option>
             <option value="Startup">Startup</option>
+            <option value="Not Available">Not Available</option>
           </select>
         </div>
+
+        <div class="form-row" style="display: flex; gap: 12px;">
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Account Type</label>
+            <div id="pf-account-type-display" style="padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.15); color: #ccc; font-weight: 500; font-size: 0.9rem; min-height: 38px; box-sizing: border-box;">Standard User</div>
+          </div>
+          
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Access Status</label>
+            <div style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; min-height: 38px; box-sizing: border-box;">
+              <span id="pf-access-status-display" class="badge-access basic-badge" style="font-weight: 700; font-size: 0.8rem;">Basic</span>
+              <button type="button" id="btn-pf-upgrade" class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px;">Upgrade</button>
+            </div>
+          </div>
+        </div>
         
-        <div class="form-group">
+        <div class="form-group" style="display: none;">
           <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Plan Type</label>
           <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.01);">
             <span id="pf-plan-display" style="font-weight: 600; color: var(--accent-color);">Basic</span>
-            <button type="button" id="btn-pf-upgrade" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 4px;">Upgrade</button>
           </div>
         </div>
         

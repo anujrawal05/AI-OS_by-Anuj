@@ -29,11 +29,11 @@ const dailyPromptLimitCache = {};
 // Authentication Endpoints
 const googleLoginHandler = require('./api/auth/google-login');
 const couponLoginHandler = require('./api/auth/coupon-login');
-const emailLoginHandler = require('./api/auth/email-login');
+const verifyPaymentHandler = require('./api/auth/verify-payment');
 
 app.post('/api/auth/google-login', googleLoginHandler);
 app.post('/api/auth/coupon-login', couponLoginHandler);
-app.post('/api/auth/email-login', emailLoginHandler);
+app.post('/api/auth/verify-payment', verifyPaymentHandler);
 
 // Helper to verify token payload
 async function verifyTokenPayload(authHeader) {

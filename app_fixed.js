@@ -3129,6 +3129,13 @@ function getToolEducationalData(tool, lang, stepName = '') {
 }
 
 function regenerateActiveRoadmap() {
+  const section = document.getElementById('roadmap-builder-section');
+  if (!isUserAuthenticated() || (state.user && !state.user.plan_type)) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = 'block';
+
   const selectedGoal = state.goalText;
   if (!selectedGoal) return;
   
@@ -3262,6 +3269,17 @@ function initDashboardControls() {
 
   if (compileBtn) {
     compileBtn.addEventListener('click', () => {
+      if (!isUserAuthenticated()) {
+        const authOverlay = document.getElementById('auth-modal-overlay');
+        if (authOverlay) authOverlay.style.display = 'flex';
+        showToast("Please login first to compile your roadmap.", "warning");
+        return;
+      }
+      if (state.user && !state.user.plan_type) {
+        showPricingModal(true);
+        showToast("Please select a plan to access roadmap features.", "warning");
+        return;
+      }
       state.goalText = taskSelect ? taskSelect.value : 'Exploring AI';
       
       if (state.goalText !== "Exploring AI") {
@@ -4578,6 +4596,26 @@ function renderComparisonTable() {
 // ==========================================================================
 
 function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = false, stepName = '', stepIndex = 0, effectiveCost = null, effectiveMode = '') {
+  const isLocked = !isUserAuthenticated() || (state.user && state.user.plan_type === 'Basic' && isTimeline && stepIndex > 10);
+  if (isLocked) {
+    return `
+      <div class="timeline-card-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px;">
+        <div class="card-icon" style="background: rgba(255,255,255,0.05); color: #777; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">🔒</div>
+        <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+          <span class="timeline-step-badge">STEP ${stepIndex} // LOCKED</span>
+          <span class="card-number" style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase;">
+            ${tool.id} // PREMIUM LOCK
+          </span>
+        </div>
+      </div>
+      <div class="timeline-card-body" style="padding: 24px;">
+        <h3 class="card-title" style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">Locked Premium Node</h3>
+        <p class="card-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 16px;">This step is locked. Please upgrade to Premium or log in to unlock this node.</p>
+        <button class="btn btn-primary" onclick="showPricingModal()" style="width: 100%; justify-content: center;">Unlock Premium Access</button>
+      </div>
+    `;
+  }
+
   let costStr = '';
   if (effectiveCost !== null) {
     costStr = effectiveCost === 0 ? 'FREE TIER' : `₹${effectiveCost} / mo`;
@@ -5349,13 +5387,13 @@ function initNavigation() {
 }
 
 // --- App Entry point ---
-function initApp() {
+async function initApp() {
   try {
     initTheme();
     setupEventListeners();
     
     // Initialize premium auth gating systems
-    initAuthSystem();
+    await initAuthSystem();
     
     // Start continuous smooth scroll draw tracing loop
     smoothScrollLoop();
@@ -5801,7 +5839,7 @@ async function handleSupabaseSession(session) {
       .eq('id', user.id)
       .single();
       
-    if (error || !profile || !profile.full_name || !profile.profession) {
+    if (error || !profile || !profile.full_name || !profile.date_of_birth || !profile.gender || !profile.profession) {
       // First time login - trigger onboarding modal
       showOnboardingModal(user);
     } else {
@@ -5814,7 +5852,7 @@ async function handleSupabaseSession(session) {
         gender: profile.gender,
         profession: profile.profession,
         date_of_birth: profile.date_of_birth,
-        plan_type: profile.plan_type || 'Basic',
+        plan_type: profile.plan_type || null,
         token: session.access_token,
         is_coupon: false
       };
@@ -5828,9 +5866,13 @@ async function handleSupabaseSession(session) {
       updateUserProfileHeader();
       toggleBusinessSectionView();
       if (window.AdManager) window.AdManager.updateAdVisibility();
-      regenerateActiveRoadmap();
       
-      showToast(`Welcome back, ${state.user.name}!`);
+      if (!profile.plan_type) {
+        showPricingModal(true);
+      } else {
+        regenerateActiveRoadmap();
+        showToast(`Welcome back, ${state.user.name}!`);
+      }
     }
   } catch (err) {
     console.error("Error fetching user profile:", err.message);
@@ -5860,7 +5902,6 @@ async function handleOnboardingSubmit(e) {
   
   const cbTerms = document.getElementById('ob-cb-terms').checked;
   const cbPrivacy = document.getElementById('ob-cb-privacy').checked;
-  const cbSurvey = document.getElementById('ob-cb-survey').checked;
   
   const errorEl = document.getElementById('onboarding-error-msg');
   if (errorEl) errorEl.style.display = 'none';
@@ -5873,9 +5914,9 @@ async function handleOnboardingSubmit(e) {
     return;
   }
   
-  if (!cbTerms || !cbPrivacy || !cbSurvey) {
+  if (!cbTerms || !cbPrivacy) {
     if (errorEl) {
-      errorEl.textContent = 'You must accept the terms, privacy policy, and survey consent to continue.';
+      errorEl.textContent = 'You must accept the terms & conditions and privacy policy to continue.';
       errorEl.style.display = 'block';
     }
     return;
@@ -5884,19 +5925,16 @@ async function handleOnboardingSubmit(e) {
   try {
     const { error } = await supabase
       .from('user_profiles')
-      .insert([
-        {
-          id: onboardingUser.id,
-          email: onboardingUser.email,
-          full_name: fullName,
-          date_of_birth: dob,
-          gender: gender,
-          profession: profession,
-          plan_type: 'Basic',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ]);
+      .upsert({
+        id: onboardingUser.id,
+        email: onboardingUser.email,
+        full_name: fullName,
+        date_of_birth: dob,
+        gender: gender,
+        profession: profession,
+        plan_type: null,
+        updated_at: new Date().toISOString()
+      });
       
     if (error) throw error;
     
@@ -5917,39 +5955,28 @@ async function handleOnboardingSubmit(e) {
   }
 }
 
-function showPricingModal() {
+function showPricingModal(isMandatory = false) {
   const overlay = document.getElementById('pricing-modal-overlay');
   if (overlay) overlay.style.display = 'flex';
+  const closeBtn = document.getElementById('pricing-modal-close-btn');
+  if (closeBtn) {
+    closeBtn.style.display = isMandatory ? 'none' : 'block';
+  }
+  state.onboardingPricing = isMandatory;
 }
 
-async function handlePremiumUpgrade() {
-  if (!state.user) {
-    showToast("Please sign in or use a coupon code to upgrade.", "warning");
-    const pricingOverlay = document.getElementById('pricing-modal-overlay');
-    if (pricingOverlay) pricingOverlay.style.display = 'none';
-    const authOverlay = document.getElementById('auth-modal-overlay');
-    if (authOverlay) authOverlay.style.display = 'flex';
-    return;
-  }
-  
-  if (state.user.is_coupon) {
-    showToast("Coupon session is already on Premium!", "info");
-    const pricingOverlay = document.getElementById('pricing-modal-overlay');
-    if (pricingOverlay) pricingOverlay.style.display = 'none';
-    return;
-  }
-  
+async function handleChooseFreePlan() {
+  if (!state.user) return;
   if (!supabase) return;
   try {
-    // Simulate payment transaction success and write to db
     const { error } = await supabase
       .from('user_profiles')
-      .update({ plan_type: 'Premium', updated_at: new Date().toISOString() })
+      .update({ plan_type: 'Basic', updated_at: new Date().toISOString() })
       .eq('id', state.user.id);
       
     if (error) throw error;
     
-    state.user.plan_type = 'Premium';
+    state.user.plan_type = 'Basic';
     localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
     
     const pricingOverlay = document.getElementById('pricing-modal-overlay');
@@ -5960,9 +5987,122 @@ async function handlePremiumUpgrade() {
     if (window.AdManager) window.AdManager.updateAdVisibility();
     regenerateActiveRoadmap();
     
-    showToast("Premium features unlocked successfully!");
+    showToast("Free Plan activated successfully!");
   } catch (err) {
-    showToast("Upgrade failed: " + err.message, "error");
+    showToast("Failed to activate Free Plan: " + err.message, "error");
+  }
+}
+
+async function handlePremiumUpgrade(planName = 'Premium Monthly', amount = 99) {
+  if (!state.user) {
+    showToast("Please sign in or use a coupon code to upgrade.", "warning");
+    const pricingOverlay = document.getElementById('pricing-modal-overlay');
+    if (pricingOverlay) pricingOverlay.style.display = 'none';
+    const authOverlay = document.getElementById('auth-modal-overlay');
+    if (authOverlay) authOverlay.style.display = 'flex';
+    return;
+  }
+  
+  if (state.user.plan_type === 'Premium') {
+    showToast("You are already on the Premium Plan!", "info");
+    const pricingOverlay = document.getElementById('pricing-modal-overlay');
+    if (pricingOverlay) pricingOverlay.style.display = 'none';
+    return;
+  }
+  
+  // Load Razorpay config
+  let razorpayKey = 'rzp_test_review2026';
+  try {
+    const res = await fetch('/api/config');
+    const config = await res.json();
+    if (config.razorpayKeyId) {
+      razorpayKey = config.razorpayKeyId;
+    }
+  } catch (e) {
+    console.error("Failed to fetch Razorpay config:", e);
+  }
+
+  const options = {
+    key: razorpayKey,
+    amount: amount * 100, // amount in paise
+    currency: 'INR',
+    name: 'A.R. Labs',
+    description: `AI-OS ${planName} Upgrade`,
+    image: 'https://anujrawal05.github.io/AI-OS_by-Anuj/aiso_logo.png',
+    handler: async function (response) {
+      showToast("Payment Successful! Verifying upgrade with server...", "info");
+      await verifyRazorpayPayment(response, planName);
+    },
+    prefill: {
+      name: state.user.name || 'Test User',
+      email: state.user.email || 'user@test.com'
+    },
+    theme: {
+      color: '#7f00ff'
+    },
+    modal: {
+      ondismiss: function () {
+        showToast("Payment cancelled by user.", "warning");
+      }
+    }
+  };
+
+  try {
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    showToast("Failed to initialize Razorpay checkout widget: " + err.message, "error");
+  }
+}
+
+async function verifyRazorpayPayment(response, planName) {
+  try {
+    const res = await fetch('/api/auth/verify-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${state.user.token}`
+      },
+      body: JSON.stringify({
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature,
+        planName: planName
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Payment verification failed');
+    }
+
+    state.user.plan_type = 'Premium';
+    
+    if (state.user.is_coupon) {
+      const payload = {
+        email: state.user.email,
+        name: state.user.name,
+        plan_type: "Premium",
+        expiry: Date.now() + 30 * 24 * 60 * 60 * 1000,
+        signature: 'AIOS-AUTHENTICATED-COUPON'
+      };
+      state.user.token = btoa(JSON.stringify(payload));
+      sessionStorage.setItem('aios_coupon_session', JSON.stringify(state.user));
+    } else {
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+    }
+
+    const pricingOverlay = document.getElementById('pricing-modal-overlay');
+    if (pricingOverlay) pricingOverlay.style.display = 'none';
+    
+    updateUserProfileHeader();
+    toggleBusinessSectionView();
+    if (window.AdManager) window.AdManager.updateAdVisibility();
+    regenerateActiveRoadmap();
+    
+    showToast(`Premium features (${planName}) unlocked successfully!`);
+  } catch (err) {
+    showToast("Upgrade profile update failed: " + err.message, "error");
   }
 }
 
@@ -5976,12 +6116,54 @@ function showProfileModal() {
   document.getElementById('pf-profession').value = state.user.profession || '';
   document.getElementById('pf-plan-display').textContent = state.user.plan_type || 'Basic';
   
+  // Set account type and access status
+  const accountTypeEl = document.getElementById('pf-account-type-display');
+  const accessStatusEl = document.getElementById('pf-access-status-display');
+  const isCoupon = !!state.user.is_coupon;
+  
+  if (isCoupon) {
+    if (accountTypeEl) accountTypeEl.textContent = state.user.account_type || 'Premium Coupon User';
+    if (accessStatusEl) {
+      accessStatusEl.innerHTML = 'Premium';
+      accessStatusEl.className = 'badge-access premium-badge';
+    }
+  } else {
+    if (accountTypeEl) accountTypeEl.textContent = 'Google User';
+    if (accessStatusEl) {
+      const isPremium = state.user.plan_type === 'Premium';
+      accessStatusEl.innerHTML = isPremium ? 'Premium' : 'Basic';
+      accessStatusEl.className = isPremium ? 'badge-access premium-badge' : 'badge-access basic-badge';
+    }
+  }
+  
+  // Handle hide_profile_editing
+  document.getElementById('pf-fullname').disabled = isCoupon;
+  document.getElementById('pf-dob').disabled = isCoupon;
+  document.getElementById('pf-gender').disabled = isCoupon;
+  document.getElementById('pf-profession').disabled = isCoupon;
+  
+  const saveBtn = document.querySelector('#profile-edit-form button[type="submit"]');
+  if (saveBtn) {
+    saveBtn.style.display = isCoupon ? 'none' : 'block';
+  }
+  
+  const upgradeBtn = document.getElementById('btn-pf-upgrade');
+  if (upgradeBtn) {
+    upgradeBtn.style.display = (isCoupon || state.user.plan_type === 'Premium') ? 'none' : 'block';
+  }
+  
   const overlay = document.getElementById('profile-modal-overlay');
   if (overlay) overlay.style.display = 'flex';
 }
 
 async function handleProfileSave(e) {
   e.preventDefault();
+  
+  if (state.user && state.user.is_coupon) {
+    showToast("Profile editing is disabled for coupon sessions.", "error");
+    return;
+  }
+  
   const errorEl = document.getElementById('profile-error-msg');
   if (errorEl) errorEl.style.display = 'none';
   
@@ -6047,29 +6229,32 @@ async function handleProfileSave(e) {
   }
 }
 
-function handleCouponLogin(couponCode) {
+async function handleCouponLogin(couponCode) {
   const errorEl = document.getElementById('coupon-error-msg');
   if (errorEl) errorEl.style.display = 'none';
   
-  if (couponCode.toUpperCase() === 'ARLAB_SPECIAL_ACCESS_25') {
-    const couponUser = {
-      id: 'coupon-' + Date.now(),
-      name: "Test User",
-      email: "user@test.com",
-      gender: null,
-      profession: null,
-      date_of_birth: null,
-      plan_type: "Premium",
-      is_coupon: true,
-      token: btoa(JSON.stringify({
-        email: "user@test.com",
-        name: "Test User",
-        expiry: Date.now() + 24 * 60 * 60 * 1000,
-        signature: 'AIOS-AUTHENTICATED-COUPON'
-      }))
-    };
-    sessionStorage.setItem('aios_coupon_session', JSON.stringify(couponUser));
-    state.user = couponUser;
+  const submitBtn = document.getElementById('btn-coupon-submit');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Verifying...';
+  }
+  
+  try {
+    const res = await fetch('/api/auth/coupon-login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ couponCode })
+    });
+    
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Invalid access code. Please try again.');
+    }
+    
+    sessionStorage.setItem('aios_coupon_session', JSON.stringify(data.user));
+    state.user = data.user;
     
     state.analytics.couponRedemptions++;
     state.analytics.roadmapUnlockRate = calculateUnlockRate();
@@ -6081,12 +6266,18 @@ function handleCouponLogin(couponCode) {
     regenerateActiveRoadmap();
     
     showToast("Coupon redeemed successfully! Premium access unlocked.");
-  } else {
+  } catch (err) {
+    console.error("Coupon redemption failed:", err.message);
     if (errorEl) {
-      errorEl.textContent = 'Invalid coupon code. Try entering ARLAB_SPECIAL_ACCESS_25';
+      errorEl.textContent = 'Invalid access code. Please try again.';
       errorEl.style.display = 'block';
     } else {
-      showToast('Invalid coupon code.', 'error');
+      showToast('Invalid access code. Please try again.', 'error');
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Redeem Access Code';
     }
   }
 }
@@ -6231,7 +6422,7 @@ function initBusinessSimulators() {
   }
 }
 
-function initAuthSystem() {
+async function initAuthSystem() {
   // 1. Check coupon session storage first (tab isolation)
   const couponSession = sessionStorage.getItem('aios_coupon_session');
   if (couponSession) {
@@ -6257,7 +6448,7 @@ function initAuthSystem() {
   initBusinessSimulators();
   
   // Initialize Supabase Client dynamically
-  initSupabase();
+  await initSupabase();
   
   const authCloseBtn = document.getElementById('auth-modal-close-btn');
   if (authCloseBtn) {
@@ -6278,6 +6469,10 @@ function initAuthSystem() {
   const pricingCloseBtn = document.getElementById('pricing-modal-close-btn');
   if (pricingCloseBtn) {
     pricingCloseBtn.addEventListener('click', () => {
+      if (state.onboardingPricing) {
+        showToast("Please choose a plan to continue.", "warning");
+        return;
+      }
       const pricingOverlay = document.getElementById('pricing-modal-overlay');
       if (pricingOverlay) pricingOverlay.style.display = 'none';
     });
@@ -6338,10 +6533,24 @@ function initAuthSystem() {
   }
 
   // Bind pricing modal upgrade and coupon buttons
-  const pUpgrade = document.getElementById('btn-pricing-upgrade');
-  if (pUpgrade) {
-    pUpgrade.addEventListener('click', () => {
-      handlePremiumUpgrade();
+  const pFree = document.getElementById('btn-pricing-free');
+  if (pFree) {
+    pFree.addEventListener('click', () => {
+      handleChooseFreePlan();
+    });
+  }
+
+  const pMonthly = document.getElementById('btn-pricing-monthly');
+  if (pMonthly) {
+    pMonthly.addEventListener('click', () => {
+      handlePremiumUpgrade('Premium Monthly', 99);
+    });
+  }
+
+  const pYearly = document.getElementById('btn-pricing-yearly');
+  if (pYearly) {
+    pYearly.addEventListener('click', () => {
+      handlePremiumUpgrade('Premium Yearly', 999);
     });
   }
 
@@ -6357,6 +6566,10 @@ function initAuthSystem() {
   const pCoupon = document.getElementById('btn-pricing-coupon');
   if (pCoupon) {
     pCoupon.addEventListener('click', () => {
+      if (state.onboardingPricing) {
+        showToast("Please choose a plan to continue.", "warning");
+        return;
+      }
       const pricingOverlay = document.getElementById('pricing-modal-overlay');
       if (pricingOverlay) pricingOverlay.style.display = 'none';
       const couponOverlay = document.getElementById('coupon-modal-overlay');

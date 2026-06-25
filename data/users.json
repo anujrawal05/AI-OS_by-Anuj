@@ -18,7 +18,7 @@
     "durationDays": null,
     "redeemedAt": "2026-06-25T14:48:50.592Z",
     "created": "2026-06-25T14:48:50.592Z",
-    "lastLogin": "2026-06-25T14:48:50.592Z"
+    "lastLogin": "2026-06-25T17:30:30.607Z"
   },
   {
     "name": "ANUJ",
@@ -30,14 +30,21 @@
     "lastLogin": "2026-06-25T14:48:50.612Z"
   },
   {
-    "name": "Razorpay Review Account",
-    "email": "review@arlabs.com",
-    "picture": "https://api.dicebear.com/7.x/identicon/svg?seed=review",
-    "sub": "review-razorpay",
-    "provider": "Review Email Login",
-    "subscriptionType": "Basic",
-    "lastLogin": "2026-06-25T15:44:28.386Z",
-    "tag": "RAZORPAY_REVIEW_ACCOUNT",
-    "created": "2026-06-25T15:44:28.386Z"
+    "name": "Test User",
+    "email": "user@test.com",
+    "picture": "https://api.dicebear.com/7.x/identicon/svg?seed=ARLAB_SPECIAL_ACCESS_25",
+    "sub": "coupon-arlab_special_access_25",
+    "provider": "Coupon Access",
+    "subscriptionType": "Premium",
+    "durationDays": null,
+    "redeemedAt": "2026-06-25T17:44:17.924Z",
+    "gender": "Not Available",
+    "profession": "Not Available",
+    "date_of_birth": "Not Available",
+    "account_type": "Premium Coupon User",
+    "is_coupon": true,
+    "hide_profile_editing": true,
+    "created": "2026-06-25T17:44:17.924Z",
+    "lastLogin": "2026-06-25T17:56:24.100Z"
   }
 ]

@@ -3,20 +3,10 @@ const path = require('path');
 
 // Coupon configurations
 const VALID_COUPONS = {
-  'AIOS-LIFETIME-PASS': {
-    type: 'Lifetime',
+  'ARLAB_SPECIAL_ACCESS_25': {
+    type: 'Premium',
     durationDays: null,
-    description: 'Lifetime Access'
-  },
-  'AIOS-FREE-MONTH': {
-    type: 'Monthly',
-    durationDays: 30,
-    description: '30 Days Access'
-  },
-  'AIOS-FREE-YEAR': {
-    type: 'Annual',
-    durationDays: 365,
-    description: '365 Days Access'
+    description: 'Premium Access'
   }
 };
 
@@ -58,18 +48,24 @@ function logRedemptionAndRegister(couponCode, config) {
       }
     }
 
-    const email = `coupon-guest@aios.platform`;
+    const email = 'user@test.com';
     const existingIndex = users.findIndex(u => u.email === email);
     
     const userProfile = {
-      name: 'Coupon Guest',
+      name: 'Test User',
       email: email,
       picture: `https://api.dicebear.com/7.x/identicon/svg?seed=${couponCode}`,
       sub: 'coupon-' + couponCode.toLowerCase(),
       provider: 'Coupon Access',
       subscriptionType: config.type,
       durationDays: config.durationDays,
-      redeemedAt: timestamp
+      redeemedAt: timestamp,
+      gender: 'Not Available',
+      profession: 'Not Available',
+      date_of_birth: 'Not Available',
+      account_type: 'Premium Coupon User',
+      is_coupon: true,
+      hide_profile_editing: true
     };
 
     if (existingIndex > -1) {
@@ -108,14 +104,14 @@ module.exports = async (req, res) => {
   try {
     const { couponCode } = req.body;
     if (!couponCode) {
-      return res.status(400).json({ error: 'Missing coupon code.' });
+      return res.status(400).json({ error: 'Invalid access code. Please try again.' });
     }
 
     const normalizedCode = couponCode.trim().toUpperCase();
     const couponConfig = VALID_COUPONS[normalizedCode];
 
     if (!couponConfig) {
-      return res.status(400).json({ error: 'Invalid Coupon Code. Please check the code and try again.' });
+      return res.status(400).json({ error: 'Invalid access code. Please try again.' });
     }
 
     // Save redemption
@@ -129,11 +125,13 @@ module.exports = async (req, res) => {
 
     // Create session token
     const sessionPayload = {
-      email: 'coupon-guest@aios.platform',
-      name: 'Coupon Guest',
+      email: 'user@test.com',
+      name: 'Test User',
       picture: `https://api.dicebear.com/7.x/identicon/svg?seed=${normalizedCode}`,
       subscriptionType: couponConfig.type,
-      expiry: expiryTime || Date.now() + 10 * 365 * 24 * 60 * 60 * 1000, // 10 years for lifetime
+      plan_type: 'Premium',
+      account_type: 'Premium Coupon User',
+      expiry: expiryTime || Date.now() + 10 * 365 * 24 * 60 * 60 * 1000,
       signature: 'AIOS-AUTHENTICATED-COUPON'
     };
     const sessionToken = Buffer.from(JSON.stringify(sessionPayload)).toString('base64');
@@ -141,20 +139,23 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       success: true,
       user: {
-        name: 'Coupon Guest',
-        email: 'coupon-guest@aios.platform',
+        id: 'coupon-' + normalizedCode.toLowerCase(),
+        name: 'Test User',
+        email: 'user@test.com',
         picture: `https://api.dicebear.com/7.x/identicon/svg?seed=${normalizedCode}`,
-        subscription: {
-          active: true,
-          type: `Premium (${couponConfig.type} Pass)`,
-          expiry: expiryTime ? new Date(expiryTime).toISOString() : null
-        }
-      },
-      token: sessionToken
+        gender: 'Not Available',
+        profession: 'Not Available',
+        date_of_birth: 'Not Available',
+        plan_type: 'Premium',
+        account_type: 'Premium Coupon User',
+        is_coupon: true,
+        hide_profile_editing: true,
+        token: sessionToken
+      }
     });
 
   } catch (error) {
     console.error('[Coupon Auth Endpoint Error]:', error.message);
-    return res.status(500).json({ error: 'Coupon validation failed.' });
+    return res.status(500).json({ error: 'Invalid access code. Please try again.' });
   }
 };
