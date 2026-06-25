@@ -6357,98 +6357,329 @@ function toggleBusinessSectionView() {
   const section = document.getElementById('ai-os-business-section');
   if (!section) return;
   
-  const isAuth = isUserAuthenticated();
-  if (isAuth) {
-    section.style.display = 'block';
-    const lockOverlay = document.getElementById('business-lock-overlay');
-    const panels = document.getElementById('business-dashboard-panels');
-    
-    if (state.user && state.user.plan_type === 'Premium') {
-      if (lockOverlay) lockOverlay.style.display = 'none';
-      if (panels) panels.style.filter = 'none';
-    } else {
-      if (lockOverlay) lockOverlay.style.display = 'flex';
-      if (panels) panels.style.filter = 'blur(16px)';
-    }
+  section.style.display = 'block';
+  
+  const buildLock = document.getElementById('build-premium-lock');
+  const expandLock = document.getElementById('expand-premium-lock');
+  
+  const isPremium = state.user && state.user.plan_type === 'Premium';
+  
+  if (isPremium) {
+    if (buildLock) buildLock.style.display = 'none';
+    if (expandLock) expandLock.style.display = 'none';
   } else {
-    section.style.display = 'none';
+    if (buildLock) buildLock.style.display = 'flex';
+    if (expandLock) expandLock.style.display = 'flex';
   }
 }
 
 function initBusinessSimulators() {
-  const syncLogs = document.getElementById('sync-console-logs');
-  const btnSync = document.getElementById('btn-trigger-team-sync');
-  if (btnSync && syncLogs) {
-    btnSync.addEventListener('click', () => {
-      btnSync.disabled = true;
-      syncLogs.innerHTML = '';
-      const messages = [
-        "Initializing team sync coordinator...",
-        "Agent-01 (Code Generator) status -> SYNCING",
-        "Agent-02 (Content Engine) status -> SYNCING",
-        "Database Sync Master -> CONNECTING",
-        "Pushing prompt logs...",
-        "Optimizing similarity nodes...",
-        "Agent-01 status -> COMPLETED",
-        "Agent-02 status -> COMPLETED",
-        "Database Sync Master -> UPDATED",
-        "Global Team Sync completed successfully!"
-      ];
-      
-      let delay = 0;
-      messages.forEach((msg, i) => {
-        setTimeout(() => {
-          const div = document.createElement('div');
-          div.textContent = "> " + msg;
-          syncLogs.appendChild(div);
-          syncLogs.scrollTop = syncLogs.scrollHeight;
-          
-          if (i === 1) document.getElementById('agent-01-status').textContent = 'SYNCING';
-          if (i === 2) document.getElementById('agent-02-status').textContent = 'SYNCING';
-          if (i === 3) document.getElementById('agent-db-status').textContent = 'SYNCING';
-          
-          if (i === 6) document.getElementById('agent-01-status').textContent = 'IDLE';
-          if (i === 7) document.getElementById('agent-02-status').textContent = 'IDLE';
-          if (i === 8) document.getElementById('agent-db-status').textContent = 'STANDBY';
-          
-          if (i === messages.length - 1) {
-            btnSync.disabled = false;
-          }
-        }, delay);
-        delay += 600;
-      });
+  // 1. Dashboard CTA Card Listener
+  const dbCta = document.getElementById('dashboard-business-banner');
+  if (dbCta) {
+    dbCta.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetSection = document.getElementById('ai-os-business-section');
+      if (targetSection) {
+        toggleBusinessSectionView();
+        
+        const navLinks = document.querySelectorAll('.main-nav .nav-link');
+        navLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector('.main-nav .nav-link[href="#ai-os-business-section"]');
+        if (link) link.classList.add('active');
+        
+        const offset = 72;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = targetSection.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+
+        checkFirstVisitJourney();
+      }
     });
   }
 
-  const ragLogs = document.getElementById('rag-console-output');
-  const btnRag = document.getElementById('btn-submit-rag-query');
-  const ragInput = document.getElementById('rag-query-input');
-  if (btnRag && ragLogs && ragInput) {
-    btnRag.addEventListener('click', () => {
-      const q = ragInput.value.trim();
-      if (!q) {
-        showToast("Please enter a search query.", "warning");
+  // Bind Main Menu Nav Link directly
+  const navBusLink = document.querySelector('.main-nav .nav-link[href="#ai-os-business-section"]');
+  if (navBusLink) {
+    navBusLink.addEventListener('click', () => {
+      setTimeout(checkFirstVisitJourney, 455);
+    });
+  }
+
+  // 2. Journey Popup Selection
+  function checkFirstVisitJourney() {
+    const chosen = localStorage.getItem('aios_business_journey');
+    if (!chosen) {
+      const modal = document.getElementById('journey-modal-overlay');
+      if (modal) modal.style.display = 'flex';
+    }
+  }
+
+  const journeyCards = document.querySelectorAll('.journey-option-card');
+  journeyCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const journey = card.getAttribute('data-journey');
+      localStorage.setItem('aios_business_journey', journey);
+      
+      const modal = document.getElementById('journey-modal-overlay');
+      if (modal) modal.style.display = 'none';
+
+      switchBusinessTab(journey);
+    });
+  });
+
+  // 3. Tab switching
+  const tabBtns = document.querySelectorAll('.business-tab-btn');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab');
+      switchBusinessTab(tab);
+    });
+  });
+
+  function switchBusinessTab(tabName) {
+    const btns = document.querySelectorAll('.business-tab-btn');
+    btns.forEach(b => {
+      if (b.getAttribute('data-tab') === tabName) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+
+    const panes = document.querySelectorAll('.business-tab-pane');
+    panes.forEach(p => {
+      p.classList.remove('active');
+    });
+
+    const targetPane = document.getElementById(`pane-bus-${tabName}`);
+    if (targetPane) targetPane.classList.add('active');
+  }
+
+  // 4. Hero Section CTAs
+  const btnHeroLearn = document.getElementById('btn-hero-learn');
+  if (btnHeroLearn) {
+    btnHeroLearn.addEventListener('click', () => switchBusinessTab('learn'));
+  }
+  const btnHeroBuild = document.getElementById('btn-hero-build');
+  if (btnHeroBuild) {
+    btnHeroBuild.addEventListener('click', () => switchBusinessTab('build'));
+  }
+  const btnHeroExpand = document.getElementById('btn-hero-expand');
+  if (btnHeroExpand) {
+    btnHeroExpand.addEventListener('click', () => switchBusinessTab('expand'));
+  }
+
+  const btnSkip = document.getElementById('btn-skip-basics');
+  if (btnSkip) {
+    btnSkip.addEventListener('click', () => switchBusinessTab('build'));
+  }
+
+  // 5. Collapsible Modules (Learn Business)
+  const modCards = document.querySelectorAll('.learn-module-card');
+  modCards.forEach(card => {
+    const header = card.querySelector('.learn-module-header');
+    const body = card.querySelector('.learn-module-body');
+    const arrow = card.querySelector('.learn-module-toggle-btn');
+    if (header && body && arrow) {
+      header.addEventListener('click', () => {
+        const isActive = body.classList.contains('active');
+        modCards.forEach(c => {
+          c.classList.remove('active');
+          c.querySelector('.learn-module-body').classList.remove('active');
+          c.querySelector('.learn-module-toggle-btn').textContent = '▲';
+        });
+        
+        if (!isActive) {
+          card.classList.add('active');
+          body.classList.add('active');
+          arrow.textContent = '▼';
+        }
+      });
+    }
+  });
+
+  // 6. Blueprint Compiler (Build Business)
+  const btnCompile = document.getElementById('btn-compile-blueprint');
+  const bOutput = document.getElementById('blueprint-output-contents');
+  if (btnCompile && bOutput) {
+    btnCompile.addEventListener('click', () => {
+      if (!isUserAuthenticated()) {
+        const authOverlay = document.getElementById('auth-modal-overlay');
+        if (authOverlay) authOverlay.style.display = 'flex';
+        showToast("Please login first to compile a business blueprint.", "warning");
         return;
       }
-      btnRag.disabled = true;
-      ragLogs.innerHTML = `<div>&gt; Querying RAG knowledge base similarity for: "${q}"...</div>`;
       
+      if (state.user && state.user.plan_type !== 'Premium') {
+        showPricingModal(true);
+        showToast("Upgrade to Premium to compile executable blueprints.", "warning");
+        return;
+      }
+
+      const model = document.getElementById('blueprint-model-select').value;
+      const niche = document.getElementById('blueprint-niche-select').value;
+      const budget = document.getElementById('blueprint-budget-select').value;
+
+      bOutput.innerHTML = `
+        <div style="text-align: center; padding: 40px 0;">
+          <span style="display:inline-block; animation: pulse 1.5s infinite; font-size: 2rem;">⏳</span>
+          <p style="margin-top: 10px; font-family: var(--font-mono);">COMPILING BUSINESS BLUEPRINT MATRIX...</p>
+        </div>
+      `;
+
       setTimeout(() => {
-        ragLogs.innerHTML += `<div>&gt; Retrieved 3 matched document chunks (Threshold: 0.81)</div>`;
-        ragLogs.scrollTop = ragLogs.scrollHeight;
-      }, 700);
+        let title = "AI Automation Agency Startup Guide";
+        let profit = "₹1,20,000 / month";
+        let cost = "₹0 (Bootstrapped)";
+        let overhead = "3 hours / order";
+        let roadmapSteps = [
+          "Set up digital domain & lead capture page using AI landing page generators.",
+          "Build specialized customer-support chat agent with system instructions for target niche.",
+          "Configure CRM sync integrations to forward lead logs directly to client email.",
+          "Launch cold-outreach system sending 30 AI-tailored proposals daily."
+        ];
+        let promptScript = `You are a growth consultant for a local business in the niche: "${niche}". Write a highly persuasive 3-step automation proposal demonstrating how integrating AI support agents reduces support resolution times by 75% and scales booking leads.`;
+
+        if (model === 'dropservicing') {
+          title = "High-Ticket Drop-Servicing Agency Blueprint";
+          profit = "₹95,000 / month";
+          cost = "₹0";
+          overhead = "4 hours / order";
+          roadmapSteps = [
+            "Select high-demand digital services (e.g. copywriting, graphic templates, translations).",
+            "Generate sample outputs using Midjourney/ChatGPT to showcase in your portfolio.",
+            "List services on marketplaces (Fiverr, Upwork) and run automated social outreach.",
+            "Once an order is received, generate output via AI, polish manually, and deliver."
+          ];
+          promptScript = `Write a professional client proposal for a digital design service offering 10 high-converting marketing creatives generated using Midjourney, including composition prompts.`;
+        } else if (model === 'micro-saas') {
+          title = "Niche AI Micro-SaaS Product Launch Blueprint";
+          profit = "₹2,50,000 / month";
+          cost = "₹1,200 / month";
+          overhead = "Flexible development";
+          roadmapSteps = [
+            "Identify a single repetitive task (e.g. converting transcripts to blog posts).",
+            "Build a lightweight Single Page App using AI coding assistants (Bolt.new, Cursor).",
+            "Connect OpenAI/OpenRouter API key on the backend to execute the prompt.",
+            "Integrate Stripe/Razorpay pricing buttons and share in product communities (ProductHunt, Reddit)."
+          ];
+          promptScript = `Act as a senior software architect. Provide a clean project structure and index.js boilerplates to fetch API models and process simple text-expander queries.`;
+        } else if (model === 'creator') {
+          title = "Automated Content Engine & Brand Blueprint";
+          profit = "₹1,50,000 / month";
+          cost = "₹0";
+          overhead = "3 hours / week";
+          roadmapSteps = [
+            "Use AI outline tools to research trending topics in the selected industry.",
+            "Generate video scripts and marketing hooks using tailored tone instructions.",
+            "Batch-produce vertical video content utilizing voice generators and auto-subtitles.",
+            "Drive viewers to a premium sponsor link or digital product storefront."
+          ];
+          promptScript = `Write a high-retention viral vertical video script about: "3 Secrets to scaling retail business automation using AI". Make it energetic, beginner-friendly and under 60 seconds.`;
+        }
+
+        bOutput.innerHTML = `
+          <div class="blueprint-result-header">
+            <span class="blueprint-result-badge">ACTIVE BLUEPRINT</span>
+            <h3 class="blueprint-result-title">${title}</h3>
+          </div>
+          
+          <div class="blueprint-projections-grid">
+            <div class="blueprint-proj-card">
+              <span class="blueprint-proj-val green">${profit}</span>
+              <span class="blueprint-proj-lbl">Projected Revenue</span>
+            </div>
+            <div class="blueprint-proj-card">
+              <span class="blueprint-proj-val">${cost}</span>
+              <span class="blueprint-proj-lbl">Setup Cost</span>
+            </div>
+            <div class="blueprint-proj-card">
+              <span class="blueprint-proj-val green">${overhead}</span>
+              <span class="blueprint-proj-lbl">Overhead / Time</span>
+            </div>
+          </div>
+
+          <h5 class="learn-module-section-title">Launch Roadmap Steps</h5>
+          <ol style="margin-left: 20px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+            ${roadmapSteps.map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
+          </ol>
+
+          <h5 class="learn-module-section-title">Copyable Prompt Script</h5>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.82rem; color: #fff; margin-bottom: 16px; position: relative;">
+            <p style="margin: 0; line-height: 1.4;">${promptScript}</p>
+            <button class="btn btn-secondary" onclick="navigator.clipboard.writeText(\`${promptScript.replace(/`/g, '\\`').replace(/\${/g, '\\${')}\`); showToast('Prompt copied to clipboard!');" style="margin-top: 10px; padding: 4px 8px; font-size: 0.75rem;">Copy Prompt</button>
+          </div>
+        `;
+      }, 1000);
+    });
+  }
+
+  // 7. Consulting Chatbot (Expand Business)
+  const chatInput = document.getElementById('chat-strategist-input');
+  const chatSendBtn = document.getElementById('btn-chat-strategist-send');
+  const chatLogs = document.getElementById('chat-strategist-logs');
+  if (chatInput && chatSendBtn && chatLogs) {
+    const handleSend = () => {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      if (!isUserAuthenticated()) {
+        const authOverlay = document.getElementById('auth-modal-overlay');
+        if (authOverlay) authOverlay.style.display = 'flex';
+        showToast("Please login first to consult the AI strategist.", "warning");
+        return;
+      }
       
+      if (state.user && state.user.plan_type !== 'Premium') {
+        showPricingModal(true);
+        showToast("Upgrade to Premium to consult A.R. Business Strategist.", "warning");
+        return;
+      }
+
+      const userBubble = document.createElement('div');
+      userBubble.className = 'chat-bubble user';
+      userBubble.textContent = text;
+      chatLogs.appendChild(userBubble);
+      chatInput.value = '';
+      chatLogs.scrollTop = chatLogs.scrollHeight;
+
+      const botThinking = document.createElement('div');
+      botThinking.className = 'chat-bubble bot';
+      botThinking.innerHTML = `<span>Thinking...</span>`;
+      chatLogs.appendChild(botThinking);
+      chatLogs.scrollTop = chatLogs.scrollHeight;
+
       setTimeout(() => {
-        ragLogs.innerHTML += `<div>&gt; Processing contexts through Llama-3 model...</div>`;
-        ragLogs.scrollTop = ragLogs.scrollHeight;
-      }, 1400);
-      
-      setTimeout(() => {
-        ragLogs.innerHTML += `<div style="color: #fff; margin-top: 8px;">[Answer Synthesized]: The repository executes RLS configurations on all tables. Profiles are mapped to auth.users.id, restricting write accesses to own profile.</div>`;
-        ragLogs.scrollTop = ragLogs.scrollHeight;
-        btnRag.disabled = false;
-        ragInput.value = '';
-      }, 2600);
+        botThinking.remove();
+        
+        let response = "I have analyzed your query. To optimize your business model, consider implementing high-ticket pricing models, refining your unit economics (CAC to LTV), and automating operational content engines to scale client acquisition.";
+        const lowText = text.toLowerCase();
+        
+        if (lowText.includes('traffic') || lowText.includes('visitors')) {
+          response = "To scale traffic, set up a programmatic SEO system or an automated vertical video engine to post daily content. This organic funnel consistently drives leads with ₹0 direct advertising spend.";
+        } else if (lowText.includes('conversion') || lowText.includes('convert') || lowText.includes('sales')) {
+          response = "A 2.8% conversion rate is decent. To optimize this, embed an interactive AI consultant widget directly on the landing page to answer visitor queries instantly, and run dynamic pricing tests.";
+        } else if (lowText.includes('budget') || lowText.includes('money') || lowText.includes('cost')) {
+          response = "With a limited budget, focus exclusively on drop-servicing or AI automation services. Use free tiers of automation tools (like Make.com, Supabase, Vercel) to keep fixed costs at ₹0.";
+        } else if (lowText.includes('marketing') || lowText.includes('ads') || lowText.includes('leads')) {
+          response = "For client acquisition, set up email scripts tailored dynamically to the prospects' website gaps. Offering a free 5-minute automated support demo is the highest converting lead-magnet.";
+        }
+
+        const botBubble = document.createElement('div');
+        botBubble.className = 'chat-bubble bot';
+        botBubble.innerHTML = response;
+        chatLogs.appendChild(botBubble);
+        chatLogs.scrollTop = chatLogs.scrollHeight;
+      }, 1200);
+    };
+
+    chatSendBtn.addEventListener('click', handleSend);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleSend();
     });
   }
 }
