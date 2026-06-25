@@ -13,9 +13,96 @@ app.use(express.json());
 // Serve static files from root directory
 app.use(express.static(__dirname));
 
+// Register Config Route
+const configHandler = require('./api/config');
+app.get('/api/config', configHandler);
+
+// Initialize Supabase Client
+const { createClient } = require('@supabase/supabase-js');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
+
+// Daily Prompt Limit Cache for Basic users
+const dailyPromptLimitCache = {};
+
+// Authentication Endpoints
+const googleLoginHandler = require('./api/auth/google-login');
+const couponLoginHandler = require('./api/auth/coupon-login');
+const emailLoginHandler = require('./api/auth/email-login');
+
+app.post('/api/auth/google-login', googleLoginHandler);
+app.post('/api/auth/coupon-login', couponLoginHandler);
+app.post('/api/auth/email-login', emailLoginHandler);
+
+// Helper to verify token payload
+async function verifyTokenPayload(authHeader) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  const token = authHeader.split(' ')[1];
+  
+  // 1. Try to verify as a local Coupon Token
+  try {
+    const jsonStr = Buffer.from(token, 'base64').toString('utf8');
+    const payload = JSON.parse(jsonStr);
+    if (payload.signature === 'AIOS-AUTHENTICATED-COUPON') {
+      if (payload.expiry && Date.now() > payload.expiry) {
+        return null;
+      }
+      return { isCoupon: true, email: payload.email, plan_type: payload.plan_type || 'Premium', name: payload.name };
+    }
+  } catch (err) {
+    // Fail silently and proceed to Supabase token verification
+  }
+
+  // 2. Try to verify as a Supabase JWT Token
+  if (supabase) {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      if (!error && user) {
+        // Retrieve profile database row to get plan_type
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('plan_type')
+          .eq('id', user.id)
+          .single();
+        return {
+          isCoupon: false,
+          id: user.id,
+          email: user.email,
+          plan_type: (profile && profile.plan_type) || 'Basic'
+        };
+      }
+    } catch (err) {
+      console.error('[VerifyToken] Supabase validation failed:', err.message);
+    }
+  }
+  
+  return null;
+}
+
 // Route: AI JSON Prompt Generator
 app.post('/api/prompt/generate-aios-prompt', async (req, res) => {
   try {
+    // Server-side verification
+    const authHeader = req.headers.authorization;
+    const verifiedUser = await verifyTokenPayload(authHeader);
+    if (!verifiedUser) {
+      return res.status(401).json({ error: 'Authentication required. Please log in or enter a valid coupon code to unlock AI-OS premium services.' });
+    }
+
+    // Daily Limit Enforcements for Basic user plan
+    if (verifiedUser.plan_type === 'Basic') {
+      const today = new Date().toISOString().split('T')[0];
+      const limitKey = `${verifiedUser.id || verifiedUser.email}_${today}`;
+      const count = dailyPromptLimitCache[limitKey] || 0;
+      if (count >= 5) {
+        return res.status(403).json({ error: 'Daily limit of 5 prompts reached for the Basic plan. Please upgrade to Premium for unlimited access.' });
+      }
+      dailyPromptLimitCache[limitKey] = count + 1;
+    }
+
     const { taskName, userInput } = req.body;
     
     if (!taskName) {
@@ -90,9 +177,16 @@ app.post('/api/prompt/generate-aios-prompt', async (req, res) => {
       "Create Music": {
         system_prompt: [
           "You are a Grammy-winning music producer.",
-          "Generate structured JSON for AI music generation.",
-          "Infer genre, instruments, emotion, BPM and vocal style automatically."
-        ]
+          "Generate a complete Suno AI compatible music prompt.",
+          "Understand user intent automatically.",
+          "Detect mood, genre, instruments, vocals and atmosphere.",
+          "Improve the user's idea creatively while preserving the original meaning.",
+          "Return a JSON object with a single key 'prompt' containing only one polished English prompt suitable for Suno AI.",
+          "Do not generate structured JSON fields for BPM/instruments, just output the final prompt paragraph inside the 'prompt' key."
+        ],
+        example: {
+          "prompt": "Create an emotional cinematic Hindi pop song with soft piano, atmospheric synths, deep male vocals, uplifting chorus and modern electronic production inspired by hope and ambition."
+        }
       },
       "Generate Voice Over": {
         system_prompt: [
@@ -230,9 +324,15 @@ app.post('/api/prompt/generate-aios-prompt', async (req, res) => {
       }
     }
 
+    let finalPrompt = parsedJSON;
+    if (parsedJSON && typeof parsedJSON === 'object') {
+      if (parsedJSON.prompt) finalPrompt = parsedJSON.prompt;
+      else if (parsedJSON.suno_prompt) finalPrompt = parsedJSON.suno_prompt;
+    }
+
     return res.status(200).json({
       success: true,
-      prompt: parsedJSON
+      prompt: finalPrompt
     });
 
   } catch (error) {

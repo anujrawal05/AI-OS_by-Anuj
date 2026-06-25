@@ -33,7 +33,9 @@
       "voiceover": "Generate Professional Voice Over",
       "brand": "Build a Brand Using AI",
       "personalAi": "Build a Personal AI Assistant",
-      "hardware": "Design and Prototype Hardware"
+      "hardware": "Design and Prototype Hardware",
+      "study": "Study Using AI",
+      "interview": "Crack Interview Using AI"
     },
     "langOptions": {
       "english": "English",
@@ -85,6 +87,7 @@
       "next": "➡ Continue",
       "finish": "Finish"
     },
+    "practicalGuideTitle": "Step-by-Step Practical Guide",
     "noNodes": "NO NODES COMPILED",
     "noNodesDesc": "No systems match your criteria. Expand your budget threshold or alter your goal target.",
     "reconfigure": "Re-configure Target",
@@ -244,20 +247,129 @@
       ]
     },
     "Monetize AI Skills": {
+      "title": "How to Earn Money Using AI",
       "reason": "One of the largest marketplaces for selling AI services and digital work.",
-      "quick_guide": "Create a professional portfolio, publish AI service listings and start acquiring clients."
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Step 1 - Create Fiverr Account",
+          "description": "Fiverr profile creation, professional username, profile image, bio and skill setup."
+        },
+        {
+          "title": "Step 2 - Create Your First Gig",
+          "description": "gig title, thumbnail, pricing, description and delivery time."
+        },
+        {
+          "title": "Step 3 - AI Services You Can Sell",
+          "description": "Here are the top AI services you can offer:",
+          "items": [
+            "AI Image Generation",
+            "AI Video Generation",
+            "AI Voice Over",
+            "AI Content Writing",
+            "AI Presentation Design",
+            "AI Brand Design",
+            "AI Prompt Engineering"
+          ]
+        },
+        {
+          "title": "Step 4 - Get First Client",
+          "description": "portfolio building, gig optimization, keywords, response time and reviews."
+        },
+        {
+          "title": "Step 5 - Scale Income",
+          "description": "multiple gigs, upsells and repeat clients."
+        }
+      ]
     },
     "Create Music Using AI": {
       "reason": "Industry-leading AI music generation platform.",
-      "quick_guide": "Generate a structured music prompt and create complete songs with lyrics and vocals."
+      "quick_guide": "Generate a natural English prompt and create complete songs with lyrics and vocals in Suno AI."
     },
     "Generate Professional Voice Over": {
       "reason": "High-quality multilingual AI voice synthesis.",
-      "quick_guide": "Generate a voice-over script and paste it into ElevenLabs for natural speech generation."
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Open ElevenLabs",
+          "description": "Visit the official ElevenLabs website to access the AI voice synthesis dashboard."
+        },
+        {
+          "title": "Sign In / Create Account",
+          "description": "Create a free account or log in to save your voice settings and generations."
+        },
+        {
+          "title": "Access Text to Speech",
+          "description": "Navigate to the main speech synthesis interface where you input your scripts."
+        },
+        {
+          "title": "Select a Voice",
+          "description": "Browse the extensive voice library and select a voice profile suited for your content."
+        },
+        {
+          "title": "Adjust Voice Settings",
+          "description": "Fine-tune stability, clarity, and style exaggeration parameters to customize the voice tone."
+        },
+        {
+          "title": "Input Your Script",
+          "description": "Paste or type your written script into the text area, checking for correct punctuation."
+        },
+        {
+          "title": "Generate Speech",
+          "description": "Click the generate button and wait for the AI to synthesize your text into natural audio."
+        },
+        {
+          "title": "Preview Audio",
+          "description": "Listen to the generated voice-over to ensure correct pronunciation, pacing, and tone."
+        },
+        {
+          "title": "Download File",
+          "description": "Export and download the generated MP3 or WAV audio file for use in your projects."
+        }
+      ],
+      "tips": [
+        "Use short sentences.",
+        "Add punctuation for natural pauses.",
+        "Generate multiple versions and compare."
+      ]
     },
     "Build a Brand Using AI": {
-      "reason": "AI-assisted branding, ideation and creative workflow generation.",
-      "quick_guide": "Generate brand strategy, naming ideas and visual identity prompts before creating assets."
+      "reason": "Google Labs brand creation platform that learns your Business DNA.",
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Open Pomelli",
+          "description": "Navigate to the Pomelli tool by Google Labs to kickstart your branding journey."
+        },
+        {
+          "title": "Provide Core Business Assets",
+          "description": "Upload your existing website link, logos, or initial text descriptions to serve as source material."
+        },
+        {
+          "title": "Analyze Brand Identity",
+          "description": "Allow Pomelli to analyze and learn your brand's unique colors, fonts, imagery, and voice tone."
+        },
+        {
+          "title": "Generate Business DNA",
+          "description": "Receive a comprehensive Business DNA profile outlining your brand guidelines, mission, and value proposition."
+        },
+        {
+          "title": "Create Marketing Campaigns",
+          "description": "Generate targeted marketing strategies and campaign drafts customized for your specific audience."
+        },
+        {
+          "title": "Create Brand Book",
+          "description": "Generate and review your cohesive brand book containing all visual guidelines and copy styling."
+        },
+        {
+          "title": "Draft Landing Page",
+          "description": "Generate a web layout draft and copy suggestions that align with your new brand guidelines."
+        },
+        {
+          "title": "Export Brand Assets",
+          "description": "Fine-tune the generated visual elements, logo options, and copy, and export them in high resolution."
+        }
+      ]
     },
     "Build a Personal AI Assistant": {
       "reason": "Supports autonomous multi-agent development and local execution.",
@@ -266,6 +378,108 @@
         "Install and launch the application.",
         "Paste the generated AI assistant prompt.",
         "Allow the agent to create, test and refine the assistant automatically."
+      ]
+    },
+    "Study Using AI": {
+      "reason": "Google's source-grounded research assistant that generates summaries, audio overviews, and study guides.",
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Open NotebookLM",
+          "description": "Visit Google's NotebookLM interface and log in with your account."
+        },
+        {
+          "title": "Create a Notebook",
+          "description": "Start a new project space to organize all your study sources for a specific subject."
+        },
+        {
+          "title": "Upload Study Materials",
+          "description": "Add your textbooks, PDF documents, lecture slides, or personal study notes as sources."
+        },
+        {
+          "title": "Index Sources",
+          "description": "Wait for NotebookLM to analyze and understand all your uploaded documents."
+        },
+        {
+          "title": "Query Sources",
+          "description": "Ask specific questions in natural language and receive answers grounded strictly in your uploaded materials."
+        },
+        {
+          "title": "Generate Summaries",
+          "description": "Get auto-generated, concise summaries of long chapters or complex topics."
+        },
+        {
+          "title": "Generate Study Guides",
+          "description": "Create tailored study guides, glossaries, timelines, and FAQs to test your knowledge."
+        },
+        {
+          "title": "Create Revision Notes",
+          "description": "Compile key takeaways and customized revision cards directly from your sources."
+        },
+        {
+          "title": "Listen to Audio Overviews",
+          "description": "Generate and listen to a dynamic two-host podcast conversation summarizing your materials."
+        }
+      ],
+      "tips": [
+        "Upload PDFs",
+        "Upload Notes",
+        "Upload Documents",
+        "AI Summaries",
+        "Mind Maps",
+        "Question Answering",
+        "Study Guides",
+        "Audio Overviews",
+        "Source Grounded Responses"
+      ]
+    },
+    "Crack Interview Using AI": {
+      "reason": "Interactive real-time voice mode in Google Gemini app, perfect for realistic mock interviews.",
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Open Gemini Mobile App",
+          "description": "Launch the official Google Gemini app on your Android or iOS device."
+        },
+        {
+          "title": "Start Gemini Live",
+          "description": "Tap the Live icon in the bottom-right corner to initiate the real-time voice mode."
+        },
+        {
+          "title": "Select Voice Profile",
+          "description": "Choose a conversational voice style that you find professional and easy to understand."
+        },
+        {
+          "title": "Set the Context",
+          "description": "Explain your target job role, company name, industry, and experience level to the AI."
+        },
+        {
+          "title": "Prompt Mock Interview",
+          "description": "Instruct the AI: 'Please conduct a mock interview for this role. Ask one question at a time and wait for my response.'"
+        },
+        {
+          "title": "Answer via Voice",
+          "description": "Respond aloud naturally, practice clear articulation, and pause to think when needed."
+        },
+        {
+          "title": "Get Instant Feedback",
+          "description": "At the end of the session, ask the AI to evaluate your answers, highlight gaps, and suggest better phrasing."
+        },
+        {
+          "title": "Repeat Practice Rounds",
+          "description": "Conduct multiple rounds covering behavioral, technical, and scenario-based questions."
+        },
+        {
+          "title": "Refine Communication",
+          "description": "Observe and work on your voice tone, pacing, confidence, and structure of answers."
+        }
+      ],
+      "tips": [
+        "Behavioral interview practice",
+        "Technical interview practice",
+        "HR interview simulation",
+        "Follow-up questions",
+        "Communication improvement"
       ]
     }
   }

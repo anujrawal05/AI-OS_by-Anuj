@@ -5583,7 +5583,7 @@ function removeRoadmapLock() {
   if (overlay) overlay.remove();
 }
 
-let supabaseClient = null;
+let supabase = null;
 
 // Initialize Supabase client
 async function initSupabase() {
@@ -5591,7 +5591,7 @@ async function initSupabase() {
     const res = await fetch('/api/config');
     const config = await res.json();
     if (config.supabaseUrl && config.supabaseAnonKey) {
-      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
+      supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
@@ -5601,7 +5601,7 @@ async function initSupabase() {
       console.log("Supabase client initialized successfully.");
       
       // Listen to auth state transitions
-      supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      supabase.auth.onAuthStateChange(async (event, session) => {
         console.log("Supabase Auth Event:", event);
         if (session) {
           await handleSupabaseSession(session);
@@ -5774,13 +5774,13 @@ function updateUserProfileHeader() {
 }
 
 async function handleGoogleLogin() {
-  if (!supabaseClient) {
+  if (!supabase) {
     showToast("Supabase configuration is not loaded yet.", "error");
     return;
   }
   try {
     state.analytics.loginAttempts++;
-    const { error } = await supabaseClient.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin
@@ -5795,7 +5795,7 @@ async function handleGoogleLogin() {
 async function handleSupabaseSession(session) {
   const user = session.user;
   try {
-    const { data: profile, error } = await supabaseClient
+    const { data: profile, error } = await supabase
       .from('user_profiles')
       .select('*')
       .eq('id', user.id)
@@ -5851,7 +5851,7 @@ function showOnboardingModal(user) {
 
 async function handleOnboardingSubmit(e) {
   e.preventDefault();
-  if (!supabaseClient || !onboardingUser) return;
+  if (!supabase || !onboardingUser) return;
   
   const fullName = document.getElementById('ob-fullname').value.trim();
   const dob = document.getElementById('ob-dob').value;
@@ -5882,7 +5882,7 @@ async function handleOnboardingSubmit(e) {
   }
   
   try {
-    const { error } = await supabaseClient
+    const { error } = await supabase
       .from('user_profiles')
       .insert([
         {
@@ -5904,7 +5904,7 @@ async function handleOnboardingSubmit(e) {
     const overlay = document.getElementById('onboarding-modal-overlay');
     if (overlay) overlay.style.display = 'none';
     
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       await handleSupabaseSession(session);
     }
@@ -5922,7 +5922,7 @@ function showPricingModal() {
   if (overlay) overlay.style.display = 'flex';
 }
 
-async function handlePremiumUpgrade(planName = 'Premium Monthly', amount = 99) {
+async function handlePremiumUpgrade() {
   if (!state.user) {
     showToast("Please sign in or use a coupon code to upgrade.", "warning");
     const pricingOverlay = document.getElementById('pricing-modal-overlay');
@@ -5932,87 +5932,26 @@ async function handlePremiumUpgrade(planName = 'Premium Monthly', amount = 99) {
     return;
   }
   
-  if (state.user.plan_type === 'Premium') {
-    showToast("You are already on the Premium Plan!", "info");
+  if (state.user.is_coupon) {
+    showToast("Coupon session is already on Premium!", "info");
     const pricingOverlay = document.getElementById('pricing-modal-overlay');
     if (pricingOverlay) pricingOverlay.style.display = 'none';
     return;
   }
   
-  // Load Razorpay config
-  let razorpayKey = 'rzp_test_review2026';
+  if (!supabase) return;
   try {
-    const res = await fetch('/api/config');
-    const config = await res.json();
-    if (config.razorpayKeyId) {
-      razorpayKey = config.razorpayKeyId;
-    }
-  } catch (e) {
-    console.error("Failed to fetch Razorpay config:", e);
-  }
-
-  const options = {
-    key: razorpayKey,
-    amount: amount * 100, // amount in paise
-    currency: 'INR',
-    name: 'A.R. Labs',
-    description: `AI-OS ${planName} Upgrade`,
-    image: 'https://anujrawal05.github.io/AI-OS_by-Anuj/aiso_logo.png',
-    handler: async function (response) {
-      showToast("Payment Successful! Upgrading account...", "success");
-      await completePremiumUpgradeSuccess(planName);
-    },
-    prefill: {
-      name: state.user.name || 'Test User',
-      email: state.user.email || 'user@test.com'
-    },
-    theme: {
-      color: '#7f00ff'
-    },
-    modal: {
-      ondismiss: function () {
-        showToast("Payment cancelled by user.", "warning");
-      }
-    }
-  };
-
-  try {
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  } catch (err) {
-    showToast("Failed to initialize Razorpay checkout widget: " + err.message, "error");
-  }
-}
-
-async function completePremiumUpgradeSuccess(planName) {
-  try {
-    // If review account or coupon-based temporary account, upgrade local token payload
-    if (state.user.is_coupon || state.user.tag === 'RAZORPAY_REVIEW_ACCOUNT' || state.user.email === 'review@arlabs.com') {
-      state.user.plan_type = 'Premium';
-      const payload = {
-        email: state.user.email || "review@arlabs.com",
-        name: state.user.name || "Razorpay Review Account",
-        plan_type: "Premium",
-        expiry: Date.now() + 30 * 24 * 60 * 60 * 1000,
-        signature: 'AIOS-AUTHENTICATED-COUPON',
-        tag: state.user.tag || 'RAZORPAY_REVIEW_ACCOUNT'
-      };
-      state.user.token = btoa(JSON.stringify(payload));
-      sessionStorage.setItem('aios_coupon_session', JSON.stringify(state.user));
-    } else {
-      // Regular Supabase user
-      if (!supabaseClient) return;
-      const { error } = await supabaseClient
-        .from('user_profiles')
-        .update({ plan_type: 'Premium', updated_at: new Date().toISOString() })
-        .eq('id', state.user.id);
-        
-      if (error) throw error;
+    // Simulate payment transaction success and write to db
+    const { error } = await supabase
+      .from('user_profiles')
+      .update({ plan_type: 'Premium', updated_at: new Date().toISOString() })
+      .eq('id', state.user.id);
       
-      state.user.plan_type = 'Premium';
-      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-    }
-
+    if (error) throw error;
+    
+    state.user.plan_type = 'Premium';
+    localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+    
     const pricingOverlay = document.getElementById('pricing-modal-overlay');
     if (pricingOverlay) pricingOverlay.style.display = 'none';
     
@@ -6021,12 +5960,11 @@ async function completePremiumUpgradeSuccess(planName) {
     if (window.AdManager) window.AdManager.updateAdVisibility();
     regenerateActiveRoadmap();
     
-    showToast(`Premium features (${planName}) unlocked successfully!`);
+    showToast("Premium features unlocked successfully!");
   } catch (err) {
-    showToast("Upgrade profile update failed: " + err.message, "error");
+    showToast("Upgrade failed: " + err.message, "error");
   }
 }
-
 
 function showProfileModal() {
   if (!state.user) return;
@@ -6074,9 +6012,9 @@ async function handleProfileSave(e) {
     return;
   }
   
-  if (!supabaseClient) return;
+  if (!supabase) return;
   try {
-    const { error } = await supabaseClient
+    const { error } = await supabase
       .from('user_profiles')
       .update({
         full_name: fullName,
@@ -6154,9 +6092,9 @@ function handleCouponLogin(couponCode) {
 }
 
 async function logoutUser() {
-  if (supabaseClient) {
+  if (supabase) {
     try {
-      await supabaseClient.auth.signOut();
+      await supabase.auth.signOut();
     } catch (err) {}
   }
   sessionStorage.removeItem('aios_coupon_session');
@@ -6293,66 +6231,7 @@ function initBusinessSimulators() {
   }
 }
 
-async function handleReviewerSignInSubmit(e) {
-  e.preventDefault();
-  const emailInput = document.getElementById('rev-email');
-  const passwordInput = document.getElementById('rev-password');
-  const errorEl = document.getElementById('reviewer-error-msg');
-  
-  if (errorEl) errorEl.style.display = 'none';
-  
-  const email = emailInput ? emailInput.value.trim() : '';
-  const password = passwordInput ? passwordInput.value : '';
-  
-  if (!email || !password) {
-    if (errorEl) {
-      errorEl.textContent = 'Please fill out all fields.';
-      errorEl.style.display = 'block';
-    }
-    return;
-  }
-  
-  try {
-    const res = await fetch('/api/auth/email-login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
-    
-    const data = await res.json();
-    if (!res.ok || data.error) {
-      throw new Error(data.error || 'Login failed');
-    }
-    
-    // Store in sessionStorage to isolate it
-    sessionStorage.setItem('aios_coupon_session', JSON.stringify(data.user));
-    state.user = data.user;
-    
-    hideAuthModals();
-    updateUserProfileHeader();
-    toggleBusinessSectionView();
-    if (window.AdManager) window.AdManager.updateAdVisibility();
-    regenerateActiveRoadmap();
-    
-    showToast("Welcome back, Razorpay Reviewer!");
-  } catch (err) {
-    console.error("Reviewer sign-in failed:", err.message);
-    if (errorEl) {
-      errorEl.textContent = err.message;
-      errorEl.style.display = 'block';
-    }
-  }
-}
-
 function initAuthSystem() {
-  // Bind Reviewer Login submit
-  const revForm = document.getElementById('reviewer-signin-form');
-  if (revForm) {
-    revForm.addEventListener('submit', handleReviewerSignInSubmit);
-  }
-
   // 1. Check coupon session storage first (tab isolation)
   const couponSession = sessionStorage.getItem('aios_coupon_session');
   if (couponSession) {
@@ -6459,17 +6338,10 @@ function initAuthSystem() {
   }
 
   // Bind pricing modal upgrade and coupon buttons
-  const pMonthly = document.getElementById('btn-pricing-monthly');
-  if (pMonthly) {
-    pMonthly.addEventListener('click', () => {
-      handlePremiumUpgrade('Premium Monthly', 99);
-    });
-  }
-
-  const pYearly = document.getElementById('btn-pricing-yearly');
-  if (pYearly) {
-    pYearly.addEventListener('click', () => {
-      handlePremiumUpgrade('Premium Yearly', 999);
+  const pUpgrade = document.getElementById('btn-pricing-upgrade');
+  if (pUpgrade) {
+    pUpgrade.addEventListener('click', () => {
+      handlePremiumUpgrade();
     });
   }
 

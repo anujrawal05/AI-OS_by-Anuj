@@ -1,0 +1,43 @@
+[
+  {
+    "name": "TESTER.AIOS",
+    "email": "tester.aios@gmail.com",
+    "picture": "https://api.dicebear.com/7.x/bottts/svg?seed=tester.aios@gmail.com",
+    "sub": "mock-1782388718486",
+    "provider": "Google OAuth (Simulated)",
+    "created": "2026-06-25T11:58:38.535Z",
+    "lastLogin": "2026-06-25T11:58:38.535Z"
+  },
+  {
+    "name": "Coupon Guest",
+    "email": "coupon-guest@aios.platform",
+    "picture": "https://api.dicebear.com/7.x/identicon/svg?seed=AIOS-LIFETIME-PASS",
+    "sub": "coupon-aios-lifetime-pass",
+    "provider": "Coupon Access",
+    "subscriptionType": "Lifetime",
+    "durationDays": null,
+    "redeemedAt": "2026-06-25T14:48:50.592Z",
+    "created": "2026-06-25T14:48:50.592Z",
+    "lastLogin": "2026-06-25T14:48:50.592Z"
+  },
+  {
+    "name": "ANUJ",
+    "email": "anuj@ar-labs.com",
+    "picture": "https://api.dicebear.com/7.x/bottts/svg?seed=anuj@ar-labs.com",
+    "sub": "mock-1782398930610",
+    "provider": "Google OAuth (Simulated)",
+    "created": "2026-06-25T14:48:50.612Z",
+    "lastLogin": "2026-06-25T14:48:50.612Z"
+  },
+  {
+    "name": "Razorpay Review Account",
+    "email": "review@arlabs.com",
+    "picture": "https://api.dicebear.com/7.x/identicon/svg?seed=review",
+    "sub": "review-razorpay",
+    "provider": "Review Email Login",
+    "subscriptionType": "Basic",
+    "lastLogin": "2026-06-25T15:44:28.386Z",
+    "tag": "RAZORPAY_REVIEW_ACCOUNT",
+    "created": "2026-06-25T15:44:28.386Z"
+  }
+]

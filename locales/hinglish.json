@@ -33,7 +33,9 @@
       "voiceover": "Professional Voice Over Generate Karo",
       "brand": "AI se Brand Banao",
       "personalAi": "Personal AI Assistant Banao",
-      "hardware": "Hardware Design aur Prototype Banao"
+      "hardware": "Hardware Design aur Prototype Banao",
+      "study": "Study Using AI",
+      "interview": "Crack Interview Using AI"
     },
     "langOptions": {
       "english": "English",
@@ -85,6 +87,7 @@
       "next": "➡ Continue",
       "finish": "Finish"
     },
+    "practicalGuideTitle": "Step-by-Step Practical Guide",
     "noNodes": "NO NODES COMPILED",
     "noNodesDesc": "Criteria se match karta koi system nahi mila. Budget limit badhayein ya target goal change karein.",
     "reconfigure": "Re-configure Target",
@@ -244,20 +247,129 @@
       ]
     },
     "Monetize AI Skills": {
+      "title": "AI Skills se Paise Kaise Kamayein",
       "reason": "AI services aur digital work sell karne ke liye sabse bade marketplaces me se ek.",
-      "quick_guide": "Professional portfolio banao, AI service listings publish karo aur clients acquire karna start karo."
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Step 1 - Create Fiverr Account",
+          "description": "Fiverr profile create karein, professional username, profile image, bio aur skill setup."
+        },
+        {
+          "title": "Step 2 - Create Your First Gig",
+          "description": "gig title, thumbnail, pricing, description aur delivery time specify karein."
+        },
+        {
+          "title": "Step 3 - AI Services You Can Sell",
+          "description": "Niche diye gaye top AI services offer karein:",
+          "items": [
+            "AI Image Generation",
+            "AI Video Generation",
+            "AI Voice Over",
+            "AI Content Writing",
+            "AI Presentation Design",
+            "AI Brand Design",
+            "AI Prompt Engineering"
+          ]
+        },
+        {
+          "title": "Step 4 - Get First Client",
+          "description": "portfolio building, gig optimization, keywords, quick response time aur good reviews."
+        },
+        {
+          "title": "Step 5 - Scale Income",
+          "description": "multiple gigs create karein, upsells aur repeat clients handle karein."
+        }
+      ]
     },
     "Create Music Using AI": {
       "reason": "Industry-leading AI music generation platform.",
-      "quick_guide": "Structured music prompt generate karein aur lyrics aur vocals ke sath complete songs create karein."
+      "quick_guide": "Natural English prompt generate karein aur Suno AI me lyrics aur vocals ke sath complete songs banayein."
     },
     "Generate Professional Voice Over": {
       "reason": "High-quality multilingual AI voice synthesis.",
-      "quick_guide": "Voice-over script generate karein aur natural speech generation ke liye ElevenLabs me paste karein."
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "ElevenLabs open karein",
+          "description": "AI voice synthesis dashboard access karne ke liye official ElevenLabs website par jayein."
+        },
+        {
+          "title": "Account create karein ya Sign In karein",
+          "description": "Apni voice settings aur generations ko save karne ke liye free account banayein ya log in karein."
+        },
+        {
+          "title": "Text to Speech open karein",
+          "description": "Main speech synthesis interface par jayein jahan aap apni script likhte hain."
+        },
+        {
+          "title": "Ek Voice choose karein",
+          "description": "Voice library browse karein aur apne content ke hisab se best voice profile select karein."
+        },
+        {
+          "title": "Voice settings adjust karein",
+          "description": "Voice tone ko customize karne ke liye stability, clarity, aur style parameters ko fine-tune karein."
+        },
+        {
+          "title": "Apni script input karein",
+          "description": "Apni written script ko text area me paste ya type karein aur punctuation check karein."
+        },
+        {
+          "title": "Speech generate karein",
+          "description": "Generate button par click karein aur AI ko text ko natural voice me badalne ka time dein."
+        },
+        {
+          "title": "Audio preview karein",
+          "description": "Sahi pronunciation, speed aur tone check karne ke liye generated voice-over ko sun kar check karein."
+        },
+        {
+          "title": "File download karein",
+          "description": "Apne projects me use karne ke liye final MP3 ya WAV audio file download karein."
+        }
+      ],
+      "tips": [
+        "Chote sentences use karein.",
+        "Natural pauses ke liye punctuation add karein.",
+        "Multiple versions generate karke compare karein."
+      ]
     },
     "Build a Brand Using AI": {
-      "reason": "AI-assisted branding, ideation aur creative workflow generation.",
-      "quick_guide": "Assets create karne se pehle brand strategy, naming ideas aur visual identity prompts generate karein."
+      "reason": "Google Labs ka brand creation platform jo aapka Business DNA learn karta hai.",
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Pomelli open karein",
+          "description": "Apni branding journey start karne ke liye Google Labs ke Pomelli tool par jayein."
+        },
+        {
+          "title": "Business Assets provide karein",
+          "description": "Source material ke roop me use karne ke liye apni existing website link, logos, ya text descriptions upload karein."
+        },
+        {
+          "title": "Brand Identity analyze karein",
+          "description": "Pomelli ko colors, fonts, images aur tone seekhne aur analyze karne dein."
+        },
+        {
+          "title": "Business DNA generate karein",
+          "description": "Ek comprehensive Business DNA profile receive karein jisme brand guidelines aur mission statements hon."
+        },
+        {
+          "title": "Marketing Campaigns create karein",
+          "description": "Apne specific target audience ke liye customized marketing campaigns aur strategies generate karein."
+        },
+        {
+          "title": "Brand Book generate karein",
+          "description": "Apne visual guidelines aur copy styling ke sath cohesive brand book create aur review karein."
+        },
+        {
+          "title": "Landing Page draft karein",
+          "description": "Naye brand guidelines ke sath match hone wala website draft aur landing page layout generate karein."
+        },
+        {
+          "title": "Brand Assets export karein",
+          "description": "Generated visual elements aur logos ko final touch dein aur high quality me export karein."
+        }
+      ]
     },
     "Build a Personal AI Assistant": {
       "reason": "Autonomous multi-agent development aur local execution support karta hai.",
@@ -266,6 +378,108 @@
         "Application install aur launch karein.",
         "Generated AI assistant prompt paste karein.",
         "Agent ko assistant automatically create, test aur refine karne dein."
+      ]
+    },
+    "Study Using AI": {
+      "reason": "Google ka source-grounded research assistant jo summaries, audio overviews aur study guides generate karta hai.",
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "NotebookLM open karein",
+          "description": "Google ke NotebookLM web dashboard par jayein aur Gmail account se login karein."
+        },
+        {
+          "title": "Notebook create karein",
+          "description": "Kisi specific subject ke study sources ko organize karne ke liye ek naya workspace notebook banayein."
+        },
+        {
+          "title": "Study Material upload karein",
+          "description": "Apne textbooks, PDFs, lecture slides ya personal class notes ko sources ke roop me add karein."
+        },
+        {
+          "title": "Sources index hone dein",
+          "description": "NotebookLM ko aapke uploaded materials ko deeply understand aur index karne ke liye 1 minute dein."
+        },
+        {
+          "title": "Naturally sawal poochein",
+          "description": "Apne sources se related koi bhi question poochein, AI strictly aapke uploaded content se hi answer dega."
+        },
+        {
+          "title": "Summaries generate karein",
+          "description": "Bade chapters ya complex theories ke auto-generated short summaries aur bullet points read karein."
+        },
+        {
+          "title": "Study Guides aur FAQs banayein",
+          "description": "Exam prep ke liye quick study guides, word lists, aur practice questions create karein."
+        },
+        {
+          "title": "Revision Notes compile karein",
+          "description": "Subject revision ke liye main concepts aur definitions ko note cards me save karein."
+        },
+        {
+          "title": "Audio Overviews sunein",
+          "description": "Revision ke liye pure notebook material ka interactive two-host AI audio podcast generate karke sunein."
+        }
+      ],
+      "tips": [
+        "Upload PDFs",
+        "Upload Notes",
+        "Upload Documents",
+        "AI Summaries",
+        "Mind Maps",
+        "Question Answering",
+        "Study Guides",
+        "Audio Overviews",
+        "Source Grounded Responses"
+      ]
+    },
+    "Crack Interview Using AI": {
+      "reason": "Google Gemini mobile app ka interactive real-time voice mode mock interview ke liye perfect hai.",
+      "remove_prompt_generation": true,
+      "steps": [
+        {
+          "title": "Gemini Mobile App open karein",
+          "description": "Apne Android ya iOS device par official Google Gemini app launch karein."
+        },
+        {
+          "title": "Gemini Live start karein",
+          "description": "Real-time voice conversation mode active karne ke liye bottom-right side me click karein."
+        },
+        {
+          "title": "Voice Profile select karein",
+          "description": "Ek continuous conversational voice choose karein jiske sath aap talk karne me comfortable hon."
+        },
+        {
+          "title": "Context set karein",
+          "description": "AI ko batayein ki aap kis company, position aur experience level ke liye prep kar rahe hain."
+        },
+        {
+          "title": "Mock Interview prompt karein",
+          "description": "AI ko kahein: 'Is job ke liye mera mock interview lo. Ek baar me sirf ek question poochna aur mere answer ka wait karna.'"
+        },
+        {
+          "title": "Voice se answer karein",
+          "description": "Questions ke answers continuous voice me dein, words ko clear pronounce karein aur professional language maintain karein."
+        },
+        {
+          "title": "Instant Feedback lein",
+          "description": "Mock complete hone ke baad AI se apne answers ka standard review, weak points aur improvements poochein."
+        },
+        {
+          "title": "Multiple Rounds practice karein",
+          "description": "Alag-alag scenarios, technical questions aur behavioral questions ke liye test rounds bar-bar repeat karein."
+        },
+        {
+          "title": "Communication level boost karein",
+          "description": "Practice ke sath apni voice depth, pronunciation, presentation speed aur answers structure improve karein."
+        }
+      ],
+      "tips": [
+        "Behavioral interview practice",
+        "Technical interview practice",
+        "HR interview simulation",
+        "Follow-up questions",
+        "Communication improvement"
       ]
     }
   }

@@ -31,6 +31,9 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=3.4">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     window.myErrors = [];
     window.onerror = function (message, source, lineno, colno, error) {
@@ -70,11 +73,13 @@
           <a href="#roadmap-builder-section" class="nav-link" data-target="roadmap-builder-section" data-i18n="nav.roadmaps">Roadmaps</a>
           <a href="#explore-library-section" class="nav-link" data-target="explore-library-section" data-i18n="nav.explore">Explore Tools</a>
           <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section" data-i18n="nav.categories">Categories</a>
+          <a href="#ai-os-business-section" class="nav-link" data-target="ai-os-business-section">AI-OS Business</a>
           <a href="#about-section" class="nav-link" data-target="about-section" data-i18n="nav.about">About</a>
           <a href="./ar-labs/" class="nav-link" data-target="ar-labs" data-i18n="nav.more">More from A.R. Labs</a>
         </nav>
 
         <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+          <button id="btn-upgrade-premium-cta" class="premium-cta-btn" style="display: none;">Upgrade To Premium</button>
           <button id="theme-toggle" aria-label="Toggle monochrome theme">
             <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="5"></circle>
@@ -92,6 +97,9 @@
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
+          
+          <!-- User Profile Header Dropdown -->
+          <div id="user-profile-header" class="user-profile-header"></div>
         </div>
 
         <button class="hamburger-toggle" id="hamburger-toggle" aria-label="Toggle menu">
@@ -176,6 +184,8 @@
                     <option value="Brand Building" data-i18n="dashboard.tasks.brand">Build a Brand Using AI</option>
                     <option value="Personal AI Building" data-i18n="dashboard.tasks.personalAi">Build a Personal AI Assistant</option>
                     <option value="Hardware Building" data-i18n="dashboard.tasks.hardware">Design and Prototype Hardware</option>
+                    <option value="Study Using AI" data-i18n="dashboard.tasks.study">Study Using AI</option>
+                    <option value="Crack Interview Using AI" data-i18n="dashboard.tasks.interview">Crack Interview Using AI</option>
                   </select>
                 </div>
               </div>
@@ -246,11 +256,11 @@
           <div class="section-header">
             <div class="section-kicker" data-i18n="roadmap.title">WORKFLOW PROTOCOLS</div>
             <h2 class="section-title" data-i18n="roadmap.subtitle">Roadmap Builder</h2>
-            <p class="section-subtitle">Inspect the custom-compiled timeline. Filter nodes dynamically by system layer.
+            <p class="section-subtitle" style="display: none;">Inspect the custom-compiled timeline. Filter nodes dynamically by system layer.
             </p>
 
             <!-- Timeline category filters -->
-            <div class="timeline-filter-wrap">
+            <div class="timeline-filter-wrap" style="display: none;">
               <nav class="filter-nav">
                 <button class="filter-btn active" data-filter="all" data-i18n="roadmap.filters.all">All Layers</button>
                 <button class="filter-btn" data-filter="creation" data-i18n="roadmap.filters.creation">Creation</button>
@@ -489,6 +499,85 @@
                 <!-- Matched nodes will render here -->
               </div>
             </main>
+          </div>
+        </section>
+
+        <!-- Section: AI-OS Business Section -->
+        <section id="ai-os-business-section" class="app-section" style="display: none;">
+          <div class="section-header">
+            <div class="section-kicker">ENTERPRISE MATRIX</div>
+            <h2 class="section-title">AI-OS Business</h2>
+            <p class="section-subtitle">AI-OS Business Powered by A.R. Labs. Automated Team Sync and RAG pipeline controls.</p>
+          </div>
+
+          <div class="business-dashboard-container" style="position: relative; margin-top: 30px;">
+            <!-- Lock Overlay if Basic/Guest -->
+            <div id="business-lock-overlay" class="roadmap-lock-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); border-radius: 20px; z-index: 10; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+              <div class="auth-modal-icon" style="font-size: 3rem; margin-bottom: 20px; animation: authIconPulse 2s infinite alternate;">🔒</div>
+              <h3 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--text-primary); margin-bottom: 10px;">AI-OS Business Premium Preview</h3>
+              <p style="color: var(--text-secondary); max-width: 450px; margin-bottom: 24px; font-size: 0.95rem;">Unlock real-time automated team sync coordinator and enterprise RAG semantic search pipelines by upgrading to Premium.</p>
+              <button class="btn btn-primary" onclick="showPricingModal()">Upgrade to Premium</button>
+            </div>
+
+            <!-- Dashboard Panels -->
+            <div id="business-dashboard-panels" class="business-dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+              
+              <!-- Panel 1: Team Sync Coordinator -->
+              <div class="glass-card business-card" style="padding: 24px; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.01);">
+                <div class="card-header-with-status" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                  <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.25rem;">🔄 Team Sync Coordinator</h3>
+                  <span class="status-indicator-active" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-family: var(--font-mono); border: 1px solid rgba(46, 204, 113, 0.3);">CONNECTED</span>
+                </div>
+                
+                <div class="agent-sync-statuses" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; text-align: left;">
+                  <div class="agent-sync-row" style="display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Agent-01 (Code Generator)</span>
+                    <span id="agent-01-status" style="color: #bbb; font-family: var(--font-mono);">IDLE</span>
+                  </div>
+                  <div class="agent-sync-row" style="display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Agent-02 (Content Engine)</span>
+                    <span id="agent-02-status" style="color: #bbb; font-family: var(--font-mono);">IDLE</span>
+                  </div>
+                  <div class="agent-sync-row" style="display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Database Sync Master</span>
+                    <span id="agent-db-status" style="color: #bbb; font-family: var(--font-mono);">STANDBY</span>
+                  </div>
+                </div>
+
+                <div class="sync-console-output" style="background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.8rem; padding: 12px; height: 120px; overflow-y: auto; text-align: left; color: #39ff14; margin-bottom: 20px; line-height: 1.4;">
+                  <div id="sync-console-logs">&gt; Sync coordinator ready. Press sync to initialize simulation.</div>
+                </div>
+
+                <button id="btn-trigger-team-sync" class="btn btn-primary" style="width: 100%;">Trigger Global Team Sync</button>
+              </div>
+
+              <!-- Panel 2: Enterprise RAG Connection -->
+              <div class="glass-card business-card" style="padding: 24px; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.01);">
+                <div class="card-header-with-status" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                  <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.25rem;">📚 RAG Pipeline Center</h3>
+                  <span style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-family: var(--font-mono); border: 1px solid rgba(46, 204, 113, 0.3);">DB ACTIVE</span>
+                </div>
+
+                <div class="rag-form-fields" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; text-align: left;">
+                  <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Vector Database Status</label>
+                    <input type="text" readonly value="Supabase pgvector connection active" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: #888; font-size: 0.85rem; font-family: var(--font-mono);">
+                  </div>
+                  <div>
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Submit Query to RAG Knowledge Base</label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" id="rag-query-input" placeholder="e.g. corporate security rules..." style="flex: 1; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff; font-size: 0.85rem;">
+                      <button id="btn-submit-rag-query" class="btn btn-secondary" style="padding: 0 12px; border-radius: 6px;">Query</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sync-console-output" style="background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.8rem; padding: 12px; height: 120px; overflow-y: auto; text-align: left; color: #00ffff; margin-bottom: 0; line-height: 1.4;">
+                  <div id="rag-console-output">&gt; Awaiting query string. Input a search prompt above.</div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </section>
 
@@ -791,6 +880,261 @@
       <div class="drawer-body" id="legal-modal-body" style="overflow-y: auto; text-align: left; padding-right: 8px;">
         <!-- Dynamically loaded corporate legalese -->
       </div>
+    </div>
+  </div>
+
+  <!-- Auth Overlay / Modal -->
+  <div id="auth-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card">
+      <button id="auth-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon">🔒</div>
+      <h3 id="auth-modal-title">Unlock Your Complete AI Roadmap</h3>
+      <p id="auth-modal-subtitle">Login to access the complete roadmap, tool recommendations and guided workflow.</p>
+      
+      <div class="auth-modal-methods">
+        <!-- Google Sign-in Button -->
+        <button id="btn-auth-google" class="btn btn-google" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+          <svg class="google-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="auth-divider" style="margin: 16px 0; text-align: center; font-size: 0.8rem; color: var(--text-secondary); position: relative; font-family: var(--font-mono);">
+          <span style="background: #111; padding: 0 8px; position: relative; z-index: 1;">OR</span>
+          <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-color); z-index: 0;"></div>
+        </div>
+
+        <button id="btn-auth-coupon-trigger" class="btn btn-secondary btn-full-width" style="width: 100%;">
+          🎫 Use Coupon Code
+        </button>
+
+        <div class="auth-divider" style="margin: 16px 0; text-align: center; font-size: 0.8rem; color: var(--text-secondary); position: relative; font-family: var(--font-mono);">
+          <span style="background: #111; padding: 0 8px; position: relative; z-index: 1;">REVIEWER SIGN IN</span>
+          <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-color); z-index: 0;"></div>
+        </div>
+
+        <form id="reviewer-signin-form" style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 10px;">
+          <div class="form-group">
+            <label style="display: block; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-secondary);">Email Address</label>
+            <input type="email" id="rev-email" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;" placeholder="review@arlabs.com" value="review@arlabs.com">
+          </div>
+          <div class="form-group">
+            <label style="display: block; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-secondary);">Password</label>
+            <input type="password" id="rev-password" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;" placeholder="••••••••" value="Review@12345">
+          </div>
+          <div id="reviewer-error-msg" style="display: none; color: #ff4a4a; font-size: 0.8rem; margin-top: 4px; font-weight: 500;"></div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600; justify-content: center; background: linear-gradient(135deg, #7f00ff, #ff007f); border: none; box-shadow: 0 0 10px rgba(127,0,255,0.3);">Sign In as Reviewer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coupon Code Modal -->
+  <div id="coupon-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card">
+      <button id="coupon-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon">🎫</div>
+      <h3>Redeem Access Coupon</h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Enter your coupon code below to unlock premium access.</p>
+      
+      <div class="coupon-form-group" style="text-align: left;">
+        <input type="text" id="coupon-input" class="coupon-input" placeholder="e.g., AIOS-LIFETIME-PASS" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff; font-size: 1rem; font-family: var(--font-mono); text-transform: uppercase;" autocomplete="off" />
+        <div id="coupon-error-msg" class="coupon-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+        <button id="btn-coupon-submit" class="btn btn-primary btn-full-width" style="margin-top: 20px; width: 100%; padding: 12px; font-weight: 600;">
+          Redeem Access Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Modal -->
+  <div id="onboarding-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card" style="max-width: 550px; width: 95%;">
+      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px;">Complete Your Profile</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">Welcome to AI-OS! Please complete your registration onboarding to proceed.</p>
+      
+      <form id="onboarding-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Full Name *</label>
+          <input type="text" id="ob-fullname" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;" placeholder="e.g. John Doe">
+        </div>
+        
+        <div class="form-row" style="display: flex; gap: 12px;">
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Date of Birth *</label>
+            <input type="date" id="ob-dob" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;">
+          </div>
+          
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Gender *</label>
+            <select id="ob-gender" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Profession *</label>
+          <select id="ob-profession" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+            <option value="">Select Profession</option>
+            <option value="Student">Student</option>
+            <option value="Job">Job</option>
+            <option value="Intern">Intern</option>
+            <option value="Unemployed">Unemployed</option>
+            <option value="Homemaker">Homemaker</option>
+            <option value="Business">Business</option>
+            <option value="Startup">Startup</option>
+          </select>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 0.85rem;">
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="ob-cb-terms" required style="margin-top: 3px;">
+            <span>I have read the <a href="#" class="legal-trigger" data-legal="terms" style="color: var(--accent-color); text-decoration: underline;">Terms & Conditions</a> *</span>
+          </label>
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="ob-cb-privacy" required style="margin-top: 3px;">
+            <span>I acknowledge the <a href="#" class="legal-trigger" data-legal="privacy" style="color: var(--accent-color); text-decoration: underline;">Privacy Policy</a> *</span>
+          </label>
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="ob-cb-survey" required style="margin-top: 3px;">
+            <span>I consent to sharing these details for future A.R. Labs surveys *</span>
+          </label>
+        </div>
+        
+        <div id="onboarding-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; font-weight: 500; margin-top: 8px;"></div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px; font-weight: 600;">Complete Registration</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pricing Modal -->
+  <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card" style="max-width: 650px; width: 90%;">
+      <button id="pricing-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon" style="animation: authIconPulse 2s infinite alternate;">⭐</div>
+      <h3 style="font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 8px;">Choose Your Plan</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">Unlock the full power of AI-OS for personal and professional execution.</p>
+      
+      <div class="pricing-comparison-table-wrapper" style="overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.01); margin-bottom: 20px;">
+        <table class="pricing-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
+              <th style="padding: 16px;">Features</th>
+              <th style="padding: 16px; text-align: center; color: var(--text-secondary);">Basic<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹0</span></th>
+              <th style="padding: 16px; text-align: center; color: var(--accent-color);">Premium<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹99/mo</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">JSON Prompts / Day</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">5 Prompts</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">⚡ Unlimited</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">Explore AI Roadmap</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">10 Steps Only</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">✨ Full 40 Steps</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">AI-OS Business Dashboard</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">Preview Only</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">💼 Full Access</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">Platform Advertisements</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">Standard Ads</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">🛡️ Non-intrusive Only</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 16px; font-weight: 500;">Price (Yearly Option)</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">-</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">₹999/yr (Save 15%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; width: 100%;">
+        <button id="btn-pricing-monthly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #7f00ff, #ff007f); border: none; box-shadow: 0 0 10px rgba(127,0,255,0.3);">Subscribe Monthly (₹99)</button>
+        <button id="btn-pricing-yearly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #00c6ff, #0072ff); border: none; box-shadow: 0 0 10px rgba(0,198,255,0.3);">Subscribe Yearly (₹999)</button>
+        <button id="btn-pricing-coupon" class="btn btn-secondary" style="flex: 1; min-width: 150px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px;">Redeem Coupon</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card" style="max-width: 500px; width: 95%;">
+      <button id="profile-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon">👤</div>
+      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px;">My Profile</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">View and edit your profile settings.</p>
+      
+      <form id="profile-edit-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Email Address</label>
+          <input type="email" id="pf-email" readonly style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.15); color: #888; cursor: not-allowed; font-family: var(--font-mono);">
+        </div>
+        
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Full Name *</label>
+          <input type="text" id="pf-fullname" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;">
+        </div>
+        
+        <div class="form-row" style="display: flex; gap: 12px;">
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Date of Birth</label>
+            <input type="date" id="pf-dob" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;">
+          </div>
+          
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Gender</label>
+            <select id="pf-gender" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Profession</label>
+          <select id="pf-profession" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+            <option value="">Select Profession</option>
+            <option value="Student">Student</option>
+            <option value="Job">Job</option>
+            <option value="Intern">Intern</option>
+            <option value="Unemployed">Unemployed</option>
+            <option value="Homemaker">Homemaker</option>
+            <option value="Business">Business</option>
+            <option value="Startup">Startup</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Plan Type</label>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.01);">
+            <span id="pf-plan-display" style="font-weight: 600; color: var(--accent-color);">Basic</span>
+            <button type="button" id="btn-pf-upgrade" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 4px;">Upgrade</button>
+          </div>
+        </div>
+        
+        <div id="profile-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; font-weight: 500; margin-top: 8px;"></div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600; margin-top: 10px;">Save Changes</button>
+      </form>
     </div>
   </div>
 

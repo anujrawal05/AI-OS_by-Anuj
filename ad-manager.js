@@ -422,27 +422,86 @@
     }
   }
 
+  function isUserPremium() {
+    // 1. Check coupon session
+    const couponSession = sessionStorage.getItem('aios_coupon_session');
+    if (couponSession) return true;
+    
+    // 2. Check cached profile in localStorage
+    const cachedProfile = localStorage.getItem('aios_user_profile');
+    if (cachedProfile) {
+      try {
+        const u = JSON.parse(cachedProfile);
+        if (u && u.plan_type === 'Premium') return true;
+      } catch (e) {}
+    }
+    
+    // 3. Check global state
+    if (window.state && window.state.user && window.state.user.plan_type === 'Premium') {
+      return true;
+    }
+    
+    return false;
+  }
+
   // Define public API
   window.AdManager = {
     init: function () {
       isMobileLayout = window.innerWidth < 1200;
-      if (isMobileLayout) {
-        initMobilePlacements();
-      } else {
-        initDesktopPlacements();
-      }
+      window.AdManager.updateAdVisibility();
 
       window.addEventListener('resize', () => {
-        requestAnimationFrame(handleLayoutUpdate);
+        if (!isUserPremium()) {
+          requestAnimationFrame(handleLayoutUpdate);
+        }
       });
+    },
+
+    updateAdVisibility: function () {
+      if (isUserPremium()) {
+        clearAllPlacements();
+        const adSlots = [
+          'new-ad-left-sidebar', 'new-ad-right-sidebar', 'new-ad-sticky-bottom', 
+          'new-ad-category-leaderboard', 'new-ad-explore-leaderboard'
+        ];
+        adSlots.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = 'none';
+        });
+      } else {
+        const adSlots = [
+          'new-ad-left-sidebar', 'new-ad-right-sidebar', 'new-ad-sticky-bottom', 
+          'new-ad-category-leaderboard', 'new-ad-explore-leaderboard'
+        ];
+        adSlots.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = 'block';
+        });
+        clearAllPlacements();
+        if (isMobileLayout) {
+          initMobilePlacements();
+        } else {
+          initDesktopPlacements();
+        }
+      }
     },
 
     // Expose helpers for dynamic code-level injections inside grids/lists
     createInlineAdCard: function (codeName) {
+      if (isUserPremium()) {
+        const empty = document.createElement('div');
+        empty.style.display = 'none';
+        return empty;
+      }
       return createAdCardElement(codeName);
     },
 
     registerLazyLoad: function (container, codeName) {
+      if (isUserPremium()) {
+        container.innerHTML = '';
+        container.style.display = 'none';
+        return;
+      }
       registerLazyLoad(container, codeName);
     }
   };
