@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-OS Business Hub | Powered by A.R. Labs</title>
+  <meta name="description" content="Build, Grow & Scale Businesses Using AI. Go from absolute beginner to automation workflows. Powered by A.R. Labs.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=3.5">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content-wrapper active" id="main-content-wrapper">
+
+    <!-- Header / Navigation -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="logo">
+          <span class="logo-symbol">●</span>
+          <div class="logo-text-group">
+            <span class="logo-text">AI-OS</span>
+            <span class="logo-subtitle">Powered by A.R. Labs</span>
+          </div>
+        </div>
+
+        <nav class="main-nav">
+          <a href="index.html#dashboard-controls" class="nav-link">Dashboard</a>
+          <a href="index.html#roadmap-builder-section" class="nav-link">Roadmaps</a>
+          <a href="index.html#explore-library-section" class="nav-link">Explore Tools</a>
+          <a href="index.html#category-explorer-section" class="nav-link">Categories</a>
+          <a href="./aios_buisness.html" class="nav-btn-business active" id="nav-business-btn">AI-OS Business</a>
+          <a href="index.html#about-section" class="nav-link">About</a>
+          <a href="./ar-labs/" class="nav-link">More from A.R. Labs</a>
+        </nav>
+
+        <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+          <button id="btn-upgrade-premium-cta" class="premium-cta-btn" style="display: none;">Upgrade To Premium</button>
+          <button id="theme-toggle" aria-label="Toggle theme" style="display: none;"></button>
+          
+          <!-- User Profile Header Dropdown -->
+          <div id="user-profile-header" class="user-profile-header"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-layout-wrapper" style="margin-top: 100px;">
+      <!-- Left Sticky Sidebar -->
+      <aside class="sidebar-ad sidebar-ad-left" aria-label="Advertisements">
+        <div id="new-ad-left-sidebar" style="width: 100%;"></div>
+      </aside>
+
+      <main class="app-main-content">
+        
+        <!-- Section: AI-OS Business Section -->
+        <section id="ai-os-business-section" class="app-section">
+          <!-- Hero Section -->
+          <div class="business-hero-area">
+            <div class="banner-badge" style="letter-spacing: 0.25em;">✦ ENTERPRISE PLATFORM</div>
+            <h1 class="business-hero-title">Build, Grow & Scale <br><span>Businesses Using AI</span></h1>
+            <p class="business-hero-subtitle">From complete beginner to business owner. Learn, launch, and expand businesses with practical AI-powered systems.</p>
+            
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-primary" id="btn-hero-learn">Start Learning</button>
+              <button class="btn btn-secondary" id="btn-hero-build">Build a Business</button>
+              <button class="btn btn-secondary" id="btn-hero-expand" style="border-color: var(--color-bus-gold); color: var(--color-bus-gold);">Grow My Business</button>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="business-stats-grid">
+              <div class="business-stat-card">
+                <span class="business-stat-val gold">10K+</span>
+                <span class="business-stat-lbl">Active Entrepreneurs</span>
+              </div>
+              <div class="business-stat-card">
+                <span class="business-stat-val accent">100+</span>
+                <span class="business-stat-lbl">AI Business Tools</span>
+              </div>
+              <div class="business-stat-card">
+                <span class="business-stat-val">500+</span>
+                <span class="business-stat-lbl">Premium Templates</span>
+              </div>
+              <div class="business-stat-card">
+                <span class="business-stat-val accent">24/7</span>
+                <span class="business-stat-lbl">AI Business Support</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs Navigation -->
+          <div class="business-tabs-bar">
+            <button class="business-tab-btn active" data-tab="learn">Learn Business</button>
+            <button class="business-tab-btn" data-tab="build">Build Business</button>
+            <button class="business-tab-btn" data-tab="expand">Expand Business</button>
+          </div>
+
+          <!-- Tab Contents Wrapper -->
+          <div class="business-dashboard-container" style="margin-top: 20px;">
+            
+            <!-- Pane 1: Learn Business -->
+            <div class="business-tab-pane active" id="pane-bus-learn">
+              <div class="learn-intro-banner">
+                <div class="learn-intro-text">
+                  <h3>Complete Business Fundamentals</h3>
+                  <p>Skip the academic fluff. Learn real business unit economics, margins, cash flow, and marketing systems made simple enough that an 8th-pass individual can execute them.</p>
+                </div>
+                <button class="btn btn-secondary" id="btn-skip-basics" style="flex-shrink: 0; font-size: 0.8rem;">Skip Basics & Jump to AI Business →</button>
+              </div>
+
+              <div class="learn-modules-grid">
+                <!-- Module 1 -->
+                <div class="learn-module-card active" id="mod-1">
+                  <div class="learn-module-header">
+                    <div class="learn-module-title-group">
+                      <span class="learn-module-meta">Module 1</span>
+                      <h4>Business Fundamentals (The Engine)</h4>
+                    </div>
+                    <span class="learn-module-toggle-btn">▼</span>
+                  </div>
+                  <div class="learn-module-body active">
+                    <h5 class="learn-module-section-title">Concept Overview</h5>
+                    <p class="learn-module-text">Every business is simply a machine that exchanges value for money. To succeed, you must understand three numbers: <strong>Cost of Acquisition (CAC)</strong> (how much you pay to get a customer), <strong>Lifetime Value (LTV)</strong> (how much money they pay you over time), and <strong>Unit Economics</strong> (profit margin per sale).</p>
+                    
+                    <div class="learn-case-study">
+                      <h5>Case Study: Unit Economics Analysis</h5>
+                      <p class="learn-module-text" style="margin: 0; font-style: italic;">Consider a custom merchandise store. Selling a t-shirt for ₹999. Manufacture costs ₹350, shipping costs ₹100, and marketing costs ₹250 to get one order. Margins = ₹999 - (350+100+250) = ₹299 profit. If your margin is too small or negative, your business will fail regardless of how much AI you use.</p>
+                    </div>
+
+                    <h5 class="learn-module-section-title">Practical Checklist</h5>
+                    <ul class="learn-checklist-list">
+                      <li>Calculate LTV and CAC before starting any business model.</li>
+                      <li>Aim for a minimum LTV to CAC ratio of 3:1.</li>
+                      <li>Design a recurring revenue model to reduce continuous acquisition costs.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="learn-module-card" id="mod-2">
+                  <div class="learn-module-header">
+                    <div class="learn-module-title-group">
+                      <span class="learn-module-meta">Module 2</span>
+                      <h4>The Core AI Toolkit (Leverage)</h4>
+                    </div>
+                    <span class="learn-module-toggle-btn">▲</span>
+                  </div>
+                  <div class="learn-module-body">
+                    <h5 class="learn-module-section-title">Using AI as Leverage</h5>
+                    <p class="learn-module-text">AI is not a business by itself; it is a force multiplier. Instead of hiring employees, use LLMs (like Llama-3, GPT-4) to automate content calendars, write marketing copy, handle support tickets, and build custom website elements instantly. This reduces overhead to virtually ₹0.</p>
+                    
+                    <h5 class="learn-module-section-title">Practical Checklist</h5>
+                    <ul class="learn-checklist-list">
+                      <li>Build automated social media generation funnels.</li>
+                      <li>Use voice-synthesis AI to produce advertising videos.</li>
+                      <li>Deploy AI chatbots for instantaneous 24/7 lead capture.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="learn-module-card" id="mod-3">
+                  <div class="learn-module-header">
+                    <div class="learn-module-title-group">
+                      <span class="learn-module-meta">Module 3</span>
+                      <h4>Modern Income Models (Monetizing)</h4>
+                    </div>
+                    <span class="learn-module-toggle-btn">▲</span>
+                  </div>
+                  <div class="learn-module-body">
+                    <h5 class="learn-module-section-title">Sustainable Business Models</h5>
+                    <p class="learn-module-text">Four highly accessible models for beginners include:
+                      <br>1. <strong>AI Automation Agency (AAA)</strong>: Build chatbots and automated funnels for local businesses.
+                      <br>2. <strong>Drop-Servicing</strong>: Sell digital designs/writing to clients, and generate them using high-end AI.
+                      <br>3. <strong>SaaS Micro-business</strong>: Build single-purpose utility web-apps using AI code engines and monetize via subscriptions.
+                    </p>
+                    
+                    <h5 class="learn-module-section-title">Practical Checklist</h5>
+                    <li>Identify 3 target local businesses currently lacking website automation.</li>
+                    <li>Assemble a portfolio of AI-generated digital designs in under 1 hour.</li>
+                    <li>Set up a checkout page using Razorpay/Stripe to accept payments immediately.</li>
+                  </div>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="learn-module-card" id="mod-4">
+                  <div class="learn-module-header">
+                    <div class="learn-module-title-group">
+                      <span class="learn-module-meta">Module 4</span>
+                      <h4>Practical Execution Blueprint (Launching)</h4>
+                    </div>
+                    <span class="learn-module-toggle-btn">▲</span>
+                  </div>
+                  <div class="learn-module-body">
+                    <h5 class="learn-module-section-title">Idea Validation with ₹0 Budget</h5>
+                    <p class="learn-module-text">Never spend money building a product before people pay for it. Set up a simple landing page describing your offer. Pitch it to 50 prospects. If at least 3 offer to pay, your business is validated. Use AI to build the actual service after validation.</p>
+                    
+                    <h5 class="learn-module-section-title">Practical Checklist</h5>
+                    <ul class="learn-checklist-list">
+                      <li>Create a landing page using simple free builders in 30 minutes.</li>
+                      <li>Draft cold outreach emails using AI and send to 50 potential clients.</li>
+                      <li>Iterate or pivot instantly if zero purchase intent is verified.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pane 2: Build Business -->
+            <div class="business-tab-pane" id="pane-bus-build">
+              <div class="blueprint-workspace">
+                <!-- Form Panel -->
+                <div class="blueprint-form-card">
+                  <h4 style="color:#fff; margin-bottom: 20px;">Execution Configurator</h4>
+                  
+                  <div class="blueprint-form-group">
+                    <label>Business Model Target</label>
+                    <select class="blueprint-form-select" id="blueprint-model-select">
+                      <option value="agency">AI Automation Agency (AAA)</option>
+                      <option value="dropservicing">Drop-Servicing Agency</option>
+                      <option value="micro-saas">Micro-SaaS Subscriptions</option>
+                      <option value="creator">Content Engine & Brand Monetization</option>
+                    </select>
+                  </div>
+
+                  <div class="blueprint-form-group">
+                    <label>Your Niche / Focus Industry</label>
+                    <select class="blueprint-form-select" id="blueprint-niche-select">
+                      <option value="retail">Real Estate & Property Agencies</option>
+                      <option value="ecommerce">E-commerce Brands</option>
+                      <option value="health">Local Clinics & Healthcare</option>
+                      <option value="education">Content Creators & Tutors</option>
+                    </select>
+                  </div>
+
+                  <div class="blueprint-form-group">
+                    <label>Available Launch Budget</label>
+                    <select class="blueprint-form-select" id="blueprint-budget-select">
+                      <option value="0">₹0 (No-Budget Bootstrapped)</option>
+                      <option value="5000">Under ₹5,000 (Starter Toolkits)</option>
+                      <option value="50000">Under ₹50,000 (Aggressive Scale)</option>
+                    </select>
+                  </div>
+
+                  <button class="btn-blueprint-compile" id="btn-compile-blueprint">Compile Business Blueprint</button>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="blueprint-output-panel">
+                  <!-- Lock Overlay for Basic users -->
+                  <div id="build-premium-lock" class="business-lock-overlay-premium" style="display: none;">
+                    <div class="lock-gold-icon">👑</div>
+                    <h3 class="lock-premium-title">Premium Access Required</h3>
+                    <p class="lock-premium-desc">Unlock custom AI business execution blueprints, interactive financial projection dashboards, copy-paste prompt structures, and launch checklists by upgrading.</p>
+                    <button class="btn-lock-upgrade" onclick="showPricingModal(true)">Upgrade to Premium</button>
+                  </div>
+
+                  <div class="blueprint-result-body" id="blueprint-output-contents">
+                    <div style="text-align: center; padding-top: 80px; color: var(--text-secondary);">
+                      <span style="font-size: 3rem; display: block; margin-bottom: 20px;">⚙️</span>
+                      <p>Select your configuration parameters and click "Compile Business Blueprint" to generate your executable startup guide.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pane 3: Expand Business -->
+            <div class="business-tab-pane" id="pane-bus-expand">
+              <div class="strategist-workspace">
+                <!-- Sidebar Analytics Mockup -->
+                <div class="strategist-sidebar-panel">
+                  <h4 style="color:#fff; margin-bottom: 20px; font-family: var(--font-mono);">📊 Acquisition Funnel</h4>
+                  
+                  <div class="funnel-stage-row">
+                    <div class="funnel-stage-header">
+                      <span style="color:#fff;">1. Traffic / Leads</span>
+                      <span style="color: var(--color-bus-accent);">15,000</span>
+                    </div>
+                    <div class="funnel-stage-bar-outer">
+                      <div class="funnel-stage-bar-inner" style="--w: 100%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="funnel-stage-row">
+                    <div class="funnel-stage-header">
+                      <span style="color:#fff;">2. Qualified / Engaged</span>
+                      <span style="color: var(--color-bus-accent);">3,200</span>
+                    </div>
+                    <div class="funnel-stage-bar-outer">
+                      <div class="funnel-stage-bar-inner" style="--w: 45%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="funnel-stage-row">
+                    <div class="funnel-stage-header">
+                      <span style="color:#fff;">3. Conversion Rate</span>
+                      <span style="color: var(--color-bus-accent);">2.8%</span>
+                    </div>
+                    <div class="funnel-stage-bar-outer">
+                      <div class="funnel-stage-bar-inner" style="--w: 18%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="funnel-stage-row" style="margin-bottom: 0;">
+                    <div class="funnel-stage-header">
+                      <span style="color:#fff;">4. Target Growth</span>
+                      <span style="color: var(--color-bus-gold);">+150%</span>
+                    </div>
+                    <div class="funnel-stage-bar-outer">
+                      <div class="funnel-stage-bar-inner" style="background: var(--color-bus-gold); --w: 65%;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Chatbot Consultant -->
+                <div class="strategist-chat-container">
+                  <!-- Lock Overlay for Basic users -->
+                  <div id="expand-premium-lock" class="business-lock-overlay-premium" style="display: none;">
+                    <div class="lock-gold-icon">👑</div>
+                    <h3 class="lock-premium-title">A.R. Business Strategist</h3>
+                    <p class="lock-premium-desc">Consult our custom executive business intelligence system for custom scaling strategies, marketing funnels, and revenue optimization plans.</p>
+                    <button class="btn-lock-upgrade" onclick="showPricingModal(true)">Unlock with Premium</button>
+                  </div>
+
+                  <!-- Chat Messages Area -->
+                  <div class="strategist-chat-messages" id="chat-strategist-logs">
+                    <div class="chat-bubble bot">
+                      Hello, I am the <strong>A.R. Business Strategist</strong>. I can analyze your acquisition channels, marketing funnels, and operational systems. How can I help you optimize or scale your business today?
+                    </div>
+                  </div>
+
+                  <!-- Chat Input Bar -->
+                  <div class="strategist-chat-input-bar">
+                    <input type="text" id="chat-strategist-input" class="strategist-chat-input" placeholder="Ask about customer acquisition, conversion rates, or scaling...">
+                    <button class="btn-chat-send" id="btn-chat-strategist-send">Send</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- AI-OS Business Journey Modal -->
+          <div id="journey-modal-overlay" class="journey-modal-overlay" style="display: none;">
+            <div class="journey-modal-card">
+              <h3 class="journey-modal-title">What would you like to do?</h3>
+              <p class="journey-modal-subtitle">Choose your current business journey. Switch anytime.</p>
+              <div class="journey-options-list">
+                <div class="journey-option-card" data-journey="learn">
+                  <div class="journey-option-icon">📚</div>
+                  <div class="journey-option-info">
+                    <h4 class="journey-option-title">Learn Business Using AI</h4>
+                    <p class="journey-option-desc">Start from absolute basics and understand unit economics, cash flow, and leverage.</p>
+                  </div>
+                </div>
+                <div class="journey-option-card" data-journey="build">
+                  <div class="journey-option-icon">🚀</div>
+                  <div class="journey-option-info">
+                    <h4 class="journey-option-title">Build a Business Using AI</h4>
+                    <p class="journey-option-desc">Get step-by-step guidance, blueprints, and calculators to launch your startup.</p>
+                  </div>
+                </div>
+                <div class="journey-option-card" data-journey="expand">
+                  <div class="journey-option-icon">📈</div>
+                  <div class="journey-option-info">
+                    <h4 class="journey-option-title">Expand Existing Business Using AI</h4>
+                    <p class="journey-option-desc">Consult A.R. Business Strategist to scale customer acquisition and automate operations.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Right Sticky Sidebar -->
+      <aside class="sidebar-ad sidebar-ad-right" aria-label="Advertisements">
+        <div id="new-ad-right-sidebar" style="width: 100%;"></div>
+      </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-grid-container">
+        <div class="footer-brand-col">
+          <div class="logo" style="margin-bottom: 12px;">
+            <span class="logo-symbol">●</span>
+            <div class="logo-text-group">
+              <span class="logo-text">AI-OS</span>
+              <span class="logo-subtitle">Powered by A.R. Labs</span>
+            </div>
+          </div>
+          <p class="footer-brand-desc">Technology, AI, publishing, and digital products built under a single premium ecosystem.</p>
+          <div class="footer-signature">AI-OS • Powered by A.R. Labs</div>
+        </div>
+        
+        <div class="footer-section-col">
+          <h4 class="footer-col-title">Products</h4>
+          <ul class="footer-links">
+            <li><a href="index.html" class="footer-link">AI-OS</a></li>
+            <li><a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank" rel="noopener" class="footer-link">RF Communication Portal</a></li>
+            <li><a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener" class="footer-link">A.R. Publications</a></li>
+            <li><a href="https://anujrawal05.github.io/apps-by-anujrawal/" target="_blank" rel="noopener" class="footer-link">Apps by Anuj Rawal</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section-col">
+          <h4 class="footer-col-title">Connect</h4>
+          <ul class="footer-links">
+            <li><a href="mailto:rawalanuj50@gmail.com" class="footer-link">Email</a></li>
+            <li><a href="https://instagram.com/anujrawal.ar/" target="_blank" rel="noopener" class="footer-link">Instagram</a></li>
+            <li><a href="https://www.linkedin.com/in/anujrawal-ar" target="_blank" rel="noopener" class="footer-link">LinkedIn</a></li>
+            <li><a href="https://www.youtube.com/@arpublications005" target="_blank" rel="noopener" class="footer-link">YouTube</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section-col">
+          <h4 class="footer-col-title">Legal</h4>
+          <ul class="footer-links">
+            <li><a href="./terms.html" class="footer-link">Terms & Conditions</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="userAgreement">User Agreement</a></li>
+            <li><a href="./policy.html" class="footer-link">Privacy Policy</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="cookiePolicy">Cookie Policy</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="aiUsage">AI Usage Policy</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="legalNotice">Legal Notice</a></li>
+            <li><a href="#" class="footer-link legal-trigger" data-legal="disclaimer">Disclaimer</a></li>
+          </ul>
+          <div class="footer-jurisdiction-notice" style="margin-top: 14px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.45; max-width: 220px; text-align: left;">
+            <strong>Jurisdiction Notice:</strong> All interactions governed exclusively by the laws of India, under exclusive jurisdiction of the competent courts of Indore, MP, India.
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom-container">
+        <p>© 2026 A.R. Labs. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Auth Overlay / Modal -->
+  <div id="auth-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card">
+      <button id="auth-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon">🔒</div>
+      <h3 id="auth-modal-title">Unlock Your Complete AI Roadmap</h3>
+      <p id="auth-modal-subtitle">Login to access the complete roadmap, tool recommendations and guided workflow.</p>
+      
+      <div class="auth-modal-methods">
+        <!-- Google Sign-in Button -->
+        <button id="btn-auth-google" class="btn btn-google" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+          <svg class="google-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="auth-divider" style="margin: 16px 0; text-align: center; font-size: 0.8rem; color: var(--text-secondary); position: relative; font-family: var(--font-mono);">
+          <span style="background: #111; padding: 0 8px; position: relative; z-index: 1;">OR</span>
+          <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-color); z-index: 0;"></div>
+        </div>
+
+        <button id="btn-auth-coupon-trigger" class="btn btn-secondary btn-full-width" style="width: 100%;">
+          🎫 Use Coupon Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coupon Code Modal -->
+  <div id="coupon-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card">
+      <button id="coupon-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon">🎫</div>
+      <h3>Redeem Access Coupon</h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Enter your coupon code below to unlock premium access.</p>
+      
+      <div class="coupon-form-group" style="text-align: left;">
+        <input type="text" id="coupon-input" class="coupon-input" placeholder="e.g., AIOS-LIFETIME-PASS" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff; font-size: 1rem; font-family: var(--font-mono); text-transform: uppercase;" autocomplete="off" />
+        <div id="coupon-error-msg" class="coupon-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+        <button id="btn-coupon-submit" class="btn btn-primary btn-full-width" style="margin-top: 20px; width: 100%; padding: 12px; font-weight: 600;">
+          Redeem Access Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Modal -->
+  <div id="onboarding-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card" style="max-width: 550px; width: 95%;">
+      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px;">Complete Your Profile</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">Welcome to AI-OS! Please complete your registration onboarding to proceed.</p>
+      
+      <form id="onboarding-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Full Name *</label>
+          <input type="text" id="ob-fullname" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;" placeholder="e.g. John Doe">
+        </div>
+        
+        <div class="form-row" style="display: flex; gap: 12px;">
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Date of Birth *</label>
+            <input type="date" id="ob-dob" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;">
+          </div>
+          
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Gender *</label>
+            <select id="ob-gender" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer Not To Say">Prefer Not To Say</option>
+              <option value="Not Available">Not Available</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Profession *</label>
+          <select id="ob-profession" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+            <option value="">Select Profession</option>
+            <option value="Student">Student</option>
+            <option value="Job">Job</option>
+            <option value="Intern">Intern</option>
+            <option value="Unemployed">Unemployed</option>
+            <option value="Homemaker">Homemaker</option>
+            <option value="Business">Business</option>
+            <option value="Startup">Startup</option>
+            <option value="Not Available">Not Available</option>
+          </select>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 0.85rem;">
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="ob-cb-terms" required style="margin-top: 3px;">
+            <span>I have read and agree to the <a href="./terms.html" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Terms and Conditions</a>. *</span>
+          </label>
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="ob-cb-privacy" required style="margin-top: 3px;">
+            <span>I acknowledge and agree to the <a href="./policy.html" target="_blank" style="color: var(--accent-color); text-decoration: underline;">Privacy Policy</a>. *</span>
+          </label>
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="ob-cb-survey" required style="margin-top: 3px;">
+            <span>I agree that A.R. Labs may use my profile information for future surveys, research, analytics and product improvement purposes. *</span>
+          </label>
+        </div>
+        
+        <div id="onboarding-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; font-weight: 500; margin-top: 8px;"></div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px; font-weight: 600;">Complete Registration</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pricing Modal -->
+  <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card" style="max-width: 650px; width: 90%;">
+      <button id="pricing-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon" style="animation: authIconPulse 2s infinite alternate;">⭐</div>
+      <h3 style="font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 8px;">Choose Your Plan</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">Unlock the full power of AI-OS for personal and professional execution.</p>
+      
+      <div class="pricing-comparison-table-wrapper" style="overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.01); margin-bottom: 20px;">
+        <table class="pricing-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
+              <th style="padding: 16px;">Features</th>
+              <th style="padding: 16px; text-align: center; color: var(--text-secondary);">Free<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹0</span></th>
+              <th style="padding: 16px; text-align: center; color: var(--accent-color);">Premium<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹99/mo</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">JSON Prompts / Day</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">5 Prompts</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">⚡ Unlimited</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">Explore AI Roadmap</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">10 Steps Only</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">✨ Full 40 Steps</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">AI-OS Business Dashboard</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">Preview Only</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">💼 Full Access</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">Platform Advertisements</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">Standard Ads</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">🛡️ Non-intrusive Only</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 16px; font-weight: 500;">Price (Yearly Option)</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">-</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">₹999/yr (Save 15%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; width: 100%;">
+        <button id="btn-pricing-free" class="btn btn-secondary" style="flex: 1; min-width: 150px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px;">Choose Free Plan (₹0)</button>
+        <button id="btn-pricing-monthly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #7f00ff, #ff007f); border: none; box-shadow: 0 0 10px rgba(127,0,255,0.3);">Subscribe Monthly (₹99)</button>
+        <button id="btn-pricing-yearly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #00c6ff, #0072ff); border: none; box-shadow: 0 0 10px rgba(0,198,255,0.3);">Subscribe Yearly (₹999)</button>
+        <button id="btn-pricing-coupon" class="btn btn-secondary" style="flex: 1; min-width: 150px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px;">Redeem Coupon</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card" style="max-width: 500px; width: 95%;">
+      <button id="profile-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon">👤</div>
+      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px;">My Profile</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">View and edit your profile settings.</p>
+      
+      <form id="profile-edit-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Email Address</label>
+          <input type="email" id="pf-email" readonly style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.15); color: #888; cursor: not-allowed; font-family: var(--font-mono);">
+        </div>
+        
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Full Name *</label>
+          <input type="text" id="pf-fullname" required style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;">
+        </div>
+        
+        <div class="form-row" style="display: flex; gap: 12px;">
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Date of Birth</label>
+            <input type="date" id="pf-dob" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff;">
+          </div>
+          
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Gender</label>
+            <select id="pf-gender" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer Not To Say">Prefer Not To Say</option>
+              <option value="Not Available">Not Available</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Profession</label>
+          <select id="pf-profession" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
+            <option value="">Select Profession</option>
+            <option value="Student">Student</option>
+            <option value="Job">Job</option>
+            <option value="Intern">Intern</option>
+            <option value="Unemployed">Unemployed</option>
+            <option value="Homemaker">Homemaker</option>
+            <option value="Business">Business</option>
+            <option value="Startup">Startup</option>
+            <option value="Not Available">Not Available</option>
+          </select>
+        </div>
+
+        <div class="form-row" style="display: flex; gap: 12px;">
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Account Type</label>
+            <div id="pf-account-type-display" style="padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.15); color: #ccc; font-weight: 500; font-size: 0.9rem; min-height: 38px; box-sizing: border-box;">Standard User</div>
+          </div>
+          
+          <div class="form-group" style="flex: 1;">
+            <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Access Status</label>
+            <div style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; min-height: 38px; box-sizing: border-box;">
+              <span id="pf-access-status-display" class="badge-access basic-badge" style="font-weight: 700; font-size: 0.8rem;">Basic</span>
+              <button type="button" id="btn-pf-upgrade" class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px;">Upgrade</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group" style="display: none;">
+          <label style="display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-secondary);">Plan Type</label>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.01);">
+            <span id="pf-plan-display" style="font-weight: 600; color: var(--accent-color);">Basic</span>
+          </div>
+        </div>
+        
+        <div id="profile-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; font-weight: 500; margin-top: 8px;"></div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600; margin-top: 10px;">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="ad-manager.js?v=3.5"></script>
+  <script src="business.js?v=3.5"></script>
+
+</body>
+
+</html>

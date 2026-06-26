@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy | AI-OS</title>
+  <meta name="description" content="Privacy Policy for AI-OS by A.R. Labs. Google OAuth compliance, data storage on Supabase, and opt-out options.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=3.5">
+
+  <style>
+    .legal-container {
+      max-width: 900px;
+      margin: 120px auto 60px;
+      padding: 40px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: 0 30px 60px var(--card-shadow), 0 0 40px rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      position: relative;
+      z-index: 10;
+    }
+
+    .legal-title {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #ffffff 0%, #a0a0ab 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    .legal-meta {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-color);
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .legal-section {
+      margin-bottom: 35px;
+    }
+
+    .legal-section h2 {
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+    }
+
+    .legal-section p {
+      margin-bottom: 16px;
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .legal-section ul {
+      margin-left: 24px;
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .legal-section li {
+      margin-bottom: 8px;
+    }
+
+    .highlight-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--border-color);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .highlight-box h3 {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: var(--text-primary);
+      color: var(--accent-bg-invert);
+      border-color: var(--text-primary);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Decorative Grid -->
+  <div class="grid-overlay"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo">
+        <span class="logo-symbol">●</span>
+        <div class="logo-text-group">
+          <span class="logo-text">AI-OS</span>
+          <span class="logo-subtitle">Powered by A.R. Labs</span>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="./aios_buisness.html" class="nav-btn-business" id="nav-business-btn">AI-OS Business</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Legal Main Card -->
+  <main class="legal-container">
+    <a href="index.html" class="back-btn">← Back to Main Platform</a>
+
+    <h1 class="legal-title">Privacy Policy</h1>
+    <div class="legal-meta">
+      <span>Effective Date: June 26, 2026</span>
+      <span>•</span>
+      <span>Version 1.1</span>
+    </div>
+
+    <div class="legal-section">
+      <h2>1. Introduction</h2>
+      <p>A.R. Labs ("we", "us", "our") is dedicated to protecting your data and privacy. This Privacy Policy documents how AI-OS (the "Platform") accesses, collects, uses, stores, and protects information when you utilize our Services, sign in with your Google Account, or redeem access coupon codes.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>2. Google OAuth Integration & Data Accessed</h2>
+      <p>AI-OS uses Google Sign-in (Google OAuth) as a secure and seamless authentication service. When you choose to authenticate using Google, Google requests your permission to share specific profile details with us. The specific data elements we access include:</p>
+      <ul>
+        <li><strong>Email Address:</strong> To establish your identity, create a unique account record, and associate your billing status (Basic or Premium).</li>
+        <li><strong>Full Name:</strong> To personalize your dashboard experience and customize interaction greetings.</li>
+        <li><strong>Profile Picture URL (Avatar):</strong> To display your user avatar in the top navigation profile dropdown.</li>
+      </ul>
+      <div class="highlight-box" style="border-color: rgba(0, 198, 255, 0.3);">
+        <h3>Important Privacy Statement on Google OAuth</h3>
+        <p style="margin: 0; color: var(--text-secondary);">We only access the basic profile parameters explicitly granted by you during the Google OAuth flow. We do not request, access, or store secondary Google account details (such as your search history, contacts, Google Drive files, or calendar entries).</p>
+      </div>
+    </div>
+
+    <div class="legal-section">
+      <h2>3. How We Use Your Information</h2>
+      <p>We use your collected information strictly to:</p>
+      <ul>
+        <li>Maintain, personalize, and secure your account dashboard and custom settings.</li>
+        <li>Log your onboarding choices (Full Name, Date of Birth, Gender, and Profession) to customize roadmap timeline recommendations and business simulations.</li>
+        <li>Verify and log payment records (Razorpay IDs) to activate Premium subscriptions.</li>
+        <li>Identify you when you submit requests to our customer support or file inquiries.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>4. Data Storage, Hosting & Security</h2>
+      <p>Your account records and profile configurations are stored in secure cloud database tables hosted by **Supabase**. We apply industry-standard access tokens and TLS encryption to secure communication channels. Authentication sessions are stored locally in the browser via standard localStorage/sessionStorage blocks to keep you logged in across page reloads.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>5. Zero Data-Sharing with Third Parties</h2>
+      <p>A.R. Labs maintains a strict zero data-sharing standard. We do not sell, rent, trade, or distribute your email address, name, or profile metadata to third-party advertising companies, analytical networks, or data brokers. All transaction logs and billing details are processed securely and privately by Razorpay, and we do not store raw credit/debit card numbers on our servers.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>6. Account Deletion, Opt-Out & User Rights</h2>
+      <p>You have full ownership of your data. You may request account closure and data deletion at any time:</p>
+      <div class="highlight-box">
+        <h3>How to Request Account & Data Deletion</h3>
+        <p style="margin: 0 0 12px 0; color: var(--text-secondary);">If you wish to delete your profile, email, billing flags, and simulator history, please send an explicit deletion request from your registered email address to:</p>
+        <p style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); margin: 0;">rawalanuj50@gmail.com</p>
+        <p style="margin: 12px 0 0 0; color: var(--text-secondary);">We will confirm your request and completely purge all account rows from our Supabase tables within five (5) business days.</p>
+      </div>
+    </div>
+
+    <div class="legal-section">
+      <h2>7. Cookie Usage</h2>
+      <p>We use cookies and browser storage nodes solely to cache your dark/light theme preference, language settings, and current session parameters to enable continuous access. We do not use persistent tracking cookies for behavioral target marketing.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>8. Policy Modifications</h2>
+      <p>We may update this Privacy Policy periodically. If we update our data management procedures, we will post the revised policy on this page with the updated "Effective Date" timeline.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>9. Contact Us</h2>
+      <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your personal information, please write to:</p>
+      <p style="font-family: var(--font-mono); color: var(--text-primary);">Email: rawalanuj50@gmail.com</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-grid-container">
+      <div class="footer-brand-col">
+        <div class="logo" style="margin-bottom: 12px;">
+          <span class="logo-symbol">●</span>
+          <div class="logo-text-group">
+            <span class="logo-text">AI-OS</span>
+            <span class="logo-subtitle">Powered by A.R. Labs</span>
+          </div>
+        </div>
+        <p class="footer-brand-desc">Technology, AI, publishing, and digital products built under a single premium ecosystem.</p>
+        <div class="footer-signature">AI-OS • Powered by A.R. Labs</div>
+      </div>
+      
+      <div class="footer-section-col">
+        <h4 class="footer-col-title">Products</h4>
+        <ul class="footer-links">
+          <li><a href="index.html" class="footer-link">AI-OS</a></li>
+          <li><a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank" rel="noopener" class="footer-link">RF Communication Portal</a></li>
+          <li><a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener" class="footer-link">A.R. Publications</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section-col">
+        <h4 class="footer-col-title">Legal</h4>
+        <ul class="footer-links">
+          <li><a href="./terms.html" class="footer-link">Terms & Conditions</a></li>
+          <li><a href="./policy.html" class="footer-link">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom-container">
+      <p>© 2026 A.R. Labs. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
