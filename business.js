@@ -1,9 +1,10 @@
-// Standalone AI-OS Business Logic Script
+// Standalone AI-OS Business Platform Logic Script
 // Powered by A.R. Labs
 
 const state = {
   user: null,
   onboardingPricing: false,
+  activeWorkspace: 'learn', // 'learn', 'build', 'grow'
   analytics: {
     loginAttempts: 0,
     couponRedemptions: 0,
@@ -68,23 +69,29 @@ function updateUserProfileHeader() {
   if (!container) return;
   
   const ctaBtn = document.getElementById('btn-upgrade-premium-cta');
-  if (ctaBtn) {
+  const heroCtaBtn = document.getElementById('btn-hero-upgrade-cta');
+  
+  const handleUpgradeState = (btn) => {
+    if (!btn) return;
     if (state.user && state.user.plan_type === 'Premium') {
-      ctaBtn.style.display = 'block';
-      ctaBtn.textContent = 'Premium Active';
-      ctaBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
-      ctaBtn.style.boxShadow = '0 0 10px rgba(46, 204, 113, 0.3)';
-      ctaBtn.onclick = () => {
-        showToast("You are currently on the Premium Plan! Full access unlocked.", "info");
+      btn.style.display = 'block';
+      btn.textContent = 'Premium Active';
+      btn.style.background = 'linear-gradient(135deg, #00D084 0%, #2EC5FF 100%)';
+      btn.style.boxShadow = '0 0 15px rgba(0, 208, 132, 0.4)';
+      btn.onclick = () => {
+        showToast("Premium Plan active! All enterprise workspaces unlocked.", "info");
       };
     } else {
-      ctaBtn.style.display = 'block';
-      ctaBtn.textContent = 'Upgrade To Premium';
-      ctaBtn.style.background = 'linear-gradient(135deg, #ff007f, #7f00ff)';
-      ctaBtn.style.boxShadow = '0 0 15px rgba(127, 0, 255, 0.4)';
-      ctaBtn.onclick = () => showPricingModal(false);
+      btn.style.display = 'block';
+      btn.textContent = 'Upgrade to Premium';
+      btn.style.background = 'linear-gradient(135deg, #FFD54A 0%, #00D084 100%)';
+      btn.style.boxShadow = '0 0 15px rgba(255, 213, 74, 0.35)';
+      btn.onclick = () => showPricingModal(false);
     }
-  }
+  };
+
+  handleUpgradeState(ctaBtn);
+  handleUpgradeState(heroCtaBtn);
   
   if (isUserAuthenticated()) {
     const nameToDisplay = state.user.name || 'Premium User';
@@ -101,11 +108,11 @@ function updateUserProfileHeader() {
           <div class="profile-dropdown-name">${nameToDisplay}</div>
           <div class="profile-dropdown-email">${state.user.email || ''}</div>
           <div class="profile-dropdown-status ${statusText.toLowerCase() === 'premium' ? 'premium' : ''}">${statusText.toUpperCase()}</div>
-          <button id="btn-dropdown-profile" class="profile-dropdown-item" style="width: 100%; text-align: left; background: transparent; border: none; color: #fff; padding: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-            👤 <span>My Profile</span>
+          <button id="btn-dropdown-profile" class="workspace-dropdown-item" style="width: 100%; border-radius: 8px;">
+            👤 &nbsp; My Profile
           </button>
           <button id="btn-dropdown-logout" class="profile-dropdown-logout" style="margin-top: 10px;">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
               <polyline points="16 17 21 12 16 7"></polyline>
               <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -133,8 +140,8 @@ function updateUserProfileHeader() {
     });
   } else {
     container.innerHTML = `
-      <button id="btn-header-signin" class="profile-btn" style="border-radius: 20px; background: rgba(255, 255, 255, 0.05); border-color: var(--border-color);">
-        🔑 <span>Sign In</span>
+      <button id="btn-header-signin" class="profile-btn">
+        🔑 &nbsp; Sign In
       </button>
     `;
     
@@ -341,7 +348,7 @@ async function handlePremiumUpgrade(planName = 'Premium Monthly', amount = 99) {
       email: state.user.email || 'user@test.com'
     },
     theme: {
-      color: '#7f00ff'
+      color: '#00D084'
     },
     modal: {
       ondismiss: function () {
@@ -420,14 +427,14 @@ function showProfileModal() {
     if (accountTypeEl) accountTypeEl.textContent = state.user.account_type || 'Premium Coupon User';
     if (accessStatusEl) {
       accessStatusEl.innerHTML = 'Premium';
-      accessStatusEl.className = 'badge-access premium-badge';
+      accessStatusEl.className = 'profile-dropdown-status premium';
     }
   } else {
     if (accountTypeEl) accountTypeEl.textContent = 'Google User';
     if (accessStatusEl) {
       const isPremium = state.user.plan_type === 'Premium';
       accessStatusEl.innerHTML = isPremium ? 'Premium' : 'Basic';
-      accessStatusEl.className = isPremium ? 'badge-access premium-badge' : 'badge-access basic-badge';
+      accessStatusEl.className = isPremium ? 'profile-dropdown-status premium' : 'profile-dropdown-status';
     }
   }
   
@@ -583,51 +590,92 @@ function toggleBusinessSectionView() {
   }
 }
 
+// REDESIGNED TAB SWITCHER FUNCTION
+function switchBusinessWorkspace(workspaceName) {
+  state.activeWorkspace = workspaceName;
+  
+  // Update Header Button Text
+  const swBtn = document.getElementById('workspace-dropdown-btn');
+  if (swBtn) {
+    const formatted = workspaceName.charAt(0).toUpperCase() + workspaceName.slice(1);
+    swBtn.querySelector('span').textContent = `Workspace: ${formatted}`;
+  }
+  
+  // Update Dropdown Active Option
+  const dropdownItems = document.querySelectorAll('.workspace-dropdown-item');
+  dropdownItems.forEach(item => {
+    if (item.getAttribute('data-workspace') === workspaceName) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+  
+  // Hide all workspaces
+  const panes = document.querySelectorAll('.workspace-wrapper');
+  panes.forEach(pane => pane.classList.remove('active'));
+  
+  // Show target workspace
+  const targetPane = document.getElementById(`pane-bus-${workspaceName}`);
+  if (targetPane) targetPane.classList.add('active');
+}
+
 function initBusinessSimulators() {
-  const chosen = localStorage.getItem('aios_business_journey');
-  if (!chosen) {
-    const modal = document.getElementById('journey-modal-overlay');
-    if (modal) modal.style.display = 'flex';
+  // First Visit Onboarding Popup trigger
+  const hasVisited = localStorage.getItem('aios_business_first_visit_done');
+  if (!hasVisited) {
+    const overlay = document.getElementById('journey-modal-overlay');
+    if (overlay) overlay.style.display = 'flex';
   }
 
+  // Journey selection buttons
   const journeyCards = document.querySelectorAll('.journey-option-card');
   journeyCards.forEach(card => {
     card.addEventListener('click', () => {
       const journey = card.getAttribute('data-journey');
-      localStorage.setItem('aios_business_journey', journey);
+      localStorage.setItem('aios_business_first_visit_done', 'true');
       document.getElementById('journey-modal-overlay').style.display = 'none';
-      switchBusinessTab(journey);
+      switchBusinessWorkspace(journey);
     });
   });
 
-  const tabBtns = document.querySelectorAll('.business-tab-btn');
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.getAttribute('data-tab');
-      switchBusinessTab(tab);
+  // Header Dropdown switches trigger
+  const swBtnWrap = document.getElementById('workspace-dropdown-wrap');
+  const swBtn = document.getElementById('workspace-dropdown-btn');
+  if (swBtn && swBtnWrap) {
+    swBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      swBtnWrap.classList.toggle('active');
     });
-  });
-
-  function switchBusinessTab(tabName) {
-    const btns = document.querySelectorAll('.business-tab-btn');
-    btns.forEach(b => {
-      if (b.getAttribute('data-tab') === tabName) b.classList.add('active');
-      else b.classList.remove('active');
-    });
-
-    const panes = document.querySelectorAll('.business-tab-pane');
-    panes.forEach(p => p.classList.remove('active'));
-
-    const targetPane = document.getElementById(`pane-bus-${tabName}`);
-    if (targetPane) targetPane.classList.add('active');
   }
 
-  document.getElementById('btn-hero-learn').addEventListener('click', () => switchBusinessTab('learn'));
-  document.getElementById('btn-hero-build').addEventListener('click', () => switchBusinessTab('build'));
-  document.getElementById('btn-hero-expand').addEventListener('click', () => switchBusinessTab('expand'));
-  document.getElementById('btn-skip-basics').addEventListener('click', () => switchBusinessTab('build'));
+  // Close dropdown on click outside
+  document.addEventListener('click', () => {
+    if (swBtnWrap) swBtnWrap.classList.remove('active');
+  });
 
-  // Learn modules collapsible
+  // Dropdown list click triggers swapper
+  const dropdownItems = document.querySelectorAll('.workspace-dropdown-menu button');
+  dropdownItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const workspace = item.getAttribute('data-workspace');
+      switchBusinessWorkspace(workspace);
+      if (swBtnWrap) swBtnWrap.classList.remove('active');
+    });
+  });
+
+  // Custom visual triggers (hero buttons)
+  const heroLearn = document.getElementById('btn-hero-learn-cta');
+  if (heroLearn) {
+    heroLearn.addEventListener('click', () => switchBusinessWorkspace('learn'));
+  }
+  const skipBasicsBtn = document.getElementById('btn-skip-basics');
+  if (skipBasicsBtn) {
+    skipBasicsBtn.addEventListener('click', () => switchBusinessWorkspace('build'));
+  }
+
+  // Academy course catalog module toggles
   const modCards = document.querySelectorAll('.learn-module-card');
   modCards.forEach(card => {
     const header = card.querySelector('.learn-module-header');
@@ -635,22 +683,24 @@ function initBusinessSimulators() {
     const arrow = card.querySelector('.learn-module-toggle-btn');
     if (header && body && arrow) {
       header.addEventListener('click', () => {
-        const isActive = body.classList.contains('active');
+        const isActive = body.style.display === 'block';
         modCards.forEach(c => {
           c.classList.remove('active');
-          c.querySelector('.learn-module-body').classList.remove('active');
-          c.querySelector('.learn-module-toggle-btn').textContent = '▲';
+          const b = c.querySelector('.learn-module-body');
+          if (b) b.style.display = 'none';
+          const a = c.querySelector('.learn-module-toggle-btn');
+          if (a) a.textContent = '▲';
         });
         if (!isActive) {
           card.classList.add('active');
-          body.classList.add('active');
+          body.style.display = 'block';
           arrow.textContent = '▼';
         }
       });
     }
   });
 
-  // Blueprint Compiler
+  // Blueprint Launchpad Compiler logic
   const btnCompile = document.getElementById('btn-compile-blueprint');
   const bOutput = document.getElementById('blueprint-output-contents');
   if (btnCompile && bOutput) {
@@ -672,103 +722,123 @@ function initBusinessSimulators() {
       const budget = document.getElementById('blueprint-budget-select').value;
 
       bOutput.innerHTML = `
-        <div style="text-align: center; padding: 40px 0;">
+        <div style="text-align: center; padding: 60px 0;">
           <span style="display:inline-block; animation: pulse 1.5s infinite; font-size: 2rem;">⏳</span>
-          <p style="margin-top: 10px; font-family: var(--font-mono);">COMPILING BUSINESS BLUEPRINT MATRIX...</p>
+          <p style="margin-top: 10px; font-family: var(--font-mono); color: var(--bus-primary);">COMPILING ENTERPRISE LAUNCH BLUEPRINT...</p>
         </div>
       `;
 
       setTimeout(() => {
-        let title = "AI Automation Agency Startup Guide";
+        let title = "AI Automation Agency (AAA) Implementation Plan";
         let profit = "₹1,20,000 / month";
         let cost = "₹0 (Bootstrapped)";
         let overhead = "3 hours / order";
         let roadmapSteps = [
-          "Set up digital domain & lead capture page using AI landing page generators.",
-          "Build specialized customer-support chat agent with system instructions for target niche.",
-          "Configure CRM sync integrations to forward lead logs directly to client email.",
-          "Launch cold-outreach system sending 30 AI-tailored proposals daily."
+          "Establish high-converting landing page showcasing dynamic customer chatbots.",
+          "Build modular support agent prototype with clear target instruction parameters.",
+          "Link form webhook outputs directly to client email pipelines using Make.com flows.",
+          "Initiate customized cold inbound outreach pitches targetting local clinical directories."
         ];
-        let promptScript = `You are a growth consultant for a local business in the niche: "${niche}". Write a highly persuasive 3-step automation proposal demonstrating how integrating AI support agents reduces support resolution times by 75% and scales booking leads.`;
+        let promptScript = `Act as an executive business compiler. Create a 3-step value pitch proposal for a local provider in the niche: "${niche}" detailing how custom support agents reduce lead drop-off rates by 70%.`;
 
         if (model === 'dropservicing') {
-          title = "High-Ticket Drop-Servicing Agency Blueprint";
+          title = "High-Ticket Drop-Servicing Business Blueprint";
           profit = "₹95,000 / month";
           cost = "₹0";
           overhead = "4 hours / order";
           roadmapSteps = [
-            "Select high-demand digital services (e.g. copywriting, graphic templates, translations).",
-            "Generate sample outputs using Midjourney/ChatGPT to showcase in your portfolio.",
-            "List services on marketplaces (Fiverr, Upwork) and run automated social outreach.",
-            "Once an order is received, generate output via AI, polish manually, and deliver."
+            "Curate a portfolio of high-demand graphics, copywriting, or video templates.",
+            "Generate sample outputs using Midjourney/DALL-E to show client validation.",
+            "List service packs on marketplace portals (Upwork, Fiverr) and run cold outreaches.",
+            "Delegate raw execution to premium AI tools once order receipts are verified."
           ];
-          promptScript = `Write a professional client proposal for a digital design service offering 10 high-converting marketing creatives generated using Midjourney, including composition prompts.`;
+          promptScript = `Write an outcomes-focused design proposal pitching 15 premium marketing creative templates tailored dynamically to client objectives.`;
         } else if (model === 'micro-saas') {
-          title = "Niche AI Micro-SaaS Product Launch Blueprint";
+          title = "AI Micro-SaaS Product Launch matrix";
           profit = "₹2,50,000 / month";
           cost = "₹1,200 / month";
-          overhead = "Flexible development";
+          overhead = "Continuous dev";
           roadmapSteps = [
-            "Identify a single repetitive task (e.g. converting transcripts to blog posts).",
-            "Build a lightweight Single Page App using AI coding assistants (Bolt.new, Cursor).",
-            "Connect OpenAI/OpenRouter API key on the backend to execute the prompt.",
-            "Integrate Stripe/Razorpay pricing buttons and share in product communities (ProductHunt, Reddit)."
+            "Map out a highly specific administrative task (e.g. formatting contracts).",
+            "Generate boilerplate single-page script using Cursor or code generation engines.",
+            "Integrate OpenAI API key configurations securely in the backend schema.",
+            "Incorporate checkout links (Stripe/Razorpay) and post in user directories (ProductHunt)."
           ];
-          promptScript = `Act as a senior software architect. Provide a clean project structure and index.js boilerplates to fetch API models and process simple text-expander queries.`;
+          promptScript = `Act as a senior software architect. Provide secure Node/Express boilerplate code for a dynamic text compiler API calling GPT models.`;
         } else if (model === 'creator') {
-          title = "Automated Content Engine & Brand Blueprint";
+          title = "Vertical Content Engine Brand strategy";
           profit = "₹1,50,000 / month";
           cost = "₹0";
           overhead = "3 hours / week";
           roadmapSteps = [
-            "Use AI outline tools to research trending topics in the selected industry.",
-            "Generate video scripts and marketing hooks using tailored tone instructions.",
-            "Batch-produce vertical video content utilizing voice generators and auto-subtitles.",
-            "Drive viewers to a premium sponsor link or digital product storefront."
+            "Research high-traffic trends within target sector topics.",
+            "Draft high-retention vertical script outlines with customized system prompts.",
+            "Generate professional voiceover narratives and vertical visual crops.",
+            "Include product checkout links in profiles to capture organic conversion rates."
           ];
-          promptScript = `Write a high-retention viral vertical video script about: "3 Secrets to scaling retail business automation using AI". Make it energetic, beginner-friendly and under 60 seconds.`;
+          promptScript = `Write a viral 45-second vertical video script focused on: "3 Secrets to scaling local clinicial leads using automated voice agents".`;
         }
 
         bOutput.innerHTML = `
           <div class="blueprint-result-header">
-            <span class="blueprint-result-badge">ACTIVE BLUEPRINT</span>
+            <span class="blueprint-result-badge">LAUNCHPAD BLUEPRINT V1.0</span>
             <h3 class="blueprint-result-title">${title}</h3>
           </div>
           
           <div class="blueprint-projections-grid">
             <div class="blueprint-proj-card">
               <span class="blueprint-proj-val green">${profit}</span>
-              <span class="blueprint-proj-lbl">Projected Revenue</span>
+              <span class="blueprint-proj-lbl">Projected IRR</span>
             </div>
             <div class="blueprint-proj-card">
               <span class="blueprint-proj-val">${cost}</span>
-              <span class="blueprint-proj-lbl">Setup Cost</span>
+              <span class="blueprint-proj-lbl">Launch OPEX</span>
             </div>
             <div class="blueprint-proj-card">
               <span class="blueprint-proj-val green">${overhead}</span>
-              <span class="blueprint-proj-lbl">Overhead / Time</span>
+              <span class="blueprint-proj-lbl">Setup Time</span>
             </div>
           </div>
 
           <h5 class="learn-module-section-title">Launch Roadmap Steps</h5>
-          <ol style="margin-left: 20px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+          <ol style="margin-left: 20px; color: var(--bus-text-secondary); line-height: 1.7; margin-bottom: 20px; font-size: 0.9rem;">
             ${roadmapSteps.map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
           </ol>
 
-          <h5 class="learn-module-section-title">Copyable Prompt Script</h5>
-          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.82rem; color: #fff; margin-bottom: 16px; position: relative;">
-            <p style="margin: 0; line-height: 1.4;">${promptScript}</p>
-            <button class="btn btn-secondary" onclick="navigator.clipboard.writeText(\`${promptScript.replace(/`/g, '\\`').replace(/\${/g, '\\${')}\`); showToast('Prompt copied to clipboard!');" style="margin-top: 10px; padding: 4px 8px; font-size: 0.75rem;">Copy Prompt</button>
+          <h5 class="learn-module-section-title">Copyable System Prompt</h5>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--bus-border); padding: 16px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; color: #fff; margin-bottom: 16px; position: relative;">
+            <p style="margin: 0; line-height: 1.5;">${promptScript}</p>
+            <button class="workspace-dropdown-trigger" onclick="navigator.clipboard.writeText(\`${promptScript.replace(/`/g, '\\`').replace(/\${/g, '\\${')}\`); showToast('Prompt copied!');" style="margin-top: 12px; padding: 4px 10px; font-size: 0.7rem; border-color: var(--bus-primary);">Copy Prompt</button>
           </div>
         `;
       }, 1000);
     });
   }
 
-  // Strategy Chatbot
+  // A.R. Business Strategist Chat & 7-Tab Output Compiler
   const chatInput = document.getElementById('chat-strategist-input');
   const chatSendBtn = document.getElementById('btn-chat-strategist-send');
   const chatLogs = document.getElementById('chat-strategist-logs');
+  const outputPanel = document.getElementById('strategist-tabs-panel');
+  
+  // Strategy tab triggers binding
+  const strategTabBtns = document.querySelectorAll('.strategist-tab-btn');
+  strategTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.getAttribute('data-output-tab');
+      
+      // Update buttons active
+      strategTabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Update pane active
+      const panes = document.querySelectorAll('.strategist-tab-pane');
+      panes.forEach(p => p.classList.remove('active'));
+      const activePane = document.getElementById(`tab-out-${targetTab}`);
+      if (activePane) activePane.classList.add('active');
+    });
+  });
+
   if (chatInput && chatSendBtn && chatLogs) {
     const handleSend = () => {
       const text = chatInput.value.trim();
@@ -786,6 +856,7 @@ function initBusinessSimulators() {
         return;
       }
 
+      // Append User Bubble
       const userBubble = document.createElement('div');
       userBubble.className = 'chat-bubble user';
       userBubble.textContent = text;
@@ -793,6 +864,7 @@ function initBusinessSimulators() {
       chatInput.value = '';
       chatLogs.scrollTop = chatLogs.scrollHeight;
 
+      // Append Bot Thinking Bubble
       const botThinking = document.createElement('div');
       botThinking.className = 'chat-bubble bot';
       botThinking.innerHTML = `<span>Thinking...</span>`;
@@ -802,24 +874,49 @@ function initBusinessSimulators() {
       setTimeout(() => {
         botThinking.remove();
         
-        let response = "I have analyzed your query. To optimize your business model, consider implementing high-ticket pricing models, refining your unit economics (CAC to LTV), and automating operational content engines to scale client acquisition.";
+        // Generate Dynamic Strategist Responses & Compile all 7 Tabs
+        let analysisText = `Based on your query "${text}", the primary operational gap is customer distribution volume. While your core delivery mechanics are valid, your cost-of-acquisition (CAC) is bottlenecked by manual outreach models. System analysis recommends deploying programmatic outbound nodes.`;
+        let oppText = "1. AAA Lead Chatbots: Selling conversational booking lead systems to local medical clinics.<br>2. Programmatic Landing Pages: Building highly-scalable programmatic landing pages tailored dynamically to regional keywords.<br>3. Workflow Optimization: Connecting support mail webhooks to automated CRM databases.";
+        let autoText = "Integrate Make.com triggers: When a user completes the lead capture page, fire an API call to extract specs, generate a formatted design contract template, and sync coordinates to client dashboard tables instantly.";
+        let markText = "Focus on cold outbound messaging on LinkedIn. Deploy automated prospecting systems targetting executive leads, delivering a customized 5-minute Loom demo demonstrating a 60% increase in operations speed.";
+        let leadText = "Acquire a corporate directory mailing list. Filter target contacts by position and scale. Set up automated sequence scripts delivering personalized offers and tracking open metrics.";
+        let revText = "Shift pricing from time-based margins to outcome-based contracts. Charge a ₹50,000 setup fee + a 10% commission on all new leads generated, dramatically scaling the lifetime value (LTV) metric.";
+        let planText = "Days 1-30: Build landing portfolio page and chatbot assets.<br>Days 31-60: Initiate automated cold outbound campaigns pitching 40 contacts daily.<br>Days 61-90: Upsell automated support contracts to existing accounts.";
+
         const lowText = text.toLowerCase();
-        
-        if (lowText.includes('traffic') || lowText.includes('visitors')) {
-          response = "To scale traffic, set up a programmatic SEO system or an automated vertical video engine to post daily content. This organic funnel consistently drives leads with ₹0 direct advertising spend.";
-        } else if (lowText.includes('conversion') || lowText.includes('convert') || lowText.includes('sales')) {
-          response = "A 2.8% conversion rate is decent. To optimize this, embed an interactive AI consultant widget directly on the landing page to answer visitor queries instantly, and run dynamic pricing tests.";
-        } else if (lowText.includes('budget') || lowText.includes('money') || lowText.includes('cost')) {
-          response = "With a limited budget, focus exclusively on drop-servicing or AI automation services. Use free tiers of automation tools (like Make.com, Supabase, Vercel) to keep fixed costs at ₹0.";
-        } else if (lowText.includes('marketing') || lowText.includes('ads') || lowText.includes('leads')) {
-          response = "For client acquisition, set up email scripts tailored dynamically to the prospects' website gaps. Offering a free 5-minute automated support demo is the highest converting lead-magnet.";
+        if (lowText.includes('traffic') || lowText.includes('leads') || lowText.includes('visitor')) {
+          analysisText = "Traffic bottlenecks are caused by relying on a single channel. Programmatic organic pipelines represent the highest yield. Organic video scripts generated via AI scale impressions at ₹0 expense.";
+          oppText = "Deploy viral short video content cycles. Reach out to local directory leads with customized content templates.";
+        } else if (lowText.includes('conversion') || lowText.includes('sell') || lowText.includes('sales')) {
+          analysisText = "Low conversion rates indicate poor offer validation or lack of trust. Refocus pricing copy around output warranties instead of tool definitions.";
+          oppText = "Embed interactive AI chatbots directly on the landing page to resolve user concerns in under 10 seconds.";
+        } else if (lowText.includes('scale') || lowText.includes('expand')) {
+          analysisText = "Scaling requires removing yourself from daily operations. Delegate product delivery to automated AI code platforms and focus exclusively on client pipeline distribution.";
+          planText = "Days 1-15: Integrate Make database webhooks.<br>Days 16-45: Launch scalable ads targeting validated templates.<br>Days 46-90: Delegate support lines to conversational bots.";
         }
 
+        // Fill in the 7 Tabs contents dynamically
+        document.getElementById('out-text-analysis').innerHTML = analysisText;
+        document.getElementById('out-text-opportunities').innerHTML = oppText;
+        document.getElementById('out-text-automation').innerHTML = autoText;
+        document.getElementById('out-text-marketing').innerHTML = markText;
+        document.getElementById('out-text-leads').innerHTML = leadText;
+        document.getElementById('out-text-revenue').innerHTML = revText;
+        document.getElementById('out-text-plan').innerHTML = planText;
+
+        // Append Bot Text reply
         const botBubble = document.createElement('div');
         botBubble.className = 'chat-bubble bot';
-        botBubble.innerHTML = response;
+        botBubble.innerHTML = "Analysis Compiled successfully! I have generated a custom strategy matrix based on your inputs. Please review the <strong>7-tab Strategy Board</strong> below for step-by-step implementation parameters.";
         chatLogs.appendChild(botBubble);
         chatLogs.scrollTop = chatLogs.scrollHeight;
+
+        // Display the 7-Tab Panel
+        if (outputPanel) {
+          outputPanel.style.display = 'block';
+          outputPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+        
       }, 1200);
     };
 
@@ -855,6 +952,7 @@ async function initApp() {
   
   await initSupabase();
   
+  // Close triggers for modals
   document.getElementById('auth-modal-close-btn').addEventListener('click', () => {
     document.getElementById('auth-modal-overlay').style.display = 'none';
   });
@@ -871,6 +969,22 @@ async function initApp() {
   document.getElementById('profile-modal-close-btn').addEventListener('click', () => {
     document.getElementById('profile-modal-overlay').style.display = 'none';
   });
+  
+  // Custom About platform modal triggers
+  const btnAboutTrigger = document.getElementById('btn-about-trigger');
+  const aboutOverlay = document.getElementById('about-bus-modal-overlay');
+  if (btnAboutTrigger && aboutOverlay) {
+    btnAboutTrigger.addEventListener('click', () => {
+      aboutOverlay.style.display = 'flex';
+    });
+  }
+  const btnAboutClose = document.getElementById('btn-about-close');
+  const btnAboutCloseBtn = document.getElementById('about-bus-modal-close-btn');
+  if (btnAboutClose && btnAboutCloseBtn && aboutOverlay) {
+    const closeAbout = () => { aboutOverlay.style.display = 'none'; };
+    btnAboutClose.addEventListener('click', closeAbout);
+    btnAboutCloseBtn.addEventListener('click', closeAbout);
+  }
   
   document.getElementById('btn-auth-google').addEventListener('click', handleGoogleLogin);
   document.getElementById('btn-auth-coupon-trigger').addEventListener('click', () => {
