@@ -5072,6 +5072,14 @@ function initLibrarySection() {
     });
   }
   
+  const btnLibShowMore = document.getElementById('btn-library-show-more');
+  if (btnLibShowMore) {
+    btnLibShowMore.addEventListener('click', () => {
+      const wrapper = document.getElementById('library-grid-wrapper');
+      if (wrapper) wrapper.classList.remove('collapsed');
+    });
+  }
+  
   renderLibraryGrid();
 }
 
@@ -5230,6 +5238,15 @@ function renderLibraryGrid() {
     });
   }
   
+  const wrapper = document.getElementById('library-grid-wrapper');
+  if (wrapper) {
+    if (filtered.length > 6) {
+      wrapper.classList.add('collapsed');
+    } else {
+      wrapper.classList.remove('collapsed');
+    }
+  }
+  
   setupCardInteractions();
 }
 
@@ -5270,6 +5287,14 @@ function initCategoryExplorerSection() {
       renderCategoryExplorer();
     }
   });
+  
+  const btnCatShowMore = document.getElementById('btn-category-show-more');
+  if (btnCatShowMore) {
+    btnCatShowMore.addEventListener('click', () => {
+      const wrapper = document.getElementById('category-tools-grid-wrapper');
+      if (wrapper) wrapper.classList.remove('collapsed');
+    });
+  }
   
   renderCategoryExplorer();
 }
@@ -5317,6 +5342,15 @@ function renderCategoryExplorer() {
       window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
     }
   });
+  
+  const wrapper = document.getElementById('category-tools-grid-wrapper');
+  if (wrapper) {
+    if (matched.length > 6) {
+      wrapper.classList.add('collapsed');
+    } else {
+      wrapper.classList.remove('collapsed');
+    }
+  }
   
   setupCardInteractions();
 }

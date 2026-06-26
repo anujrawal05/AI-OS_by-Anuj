@@ -490,8 +490,13 @@
           </div>
 
           <!-- Card Grid -->
-          <div class="library-grid" id="library-grid">
-            <!-- Generated dynamically in exact dataset sequence -->
+          <div class="grid-show-more-wrapper collapsed" id="library-grid-wrapper">
+            <div class="library-grid" id="library-grid">
+              <!-- Generated dynamically in exact dataset sequence -->
+            </div>
+            <div class="show-more-overlay">
+              <button class="btn-show-more" id="btn-library-show-more">Show More</button>
+            </div>
           </div>
         </section>
 
@@ -518,8 +523,13 @@
                 <h3 class="category-active-title" id="category-active-name">Everyday Personal Tasks</h3>
                 <span class="category-active-badge" id="category-active-count">0 Nodes</span>
               </div>
-              <div class="category-tools-grid" id="category-tools-grid">
-                <!-- Matched nodes will render here -->
+              <div class="grid-show-more-wrapper collapsed" id="category-tools-grid-wrapper">
+                <div class="category-tools-grid" id="category-tools-grid">
+                  <!-- Matched nodes will render here -->
+                </div>
+                <div class="show-more-overlay">
+                  <button class="btn-show-more" id="btn-category-show-more">Show More</button>
+                </div>
               </div>
             </main>
           </div>

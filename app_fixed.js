@@ -3970,6 +3970,36 @@ function renderPremiumToolCard(mapping) {
   if (deckContainer) deckContainer.innerHTML = '';
   
   if (!recContainer) return;
+
+  const isLocked = !isUserAuthenticated();
+  if (isLocked) {
+    recContainer.innerHTML = `
+      <div class="premium-tool-card">
+        <div class="premium-tool-card-header">
+          <div class="best-tool-badge">🔒 LOCKED PREMIUM TOOL</div>
+          <h2 class="premium-tool-name">Locked Premium Tool</h2>
+        </div>
+        <div class="premium-tool-card-body">
+          <div class="info-section">
+            <h4 class="info-title">Why This Tool</h4>
+            <p class="info-text">Please sign in or enter a valid coupon code to unlock premium tool recommendation reasons.</p>
+          </div>
+          <div class="info-section">
+            <h4 class="info-title">Quick Start Guide</h4>
+            <p class="info-text">Please sign in or enter a valid coupon code to unlock premium quick start execution guides.</p>
+          </div>
+          <div class="prompt-generation-section">
+            <h4 class="info-title">Generate Master JSON Prompt</h4>
+            <p class="prompt-desc-label">Please sign in or enter a valid coupon code to unlock the AI prompt generator.</p>
+          </div>
+        </div>
+        <div class="premium-tool-card-footer">
+          <button class="btn btn-primary btn-full-width" onclick="showPricingModal()">Unlock Premium Access</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
   
   const resolvedTaskKey = optionToMatrixKey[state.goalText] || state.goalText;
   
@@ -5042,6 +5072,14 @@ function initLibrarySection() {
     });
   }
   
+  const btnLibShowMore = document.getElementById('btn-library-show-more');
+  if (btnLibShowMore) {
+    btnLibShowMore.addEventListener('click', () => {
+      const wrapper = document.getElementById('library-grid-wrapper');
+      if (wrapper) wrapper.classList.remove('collapsed');
+    });
+  }
+  
   renderLibraryGrid();
 }
 
@@ -5200,6 +5238,15 @@ function renderLibraryGrid() {
     });
   }
   
+  const wrapper = document.getElementById('library-grid-wrapper');
+  if (wrapper) {
+    if (filtered.length > 6) {
+      wrapper.classList.add('collapsed');
+    } else {
+      wrapper.classList.remove('collapsed');
+    }
+  }
+  
   setupCardInteractions();
 }
 
@@ -5240,6 +5287,14 @@ function initCategoryExplorerSection() {
       renderCategoryExplorer();
     }
   });
+  
+  const btnCatShowMore = document.getElementById('btn-category-show-more');
+  if (btnCatShowMore) {
+    btnCatShowMore.addEventListener('click', () => {
+      const wrapper = document.getElementById('category-tools-grid-wrapper');
+      if (wrapper) wrapper.classList.remove('collapsed');
+    });
+  }
   
   renderCategoryExplorer();
 }
@@ -5287,6 +5342,15 @@ function renderCategoryExplorer() {
       window.AdManager.registerLazyLoad(adCard.querySelector('.ad-content'), 'code_1');
     }
   });
+  
+  const wrapper = document.getElementById('category-tools-grid-wrapper');
+  if (wrapper) {
+    if (matched.length > 6) {
+      wrapper.classList.add('collapsed');
+    } else {
+      wrapper.classList.remove('collapsed');
+    }
+  }
   
   setupCardInteractions();
 }
@@ -5621,7 +5685,7 @@ function removeRoadmapLock() {
   if (overlay) overlay.remove();
 }
 
-let supabase = null;
+let supabaseClient = null;
 
 // Initialize Supabase client
 async function initSupabase() {
@@ -5629,7 +5693,7 @@ async function initSupabase() {
     const res = await fetch('/api/config');
     const config = await res.json();
     if (config.supabaseUrl && config.supabaseAnonKey) {
-      supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
+      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
@@ -5639,7 +5703,7 @@ async function initSupabase() {
       console.log("Supabase client initialized successfully.");
       
       // Listen to auth state transitions
-      supabase.auth.onAuthStateChange(async (event, session) => {
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
         console.log("Supabase Auth Event:", event);
         if (session) {
           await handleSupabaseSession(session);
@@ -5812,13 +5876,13 @@ function updateUserProfileHeader() {
 }
 
 async function handleGoogleLogin() {
-  if (!supabase) {
+  if (!supabaseClient) {
     showToast("Supabase configuration is not loaded yet.", "error");
     return;
   }
   try {
     state.analytics.loginAttempts++;
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin
@@ -5833,7 +5897,7 @@ async function handleGoogleLogin() {
 async function handleSupabaseSession(session) {
   const user = session.user;
   try {
-    const { data: profile, error } = await supabase
+    const { data: profile, error } = await supabaseClient
       .from('user_profiles')
       .select('*')
       .eq('id', user.id)
@@ -5893,7 +5957,7 @@ function showOnboardingModal(user) {
 
 async function handleOnboardingSubmit(e) {
   e.preventDefault();
-  if (!supabase || !onboardingUser) return;
+  if (!supabaseClient || !onboardingUser) return;
   
   const fullName = document.getElementById('ob-fullname').value.trim();
   const dob = document.getElementById('ob-dob').value;
@@ -5923,7 +5987,7 @@ async function handleOnboardingSubmit(e) {
   }
   
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('user_profiles')
       .upsert({
         id: onboardingUser.id,
@@ -5942,7 +6006,7 @@ async function handleOnboardingSubmit(e) {
     const overlay = document.getElementById('onboarding-modal-overlay');
     if (overlay) overlay.style.display = 'none';
     
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
       await handleSupabaseSession(session);
     }
@@ -5967,9 +6031,9 @@ function showPricingModal(isMandatory = false) {
 
 async function handleChooseFreePlan() {
   if (!state.user) return;
-  if (!supabase) return;
+  if (!supabaseClient) return;
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('user_profiles')
       .update({ plan_type: 'Basic', updated_at: new Date().toISOString() })
       .eq('id', state.user.id);
@@ -6106,6 +6170,7 @@ async function verifyRazorpayPayment(response, planName) {
   }
 }
 
+
 function showProfileModal() {
   if (!state.user) return;
   
@@ -6194,9 +6259,9 @@ async function handleProfileSave(e) {
     return;
   }
   
-  if (!supabase) return;
+  if (!supabaseClient) return;
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('user_profiles')
       .update({
         full_name: fullName,
@@ -6283,9 +6348,9 @@ async function handleCouponLogin(couponCode) {
 }
 
 async function logoutUser() {
-  if (supabase) {
+  if (supabaseClient) {
     try {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
     } catch (err) {}
   }
   sessionStorage.removeItem('aios_coupon_session');
@@ -6336,7 +6401,9 @@ function initBusinessSimulators() {
   }
 }
 
+
 async function initAuthSystem() {
+
   // 1. Check coupon session storage first (tab isolation)
   const couponSession = sessionStorage.getItem('aios_coupon_session');
   if (couponSession) {
