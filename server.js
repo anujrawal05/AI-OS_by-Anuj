@@ -46,8 +46,11 @@ app.post('/api/auth/email-signup', async (req, res) => {
 
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
+      console.error('[Signup Auth Error Object]:', error);
       return res.status(400).json({ error: error.message });
     }
+
+    console.log('[Signup Auth SignUp Response Data]:', data);
 
     if (data && data.user) {
       const profileData = {
@@ -77,9 +80,11 @@ app.post('/api/auth/email-signup', async (req, res) => {
       }
 
       if (profileError) {
-        console.error('[Signup Profile Error]:', profileError.message);
+        console.error('[Signup Profile Error Object]:', profileError);
         return res.status(400).json({ error: 'Failed to create user profile: ' + profileError.message });
       }
+
+      console.log('[Signup Profile Upsert Response Success]:', profileData);
 
       return res.status(200).json({
         user: data.user,
