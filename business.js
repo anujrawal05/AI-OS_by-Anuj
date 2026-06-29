@@ -1845,7 +1845,8 @@ function initBusinessSimulators() {
       const model = document.getElementById('blueprint-model-select').value;
       const nicheEl = document.getElementById('blueprint-niche-select');
       const niche = nicheEl ? nicheEl.value : 'retail';
-      const budget = document.getElementById('blueprint-budget-select').value;
+      const budgetSelect = document.getElementById('blueprint-budget-select');
+      const budget = budgetSelect ? budgetSelect.value : "5000";
 
       bOutput.innerHTML = `
         <div style="text-align: center; padding: 60px 0;">
