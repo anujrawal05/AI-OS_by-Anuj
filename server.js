@@ -516,46 +516,60 @@ app.post('/api/strategist/chat', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required. Please log in or enter a valid coupon code to unlock AI-OS premium services.' });
     }
 
-    if (verifiedUser.plan_type !== 'Premium') {
+    if (verifiedUser.plan_type !== 'Premium' && verifiedUser.plan_type !== 'Trial') {
       return res.status(403).json({ error: 'Upgrade to Premium to consult A.R. Business Strategist.' });
     }
 
-    const { userInput } = req.body;
-    if (!userInput) {
-      return res.status(400).json({ error: 'Missing userInput in request body.' });
-    }
-
+    const { mode, userInput, businessName, targetAudience, bottleneck, context, history } = req.body;
+    
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
     if (!openRouterApiKey) {
       console.warn('[Strategist Server] OpenRouter API key not configured. Using fallback templates.');
-      return res.status(200).json(getFallbackStrategy(userInput));
+      if (mode === 'chat') {
+        return res.status(200).json({ reply: `I received your query: "${userInput}". Our live AI systems are currently offline. Please configure your OpenRouter API key.` });
+      }
+      return res.status(200).json(getFallbackStrategy(businessName || userInput));
     }
 
-    const systemPromptContent = [
-      "You are an elite business architect and SaaS strategist.",
-      "Analyze the user's business query or idea and generate a highly professional, structured strategy roadmap.",
-      "Output ONLY valid JSON containing exactly these 7 keys:",
-      "1. 'analysis': Strategic diagnostics of the business query, identified bottlenecks, and recommendations.",
-      "2. 'opportunities': A list of exactly 3 highly actionable, specific business opportunities/monetization strategies (use HTML tags like <br> or <strong> for formatting).",
-      "3. 'automation': Exact Make.com, Zapier, or API webhook trigger/action steps for operations.",
-      "4. 'marketing': The organic and outbound marketing distribution channels, client outreach copy ideas, and direct funnel design.",
-      "5. 'leads': Scraper inputs, lead filters, cold email volume recommendations, and expected conversion metrics.",
-      "6. 'revenue': Concrete pricing structures (retainers, setup fees, outcome cuts) and operational cost/margin calculations.",
-      "7. 'plan': Step-by-step milestone execution roadmap mapping Days 1-30 (Launch), Days 31-60 (Scale), and Days 61-90 (Optimize).",
-      "Ensure all values contain detailed, concrete operational advice tailored to the user's specific input, rather than generic motivational text. Use HTML line breaks (<br>) and bold text (<strong>) where appropriate.",
-      "Return ONLY a raw JSON object. Do NOT wrap inside markdown blocks. Do NOT output explanations or thinking text."
-    ].join('\n');
+    const currentMode = mode || 'compile';
 
-    try {
+    if (currentMode === 'compile') {
+      const name = businessName || 'My Startup';
+      const audience = targetAudience || 'General Consumers';
+      const bn = bottleneck || 'Acquisition/Sales';
+
+      const systemPromptContent = [
+        "You are an elite corporate advisory partner, ultra-pro venture capital consultant, fractional CMO, and hyper-practical systems advisor.",
+        "Your goal is to deliver deep, customized business value that explicitly handles the user's specific typed responses.",
+        "Your advice must feel hyper-vetted, elite, and premium, making the user feel their investment is a massive arbitrage deal.",
+        "",
+        "CRITICAL QUALITY TARGETS:",
+        "- NEVER output generic or superficial advice like 'identify the target audience' or 'offer free tutorials'.",
+        "- ALL generated steps must contain precise tool stack choices (e.g., specific SaaS names, APIs), specific outreach copy frameworks, exact timeline steps, and actionable unit economics (costs, prices, conversions).",
+        "- Render every tab pane element using tailored bullet lists with HTML line breaks (<br>) and clear bold headers (<strong>) for beautiful UI formatting.",
+        "",
+        "Output ONLY valid JSON containing exactly these 7 keys:",
+        "1. 'analysis': Strategic diagnostics of the business, identified bottlenecks, and recommendations.",
+        "2. 'opportunities': A list of exactly 3 highly actionable, specific business opportunities/monetization strategies.",
+        "3. 'automation': Exact Make.com, Zapier, or API webhook trigger/action steps for operations.",
+        "4. 'marketing': The organic and outbound marketing distribution channels, client outreach copy ideas, and direct funnel design.",
+        "5. 'leads': Scraper inputs, lead filters, cold email volume recommendations, and expected conversion metrics.",
+        "6. 'revenue': Concrete pricing structures (retainers, setup fees, outcome cuts) and operational cost/margin calculations.",
+        "7. 'plan': Step-by-step milestone execution roadmap mapping Days 1-30 (Launch), Days 31-60 (Scale), and Days 61-90 (Optimize).",
+        "Return ONLY a raw JSON object. Do NOT wrap inside markdown blocks. Do NOT output explanations or thinking text."
+      ].join('\n');
+
+      const userPrompt = `Develop a customized enterprise roadmap for my business:\nBusiness Name/Niche/Offer: ${name}\nTarget Audience/Avatar: ${audience}\nBottleneck: ${bn}`;
+
       const openRouterResponse = await axios.post(
         'https://openrouter.ai/api/v1/chat/completions',
         {
           model: 'meta-llama/llama-3.3-70b-instruct',
           messages: [
             { role: 'system', content: systemPromptContent },
-            { role: 'user', content: userInput }
+            { role: 'user', content: userPrompt }
           ],
-          temperature: 0.8,
+          temperature: 0.7,
           max_tokens: 4096,
           response_format: { type: "json_object" }
         },
@@ -571,7 +585,6 @@ app.post('/api/strategist/chat', async (req, res) => {
       let resultText = openRouterResponse?.data?.choices?.[0]?.message?.content || '';
       resultText = resultText.trim();
 
-      // Strip markdown block formatting if present
       if (resultText.startsWith('```')) {
         resultText = resultText.replace(/^```(?:json)?\n?/i, '');
         resultText = resultText.replace(/\n?```$/i, '');
@@ -581,14 +594,70 @@ app.post('/api/strategist/chat', async (req, res) => {
       const parsedJSON = JSON.parse(resultText);
       return res.status(200).json(parsedJSON);
 
-    } catch (apiError) {
-      console.warn('[Strategist Server] OpenRouter API call failed. Using fallback templates.', apiError.message);
-      return res.status(200).json(getFallbackStrategy(userInput));
+    } else {
+      // mode === 'chat' (Follow-up chat answers)
+      if (!userInput) {
+        return res.status(400).json({ error: 'Missing userInput in request body.' });
+      }
+
+      const bizName = context?.businessName || 'N/A';
+      const bizAudience = context?.targetAudience || 'N/A';
+      const bizBottleneck = context?.bottleneck || 'N/A';
+      const compiledStrategy = context?.strategy ? JSON.stringify(context.strategy, null, 2) : 'No compiled roadmap yet.';
+
+      const systemPromptContent = [
+        "You are an elite corporate advisory partner, ultra-pro venture capital consultant, fractional CMO, and hyper-practical systems advisor.",
+        "You are answering a user's follow-up question regarding their business profile and compiled roadmap.",
+        `User Profile:\n- Business Offer: ${bizName}\n- Target Audience: ${bizAudience}\n- Current Bottleneck: ${bizBottleneck}`,
+        `Compiled Strategy Roadmap:\n${compiledStrategy}`,
+        "",
+        "CRITICAL QUALITY TARGETS:",
+        "- NEVER output generic or superficial advice. Be highly specific, technical, and concrete.",
+        "- Output answers in clean HTML format using line breaks (<br>) and bold text (<strong>) where appropriate.",
+        "- Keep responses punchy, professional, and actionable."
+      ].join('\n');
+
+      const messages = [{ role: 'system', content: systemPromptContent }];
+      
+      // Inject previous logs/history if present
+      if (Array.isArray(history)) {
+        history.forEach(msg => {
+          messages.push({
+            role: msg.role === 'user' ? 'user' : 'assistant',
+            content: msg.content
+          });
+        });
+      }
+
+      messages.push({ role: 'user', content: userInput });
+
+      const openRouterResponse = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'meta-llama/llama-3.3-70b-instruct',
+          messages,
+          temperature: 0.7,
+          max_tokens: 2048
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${openRouterApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          timeout: 25000
+        }
+      );
+
+      const resultText = openRouterResponse?.data?.choices?.[0]?.message?.content || '';
+      return res.status(200).json({ reply: resultText.trim() });
     }
 
   } catch (error) {
-    console.error('[Strategist Server] Internal Server Error:', error.message);
-    return res.status(500).json({ error: 'Failed to process strategic analysis.', details: error.message });
+    console.error('[Strategist Server] Error:', error.message);
+    if (req.body && req.body.mode === 'chat') {
+      return res.status(200).json({ reply: "I failed to process your question due to a backend connection timeout. Please try again." });
+    }
+    return res.status(200).json(getFallbackStrategy(req.body ? (req.body.businessName || 'Business') : 'Business'));
   }
 });
 

@@ -1957,6 +1957,7 @@ function initBusinessSimulators() {
   const chatSendBtn = document.getElementById('btn-chat-strategist-send');
   const chatLogs = document.getElementById('chat-strategist-logs');
   const outputPanel = document.getElementById('strategist-tabs-panel');
+  const btnAnalyze = document.getElementById('btn-strategist-analyze');
   
   // Strategy tab triggers binding
   const strategTabBtns = document.querySelectorAll('.strategist-tab-btn');
@@ -1974,10 +1975,165 @@ function initBusinessSimulators() {
     });
   });
 
+  let isAnalysisComputed = false;
+  let currentBusinessContext = {
+    name: '',
+    audience: '',
+    bottleneck: '',
+    strategy: null
+  };
+  let strategistChatHistory = [];
+
+  // Deactivate chatbot send footer inputs by default until compiled
+  if (chatInput && chatSendBtn) {
+    chatInput.disabled = true;
+    chatInput.placeholder = "Please analyze your enterprise matrix first...";
+    chatSendBtn.disabled = true;
+  }
+
+  const renderStrategyBoard = (data) => {
+    document.getElementById('out-text-analysis').innerHTML = data.analysis || '';
+    document.getElementById('out-text-opportunities').innerHTML = data.opportunities || '';
+    document.getElementById('out-text-automation').innerHTML = data.automation || '';
+    document.getElementById('out-text-marketing').innerHTML = data.marketing || '';
+    document.getElementById('out-text-leads').innerHTML = data.leads || '';
+    document.getElementById('out-text-revenue').innerHTML = data.revenue || '';
+    document.getElementById('out-text-plan').innerHTML = data.plan || '';
+
+    // Display the 7-Tab Panel
+    if (outputPanel) {
+      outputPanel.style.display = 'block';
+      outputPanel.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const getClientFallback = () => {
+    return {
+      analysis: "Strategy generation requires a live server connection. Please check your network and retry.",
+      opportunities: "Please retry after a moment.",
+      automation: "Please retry after a moment.",
+      marketing: "Please retry after a moment.",
+      leads: "Please retry after a moment.",
+      revenue: "Please retry after a moment.",
+      plan: "Please retry after a moment."
+    };
+  };
+
+  if (btnAnalyze) {
+    btnAnalyze.addEventListener('click', async () => {
+      if (!isUserAuthenticated()) {
+        document.getElementById('auth-modal-overlay').style.display = 'flex';
+        showToast("Please login first to consult the AI strategist.", "warning");
+        return;
+      }
+      
+      if (state.user && state.user.plan_type !== 'Premium' && state.user.plan_type !== 'Trial') {
+        showPricingModal(true);
+        showToast("Upgrade to Premium or start trial to consult A.R. Business Strategist.", "warning");
+        return;
+      }
+
+      const nameVal = (document.getElementById('strategist-business-name') || {}).value?.trim();
+      const audienceVal = (document.getElementById('strategist-target-audience') || {}).value?.trim();
+      const bottleneckVal = (document.getElementById('strategist-bottleneck') || {}).value?.trim();
+
+      if (!nameVal || !audienceVal || !bottleneckVal) {
+        showToast("Please fill in all three matrix profile inputs first.", "warning");
+        return;
+      }
+
+      btnAnalyze.disabled = true;
+      btnAnalyze.textContent = "COMPILING MATRIX...";
+
+      // Clear previous logs and append Bot Thinking
+      if (chatLogs) {
+        chatLogs.innerHTML = '';
+        const botThinking = document.createElement('div');
+        botThinking.className = 'chat-bubble bot';
+        botThinking.innerHTML = `<span>Formulating customized enterprise strategy roadmap based on your profile inputs...</span>`;
+        chatLogs.appendChild(botThinking);
+        chatLogs.scrollTop = chatLogs.scrollHeight;
+      }
+
+      try {
+        const res = await fetch('/api/strategist/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${state.user ? state.user.token : ''}`
+          },
+          body: JSON.stringify({
+            mode: 'compile',
+            businessName: nameVal,
+            targetAudience: audienceVal,
+            bottleneck: bottleneckVal
+          })
+        });
+
+        // Remove thinking bubble
+        if (chatLogs) chatLogs.innerHTML = '';
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Server error');
+        }
+
+        const data = await res.json();
+        
+        // Sync context
+        currentBusinessContext = {
+          name: nameVal,
+          audience: audienceVal,
+          bottleneck: bottleneckVal,
+          strategy: data
+        };
+
+        // Initialize structured payload context in active chat memory logs
+        strategistChatHistory = [
+          { role: 'user', content: `Analyze my business:\nName/Niche: ${nameVal}\nTarget Audience: ${audienceVal}\nBottleneck: ${bottleneckVal}` },
+          { role: 'assistant', content: `Analysis Compiled successfully. I have populated the 7-tab Strategy Board. Key findings:\n${data.analysis}` }
+        ];
+
+        renderStrategyBoard(data);
+
+        // Success bubble in chat
+        if (chatLogs) {
+          const welcomeBubble = document.createElement('div');
+          welcomeBubble.className = 'chat-bubble bot';
+          welcomeBubble.innerHTML = `<strong>Enterprise Analysis Compiled!</strong><br>I have generated a customized operational blueprint based on your query. Please review the <strong>7-tab Strategy Board</strong> below.<br><br>You can now ask follow-up questions in the chat bar below.`;
+          chatLogs.appendChild(welcomeBubble);
+          chatLogs.scrollTop = chatLogs.scrollHeight;
+        }
+
+        // Enable chat inputs
+        isAnalysisComputed = true;
+        if (chatInput && chatSendBtn) {
+          chatInput.disabled = false;
+          chatInput.placeholder = "Ask your corporate advisory partner follow-up questions...";
+          chatSendBtn.disabled = false;
+        }
+
+      } catch (err) {
+        console.warn("Backend strategist call failed, running local fallback strategy:", err);
+        if (chatLogs) chatLogs.innerHTML = '';
+        renderStrategyBoard(getClientFallback());
+        showToast(err.message || "Failed to compile blueprint.", "error");
+      } finally {
+        btnAnalyze.disabled = false;
+        btnAnalyze.textContent = "ANALYZE ENTERPRISE MATRIX";
+      }
+    });
+  }
+
   if (chatInput && chatSendBtn && chatLogs) {
     const handleSend = () => {
       const text = chatInput.value.trim();
       if (!text) return;
+
+      if (!isAnalysisComputed) {
+        showToast("Please compile the Enterprise Matrix first.", "warning");
+        return;
+      }
 
       if (!isUserAuthenticated()) {
         document.getElementById('auth-modal-overlay').style.display = 'flex';
@@ -2002,47 +2158,9 @@ function initBusinessSimulators() {
       // Append Bot Thinking Bubble
       const botThinking = document.createElement('div');
       botThinking.className = 'chat-bubble bot';
-      botThinking.innerHTML = `<span>Analyzing business architecture and formulating strategy roadmap...</span>`;
+      botThinking.innerHTML = `<span>Thinking...</span>`;
       chatLogs.appendChild(botThinking);
       chatLogs.scrollTop = chatLogs.scrollHeight;
-
-      // Function to render the strategy board tabs
-      const renderStrategyBoard = (data) => {
-        document.getElementById('out-text-analysis').innerHTML = data.analysis || '';
-        document.getElementById('out-text-opportunities').innerHTML = data.opportunities || '';
-        document.getElementById('out-text-automation').innerHTML = data.automation || '';
-        document.getElementById('out-text-marketing').innerHTML = data.marketing || '';
-        document.getElementById('out-text-leads').innerHTML = data.leads || '';
-        document.getElementById('out-text-revenue').innerHTML = data.revenue || '';
-        document.getElementById('out-text-plan').innerHTML = data.plan || '';
-
-        // Append Bot Text reply
-        const botBubble = document.createElement('div');
-        botBubble.className = 'chat-bubble bot';
-        botBubble.innerHTML = "Analysis Compiled! I have generated a customized operational blueprint based on your query. Please review the <strong>7-tab Strategy Board</strong> below for exact timelines and steps.";
-        chatLogs.appendChild(botBubble);
-        chatLogs.scrollTop = chatLogs.scrollHeight;
-
-        // Display the 7-Tab Panel
-        if (outputPanel) {
-          outputPanel.style.display = 'block';
-          outputPanel.scrollIntoView({ behavior: 'smooth' });
-        }
-      };
-
-      const getClientFallback = () => {
-        // Raw strategy data has been moved server-side. Return a minimal retry state.
-        return {
-          analysis: "Strategy generation requires a live server connection. Please check your network and retry.",
-          opportunities: "Please retry after a moment.",
-          automation: "Please retry after a moment.",
-          marketing: "Please retry after a moment.",
-          leads: "Please retry after a moment.",
-          revenue: "Please retry after a moment.",
-          plan: "Please retry after a moment."
-        };
-      };
-
 
       fetch('/api/strategist/chat', {
         method: 'POST',
@@ -2050,7 +2168,12 @@ function initBusinessSimulators() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${state.user ? state.user.token : ''}`
         },
-        body: JSON.stringify({ userInput: text })
+        body: JSON.stringify({
+          mode: 'chat',
+          userInput: text,
+          context: currentBusinessContext,
+          history: strategistChatHistory
+        })
       })
       .then(async (res) => {
         botThinking.remove();
@@ -2061,11 +2184,18 @@ function initBusinessSimulators() {
         return res.json();
       })
       .then((data) => {
-        renderStrategyBoard(data);
+        const botBubble = document.createElement('div');
+        botBubble.className = 'chat-bubble bot';
+        botBubble.innerHTML = data.reply || "I have processed your query.";
+        chatLogs.appendChild(botBubble);
+        chatLogs.scrollTop = chatLogs.scrollHeight;
+
+        // Persist history
+        strategistChatHistory.push({ role: 'user', content: text });
+        strategistChatHistory.push({ role: 'assistant', content: data.reply });
       })
       .catch((err) => {
-        console.warn("Backend strategist call failed, running local fallback strategy:", err);
-        renderStrategyBoard(getClientFallback(text));
+        showToast("Failed to fetch reply: " + err.message, "error");
       });
     };
 

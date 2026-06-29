@@ -1000,54 +1000,25 @@
         <div class="strategist-workspace">
           
           <!-- Funnel metrics analytics mock -->
-          <div class="strategist-sidebar-panel">
-            <h4 style="color:#fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1rem;">📊 Conversion Funnel</h4>
+          <div class="strategist-sidebar-panel" style="display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
+            <h4 style="color:#fff; margin-bottom: 5px; font-family: var(--font-mono); font-size: 1rem;">📊 Enterprise Matrix</h4>
             
-            <div class="funnel-stage-row">
-              <div class="funnel-stage-header">
-                <span>1. Traffic / Leads</span>
-                <span id="funnel-traffic" style="color: var(--bus-accent);">15,000</span>
-              </div>
-              <div class="funnel-stage-bar-outer">
-                <div id="funnel-bar-traffic" class="funnel-stage-bar-inner" style="--w: 100%;"></div>
-              </div>
+            <div class="blueprint-form-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">1. What is your business name, domain niche, or core service offer?</label>
+              <textarea class="blueprint-form-select" id="strategist-business-name" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Apex AI Solutions, custom LLM fine-tuning..."></textarea>
             </div>
 
-            <div class="funnel-stage-row">
-              <div class="funnel-stage-header">
-                <span>2. Qualified Leads</span>
-                <span id="funnel-qualified" style="color: var(--bus-accent);">3,200</span>
-              </div>
-              <div class="funnel-stage-bar-outer">
-                <div id="funnel-bar-qualified" class="funnel-stage-bar-inner" style="--w: 45%;"></div>
-              </div>
+            <div class="blueprint-form-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">2. Describe your primary target audience or ideal client avatar</label>
+              <textarea class="blueprint-form-select" id="strategist-target-audience" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Mid-sized healthcare clinics, operations managers..."></textarea>
             </div>
 
-            <div class="funnel-stage-row">
-              <div class="funnel-stage-header">
-                <span>3. Conversions</span>
-                <span id="funnel-conversions" style="color: var(--bus-accent);">2.8%</span>
-              </div>
-              <div class="funnel-stage-bar-outer">
-                <div id="funnel-bar-conversions" class="funnel-stage-bar-inner" style="--w: 18%;"></div>
-              </div>
+            <div class="blueprint-form-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">3. What is your biggest current business bottleneck? (e.g., Traffic, Sales Conversions, Retention)</label>
+              <textarea class="blueprint-form-select" id="strategist-bottleneck" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Getting qualified leads, sales closing rates..."></textarea>
             </div>
 
-            <div class="funnel-stage-row" style="margin-bottom: 24px;">
-              <div class="funnel-stage-header">
-                <span>4. Target Growth</span>
-                <span id="funnel-growth" style="color: var(--bus-secondary);">+150%</span>
-              </div>
-              <div class="funnel-stage-bar-outer">
-                <div id="funnel-bar-growth" class="funnel-stage-bar-inner" style="background: var(--bus-secondary); --w: 65%; box-shadow: 0 0 8px var(--bus-secondary);"></div>
-              </div>
-            </div>
-            
-            <!-- Minimal Map Vector graphics -->
-            <div class="map-world-graphics">
-              <img src="world_map.png" alt="World Map Nodes" class="map-world-image">
-              <div class="hero-floating-badge" style="top: auto; bottom: 10px; left: 10px; font-size: 0.55rem; background: rgba(0,0,0,0.65);">GLOBAL DISTRIBUTION</div>
-            </div>
+            <button class="btn-blueprint-compile" id="btn-strategist-analyze" style="margin-top: 5px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; padding: 12px; background: var(--bus-primary); color: #000; border: none; border-radius: 8px; cursor: pointer; transition: all var(--transition-fast);">ANALYZE ENTERPRISE MATRIX</button>
           </div>
 
           <!-- Chat Strategist Console -->
