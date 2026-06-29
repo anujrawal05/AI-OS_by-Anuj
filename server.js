@@ -62,7 +62,8 @@ app.post('/api/auth/email-signup', async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    console.log('[Signup Auth SignUp Response Data]:', data);
+    console.log('[Signup Auth SignUp Response User]:', data ? data.user : null);
+    console.log('[Signup Auth SignUp Response Session]:', data ? data.session : null);
 
     if (data && data.user) {
       const profileData = {

@@ -2381,7 +2381,7 @@ async function handleBusEmailSignup() {
     } else if (result.user) {
       if (errEl) {
         errEl.style.color = 'var(--bus-primary)';
-        errEl.textContent = '✅ Registration successful! Please log in to complete setup.';
+        errEl.textContent = '✅ Registration successful! A verification email has been sent. Please verify your email before continuing.';
         errEl.style.display = 'block';
       }
     }
