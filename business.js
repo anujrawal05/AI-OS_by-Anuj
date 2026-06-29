@@ -2335,6 +2335,13 @@ async function handleBusEmailSignin() {
       throw new Error(result.error || 'Sign in failed. Check credentials.');
     }
     if (result.session) {
+      if (!supabase) throw new Error('Auth service is offline.');
+      const { error: setSessionError } = await supabase.auth.setSession({
+        access_token: result.session.access_token,
+        refresh_token: result.session.refresh_token
+      });
+      if (setSessionError) throw setSessionError;
+
       await handleSupabaseSession(result.session, result.profile);
     }
   } catch (err) {
@@ -2377,6 +2384,19 @@ async function handleBusEmailSignup() {
     
     // Auto login on successful signup if session is returned
     if (result.session) {
+      if (!supabase) throw new Error('Auth service is offline.');
+      const { error: setSessionError } = await supabase.auth.setSession({
+        access_token: result.session.access_token,
+        refresh_token: result.session.refresh_token
+      });
+      if (setSessionError) throw setSessionError;
+
+      // Log values for debugging
+      console.log('[Signup Success Debug] user:', result.user);
+      console.log('[Signup Success Debug] session:', result.session);
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      console.log('[Signup Success Debug] current client session:', currentSession);
+
       await handleSupabaseSession(result.session, result.profile);
     } else if (result.user) {
       if (errEl) {
