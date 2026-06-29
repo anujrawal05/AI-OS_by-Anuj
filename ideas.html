@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Blueprints Lab</title>
+  <!-- Google Fonts Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #090a0f;
+      --bg-card: #12141c;
+      --bg-sidebar: #0f1118;
+      --border-color: #1e2230;
+      
+      --accent-green: #00ff88;
+      --accent-blue: #00f0ff;
+      --accent-purple: #9d4edd;
+      --accent-pink: #ff007f;
+      
+      --text-main: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 320px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+    }
+
+    .sidebar-title span {
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sidebar-subtitle {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ideas-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Scrollbar */
+    .ideas-list::-webkit-scrollbar,
+    .main-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .ideas-list::-webkit-scrollbar-track,
+    .main-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .ideas-list::-webkit-scrollbar-thumb,
+    .main-content::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .idea-card-trigger {
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      outline: none;
+    }
+
+    .idea-card-trigger:hover {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .idea-card-trigger.active {
+      background: rgba(0, 255, 136, 0.03);
+      border-color: rgba(0, 255, 136, 0.2);
+    }
+
+    .idea-card-trigger-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fff;
+      transition: var(--transition);
+    }
+
+    .idea-card-trigger.active .idea-card-trigger-title {
+      color: var(--accent-green);
+    }
+
+    .idea-card-trigger-desc {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Main Display Panel */
+    .main-content {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      background: radial-gradient(circle at 10% 20%, rgba(18, 20, 28, 0.4) 0%, rgba(9, 10, 15, 0) 100%);
+    }
+
+    /* Top Grid metrics */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .metric-card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .metric-card.profit { border-left: 3px solid var(--accent-green); }
+    .metric-card.setup { border-left: 3px solid var(--accent-blue); }
+    .metric-card.opex { border-left: 3px solid var(--accent-purple); }
+
+    /* Content Cards layout */
+    .blueprint-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .blueprint-badge {
+      display: inline-flex;
+      align-self: flex-start;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      color: var(--accent-blue);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 4px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .blueprint-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .blueprint-description {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 850px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .detail-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: var(--transition);
+    }
+
+    .detail-card:hover {
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .detail-title {
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-green);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-content {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .detail-content strong {
+      color: #fff;
+    }
+
+    /* Checklist Card block span */
+    .detail-card.span-2 {
+      grid-column: span 2;
+    }
+
+    .checklist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .checklist-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      transition: var(--transition);
+    }
+
+    .checklist-row:hover {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .checklist-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 3px;
+      cursor: pointer;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .checklist-checkbox.checked {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    .checklist-checkbox::after {
+      content: '';
+      width: 8px;
+      height: 4px;
+      border-left: 2px solid #000;
+      border-bottom: 2px solid #000;
+      transform: rotate(-45deg) translateY(-1px);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .checklist-checkbox.checked::after {
+      opacity: 1;
+    }
+
+    .checklist-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .checklist-checkbox.checked + .checklist-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    /* Animation wrappers */
+    .fade-element {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar List -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3 class="sidebar-title">⚡ <span>BLUEPRINTS LAB</span></h3>
+      <div class="sidebar-subtitle">Launch Matrix Directory</div>
+    </div>
+    <div class="ideas-list" id="trigger-container">
+      <!-- List populated dynamically by Javascript -->
+    </div>
+  </div>
+
+  <!-- Main Blueprint Workspace -->
+  <div class="main-content" id="workspace-container">
+    <!-- Content populated dynamically -->
+  </div>
+
+  <script>
+    const database = {
+      'agency': {
+        title: "AI Automation Agency (AAA)",
+        desc: "Deploy conversational lead-capture chat bots, CRM database synchronizers, and intake form workflows for client services.",
+        profit: "₹80,000 - ₹3,50,000 / month",
+        setup: "₹1,500 (Domain registration + custom email)",
+        opex: "₹4,200 (Make.com core + OpenAI keys + Voiceflow)",
+        tools: "Make.com, Voiceflow, ChatGPT API, Google Workspace APIs",
+        skills: "API webhook configurations, prompt structuring, client discovery",
+        registration: "Sole Proprietorship initially. Transition to One Person Company (OPC) once monthly revenue exceeds ₹1,50,000.",
+        marketing: "Configure Programmatic SEO directory sites targeting '[City Name] Realtor Automations' + cold outreach DMs.",
+        sales: "Build a basic real estate booking bot mockup and send a 3-minute video showcase to local agency directors.",
+        automation: "Webhooks sync lead capture records directly to client CRM spreadsheet rows while firing Slack client alert pings.",
+        risks: "API model updates changing bot output tones, client churn, setting up wrong webhooks.",
+        timeline: "14 - 30 days to close first client retainer.",
+        checklist: [
+          "Build landing portal displaying realtor conversational lead booking bot demo.",
+          "Locate 40 regional realtors on Google Maps and LinkedIn.",
+          "Pitch Loom audit illustrating how bots reduce booking leakage by 60%.",
+          "Close setup agreement and link Make.com pipeline nodes."
+        ]
+      },
+      'dropservicing': {
+        title: "High-Ticket Drop-Servicing Agency",
+        desc: "Broker high-value digital services (web design, copywriting, video editing) by securing contracts and outsourcing delivery to vetted contractors.",
+        profit: "₹75,000 - ₹3,00,000 / month",
+        setup: "₹1,000 (Domain + basic landing site builder)",
+        opex: "₹2,500 (CRM tool + outreach sequencing software)",
+        tools: "Webflow, Loom, Google Forms, Freelance portals (Upwork, Behance)",
+        skills: "High-ticket sales, project management, contractor vetting",
+        registration: "Sole Proprietorship initially. LLC once cash flows stabilize.",
+        marketing: "Build a premium niche portfolio site (e.g. 'Custom Web Design for Real Estate Brokers').",
+        sales: "Outbound outreach pitching site upgrades, charging ₹80,000 flat setup fee.",
+        automation: "Client feedback forms map updates directly to contractor project boards via Trello integrations.",
+        risks: "Contractor delays or poor output quality, client communication delays.",
+        timeline: "15 - 40 days.",
+        checklist: [
+          "Vett 3 high-quality UI designers on Behance and agree on hourly pricing.",
+          "Build client-facing site presenting premium visual examples.",
+          "Reach out to 50 realtors with outdated sites.",
+          "Close client deal, pay contractor 40%, and keep 60% arbitrage margin."
+        ]
+      },
+      'micro-saas': {
+        title: "AI Micro-SaaS Product",
+        desc: "Launch a single-feature software tool that solves a highly specific operational task, monetizing via low-cost monthly subscriptions.",
+        profit: "₹1,50,000 - ₹8,00,000 / month",
+        setup: "₹3,500 (API server + domain + database config)",
+        opex: "₹5,000 (Vercel hosting + Supabase + OpenAI APIs + Stripe API)",
+        tools: "Next.js, Tailwind CSS, Supabase, OpenAI APIs, Resend",
+        skills: "JavaScript/React development, basic API routing, product design",
+        registration: "Private Limited or LLP immediately to protect software assets.",
+        marketing: "Submit product to AI directories (ProductHunt, TheresAnAIForThat) + programmatic content.",
+        sales: "Set pricing at ₹1,500/month per user account with a free 7-day trial.",
+        automation: "User accounts, billing portals, and API keys are provisioned automatically.",
+        risks: "Server down-time, OpenAI billing scale spikes, competitors launching identical clones.",
+        timeline: "30 - 60 days.",
+        checklist: [
+          "Build a single-page tool: e.g., 'Real Estate AI Description Writer'.",
+          "Integrate Supabase Auth and Stripe checkout links.",
+          "List product on directories and launch organic search campaigns.",
+          "Optimize product UX based on client feedback metrics."
+        ]
+      },
+      'creator': {
+        title: "AI Creator Engine & Monetization",
+        desc: "Build a highly-targeted content brand using AI video scripting tools, monetizing via sponsorships, templates, and courses.",
+        profit: "₹50,000 - ₹2,50,000 / month",
+        setup: "₹0 (Free social accounts + organic editing tools)",
+        opex: "₹1,500 (AI video generation + captioning templates)",
+        tools: "CapCut, ElevenLabs, ChatGPT, Gumroad, Canva",
+        skills: "Video storytelling, script structure, content hook design",
+        registration: "Sole Proprietorship. LLC once sponsorship revenues emerge.",
+        marketing: "Publish daily vertical content explaining business mechanics and automation tips.",
+        sales: "Monetize by selling copy-paste template bundles on Gumroad at ₹750/download.",
+        automation: "Gumroad delivery fires immediately, updating customer directories and newsletter lists.",
+        risks: "Algorithm updates limiting reach, audience fatigue.",
+        timeline: "30 - 90 days.",
+        checklist: [
+          "Create social channels focused on 'How to automate local businesses'.",
+          "Generate 10 videos showing active visual workflows.",
+          "Build a digital template pack on Gumroad.",
+          "Direct traffic to bio link."
+        ]
+      },
+      'agency_video_ad': {
+        title: "AI Video Ad Creation Pipeline",
+        desc: "Transform a single product or brand image into a premium commercial video ad using keyframe interpolation and motion vector blueprints.",
+        profit: "₹90,000 - ₹3,50,000 / month",
+        setup: "₹1,500 (Domain + safe professional email mapping)",
+        opex: "₹4,500 (Motion Script Compiler Pipeline API credits + image models)",
+        tools: "Motion Script Compiler Pipeline, Google Veo, OmniFlash, ChatGPT, Midjourney",
+        skills: "Storyboard expansion, motion vector prompt engineering, asset standardization",
+        registration: "Sole Proprietorship initially. Transition to LLC as campaigns scale.",
+        marketing: "Target local e-commerce and retail brands with high-quality spec video ads.",
+        sales: "Charge a flat retainership for weekly high-retention video ad creatives.",
+        automation: "Product image uploaded -> Universal Storyboard prompt generates 9-frame layout -> camera movement instructions JSON -> Video renders automatically.",
+        risks: "Ad platform compliance changes, high rendering API costs.",
+        timeline: "7 - 14 days to secure first ad production client.",
+        checklist: [
+          "Scrape directory listings for local e-commerce brands with static product imagery.",
+          "Generate a 6-8 second spec video ad from their raw image asset using Workflow 1 templates.",
+          "Send a direct outbound message presenting the high-retention cinematic animation result.",
+          "Close a monthly creation retainer and automate the intake delivery webhook."
+        ]
+      },
+      'creator_zackd_shorts': {
+        title: "Motion Script Compiler Pipeline",
+        desc: "Produce highly viral 3D cartoon-realistic educational shorts with fast-paced pacing and scientific cross-section reveals for social channels.",
+        profit: "₹70,000 - ₹3,00,000 / month",
+        setup: "₹0 (Organic video channel registration)",
+        opex: "₹2,000 (Gemini Omni / Kling AI video rendering allocations)",
+        tools: "ChatGPT, Gemini (Create with Omni), CapCut, InShot, ElevenLabs",
+        skills: "Viral hook structure, high-retention pacing, localized video stitching",
+        registration: "Sole Proprietorship. Register for tax filing once AdSense/brand sponsorships are active.",
+        marketing: "Deploy vertical content natively on YouTube Shorts, Instagram Reels, and TikTok optimized with localized hashtags.",
+        sales: "Monetize via platform views creator pools, brand sponsor placements, and digital template downloads in bio.",
+        automation: "Master prompt detects content category -> outputs 10 curious titles -> selection triggers a 3-part script (Hook, Explanation, Shocking Reveal) with explicit camera motions (Orbit, Push-in) and voiceovers.",
+        risks: "Platform algorithm variance, automated reuse content flags, high rendering queue latency.",
+        timeline: "15 - 30 days to build audience metrics and initial revenue.",
+        checklist: [
+          "Establish faceless social media handles targeting educational/bizarre fact niches.",
+          "Compile the master script blueprint using the exact 24-30 second motion script sequencing layout sequence.",
+          "Render the three independent 8-10 second clips inside Gemini's video engine using stylized 3D character descriptions.",
+          "Stitch the outputs sequentially with automated captions and drop a template download link in the bio."
+        ]
+      },
+      'agency_voice_ai': {
+        title: "OmniDimension Inbound Voice AI Studio",
+        desc: "Build and sell custom autonomous conversational voice AI booking assistants to handle administrative phone workloads for local healthcare clinics.",
+        profit: "₹1,20,000 - ₹4,50,000 / month",
+        setup: "₹2,500 (Server configurations + custom portal mapping)",
+        opex: "₹6,000 (Claude API scale + Twilio trunk line allocations + Voiceflow routing)",
+        tools: "Claude AI, OmniDimension MCP Server (https://mcp.omnidim.io/mcp), Twilio, Exotel, SIP trunks",
+        skills: "MCP connector integration, voice telephony architecture, conversational intake rules",
+        registration: "Private Limited company setup recommended due to enterprise medical clinic liability and service agreements.",
+        marketing: "Target high-traffic local dental, wellness, and medical clinics experiencing customer service overhead.",
+        sales: "Perform live telephone audits with clinic owners showcasing immediate voice booking response.",
+        automation: "Incoming call activates Twilio trunk -> triggers OmniDimension MCP custom connector -> Claude processes natural dialogue -> automatically inputs appointment slot into clinic spreadsheet calendar.",
+        risks: "Telephony latency issues, complex medical terminology misunderstanding, API connection dropouts.",
+        timeline: "15 - 30 days to deploy your first client system.",
+        checklist: [
+          "Map out a dentist booking voice agent script using Claude's custom connectors block.",
+          "Locate 40 regional dental or wellness clinics experiencing high support workloads.",
+          "Run phone demonstration audits showing how the autonomous system auto-confirms data fields.",
+          "Secure a ₹40,000 upfront setup package and scale the monthly support retainer infrastructure."
+        ]
+      },
+      'creator_managed_network': {
+        title: "Managed Creator Brand Network",
+        desc: "Monetize digital vertical content channels through highly structured creator network partnerships, direct content contracts, and high-CPM performance applications.",
+        profit: "₹50,000 - ₹2,50,000 / month",
+        setup: "₹0 (Free standard creator portal access)",
+        opex: "₹1,500 (Caption builders + short-form template scripts)",
+        tools: "Social platform apps, Smartreach, Instantly, Google Sheets",
+        skills: "Brand guidelines alignment, contract negotiation, performance content scaling",
+        registration: "Sole Proprietorship initially. Transition to LLC/Partnership as creator contracts expand.",
+        marketing: "Apply directly to premium brand databases and pitch short-form content conversion loops.",
+        sales: "Secure brand integration payouts based on vertical video view thresholds and affiliate tracking codes.",
+        automation: "Profile optimization triggers direct campaign matching -> system matches channel metrics to featured tech/AI campaigns -> tracking dashboard registers video views and processes direct payouts.",
+        risks: "Brand guidelines violation, platform ban hazards, changing CPM pay rates.",
+        timeline: "7 - 20 days.",
+        checklist: [
+          "Configure user authentication inside the managed creator portal dashboard.",
+          "Apply to active high-CPM campaign arrays and download specific brand briefs.",
+          "Deploy daily vertical video assets integrating the precise promotional hook rules.",
+          "Sign digital payout waivers and verify recurring ledger payouts to local banks."
+        ]
+      },
+      'creator_kids_animation': {
+        title: "AI Nursery Rhyme Engine",
+        desc: "Produce automated, high-view count children's animation channels using structured ChatGPT text storyboards and native mobile generation apps.",
+        profit: "₹60,000 - ₹2,20,000 / month",
+        setup: "₹500 (Basic design templates)",
+        opex: "₹2,500 (YouTube Create video scaling + audio assets)",
+        tools: "ChatGPT, YouTube Create App, CapCut, Canva, Suno AI",
+        skills: "Nursery narrative structure, mobile video layout generation, audio syncing",
+        registration: "Sole Proprietorship. File taxes once YouTube AdSense thresholds are met.",
+        marketing: "Deploy highly engaging 3D nursery rhyme videos on YouTube and YouTube Kids using strategic tags.",
+        sales: "Monetize through YouTube Partner Program (AdSense) and merchandise or book licensing.",
+        automation: "Prompt forces ChatGPT to render scene-by-scene detail scripts -> user inserts instructions into YouTube Create's AI video generation interface -> tool outputs smooth, colorful animated short frames.",
+        risks: "YouTube Kids algorithm updates, reuse content guidelines, copyright strikes on audio tracks.",
+        timeline: "30 - 60 days to gain authority and build steady audience metrics.",
+        checklist: [
+          "Research viral children's animation categories on YouTube and map their view volume metrics.",
+          "Command ChatGPT to write a detailed, high-contrast nursery rhyme storyboard scene breakdown.",
+          "Generate the colorful cinematic clips using the text-to-video tools inside the mobile editor pipeline.",
+          "Layer background tracks and schedule daily automated uploads optimized for mobile view loops."
+        ]
+      }
+    };
+
+    // Render left sidebar items
+    const triggerContainer = document.getElementById('trigger-container');
+    const workspaceContainer = document.getElementById('workspace-container');
+
+    function init() {
+      let isFirst = true;
+      Object.entries(database).forEach(([key, value]) => {
+        const btn = document.createElement('button');
+        btn.className = `idea-card-trigger ${isFirst ? 'active' : ''}`;
+        btn.innerHTML = `
+          <div class="idea-card-trigger-title">${value.title}</div>
+          <div class="idea-card-trigger-desc">${value.desc}</div>
+        `;
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.idea-card-trigger').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderBlueprint(key);
+        });
+        triggerContainer.appendChild(btn);
+        isFirst = false;
+      });
+
+      // Render initial blueprint
+      renderBlueprint(Object.keys(database)[0]);
+    }
+
+    function renderBlueprint(key) {
+      const data = database[key];
+      
+      workspaceContainer.innerHTML = `
+        <div class="blueprint-header fade-element">
+          <div class="blueprint-badge">LAUNCHPAD CORE V2.0 // ACTIVE</div>
+          <h1 class="blueprint-title">${data.title}</h1>
+          <p class="blueprint-description">${data.desc}</p>
+        </div>
+
+        <div class="metrics-grid fade-element" style="animation-delay: 0.1s;">
+          <div class="metric-card profit">
+            <div class="metric-label">Expected Monthly Profits</div>
+            <div class="metric-value" style="color: var(--accent-green);">${data.profit}</div>
+          </div>
+          <div class="metric-card setup">
+            <div class="metric-label">Realistic Setup Budget</div>
+            <div class="metric-value" style="color: var(--accent-blue);">${data.setup}</div>
+          </div>
+          <div class="metric-card opex">
+            <div class="metric-label">Estimated Monthly Opex</div>
+            <div class="metric-value" style="color: var(--accent-purple);">${data.opex}</div>
+          </div>
+        </div>
+
+        <div class="details-grid fade-element" style="animation-delay: 0.2s;">
+          <div class="detail-card">
+            <div class="detail-title">🛠️ Technology Stack & Tools</div>
+            <div class="detail-content">${data.tools}</div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-title">🧠 Core Skills Required</div>
+            <div class="detail-content">${data.skills}</div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-title">⚖️ Legal Setup & Registration</div>
+            <div class="detail-content">${data.registration}</div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-title">⚡ Operational Automation Sequence</div>
+            <div class="detail-content">${data.automation}</div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-title">📢 Marketing & Lead Acquisition</div>
+            <div class="detail-content">${data.marketing}</div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-title">🤝 Sales & Pitching Protocol</div>
+            <div class="detail-content">${data.sales}</div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-title">⏱️ Time to First Revenue</div>
+            <div class="detail-content">${data.timeline}</div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-title">⚠️ Vulnerabilities & Risk Mitigation</div>
+            <div class="detail-content">${data.risks}</div>
+          </div>
+
+          <div class="detail-card span-2">
+            <div class="detail-title" style="color: var(--accent-blue);">📋 Sequential Action Checklist</div>
+            <div class="checklist-container">
+              ${data.checklist.map((step, i) => `
+                <div class="checklist-row">
+                  <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                  <div class="checklist-text">${i + 1}. ${step}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleCheck(el) {
+      el.classList.toggle('checked');
+    }
+
+    // Run on startup
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
