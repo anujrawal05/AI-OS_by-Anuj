@@ -180,7 +180,7 @@ module.exports = async (req, res) => {
       return null;
     }
     const token = authHeader.split(' ')[1];
-    
+
     // 1. Try to verify as local Coupon Token
     try {
       const jsonStr = Buffer.from(token, 'base64').toString('utf8');
@@ -225,7 +225,7 @@ module.exports = async (req, res) => {
         console.error('[Function VerifyToken] Supabase validation failed:', err.message);
       }
     }
-    
+
     return null;
   }
 
@@ -249,7 +249,7 @@ module.exports = async (req, res) => {
     }
 
     const { taskName, userInput } = req.body;
-    
+
     if (!taskName) {
       return res.status(400).json({ error: 'Missing taskName in request body.' });
     }
@@ -285,7 +285,7 @@ module.exports = async (req, res) => {
     const openRouterResponse = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'meta-llama/llama-3.3-70b-instruct',
+        model: 'openai/gpt-oss-120b:free',
         messages: [
           { role: 'system', content: systemPromptContent },
           { role: 'user', content: userInput || 'A creative project concept' }
@@ -339,9 +339,9 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('[Prompt Function] API error:', error.response?.data || error.message);
-    return res.status(500).json({ 
-      error: 'Failed to generate dynamic prompt.', 
-      details: error.response?.data || error.message 
+    return res.status(500).json({
+      error: 'Failed to generate dynamic prompt.',
+      details: error.response?.data || error.message
     });
   }
 };
