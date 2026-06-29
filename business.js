@@ -1992,13 +1992,34 @@ function initBusinessSimulators() {
   }
 
   const renderStrategyBoard = (data) => {
-    document.getElementById('out-text-analysis').innerHTML = data.analysis || '';
-    document.getElementById('out-text-opportunities').innerHTML = data.opportunities || '';
-    document.getElementById('out-text-automation').innerHTML = data.automation || '';
-    document.getElementById('out-text-marketing').innerHTML = data.marketing || '';
-    document.getElementById('out-text-leads').innerHTML = data.leads || '';
-    document.getElementById('out-text-revenue').innerHTML = data.revenue || '';
-    document.getElementById('out-text-plan').innerHTML = data.plan || '';
+    const formatValue = (val) => {
+      if (!val) return 'Awaiting compiler generation...';
+      if (Array.isArray(val)) {
+        return val.map(item => {
+          if (item && typeof item === 'object') {
+            return `<strong>${item.title || item.name || ''}</strong>: ${item.description || item.text || JSON.stringify(item)}`;
+          }
+          return `${item}`;
+        }).join('<br><br>');
+      }
+      if (typeof val === 'object') {
+        return Object.entries(val).map(([key, value]) => {
+          if (value && typeof value === 'object') {
+            return `<strong>${key}</strong>:<br>${formatValue(value)}`;
+          }
+          return `<strong>${key}</strong>: ${value}`;
+        }).join('<br>');
+      }
+      return String(val);
+    };
+
+    document.getElementById('out-text-analysis').innerHTML = formatValue(data.analysis);
+    document.getElementById('out-text-opportunities').innerHTML = formatValue(data.opportunities);
+    document.getElementById('out-text-automation').innerHTML = formatValue(data.automation);
+    document.getElementById('out-text-marketing').innerHTML = formatValue(data.marketing);
+    document.getElementById('out-text-leads').innerHTML = formatValue(data.leads);
+    document.getElementById('out-text-revenue').innerHTML = formatValue(data.revenue);
+    document.getElementById('out-text-plan').innerHTML = formatValue(data.plan);
 
     // Display the 7-Tab Panel
     if (outputPanel) {
