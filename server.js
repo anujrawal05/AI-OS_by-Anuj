@@ -23,6 +23,10 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
+// Initialize Supabase Admin Client for database RLS bypass
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
+const supabaseAdmin = (supabaseUrl && supabaseServiceKey) ? createClient(supabaseUrl, supabaseServiceKey) : null;
+
 // Daily Prompt Limit Cache for Basic users
 const dailyPromptLimitCache = {};
 
@@ -46,7 +50,12 @@ app.post('/api/auth/email-signup', async (req, res) => {
 
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
-      console.error('[Signup Auth Error Object]:', error);
+      console.error('[Signup Auth Error Object]:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       return res.status(400).json({ error: error.message });
     }
 
@@ -65,7 +74,7 @@ app.post('/api/auth/email-signup', async (req, res) => {
         updated_at: new Date().toISOString()
       };
 
-      let { error: profileError } = await supabase
+      let { error: profileError } = await supabaseAdmin
         .from('user_profiles')
         .upsert(profileData);
 
@@ -73,14 +82,19 @@ app.post('/api/auth/email-signup', async (req, res) => {
       if (profileError && (profileError.message.includes('trial_started_at') || profileError.message.includes('column'))) {
         console.warn('[Signup Fallback] trial_started_at column missing/failed, retrying upsert without it...');
         delete profileData.trial_started_at;
-        const retry = await supabase
+        const retry = await supabaseAdmin
           .from('user_profiles')
           .upsert(profileData);
         profileError = retry.error;
       }
 
       if (profileError) {
-        console.error('[Signup Profile Error Object]:', profileError);
+        console.error('[Signup Profile Error Object]:', {
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint,
+          code: profileError.code
+        });
         return res.status(400).json({ error: 'Failed to create user profile: ' + profileError.message });
       }
 
@@ -113,11 +127,17 @@ app.post('/api/auth/email-login', async (req, res) => {
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
+      console.error('[Login Auth Error Object]:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       return res.status(400).json({ error: error.message });
     }
 
     if (data && data.user) {
-      const { data: profile } = await supabase
+      const { data: profile } = await supabaseAdmin
         .from('user_profiles')
         .select('*')
         .eq('id', data.user.id)
@@ -154,11 +174,20 @@ app.get('/api/auth/profile', async (req, res) => {
       return res.status(401).json({ error: 'Invalid session.' });
     }
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profiles')
       .select('*')
       .eq('id', user.id)
       .single();
+
+    if (profileError) {
+      console.error('[Profile Fetch Error Object]:', {
+        message: profileError.message,
+        details: profileError.details,
+        hint: profileError.hint,
+        code: profileError.code
+      });
+    }
 
     return res.status(200).json(profile || null);
   } catch (err) {
@@ -199,7 +228,7 @@ app.post('/api/auth/update-profile', async (req, res) => {
     if (plan_type !== undefined) profileData.plan_type = plan_type;
     if (trial_started_at !== undefined) profileData.trial_started_at = trial_started_at;
 
-    let { error: profileError } = await supabase
+    let { error: profileError } = await supabaseAdmin
       .from('user_profiles')
       .upsert(profileData);
 
@@ -207,13 +236,19 @@ app.post('/api/auth/update-profile', async (req, res) => {
     if (profileError && (profileError.message.includes('trial_started_at') || profileError.message.includes('column'))) {
       console.warn('[Update Profile Fallback] trial_started_at column missing/failed, retrying upsert without it...');
       delete profileData.trial_started_at;
-      const retry = await supabase
+      const retry = await supabaseAdmin
         .from('user_profiles')
         .upsert(profileData);
       profileError = retry.error;
     }
 
     if (profileError) {
+      console.error('[Update Profile Error Object]:', {
+        message: profileError.message,
+        details: profileError.details,
+        hint: profileError.hint,
+        code: profileError.code
+      });
       return res.status(400).json({ error: profileError.message });
     }
 
@@ -254,11 +289,19 @@ async function verifyTokenPayload(authHeader) {
       const { data: { user }, error } = await supabase.auth.getUser(token);
       if (!error && user) {
         // Retrieve profile database row to get plan_type
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabaseAdmin
           .from('user_profiles')
           .select('plan_type')
           .eq('id', user.id)
           .single();
+        if (profileError) {
+          console.error('[VerifyToken Profile Error Object]:', {
+            message: profileError.message,
+            details: profileError.details,
+            hint: profileError.hint,
+            code: profileError.code
+          });
+        }
         return {
           isCoupon: false,
           id: user.id,

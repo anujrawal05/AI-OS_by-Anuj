@@ -3,6 +3,12 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   : null;
+
+// Initialize Supabase Admin Client for database RLS bypass
+const supabaseAdmin = (process.env.NEXT_PUBLIC_SUPABASE_URL && (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY))
+  ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  : null;
+
 const dailyPromptLimitCache = {};
 
 // Mappings for standard roadmaps
@@ -193,11 +199,19 @@ module.exports = async (req, res) => {
         const { data: { user }, error } = await supabase.auth.getUser(token);
         if (!error && user) {
           // Fetch plan type from public.user_profiles
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabaseAdmin
             .from('user_profiles')
             .select('plan_type')
             .eq('id', user.id)
             .single();
+          if (profileError) {
+            console.error('[VerifyToken DB Error Object]:', {
+              message: profileError.message,
+              details: profileError.details,
+              hint: profileError.hint,
+              code: profileError.code
+            });
+          }
           return {
             isCoupon: false,
             id: user.id,
