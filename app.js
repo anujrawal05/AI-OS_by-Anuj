@@ -6006,33 +6006,54 @@ async function handleEmailSignup() {
   const btn = document.getElementById('btn-email-signup');
   if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
   try {
-    const res = await fetch('/api/auth/email-signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const result = await res.json();
-    if (!res.ok) {
-      throw new Error(result.error || 'Registration failed. Please try again.');
-    }
+    if (!supabaseClient) throw new Error('Auth service is offline.');
     
-    // Auto login on successful signup if session is returned
-    if (result.session) {
-      if (!supabaseClient) throw new Error('Auth service is offline.');
-      const { error: setSessionError } = await supabaseClient.auth.setSession({
-        access_token: result.session.access_token,
-        refresh_token: result.session.refresh_token
+    // Call supabase.auth.signUp() first client-side
+    const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
+      email,
+      password
+    });
+    
+    if (signUpError) throw signUpError;
+    console.log('[Client SignUp Success] data:', signUpData);
+
+    const user = signUpData.user;
+    const session = signUpData.session;
+
+    if (session) {
+      // Allow browser to automatically establish and persist session
+      const { data: { session: activeSession }, error: activeSessionError } = await supabaseClient.auth.getSession();
+      if (activeSessionError || !activeSession) {
+        throw new Error('Failed to verify active authentication session after signup.');
+      }
+      console.log('[Client Active Session Verified]:', activeSession);
+
+      // Call backend to update user profiles
+      const res = await fetch('/api/auth/update-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${activeSession.access_token}`
+        },
+        body: JSON.stringify({
+          full_name: '',
+          date_of_birth: '',
+          gender: '',
+          profession: '',
+          plan_type: null,
+          trial_started_at: new Date().toISOString()
+        })
       });
-      if (setSessionError) throw setSessionError;
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || 'Failed to initialize profile on server.');
+      }
+      console.log('[Signup Success Debug] user:', user);
+      console.log('[Signup Success Debug] session:', session);
+      console.log('[Signup Success Debug] current client session:', activeSession);
 
-      // Log values for debugging
-      console.log('[Signup Success Debug] user:', result.user);
-      console.log('[Signup Success Debug] session:', result.session);
-      const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
-      console.log('[Signup Success Debug] current client session:', currentSession);
-
-      await handleSupabaseSession(result.session, result.profile);
-    } else if (result.user) {
+      await handleSupabaseSession(activeSession, result.profile);
+    } else if (user) {
       if (errEl) {
         errEl.style.color = '#2EC5FF';
         errEl.textContent = '✅ Registration successful! A verification email has been sent. Please verify your email before continuing.';
@@ -6040,6 +6061,7 @@ async function handleEmailSignup() {
       }
     }
   } catch (err) {
+    console.error('[Onboarding/Signup Failure]:', err);
     if (errEl) { errEl.textContent = err.message || 'Registration failed. Please try again.'; errEl.style.display = 'block'; }
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Create Account →'; }
