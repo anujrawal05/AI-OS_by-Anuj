@@ -18,6 +18,7 @@
   },
   "dashboard": {
     "title": "OPERATIONAL TARGET CONFIGURATION",
+    "onboarding": "🎯 <strong>HOW TO EXECUTE:</strong> 1. Objective drop-down menu se apna target digital goal select karein. 2. Apni preferred interaction language output choose karein. 3. Multi-step execution timeline build karne, master JSON prompts download karne, aur custom tool sandboxes ko activate karne ke liye Compile Roadmap par click karein.",
     "taskLabel": "1. Task / Objective Select Karo",
     "langLabel": "2. Target Language Select Karo",
     "compileBtn": "ROADMAP COMPILE KARO",

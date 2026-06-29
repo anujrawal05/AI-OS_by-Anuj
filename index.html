@@ -33,7 +33,6 @@
   <link rel="stylesheet" href="style.css?v=3.4">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     window.myErrors = [];
     window.onerror = function (message, source, lineno, colno, error) {
@@ -114,54 +113,22 @@
     </header>
     <div id="mobile-nav-overlay" class="mobile-nav-overlay"></div>
 
-    <!-- ══════════════════════════════════════════════════════
-       PREMIUM TOP HERO BANNER — The Vankari Debt
-       Netflix-style cinematic strip with muted video bg
-  ═══════════════════════════════════════════════════════ -->
-    <div class="top-hero-ad-container">
-      <div class="local-ad-content">
-        <div class="prem-hero-banner" id="promo-top-banner" role="complementary"
-          aria-label="The Vankari Debt — Now Available">
-          <!-- Muted autoplay video background -->
-          <video class="prem-hero-video" autoplay muted loop playsinline preload="none" data-src="./vankari.mp4"
-            id="vankari-hero-video">
-          </video>
-          <div class="prem-hero-overlay"></div>
-          <div class="prem-hero-body">
-            <div class="prem-hero-left">
-              <span class="prem-label-badge" data-i18n="hero.fromCreator">✦ FROM THE CREATOR</span>
-              <span class="prem-genre-pill" data-i18n="hero.genre">🩸 Dark Thriller · 2026</span>
-              <h2 class="prem-hero-title" data-i18n="hero.title">The Vankari Debt</h2>
-              <p class="prem-hero-tagline" data-i18n="hero.tagline">Power protects the guilty — until someone decides to collect. A dark thriller set
-                in modern India where ancient tribal secrets collide with deadly consequences.</p>
-            </div>
-            <div class="prem-hero-right">
-              <img src="./vankari.png" alt="The Vankari Debt" class="prem-hero-poster" loading="lazy">
-              <div class="prem-hero-actions">
-                <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html"
-                  target="_blank" rel="noopener" class="prem-btn-primary" data-i18n="hero.unlock">Unlock the Mystery ↗</a>
-                <a href="https://play.google.com/store/books/details/Anuj_Rawal_The_Vankari_Debt?id=gSnFEQAAQBAJ"
-                  target="_blank" rel="noopener" class="prem-btn-ghost" data-i18n="hero.playBooks">Google Play Books</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Trial Countdown Banner (hidden unless trial active) -->
+    <div id="trial-countdown-banner" style="display:none; align-items:center; justify-content:center; gap:6px; background:linear-gradient(90deg,rgba(46,197,255,0.12),rgba(0,208,132,0.08)); border-bottom:1px solid rgba(46,197,255,0.25); padding:9px 20px; font-family:var(--font-mono); font-size:0.8rem; color:var(--text-primary); position:relative; z-index:90;"></div>
 
     <div class="app-layout-wrapper">
-      <!-- Left Sticky Sidebar -->
-      <aside class="sidebar-ad sidebar-ad-left" aria-label="Advertisements">
-
-        <!-- Additional ad placement -->
-        <div id="new-ad-left-sidebar" style="width: 100%;"></div>
-      </aside>
+      <!-- Left layout panel -->
+      <aside class="aside-panel aside-panel-left" aria-hidden="true"></aside>
 
       <main class="app-main-content">
 
         <!-- Persistent Controls Dashboard Toolbar -->
         <section class="dashboard-controls" id="dashboard-controls">
           <div class="controls-container">
+            <!-- Onboarding Guide Box -->
+            <div class="onboarding-guide-box">
+              <span class="onboarding-guide-text" data-i18n="dashboard.onboarding">🎯 <strong>HOW TO EXECUTE:</strong> 1. Select your target digital goal from the objective drop-down menu. 2. Choose your preferred interaction language output. 3. Click Compile Roadmap to build your multi-step execution timeline, download master JSON prompts, and activate custom tool sandboxes.</span>
+            </div>
             <div class="controls-label" data-i18n="dashboard.title">
               OPERATIONAL TARGET CONFIGURATION
             </div>
@@ -262,17 +229,7 @@
           </div>
         </section>
 
-        <!-- ══ PREMIUM WIDE BANNER: A.R. Publications ══ -->
-        <div class="prem-wide-banner-container" id="promo-native-1">
 
-          <div class="local-ad-content">
-            <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
-              title="Visit A.R. Publications">
-              <img src="ar_pub_banner.png" alt="A.R. Publications Wide Banner"
-                style="width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--border-color);">
-            </a>
-          </div>
-        </div>
 
         <!-- Section 1: Roadmap Builder -->
         <section id="roadmap-builder-section" class="app-section">
@@ -348,56 +305,6 @@
             </div>
           </div>
         </section>
-
-        <!-- ══ PREMIUM NATIVE PROMO 2: RF Portal + Apps by Anuj dual card ══ -->
-        <div class="prem-dual-strip" id="promo-native-2" role="complementary" aria-label="Projects by Anuj">
-
-          <div class="local-ad-content">
-            <span class="prem-label-badge">✦ FROM THE CREATOR</span>
-            <div class="prem-dual-grid">
-
-              <!-- RF Communication Portal -->
-              <div class="prem-dual-card prem-dual-rf">
-                <div class="prem-dual-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="2" />
-                    <path
-                      d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14" />
-                  </svg>
-                </div>
-                <div class="prem-dual-text">
-                  <span class="prem-dual-cat">Engineering · Education</span>
-                  <h4 class="prem-dual-title">RF Communication Portal</h4>
-                  <p class="prem-dual-desc">Deep-dive into RF, antenna theory, signal propagation and wireless engineering
-                    concepts with curated resources and interactive content.</p>
-                  <a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank"
-                    rel="noopener" class="prem-dual-cta prem-cta-rf">Explore RF Portal ↗</a>
-                </div>
-              </div>
-
-              <!-- Apps by Anuj -->
-              <div class="prem-dual-card prem-dual-apps">
-                <div class="prem-dual-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
-                    <line x1="12" y1="18" x2="12.01" y2="18" />
-                  </svg>
-                </div>
-                <div class="prem-dual-text">
-                  <span class="prem-dual-cat">Mobile Apps · Software</span>
-                  <h4 class="prem-dual-title">Apps By Anuj Rawal</h4>
-                  <p class="prem-dual-desc">A growing collection of mobile applications and software tools developed by
-                    Anuj Rawal — designed to simplify and empower everyday digital tasks.</p>
-                  <a href="https://anujrawal05.github.io/apps-by-anujrawal/" target="_blank" rel="noopener"
-                    class="prem-dual-cta prem-cta-apps">Browse Apps ↗</a>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
 
         <!-- Section 2: Explore Library -->
         <section id="explore-library-section" class="app-section">
@@ -571,60 +478,11 @@
 
       </main>
 
-      <!-- Right Sticky Sidebar -->
-      <aside class="sidebar-ad sidebar-ad-right" aria-label="Advertisements">
-
-        <!-- Additional ad placement -->
-        <div id="new-ad-right-sidebar" style="width: 100%;"></div>
-      </aside>
-    </div>
-
-    <!-- ══ PREMIUM BOTTOM SHOWCASE BANNER ══ -->
-    <div class="prem-bottom-showcase" id="promo-bottom-banner" role="complementary"
-      aria-label="A.R. Publications Books">
-      <!-- Adsterra Content Bottom Banner -->
-      <div id="adsterra-bottom-banner" style="width: 100%; display: flex; justify-content: center; margin-top: 20px;"></div>
-      <div class="local-ad-content">
-        <div class="prem-bottom-inner">
-          <div class="prem-bottom-label">
-            <span class="prem-label-badge" data-i18n="bottomShowcase.label">✦ A.R. PUBLICATIONS</span>
-            <p class="prem-bottom-tagline" data-i18n="bottomShowcase.tagline">The Literary Universe of Anuj Rawal</p>
-          </div>
-          <div class="prem-bottom-books">
-            <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html" target="_blank"
-              rel="noopener" class="prem-bottom-book prem-book-vankari">
-              <img src="./vankari-book.jpg" alt="The Vankari Debt" loading="lazy">
-              <div class="prem-bottom-book-info">
-                <span data-i18n="bottomShowcase.darkThriller">Dark Thriller</span>
-                <strong>The Vankari Debt</strong>
-              </div>
-            </a>
-            <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
-              class="prem-bottom-book">
-              <img src="./sanatan1.jpg" alt="Sanatan Vol 1" loading="lazy">
-              <div class="prem-bottom-book-info">
-                <span data-i18n="bottomShowcase.spiritual">Spiritual</span>
-                <strong>Sanatan: Eternal Way</strong>
-              </div>
-            </a>
-            <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
-              class="prem-bottom-book">
-              <img src="./sanatan2.png" alt="Sanatan Vol 2" loading="lazy">
-              <div class="prem-bottom-book-info">
-                <span data-i18n="bottomShowcase.spiritual">Spiritual</span>
-                <strong>Sanatan: Birth to Death</strong>
-              </div>
-            </a>
-          </div>
-          <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
-            class="prem-btn-primary" style="flex-shrink:0;" data-i18n="bottomShowcase.visitPublisher">Visit Publisher ↗</a>
-        </div>
-      </div>
+      <!-- Right layout panel -->
+      <aside class="aside-panel aside-panel-right" aria-hidden="true"></aside>
     </div>
 
 
-      <!-- Footer Native Ad (Adsterra) -->
-      <div id="adsterra-footer-native" style="width: 100%; display: flex; justify-content: center; margin: 20px 0;"></div>
 
     <!-- Premium Multi-Column Footer -->
     <footer class="app-footer">
@@ -654,7 +512,7 @@
         <div class="footer-section-col">
           <h4 class="footer-col-title" data-i18n="footer.colConnect">Connect</h4>
           <ul class="footer-links">
-            <li><a href="mailto:rawalanuj50@gmail.com" class="footer-link">Email</a></li>
+            <li><a href="mailto:arproduction050@gmail.com" class="footer-link">Email</a></li>
             <li><a href="https://instagram.com/anujrawal.ar/" target="_blank" rel="noopener" class="footer-link">Instagram</a></li>
             <li><a href="https://www.linkedin.com/in/anujrawal-ar" target="_blank" rel="noopener" class="footer-link">LinkedIn</a></li>
             <li><a href="https://www.youtube.com/@arpublications005" target="_blank" rel="noopener" class="footer-link">YouTube</a></li>
@@ -684,29 +542,7 @@
 
   </div> <!-- End main-content-wrapper -->
 
-  <!-- ===== CINEMATIC VANKARI DEBT POPUP (EXACT FROM A.R. PUBLICATIONS) ===== -->
-  <div id="vankari-welcome-popup" class="cinematic-modal" role="dialog" aria-modal="true"
-    aria-label="The Vankari Debt — Book Promotion">
-    <div class="cinematic-modal-content">
-      <div class="cinematic-close" id="close-vankari-welcome" aria-label="Close">&times;</div>
-      <div class="cinematic-layout">
-        <div class="cinematic-poster-wrapper">
-          <div class="poster-glow"></div>
-          <img src="./vankari.png" alt="The Vankari Debt Poster" loading="lazy">
-        </div>
-        <div class="cinematic-text">
-          <span class="cinematic-badge">Now Available</span>
-          <h2>The Vankari Debt</h2>
-          <p class="tagline">Step into the darkness. A dark thriller where history, mystery, and deadly tribal secrets
-            collide deep within the ancient caves.</p>
-          <div class="cinematic-action">
-            <a href="https://arproduction050-byte.github.io/A.R.-Publications/products/book_vankari.html"
-              target="_blank" rel="noopener" class="btn-cinematic">Unlock the Mystery</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Detail Inspect Drawer -->
   <div id="detail-drawer" class="drawer" aria-hidden="true">
@@ -839,34 +675,39 @@
     </div>
   </div>
 
-  <!-- Auth Overlay / Modal -->
+  <!-- Auth Overlay / Modal — Email/Password Tabs -->
   <div id="auth-modal-overlay" class="auth-modal-overlay" style="display: none;">
-    <div class="auth-modal-card">
+    <div class="auth-modal-card" style="max-width: 440px;">
       <button id="auth-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
-      <div class="auth-modal-icon">🔒</div>
-      <h3 id="auth-modal-title">Unlock Your Complete AI Roadmap</h3>
-      <p id="auth-modal-subtitle">Login to access the complete roadmap, tool recommendations and guided workflow.</p>
-      
-      <div class="auth-modal-methods">
-        <!-- Google Sign-in Button -->
-        <button id="btn-auth-google" class="btn btn-google" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-          <svg class="google-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
-          </svg>
-          <span>Continue with Google</span>
-        </button>
+      <div class="auth-modal-icon">🔑</div>
+      <h3 id="auth-modal-title" style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 6px;">Access AI-OS</h3>
+      <p id="auth-modal-subtitle" style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 20px;">Sign in or create an account to unlock full roadmaps.</p>
 
-        <div class="auth-divider" style="margin: 16px 0; text-align: center; font-size: 0.8rem; color: var(--text-secondary); position: relative; font-family: var(--font-mono);">
-          <span style="background: #111; padding: 0 8px; position: relative; z-index: 1;">OR</span>
-          <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-color); z-index: 0;"></div>
+      <!-- Tab switcher -->
+      <div class="auth-tabs" style="display: flex; gap: 0; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 22px;">
+        <button id="auth-tab-signin" class="auth-tab active" onclick="switchAuthTab('signin')" style="flex:1; padding: 10px; font-weight: 700; font-size: 0.82rem; font-family: var(--font-mono); background: var(--accent-color); color: #000; border: none; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em;">Sign In</button>
+        <button id="auth-tab-signup" class="auth-tab" onclick="switchAuthTab('signup')" style="flex:1; padding: 10px; font-weight: 700; font-size: 0.82rem; font-family: var(--font-mono); background: transparent; color: var(--text-secondary); border: none; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em;">Create Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <div id="auth-form-signin" style="display: flex; flex-direction: column; gap: 12px;">
+        <input type="email" id="auth-signin-email" placeholder="Email address" autocomplete="email" style="width:100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color:#fff; font-size:0.9rem; font-family:var(--font-mono); box-sizing:border-box;">
+        <input type="password" id="auth-signin-password" placeholder="Password" autocomplete="current-password" style="width:100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color:#fff; font-size:0.9rem; font-family:var(--font-mono); box-sizing:border-box;">
+        <div id="auth-signin-error" style="display:none; color:#ff5a5a; font-size:0.82rem; font-weight:500;"></div>
+        <button id="btn-email-signin" class="btn btn-primary" style="width:100%; padding:12px; font-weight:700; border-radius:8px; margin-top:4px;">Sign In →</button>
+        <div style="text-align:center; margin-top:8px;">
+          <button id="btn-auth-coupon-trigger" style="background:none; border:none; color:var(--text-secondary); font-size:0.8rem; cursor:pointer; text-decoration:underline; font-family:var(--font-mono);">🎫 Use Coupon Code instead</button>
         </div>
+      </div>
 
-        <button id="btn-auth-coupon-trigger" class="btn btn-secondary btn-full-width" style="width: 100%;">
-          🎫 Use Coupon Code
-        </button>
+      <!-- Sign Up Form -->
+      <div id="auth-form-signup" style="display: none; flex-direction: column; gap: 12px;">
+        <input type="email" id="auth-signup-email" placeholder="Email address" autocomplete="email" style="width:100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color:#fff; font-size:0.9rem; font-family:var(--font-mono); box-sizing:border-box;">
+        <input type="password" id="auth-signup-password" placeholder="Create password (min 8 chars)" autocomplete="new-password" style="width:100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color:#fff; font-size:0.9rem; font-family:var(--font-mono); box-sizing:border-box;">
+        <input type="password" id="auth-signup-confirm" placeholder="Confirm password" autocomplete="new-password" style="width:100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color:#fff; font-size:0.9rem; font-family:var(--font-mono); box-sizing:border-box;">
+        <div id="auth-signup-error" style="display:none; color:#ff5a5a; font-size:0.82rem; font-weight:500;"></div>
+        <button id="btn-email-signup" class="btn btn-primary" style="width:100%; padding:12px; font-weight:700; border-radius:8px; margin-top:4px;">Create Account →</button>
+        <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:6px; line-height:1.5;">By creating an account you agree to our <a href="./terms.html" target="_blank" style="color:var(--accent-color);">Terms</a> and <a href="./policy.html" target="_blank" style="color:var(--accent-color);">Privacy Policy</a>.</p>
       </div>
     </div>
   </div>
@@ -1095,132 +936,12 @@
     </div>
   </div>
 
-  <script src="toolsData.js?v=3.5"></script>
-  <script src="exploringAIData.js?v=3.5"></script>
-  <script src="legalData.js?v=3.5"></script>
-  <script src="ad-manager.js?v=3.5"></script>
-  <script src="app.js?v=3.5"></script>
+  <script src="toolsData.js?v=3.6"></script>
+  <script src="exploringAIData.js?v=3.6"></script>
+  <script src="legalData.js?v=3.6"></script>
+  <script src="app.js?v=3.6"></script>
 
-  <!-- ===== CINEMATIC POPUP — SESSION LOGIC ===== -->
-  <script>
-    (function () {
-      'use strict';
-      var SESSION_KEY = 'aios_vankari_popup_shown';
 
-      function openPopup() {
-        var popup = document.getElementById('vankari-welcome-popup');
-        if (!popup) return;
-        document.body.classList.add('modal-open');
-        popup.classList.add('active');
-        sessionStorage.setItem(SESSION_KEY, '1');
-      }
-
-      function closePopup() {
-        var popup = document.getElementById('vankari-welcome-popup');
-        if (!popup) return;
-        popup.classList.remove('active');
-        document.body.classList.remove('modal-open');
-      }
-
-      function init() {
-        // Show only once per session
-        if (sessionStorage.getItem(SESSION_KEY)) return;
-
-        // Delay slightly so the app initialises first
-        setTimeout(openPopup, 1200);
-
-        // Wire close button
-        var closeBtn = document.getElementById('close-vankari-welcome');
-        if (closeBtn) closeBtn.addEventListener('click', closePopup);
-
-        // Click on dark backdrop closes
-        var popup = document.getElementById('vankari-welcome-popup');
-        if (popup) {
-          popup.addEventListener('click', function (e) {
-            if (e.target === popup) closePopup();
-          });
-        }
-
-        // Escape key closes
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') closePopup();
-        });
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-      } else {
-        init();
-      }
-    })();
-  </script>
-
-  <!-- ===== PREMIUM AD MANAGER ===== -->
-  <script>
-    (function () {
-      'use strict';
-
-      /* ─── Lazy-load Vankari hero video ───────────────────────────────────── */
-      function initHeroVideo() {
-        var video = document.getElementById('vankari-hero-video');
-        if (!video) return;
-        var src = video.getAttribute('data-src');
-        if (!src) return;
-
-        var obs = new IntersectionObserver(function (entries) {
-          if (entries[0].isIntersecting) {
-            video.src = src;
-            video.load();
-            video.play().catch(function () { });
-            obs.disconnect();
-          }
-        }, { threshold: 0.1 });
-        obs.observe(video);
-      }
-
-      /* ─── A.R. Publications book carousel ───────────────────────────────── */
-      function initCarousel() {
-        var track = document.getElementById('prem-carousel-track');
-        var prev = document.getElementById('prem-prev');
-        var next = document.getElementById('prem-next');
-        if (!track || !prev || !next) return;
-
-        var cardWidth = function () {
-          var card = track.querySelector('.prem-carousel-card');
-          return card ? card.offsetWidth + 24 : 320; // 24 = gap
-        };
-
-        prev.addEventListener('click', function () {
-          track.scrollBy({ left: -cardWidth(), behavior: 'smooth' });
-        });
-        next.addEventListener('click', function () {
-          track.scrollBy({ left: cardWidth(), behavior: 'smooth' });
-        });
-
-        // Auto-advance every 6s
-        setInterval(function () {
-          var maxScroll = track.scrollWidth - track.clientWidth;
-          if (track.scrollLeft >= maxScroll - 4) {
-            track.scrollTo({ left: 0, behavior: 'smooth' });
-          } else {
-            track.scrollBy({ left: cardWidth(), behavior: 'smooth' });
-          }
-        }, 6000);
-      }
-
-      /* ─── Boot ───────────────────────────────────────────────────────────── */
-      function boot() {
-        initHeroVideo();
-        initCarousel();
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', boot);
-      } else {
-        boot();
-      }
-    })();
-  </script>
 
 </body>
 

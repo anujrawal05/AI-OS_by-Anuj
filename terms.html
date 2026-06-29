@@ -113,6 +113,45 @@
       color: var(--accent-bg-invert);
       border-color: var(--text-primary);
     }
+
+    @media (max-width: 1024px) {
+      .main-nav {
+        position: static !important;
+        display: flex !important;
+        flex-direction: row !important;
+        width: auto !important;
+        height: auto !important;
+        padding: 0 !important;
+        gap: 12px !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        z-index: 1 !important;
+      }
+      .nav-link, .nav-btn-business {
+        font-size: 0.82rem !important;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+      }
+      .logo-subtitle {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .legal-container {
+        margin: 90px 16px 40px !important;
+        padding: 24px 16px !important;
+      }
+      .legal-title {
+        font-size: 1.8rem !important;
+      }
+      .app-header {
+        padding: 0 12px !important;
+      }
+      .logo-text {
+        font-size: 1rem !important;
+      }
+    }
   </style>
 </head>
 
@@ -161,11 +200,11 @@
 
     <div class="legal-section">
       <h2>3. Account Registration & User Onboarding</h2>
-      <p>To access the Platform's core roadmap tools and the Business Hub, you must sign in using your Google Account or redeem a valid corporate/educational access coupon code. During onboarding, you are required to submit accurate profile details including your Full Name, Date of Birth, Gender, and Profession.</p>
+      <p>To access the Platform's core roadmap tools and the Business Hub, you must register and sign in using a valid email address and password, or redeem a valid premium access coupon code. During onboarding, you are required to submit accurate profile details including your Full Name, Date of Birth, Gender, and Profession.</p>
       <ul>
-        <li>You agree to use Google Sign-in solely with your own Google account.</li>
-        <li>You agree that A.R. Labs may process your public profile information in accordance with our Privacy Policy.</li>
+        <li>You agree to maintain the confidentiality of your sign-in credentials.</li>
         <li>You are solely responsible for all activities that occur under your account.</li>
+        <li>You agree that A.R. Labs may process your registration and onboarding profile information in accordance with our Privacy Policy.</li>
       </ul>
     </div>
 
@@ -214,9 +253,19 @@
     </div>
 
     <div class="legal-section">
-      <h2>10. Contact Information</h2>
+      <h2>10. AI-OS Business Side-Income Engine</h2>
+      <p>The AI-OS Business Hub, including the Business Academy, Launchpad, and AI Strategist (collectively, the "Business Module"), provides educational guides, business blueprint compilers, and simulation models.</p>
+      <ul>
+        <li><strong>Simulated Projections:</strong> All business models, matrices, timelines, setups, monthly costs, and statistics displayed in the Business Hub are for educational and simulation purposes only. They do NOT guarantee actual profit or real-world financial outcomes.</li>
+        <li><strong>Subscription Limits & API Credits:</strong> Usage of the AI-OS Business strategist chat and prompt compiler engines is subject to system rate-limits and token subscription allowances as defined in your account tier.</li>
+        <li><strong>Indemnification:</strong> A.R. Labs and Anuj Rawal are not liable for any real-world business decisions, registrations, taxes, or operational losses resulting from the use of the blueprints, calculators, and legal resources provided in the Business Hub.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>11. Contact Information</h2>
       <p>If you have any questions regarding these Terms & Conditions, please contact us at:</p>
-      <p style="font-family: var(--font-mono); color: var(--text-primary);">Email: rawalanuj50@gmail.com</p>
+      <p style="font-family: var(--font-mono); color: var(--text-primary);">Email: arproduction050@gmail.com</p>
     </div>
   </main>
 

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy | AI-OS</title>
-  <meta name="description" content="Privacy Policy for AI-OS by A.R. Labs. Google OAuth compliance, data storage on Supabase, and opt-out options.">
+  <meta name="description" content="Privacy Policy for AI-OS by A.R. Labs. Data storage on Supabase, cookie usage, and account deletion options.">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,6 +113,45 @@
       color: var(--accent-bg-invert);
       border-color: var(--text-primary);
     }
+
+    @media (max-width: 1024px) {
+      .main-nav {
+        position: static !important;
+        display: flex !important;
+        flex-direction: row !important;
+        width: auto !important;
+        height: auto !important;
+        padding: 0 !important;
+        gap: 12px !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        z-index: 1 !important;
+      }
+      .nav-link, .nav-btn-business {
+        font-size: 0.82rem !important;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+      }
+      .logo-subtitle {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .legal-container {
+        margin: 90px 16px 40px !important;
+        padding: 24px 16px !important;
+      }
+      .legal-title {
+        font-size: 1.8rem !important;
+      }
+      .app-header {
+        padding: 0 12px !important;
+      }
+      .logo-text {
+        font-size: 1rem !important;
+      }
+    }
   </style>
 </head>
 
@@ -151,21 +190,16 @@
 
     <div class="legal-section">
       <h2>1. Introduction</h2>
-      <p>A.R. Labs ("we", "us", "our") is dedicated to protecting your data and privacy. This Privacy Policy documents how AI-OS (the "Platform") accesses, collects, uses, stores, and protects information when you utilize our Services, sign in with your Google Account, or redeem access coupon codes.</p>
+      <p>A.R. Labs ("we", "us", "our") is dedicated to protecting your data and privacy. This Privacy Policy documents how AI-OS (the "Platform") accesses, collects, uses, stores, and protects information when you utilize our Services, register or sign in with your email credentials, or redeem access coupon codes.</p>
     </div>
 
     <div class="legal-section">
-      <h2>2. Google OAuth Integration & Data Accessed</h2>
-      <p>AI-OS uses Google Sign-in (Google OAuth) as a secure and seamless authentication service. When you choose to authenticate using Google, Google requests your permission to share specific profile details with us. The specific data elements we access include:</p>
+      <h2>2. Account Credentials & Data Collected</h2>
+      <p>AI-OS uses local email and password credentials, or premium access coupon validation keys, as its secure authentication mechanism. When you register or sign in, we process:</p>
       <ul>
-        <li><strong>Email Address:</strong> To establish your identity, create a unique account record, and associate your billing status (Basic or Premium).</li>
-        <li><strong>Full Name:</strong> To personalize your dashboard experience and customize interaction greetings.</li>
-        <li><strong>Profile Picture URL (Avatar):</strong> To display your user avatar in the top navigation profile dropdown.</li>
+        <li><strong>Email Address:</strong> To establish your identity, associate your billing status (Basic or Premium), and manage account security.</li>
+        <li><strong>User Profile Metadata:</strong> Full Name, Date of Birth, Gender, and Profession to customize operational timeline outputs and personalize your user dashboard.</li>
       </ul>
-      <div class="highlight-box" style="border-color: rgba(0, 198, 255, 0.3);">
-        <h3>Important Privacy Statement on Google OAuth</h3>
-        <p style="margin: 0; color: var(--text-secondary);">We only access the basic profile parameters explicitly granted by you during the Google OAuth flow. We do not request, access, or store secondary Google account details (such as your search history, contacts, Google Drive files, or calendar entries).</p>
-      </div>
     </div>
 
     <div class="legal-section">
@@ -195,7 +229,7 @@
       <div class="highlight-box">
         <h3>How to Request Account & Data Deletion</h3>
         <p style="margin: 0 0 12px 0; color: var(--text-secondary);">If you wish to delete your profile, email, billing flags, and simulator history, please send an explicit deletion request from your registered email address to:</p>
-        <p style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); margin: 0;">rawalanuj50@gmail.com</p>
+        <p style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); margin: 0;">arproduction050@gmail.com</p>
         <p style="margin: 12px 0 0 0; color: var(--text-secondary);">We will confirm your request and completely purge all account rows from our Supabase tables within five (5) business days.</p>
       </div>
     </div>
@@ -211,9 +245,18 @@
     </div>
 
     <div class="legal-section">
-      <h2>9. Contact Us</h2>
+      <h2>10. AI-OS Business Hub Data Management</h2>
+      <p>When you interact with the AI-OS Business Hub tools (Launchpad, Strategist, Academy):</p>
+      <ul>
+        <li><strong>Simulated Inputs:</strong> The business models and budget ranges you select are processed client-side or sent to server-side APIs to compile custom outputs. We do not sell or monetize your business parameters.</li>
+        <li><strong>Chat Logs & Custom Prompts:</strong> Conversations with the A.R. Business Strategist are stored locally in your browser session or processed via secure server connection layers.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>11. Contact Us</h2>
       <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your personal information, please write to:</p>
-      <p style="font-family: var(--font-mono); color: var(--text-primary);">Email: rawalanuj50@gmail.com</p>
+      <p style="font-family: var(--font-mono); color: var(--text-primary);">Email: arproduction050@gmail.com</p>
     </div>
   </main>
 

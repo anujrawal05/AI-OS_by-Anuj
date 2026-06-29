@@ -22,7 +22,7 @@ const state = {
   analytics: {
     compileRoadmapClicks: 0,
     loginAttempts: 0,
-    googleSignIns: 0,
+    emailSignIns: 0,
     couponRedemptions: 0,
     roadmapUnlockRate: 0
   }
@@ -1176,7 +1176,9 @@ function toggleTheme() {
 
 function setupEventListeners() {
   // Theme Switching
-  themeToggleBtn.addEventListener('click', toggleTheme);
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+  }
 
   // Wizard reconfiguration trigger
   const reconfigBtn = document.getElementById('reconfigure-btn');
@@ -1194,14 +1196,16 @@ function setupEventListeners() {
   window.addEventListener('scroll', updateScrollProgress);
   
   // Filter tabs click binding
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.getAttribute('data-filter');
-      filterNodes(filter);
+  if (filterBtns) {
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.getAttribute('data-filter');
+        filterNodes(filter);
+      });
     });
-  });
+  }
 
   // Slide drawer controls using event delegation on the wrapper container
   // Click anywhere on a timeline-card (or library card) to open drawer
@@ -1223,8 +1227,12 @@ function setupEventListeners() {
     });
   }
 
-  drawerCloseBtn.addEventListener('click', closeDrawer);
-  drawerCloseOverlay.addEventListener('click', closeDrawer);
+  if (drawerCloseBtn) {
+    drawerCloseBtn.addEventListener('click', closeDrawer);
+  }
+  if (drawerCloseOverlay) {
+    drawerCloseOverlay.addEventListener('click', closeDrawer);
+  }
 
   // Close drawer or comparison overlay with escape key
   window.addEventListener('keydown', (e) => {
@@ -1374,7 +1382,55 @@ function setupEventListeners() {
       });
     }
 
+  });
 
+  // Accordion Collapsible course modules toggles inside homepage Academy
+  const modCards = document.querySelectorAll('#business-academy-section .learn-module-card');
+  modCards.forEach(card => {
+    const header = card.querySelector('.learn-module-header');
+    const body = card.querySelector('.learn-module-body');
+    const arrow = card.querySelector('.learn-module-toggle-btn');
+    if (header && body && arrow) {
+      header.addEventListener('click', () => {
+        const isActive = body.style.display === 'block';
+        modCards.forEach(c => {
+          c.classList.remove('active');
+          const b = c.querySelector('.learn-module-body');
+          if (b) b.style.display = 'none';
+          const a = c.querySelector('.learn-module-toggle-btn');
+          if (a) a.textContent = '▲';
+        });
+        if (!isActive) {
+          card.classList.add('active');
+          body.style.display = 'block';
+          arrow.textContent = '▼';
+        }
+      });
+    }
+  });
+
+  // Skip Basics button scrolling redirect
+  const skipBasicsBtn = document.getElementById('btn-skip-basics');
+  if (skipBasicsBtn) {
+    skipBasicsBtn.addEventListener('click', () => {
+      const controlsSec = document.getElementById('dashboard-controls');
+      if (controlsSec) {
+        controlsSec.scrollIntoView({ behavior: 'smooth' });
+        const taskSelect = document.getElementById('control-task-select');
+        if (taskSelect) taskSelect.focus();
+      }
+    });
+  }
+
+  // Mobile Touch/Tap response enhancements
+  const elementsToTap = document.querySelectorAll('.nav-btn-business, .business-popup-opt-btn, .learn-module-header, .btn-submit-quiz, .workspace-dropdown-trigger');
+  elementsToTap.forEach(el => {
+    el.addEventListener('touchstart', function() {
+      el.classList.add('touch-active');
+    }, { passive: true });
+    el.addEventListener('touchend', function() {
+      el.classList.remove('touch-active');
+    }, { passive: true });
   });
 }
 
@@ -5600,19 +5656,19 @@ const lockTranslations = {
   English: {
     title: "Login For Full Access",
     desc: "Authentication is required to unlock complete system roadmaps, prompt templates, and professional execution guides.",
-    googleBtn: "Continue with Google",
+    signinBtn: "Sign In / Create Account",
     couponBtn: "Access Using Coupon"
   },
   Hindi: {
     title: "पूर्ण एक्सेस के लिए लॉगिन करें",
     desc: "सिस्टम रोडमैप, प्रॉम्ट टेम्पलेट्स और व्यावसायिक मार्गदर्शिकाओं को अनलॉक करने के लिए प्रमाणीकरण आवश्यक है।",
-    googleBtn: "गूगल के साथ जारी रखें",
+    signinBtn: "लॉगिन / अकाउंट बनाएं",
     couponBtn: "कूपन कोड दर्ज करें"
   },
   Hinglish: {
     title: "Login For Full Access",
     desc: "Complete system roadmaps, prompt templates aur guides ko unlock karne ke liye authentication zaroori hai.",
-    googleBtn: "Continue with Google",
+    signinBtn: "Sign In / Create Account",
     couponBtn: "Access Using Coupon"
   }
 };
@@ -5645,11 +5701,8 @@ function applyRoadmapLock() {
       <h3 style="font-family: var(--font-title); font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">${t.title}</h3>
       <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 28px;">${t.desc}</p>
       <div style="display: flex; flex-direction: column; gap: 12px;">
-        <button id="btn-lock-google" class="btn btn-primary" style="width: 100%; justify-content: center; gap: 8px;">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right: 4px;">
-            <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-6.887 4.114-4.904 0-8.9-3.995-8.9-8.9s3.996-8.9 8.9-8.9c2.467 0 4.53 1.019 6.136 2.545l3.036-3.036C18.6 1.454 15.655 0 12.24 0 5.58 0 0 5.58 0 12.24s5.58 12.24 12.24 12.24c7.02 0 11.65-4.937 11.65-11.83 0-.815-.072-1.545-.22-2.365H12.24z"/>
-          </svg>
-          <span>${t.googleBtn}</span>
+        <button id="btn-lock-signin" class="btn btn-primary" style="width: 100%; justify-content: center; gap: 8px;">
+          <span>${t.signinBtn}</span>
         </button>
         <button id="btn-lock-coupon" class="btn btn-secondary" style="width: 100%; justify-content: center;">
           <span>${t.couponBtn}</span>
@@ -5658,8 +5711,9 @@ function applyRoadmapLock() {
     `;
     section.appendChild(overlay);
     
-    document.getElementById('btn-lock-google').addEventListener('click', () => {
-      handleGoogleLogin();
+    document.getElementById('btn-lock-signin').addEventListener('click', () => {
+      const authOverlay = document.getElementById('auth-modal-overlay');
+      if (authOverlay) authOverlay.style.display = 'flex';
     });
     document.getElementById('btn-lock-coupon').addEventListener('click', () => {
       const authOverlay = document.getElementById('auth-modal-overlay');
@@ -5702,20 +5756,12 @@ async function initSupabase() {
       });
       console.log("Supabase client initialized successfully.");
       
-      // Listen to auth state transitions
-      supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        console.log("Supabase Auth Event:", event);
-        if (session) {
-          await handleSupabaseSession(session);
-        } else {
-          // Verify if coupon session is active. If not, clear state.user
-          if (!sessionStorage.getItem('aios_coupon_session')) {
-            state.user = null;
-            updateUserProfileHeader();
-            toggleBusinessSectionView();
-          }
-        }
-      });
+      // Verify if coupon session is active. If not, clear state.user
+      if (!sessionStorage.getItem('aios_coupon_session')) {
+        state.user = null;
+        updateUserProfileHeader();
+        toggleBusinessSectionView();
+      }
     } else {
       console.warn("Supabase credentials missing from config API.");
     }
@@ -5770,7 +5816,7 @@ function incrementPromptLimit() {
 
 function calculateUnlockRate() {
   if (state.analytics.compileRoadmapClicks === 0) return 0;
-  const rate = ((state.analytics.googleSignIns + state.analytics.couponRedemptions) / state.analytics.compileRoadmapClicks) * 100;
+  const rate = (((state.analytics.emailSignIns || 0) + state.analytics.couponRedemptions) / state.analytics.compileRoadmapClicks) * 100;
   return Math.min(100, Math.round(rate));
 }
 
@@ -5814,10 +5860,16 @@ function updateUserProfileHeader() {
         <div id="header-profile-dropdown" class="profile-dropdown">
           <div class="profile-dropdown-name">${nameToDisplay}</div>
           <div class="profile-dropdown-email">${state.user.email || ''}</div>
-          <div class="profile-dropdown-status ${statusText.toLowerCase() === 'premium' ? 'premium' : ''}">${statusText.toUpperCase()}</div>
+          <div class="profile-dropdown-status ${statusText.toLowerCase() === 'premium' ? 'premium' : ''}">${statusText.toUpperCase()}${state.user.plan_type === 'Trial' ? ` — ${state.user.trial_days_remaining || 0}d left` : ''}</div>
           <button id="btn-dropdown-profile" class="profile-dropdown-item" style="width: 100%; text-align: left; background: transparent; border: none; color: #fff; padding: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 8px;">
             👤 <span>My Profile</span>
           </button>
+          <a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener" style="display:flex; align-items:center; gap:8px; padding:10px; color:rgba(255,255,255,0.7); font-size:0.82rem; text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+            📖 <span>A.R. Publications</span>
+          </a>
+          <a href="https://anujrawal05.github.io/apps-by-anujrawal/" target="_blank" rel="noopener" style="display:flex; align-items:center; gap:8px; padding:10px; color:rgba(255,255,255,0.7); font-size:0.82rem; text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+            📱 <span>Apps by Anuj</span>
+          </a>
           <button id="btn-dropdown-logout" class="profile-dropdown-logout" style="margin-top: 10px;">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -5875,22 +5927,87 @@ function updateUserProfileHeader() {
   }
 }
 
-async function handleGoogleLogin() {
-  if (!supabaseClient) {
-    showToast("Supabase configuration is not loaded yet.", "error");
+/* ---- Auth Tab Switcher (global so onclick= attribute works) ---- */
+function switchAuthTab(tab) {
+  const signinForm = document.getElementById('auth-form-signin');
+  const signupForm = document.getElementById('auth-form-signup');
+  const signinTab = document.getElementById('auth-tab-signin');
+  const signupTab = document.getElementById('auth-tab-signup');
+  if (!signinForm || !signupForm) return;
+  if (tab === 'signin') {
+    signinForm.style.display = 'flex';
+    signupForm.style.display = 'none';
+    if (signinTab) { signinTab.style.background = 'var(--accent-color)'; signinTab.style.color = '#000'; }
+    if (signupTab) { signupTab.style.background = 'transparent'; signupTab.style.color = 'var(--text-secondary)'; }
+  } else {
+    signinForm.style.display = 'none';
+    signupForm.style.display = 'flex';
+    if (signupTab) { signupTab.style.background = 'var(--accent-color)'; signupTab.style.color = '#000'; }
+    if (signinTab) { signinTab.style.background = 'transparent'; signinTab.style.color = 'var(--text-secondary)'; }
+  }
+}
+
+async function handleEmailSignin() {
+  const email = (document.getElementById('auth-signin-email') || {}).value?.trim();
+  const password = (document.getElementById('auth-signin-password') || {}).value;
+  const errEl = document.getElementById('auth-signin-error');
+  if (errEl) errEl.style.display = 'none';
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; }
     return;
   }
+  const btn = document.getElementById('btn-email-signin');
+  if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
   try {
-    state.analytics.loginAttempts++;
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin
-      }
-    });
+    if (!supabaseClient) throw new Error('Auth service unavailable. Please try again.');
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    if (data?.session) await handleSupabaseSession(data.session);
   } catch (err) {
-    showToast("Google sign in failed: " + err.message, "error");
+    if (errEl) { errEl.textContent = err.message || 'Sign in failed. Check credentials.'; errEl.style.display = 'block'; }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Sign In →'; }
+  }
+}
+
+async function handleEmailSignup() {
+  const email = (document.getElementById('auth-signup-email') || {}).value?.trim();
+  const password = (document.getElementById('auth-signup-password') || {}).value;
+  const confirm = (document.getElementById('auth-signup-confirm') || {}).value;
+  const errEl = document.getElementById('auth-signup-error');
+  if (errEl) errEl.style.display = 'none';
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (password.length < 8) {
+    if (errEl) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (password !== confirm) {
+    if (errEl) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; }
+    return;
+  }
+  const btn = document.getElementById('btn-email-signup');
+  if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
+  try {
+    if (!supabaseClient) throw new Error('Auth service unavailable. Please try again.');
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) throw error;
+    if (data?.user && !data?.session) {
+      // Email confirmation required
+      if (errEl) {
+        errEl.style.color = '#2EC5FF';
+        errEl.textContent = '✅ Confirmation email sent! Check your inbox to complete registration.';
+        errEl.style.display = 'block';
+      }
+    } else if (data?.session) {
+      showOnboardingModal(data.session.user);
+    }
+  } catch (err) {
+    if (errEl) { errEl.textContent = err.message || 'Registration failed. Please try again.'; errEl.style.display = 'block'; }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Create Account →'; }
   }
 }
 
@@ -5908,30 +6025,36 @@ async function handleSupabaseSession(session) {
       showOnboardingModal(user);
     } else {
       // User registered - complete sign in
+      const now = Date.now();
+      const trialStart = profile.trial_started_at ? new Date(profile.trial_started_at).getTime() : null;
+      const trialDaysElapsed = trialStart ? (now - trialStart) / (1000 * 60 * 60 * 24) : 999;
+      const onTrial = trialDaysElapsed < 3 && !profile.plan_type;
+      
       state.user = {
         id: user.id,
         name: profile.full_name,
         email: user.email,
-        picture: user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
+        picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
         gender: profile.gender,
         profession: profile.profession,
         date_of_birth: profile.date_of_birth,
-        plan_type: profile.plan_type || null,
+        plan_type: onTrial ? 'Trial' : (profile.plan_type || 'Basic'),
+        trial_started_at: profile.trial_started_at || null,
+        trial_days_remaining: onTrial ? Math.max(0, Math.ceil(3 - trialDaysElapsed)) : 0,
         token: session.access_token,
         is_coupon: false
       };
       
       localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
       
-      state.analytics.googleSignIns++;
-      state.analytics.roadmapUnlockRate = calculateUnlockRate();
+      state.analytics.emailSignIns = (state.analytics.emailSignIns || 0) + 1;
       
       hideAuthModals();
       updateUserProfileHeader();
+      initTrialClock();
       toggleBusinessSectionView();
-      if (window.AdManager) window.AdManager.updateAdVisibility();
       
-      if (!profile.plan_type) {
+      if (!profile.plan_type && !onTrial) {
         showPricingModal(true);
       } else {
         regenerateActiveRoadmap();
@@ -5987,6 +6110,7 @@ async function handleOnboardingSubmit(e) {
   }
   
   try {
+    const trialStart = new Date().toISOString();
     const { error } = await supabaseClient
       .from('user_profiles')
       .upsert({
@@ -5997,6 +6121,7 @@ async function handleOnboardingSubmit(e) {
         gender: gender,
         profession: profession,
         plan_type: null,
+        trial_started_at: trialStart,
         updated_at: new Date().toISOString()
       });
       
@@ -6016,6 +6141,23 @@ async function handleOnboardingSubmit(e) {
       errorEl.textContent = 'Onboarding registration failed: ' + err.message;
       errorEl.style.display = 'block';
     }
+  }
+}
+
+/* ─── Trial Clock ───────────────────────────────────────────────────── */
+function isTrialActive() {
+  return state.user && state.user.plan_type === 'Trial' && state.user.trial_days_remaining > 0;
+}
+
+function initTrialClock() {
+  const banner = document.getElementById('trial-countdown-banner');
+  if (!banner) return;
+  if (isTrialActive()) {
+    const days = state.user.trial_days_remaining;
+    banner.innerHTML = `⏳ <strong>Free Trial Active</strong> — ${days} day${days !== 1 ? 's' : ''} remaining. <a href="#" onclick="showPricingModal(); return false;" style="color:#2EC5FF; text-decoration:underline; margin-left:8px;">Upgrade to Premium →</a>`;
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
   }
 }
 
@@ -6193,7 +6335,7 @@ function showProfileModal() {
       accessStatusEl.className = 'badge-access premium-badge';
     }
   } else {
-    if (accountTypeEl) accountTypeEl.textContent = 'Google User';
+    if (accountTypeEl) accountTypeEl.textContent = 'Email User';
     if (accessStatusEl) {
       const isPremium = state.user.plan_type === 'Premium';
       accessStatusEl.innerHTML = isPremium ? 'Premium' : 'Basic';
@@ -6430,8 +6572,34 @@ async function initAuthSystem() {
   
   // Initialize Supabase Client dynamically
   await initSupabase();
-  
+
+  // Silently restore Supabase session if still valid
+  if (supabaseClient) {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && !state.user?.is_coupon) {
+        await handleSupabaseSession(session);
+      }
+    } catch (e) { /* session expired */ }
+
+    // Real-time auth state listener
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        await handleSupabaseSession(session);
+      } else if (event === 'SIGNED_OUT') {
+        state.user = null;
+        localStorage.removeItem('aios_user_profile');
+        updateUserProfileHeader();
+        toggleBusinessSectionView();
+      }
+    });
+  }
+
+  // Show trial banner for cached trial sessions
+  initTrialClock();
+
   const authCloseBtn = document.getElementById('auth-modal-close-btn');
+
   if (authCloseBtn) {
     authCloseBtn.addEventListener('click', () => {
       const authOverlay = document.getElementById('auth-modal-overlay');
@@ -6467,12 +6635,25 @@ async function initAuthSystem() {
     });
   }
   
-  const btnGoogle = document.getElementById('btn-auth-google');
-  if (btnGoogle) {
-    btnGoogle.addEventListener('click', () => {
-      handleGoogleLogin();
-    });
+  const btnSignin = document.getElementById('btn-email-signin');
+  if (btnSignin) {
+    btnSignin.addEventListener('click', handleEmailSignin);
   }
+
+  const btnSignup = document.getElementById('btn-email-signup');
+  if (btnSignup) {
+    btnSignup.addEventListener('click', handleEmailSignup);
+  }
+
+  // Also support Enter key in email/password fields
+  ['auth-signin-email','auth-signin-password'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleEmailSignin(); });
+  });
+  ['auth-signup-email','auth-signup-password','auth-signup-confirm'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleEmailSignup(); });
+  });
   
   const btnCouponTrigger = document.getElementById('btn-auth-coupon-trigger');
   if (btnCouponTrigger) {
@@ -6566,3 +6747,207 @@ async function initAuthSystem() {
     }
   });
 }
+
+// Concept Quiz Verifier for Business Academy
+function verifyQuizAnswer(btnElement, radioGroupName, expectedValue, explanationText) {
+  const container = btnElement.closest('.learn-quiz-box');
+  const feedbackBox = container.querySelector('.quiz-feedback-box');
+  const selectedRadio = container.querySelector(`input[name="${radioGroupName}"]:checked`);
+  
+  if (!selectedRadio) {
+    showToast("Please select an option before submitting.", "warning");
+    return;
+  }
+  
+  feedbackBox.style.display = 'block';
+  btnElement.disabled = true;
+  
+  container.querySelectorAll(`input[name="${radioGroupName}"]`).forEach(input => {
+    input.disabled = true;
+  });
+
+  if (selectedRadio.value === expectedValue) {
+    feedbackBox.style.background = 'rgba(0, 208, 132, 0.1)';
+    feedbackBox.style.border = '1px solid rgba(0, 208, 132, 0.3)';
+    feedbackBox.style.color = '#00D084';
+    feedbackBox.innerHTML = `<strong>✅ Correct!</strong> ${explanationText}`;
+    showToast("Concept check unlocked successfully!");
+  } else {
+    feedbackBox.style.background = 'rgba(255, 74, 74, 0.1)';
+    feedbackBox.style.border = '1px solid rgba(255, 74, 74, 0.3)';
+    feedbackBox.style.color = '#ff4a4a';
+    feedbackBox.innerHTML = `<strong>❌ Incorrect.</strong> ${explanationText}`;
+    showToast("Incorrect answer.", "error");
+  }
+}
+
+// Downloadable templates client exporter for Business Academy
+function downloadTemplate(templateName) {
+  const templates = {
+    'business_model_canvas': [
+      "==================================================",
+      "AI-OS BUSINESS PLATFORM - BUSINESS MODEL CANVAS",
+      "Powered by A.R. Labs",
+      "==================================================",
+      "",
+      "1. VALUE PROPOSITIONS:",
+      "   - What value do we deliver to the customer?",
+      "   - Which customer problems are we helping to solve?",
+      "",
+      "2. CUSTOMER SEGMENTS:",
+      "   - For whom are we creating value?",
+      "   - Who are our most important customers?",
+      "",
+      "3. CHANNELS:",
+      "   - Through which channels do our customer segments want to be reached?",
+      "",
+      "4. CUSTOMER RELATIONSHIPS:",
+      "   - How do we get, keep, and grow customers?",
+      "",
+      "5. REVENUE STREAMS:",
+      "   - For what value are our customers really willing to pay?",
+      "   - How do they pay (subscriptions, commissions, transactional)?",
+      "",
+      "6. KEY RESOURCES:",
+      "   - What key assets are required to deliver our value proposition?",
+      "",
+      "7. KEY ACTIVITIES:",
+      "   - What key operations are required to deliver value?",
+      "",
+      "8. KEY PARTNERS:",
+      "   - Who are our key partners and suppliers?",
+      "",
+      "9. COST STRUCTURE:",
+      "   - What are the most important costs inherent in our business model?",
+      "   - What are the COGS and OPEX projections?",
+      ""
+    ].join('\n'),
+    
+    'marketing_distribution': [
+      "==================================================",
+      "AI-OS BUSINESS HUB - MARKETING DISTRIBUTION SHEET",
+      "Powered by A.R. Labs",
+      "==================================================",
+      "",
+      "CHANNEL LIST & OUTREACH METRIC MATRIX:",
+      "",
+      "1. COLD OUTBOUND OUTREACH (LinkedIn/Email):",
+      "   - Daily Volume Goal: 40 highly targeted decision makers",
+      "   - Script Outline: [Observation] + [Friction identified] + [Helpful outcome proof] + [Call to Action]",
+      "   - Target Conversion Rate: 10% demo booking rate",
+      "",
+      "2. ORGANIC CONTENT ENGINE (Short Videos / Reels):",
+      "   - Weekly Frequency: 3 videos detailing practical automations",
+      "   - Target Platform: YouTube Shorts, TikTok, Instagram Reels, LinkedIn Video",
+      "",
+      "3. PROGRAMMATIC SEO PIPELINE:",
+      "   - Niche Keyword Structure: '[Industry] Automation Service in [City Name]'",
+      "   - Target Index Volume: 100 pages generated from template directories",
+      "",
+      "OUTREACH SCHEDULE TIMELINE:",
+      "   - Week 1: Lead list creation (scrape directories for 200 qualified companies)",
+      "   - Week 2: Send Loom-based video audits to top 40 prospects",
+      "   - Week 3: Initiate secondary follow-up loops on positive replies",
+      "   - Week 4: Analyze analytics and optimize script variables"
+    ].join('\n'),
+    
+    'onboarding_automation': [
+      "==================================================",
+      "AI-OS BUSINESS PLATFORM - ONBOARDING WORKFLOW",
+      "Powered by A.R. Labs",
+      "==================================================",
+      "",
+      "Intake Flow Automations Trigger Mappings (Make.com/Zapier):",
+      "",
+      "[Trigger event: Stripe/Razorpay Checkout Captured successfully]",
+      "  |",
+      "  +--> 1. CREATE client row in Supabase database",
+      "  |",
+      "  +--> 2. GENERATE Google Drive folder labeled '[Client Name] Workspace'",
+      "  |",
+      "  +--> 3. RENDER custom Service Agreement contract from template",
+      "  |      (Fill variables: client_name, date, setup_price, monthly_retainer)",
+      "  |",
+      "  +--> 4. SEND automated docu-sign proposal link via email",
+      "  |",
+      "  +--> 5. ALERT team Slack/Discord room: 'New client [Client Name] active!'"
+    ].join('\n'),
+    
+    'pl_ledger': [
+      "==================================================",
+      "AI-OS BUSINESS HUB - P&L STATEMENT LEDGER SHEET",
+      "Powered by A.R. Labs",
+      "==================================================",
+      "",
+      "MONTHLY OPERATING SUMMARY:",
+      "",
+      "REVENUE:",
+      "  - Retainer Services: ____________________ (INR/USD)",
+      "  - Transaction Fees: ____________________ (INR/USD)",
+      "  - Product Licenses: ____________________ (INR/USD)",
+      "  - TOTAL REVENUE: ____________________ (A)",
+      "",
+      "COST OF GOODS SOLD (COGS):",
+      "  - Freelancer Payouts: ____________________",
+      "  - API Tokens & Compute: __________________",
+      "  - Transaction Gateways: __________________",
+      "  - TOTAL COGS: ________________________ (B)",
+      "",
+      "GROSS PROFIT: ________________________ (A - B = C)",
+      "",
+      "OPERATING EXPENSES (OPEX):",
+      "  - Server Hosting: ____________________",
+      "  - CRM & Support Subscriptions: _________",
+      "  - Domain Registrations: _______________",
+      "  - Marketing & Advertising: ____________",
+      "  - TOTAL OPEX: ________________________ (D)",
+      "",
+      "NET OPERATING PROFIT: __________________ (C - D = NET PROFIT)",
+      "NET MARGIN: __________________________ (NET PROFIT / TOTAL REVENUE) * 100"
+    ].join('\n'),
+
+    'freelance_contract': [
+      "==================================================",
+      "AI-OS BUSINESS PLATFORM - SERVICE AGREEMENT CONTRACT",
+      "Powered by A.R. Labs",
+      "==================================================",
+      "",
+      "This agreement is made between [Client Business Name] ('Client') and [Your Business/Agency Name] ('Service Provider').",
+      "",
+      "1. DESCRIPTION OF SERVICES:",
+      "   Service Provider will configure and maintain autonomous operations, custom automation pipelines, and AI systems as detailed in the project specifications.",
+      "",
+      "2. PAYMENT TERMS:",
+      "   - Setup Fee: [Setup Price] INR due upon signature of this agreement.",
+      "   - Monthly Support Retainer: [Support Price] INR due on the 1st of each calendar month.",
+      "",
+      "3. INTELLECTUAL PROPERTY:",
+      "   All custom scripts, web structures, and automation flows created specifically for the Client will belong to the Client upon full receipt of payment.",
+      "",
+      "4. LIMITATION OF LIABILITY:",
+      "   Service Provider is not liable for indirect, incidental, or consequential damages resulting from operational tool down-time or third-party API rate adjustments.",
+      "",
+      "Signed,",
+      "Service Provider Signature: ______________________ Date: ___________",
+      "Client Signature: _______________________________ Date: ___________"
+    ].join('\n')
+  };
+
+  const content = templates[templateName];
+  if (!content) return;
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${templateName}_template.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Business template downloaded successfully!");
+}
+
+// Bind methods globally
+window.verifyQuizAnswer = verifyQuizAnswer;
+window.downloadTemplate = downloadTemplate;

@@ -18,6 +18,7 @@
   },
   "dashboard": {
     "title": "OPERATIONAL TARGET CONFIGURATION",
+    "onboarding": "🎯 <strong>HOW TO EXECUTE:</strong> 1. Select your target digital goal from the objective drop-down menu. 2. Choose your preferred interaction language output. 3. Click Compile Roadmap to build your multi-step execution timeline, download master JSON prompts, and activate custom tool sandboxes.",
     "taskLabel": "1. Task / Objective",
     "langLabel": "2. Target Language",
     "compileBtn": "COMPILE ROADMAP",

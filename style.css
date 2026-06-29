@@ -6,6 +6,7 @@
   /* Fonts */
   --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'Space Grotesk', monospace;
+  --font-title: 'Space Grotesk', var(--font-mono), sans-serif;
 
   /* Transitions */
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -42,17 +43,19 @@
   --road-grad-start: #18181b;
   --road-grad-end: #09090b;
 
-  --accent-color: #ffffff;
-  --accent-secondary: #e5e5ea;
+  /* Accent — Bloomberg/Stripe neon-cyan + emerald */
+  --accent-color: #2EC5FF;
+  --accent-secondary: #00D084;
   --accent-bg-invert: #000000;
 
+  --text-muted: rgba(240, 240, 240, 0.38);
   --drawer-bg: rgba(10, 10, 12, 0.85);
   --drawer-overlay: rgba(0, 0, 0, 0.75);
-  --glow-color: rgba(255, 255, 255, 0.1);
+  --glow-color: rgba(46, 197, 255, 0.15);
 
   --input-bg: rgba(255, 255, 255, 0.03);
   --badge-bg: rgba(255, 255, 255, 0.08);
-  --header-bg: rgba(10, 10, 12, 0.7);
+  --header-bg: rgba(8, 8, 10, 0.78);
 
   /* New themed variables */
   --prompt-bg: rgba(0, 0, 0, 0.15);
@@ -61,19 +64,19 @@
 
   --metric-bg-start: rgba(255, 255, 255, 0.03);
   --metric-bg-end: rgba(255, 255, 255, 0.01);
-  --metric-bg-hover-start: rgba(255, 255, 255, 0.06);
-  --metric-bg-hover-end: rgba(255, 255, 255, 0.02);
-  --metric-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 255, 255, 0.03);
-  --metric-hover-val-color: #ffffff;
+  --metric-bg-hover-start: rgba(46, 197, 255, 0.08);
+  --metric-bg-hover-end: rgba(46, 197, 255, 0.02);
+  --metric-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(46, 197, 255, 0.04);
+  --metric-hover-val-color: #2EC5FF;
 
-  --hover-bg: rgba(255, 255, 255, 0.02);
+  --hover-bg: rgba(46, 197, 255, 0.03);
 
   --card-hover-badge-bg: rgba(0, 0, 0, 0.05);
   --card-hover-badge-border: rgba(0, 0, 0, 0.12);
 
   --category-active-count-bg: rgba(0, 0, 0, 0.15);
 
-  --diff-addition-bg: rgba(255, 255, 255, 0.06);
+  --diff-addition-bg: rgba(46, 197, 255, 0.06);
   --diff-deletion-bg: rgba(255, 0, 0, 0.04);
 
   /* Scoped card hover tokens */
@@ -2221,7 +2224,7 @@ textarea {
    DASHBOARD CONTROLS SECTION (moved from inline styles)
    ========================================================================== */
 .dashboard-controls {
-  margin-top: 25px;
+  margin-top: 110px;
   /* compact — banner already handles header clearance */
   padding: 20px 0;
   z-index: 10;
@@ -4018,7 +4021,7 @@ html {
   /* --- Dashboard Controls Section --- */
   /* Override the inline margin-top: 100px and padding via class */
   .dashboard-controls {
-    margin-top: 80px !important;
+    margin-top: 100px !important;
     padding: 16px !important;
   }
 
@@ -4250,7 +4253,7 @@ html {
 
   /* --- Dashboard Controls --- */
   .dashboard-controls {
-    margin-top: 90px !important;
+    margin-top: 110px !important;
     padding: 16px 20px !important;
   }
 
@@ -4928,19 +4931,19 @@ body.modal-open {
   padding: 0 24px;
 }
 
-/* ─── Sticky Sidebar Ads (Desktop only) ──────────────────────────────────── */
-.sidebar-ad {
-  width: 200px;
+/* ─── Layout Side Panels (neutral, no ad content) ────────────────────────── */
+.aside-panel {
+  width: 160px;
   padding: 12px 8px;
   position: relative;
 }
 
-.sidebar-ad-left {
+.aside-panel-left {
   padding-left: 4px;
   padding-right: 2px;
 }
 
-.sidebar-ad-right {
+.aside-panel-right {
   padding-left: 2px;
   padding-right: 4px;
 }
@@ -6275,58 +6278,9 @@ body.modal-open {
   }
 }
 
-/* ── GOOGLE ADSENSE INTEGRATION & LOCAL FALLBACK ───────────────────────── */
-/* Collapse Google Ads placeholder tags unless they are successfully loaded */
-ins.adsbygoogle:not([data-ad-status="filled"]) {
-  display: none !important;
-}
-
-/* Hide fallback local ads content when Google Ads load successfully */
-ins.adsbygoogle[data-ad-status="filled"] + .local-ad-content,
-ins.adsbygoogle[data-ad-status="filled"] ~ .local-ad-content {
-  display: none !important;
-}
-
-/* Style the Google Ads containers to fit nicely */
-ins.adsbygoogle {
-  background: var(--promo-bg);
-  border: 1px solid var(--promo-border);
-  border-radius: var(--prem-radius);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* Align ad slots to occupy full container layout properties */
-.sidebar-ad ins.adsbygoogle {
-  min-height: 250px;
-  width: 100%;
-}
-
-.prem-wide-banner-container ins.adsbygoogle {
-  min-height: 90px;
-  width: 100%;
-}
-
-.top-hero-ad-container ins.adsbygoogle {
-  min-height: 250px;
-  width: 100%;
-  margin-top: 72px;
-}
-
-.prem-dual-strip ins.adsbygoogle {
-  min-height: 150px;
-  width: 100%;
-}
-
-.prem-bottom-showcase ins.adsbygoogle {
-  min-height: 90px;
-  width: 100%;
-}
-
-/* ── ADDITIONAL EXTERNAL AD PLACEMENTS ───────────────────────────────────── */
-
+/* ── LAYOUT PANEL — Desktop Sticky ────────────────────────────────────────── */
 @media (min-width: 1200px) {
-  .sidebar-ad {
+  .aside-panel {
     display: flex !important;
     flex-direction: column;
     gap: 16px;
@@ -6338,13 +6292,8 @@ ins.adsbygoogle {
     overflow-y: auto;
     scrollbar-width: none;
   }
-  .sidebar-ad::-webkit-scrollbar {
+  .aside-panel::-webkit-scrollbar {
     display: none;
-  }
-  
-  /* Make sure internal ads and new ads stack nicely */
-  .sidebar-ad > * {
-    flex-shrink: 0;
   }
 }
 
@@ -8822,4 +8771,392 @@ ins.adsbygoogle {
 
 .btn-show-more:active {
   transform: translateY(1px) scale(0.98);
+}
+
+/* Onboarding Guide Box */
+.onboarding-guide-box {
+  background: linear-gradient(135deg, rgba(46, 197, 255, 0.05), rgba(0, 208, 132, 0.03));
+  border: 1px solid rgba(46, 197, 255, 0.2);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(46, 197, 255, 0.05);
+}
+
+.onboarding-guide-text {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  display: block;
+}
+
+.onboarding-guide-text strong {
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+/* AI-OS Business Click Popup Hijack Modal */
+.business-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.business-popup-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.business-popup-card {
+  background: rgba(18, 18, 22, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(46, 197, 255, 0.1);
+  text-align: center;
+  position: relative;
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.business-popup-overlay.active .business-popup-card {
+  transform: scale(1) translateY(0);
+}
+
+.business-popup-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px;
+  line-height: 1;
+}
+
+.business-popup-close-btn:hover {
+  color: #fff;
+}
+
+.business-popup-title {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #00d084, #2ec5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.business-popup-desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.business-popup-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.business-popup-opt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.business-popup-opt-btn:hover {
+  background: rgba(46, 197, 255, 0.05);
+  border-color: rgba(46, 197, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(46, 197, 255, 0.1);
+}
+
+.business-popup-opt-btn span.opt-icon {
+  font-size: 1.2rem;
+  margin-right: 12px;
+}
+
+.business-popup-opt-btn span.opt-arrow {
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+.business-popup-opt-btn:hover span.opt-arrow {
+  transform: translateX(4px);
+  color: #fff;
+}
+
+/* ==========================================================================
+   INTEGRATED BUSINESS ACADEMY SECTION (HOMEPAGE)
+   ========================================================================== */
+#business-academy-section {
+  --bus-surface: #121212;
+  --bus-primary: #00D084;      /* Emerald Green */
+  --bus-secondary: #FFD54A;    /* Warm Gold */
+  --bus-accent: #2EC5FF;       /* Neon Cyan */
+  --bus-text-secondary: #A0A0AB;
+  --bus-text-muted: #8E8E93;
+  --bus-border: rgba(255, 255, 255, 0.06);
+  --bus-card-shadow: rgba(0, 0, 0, 0.8);
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border-color);
+}
+
+.learn-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.learn-header-banner {
+  background: rgba(18, 18, 22, 0.6);
+  border: 1px solid var(--bus-border);
+  border-radius: 14px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  box-shadow: 0 15px 30px var(--bus-card-shadow);
+}
+
+.learn-banner-info h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.learn-banner-info p {
+  font-size: 0.92rem;
+  color: var(--bus-text-secondary);
+  max-width: 620px;
+}
+
+.learn-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .learn-modules-grid {
+    grid-template-columns: 1fr;
+  }
+  .learn-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 20px;
+  }
+}
+
+/* Course Module Collapsible Cards */
+.learn-module-card {
+  background: var(--bus-surface);
+  border: 1px solid var(--bus-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  height: fit-content;
+}
+
+.learn-module-card:hover {
+  border-color: rgba(0, 208, 132, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.learn-module-card.active {
+  border-color: var(--bus-primary);
+  box-shadow: 0 15px 35px rgba(0, 208, 132, 0.05);
+}
+
+.learn-module-header {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: rgba(255,255,255,0.01);
+}
+
+.learn-module-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.learn-module-meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--bus-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.learn-module-header h4 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-family: var(--font-sans);
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.learn-module-toggle-btn {
+  font-size: 0.8rem;
+  color: var(--bus-text-muted);
+  transition: transform 0.3s;
+}
+
+.learn-module-card.active .learn-module-toggle-btn {
+  transform: rotate(180deg);
+  color: var(--bus-primary);
+}
+
+.learn-module-body {
+  padding: 0 24px 24px;
+  display: none;
+  border-top: 1px solid var(--bus-border);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.learn-module-card.active .learn-module-body {
+  display: block;
+}
+
+.learn-module-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--bus-primary);
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.learn-module-text {
+  font-size: 0.88rem;
+  color: var(--bus-text-secondary);
+  line-height: 1.6;
+}
+
+.learn-case-study {
+  background: rgba(255, 213, 74, 0.03);
+  border: 1px solid rgba(255, 213, 74, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.learn-case-study h5 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--bus-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.learn-checklist-list {
+  list-style: none;
+  margin-top: 8px;
+}
+
+.learn-checklist-list li {
+  font-size: 0.85rem;
+  color: var(--bus-text-secondary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.learn-checklist-list li::before {
+  content: '✓';
+  color: var(--bus-primary);
+  font-weight: bold;
+}
+
+.learn-quiz-box {
+  background: rgba(46, 197, 255, 0.03);
+  border: 1px solid rgba(46, 197, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  display: block;
+}
+
+.learn-quiz-box p {
+  font-size: 0.88rem;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.btn-submit-quiz {
+  background: transparent;
+  border: 1px solid var(--bus-primary);
+  color: var(--bus-primary) !important;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-submit-quiz:hover {
+  background: var(--bus-primary);
+  color: #000 !important;
+}
+
+.learn-download-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--bus-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+}
+
+.learn-download-box span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
 }
