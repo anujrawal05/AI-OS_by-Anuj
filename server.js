@@ -33,6 +33,175 @@ const verifyPaymentHandler = require('./api/auth/verify-payment');
 app.post('/api/auth/coupon-login', couponLoginHandler);
 app.post('/api/auth/verify-payment', verifyPaymentHandler);
 
+// Custom Email/Password Signup Endpoint
+app.post('/api/auth/email-signup', async (req, res) => {
+  try {
+    const { email, password, full_name, date_of_birth, gender, profession } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+    if (!supabase) {
+      return res.status(500).json({ error: 'Database service is not configured on the server.' });
+    }
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    if (data && data.user) {
+      const profileData = {
+        id: data.user.id,
+        email: data.user.email,
+        full_name: full_name || null,
+        date_of_birth: date_of_birth || null,
+        gender: gender || null,
+        profession: profession || null,
+        plan_type: null,
+        trial_started_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .upsert(profileData);
+
+      if (profileError) {
+        console.error('[Signup Profile Error]:', profileError.message);
+        return res.status(400).json({ error: 'Failed to create user profile: ' + profileError.message });
+      }
+
+      return res.status(200).json({
+        user: data.user,
+        session: data.session,
+        profile: profileData
+      });
+    }
+
+    return res.status(400).json({ error: 'User creation failed.' });
+  } catch (err) {
+    console.error('[Signup Endpoint Error]:', err.message);
+    return res.status(500).json({ error: err.message || 'Internal Server Error.' });
+  }
+});
+
+// Custom Email/Password Login Endpoint
+app.post('/api/auth/email-login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+    if (!supabase) {
+      return res.status(500).json({ error: 'Database service is not configured on the server.' });
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    if (data && data.user) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
+      return res.status(200).json({
+        user: data.user,
+        session: data.session,
+        profile: profile || null
+      });
+    }
+
+    return res.status(400).json({ error: 'Authentication failed.' });
+  } catch (err) {
+    console.error('[Login Endpoint Error]:', err.message);
+    return res.status(500).json({ error: err.message || 'Internal Server Error.' });
+  }
+});
+
+// Custom Profile Fetch Endpoint
+app.get('/api/auth/profile', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authentication required.' });
+    }
+    const token = authHeader.split(' ')[1];
+    if (!supabase) {
+      return res.status(500).json({ error: 'Database service is not configured on the server.' });
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return res.status(401).json({ error: 'Invalid session.' });
+    }
+
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    return res.status(200).json(profile || null);
+  } catch (err) {
+    console.error('[Profile Fetch Endpoint Error]:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// Custom Profile Update Endpoint
+app.post('/api/auth/update-profile', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authentication required.' });
+    }
+    const token = authHeader.split(' ')[1];
+    if (!supabase) {
+      return res.status(500).json({ error: 'Database service is not configured on the server.' });
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return res.status(401).json({ error: 'Invalid or expired session. Please log in again.' });
+    }
+
+    const { full_name, date_of_birth, gender, profession, plan_type, trial_started_at } = req.body;
+
+    const profileData = {
+      id: user.id,
+      email: user.email,
+      full_name: full_name,
+      date_of_birth: date_of_birth,
+      gender: gender,
+      profession: profession,
+      updated_at: new Date().toISOString()
+    };
+
+    if (plan_type !== undefined) profileData.plan_type = plan_type;
+    if (trial_started_at !== undefined) profileData.trial_started_at = trial_started_at;
+
+    const { error: profileError } = await supabase
+      .from('user_profiles')
+      .upsert(profileData);
+
+    if (profileError) {
+      return res.status(400).json({ error: profileError.message });
+    }
+
+    return res.status(200).json({
+      success: true,
+      profile: profileData
+    });
+  } catch (err) {
+    console.error('[Update Profile Endpoint Error]:', err.message);
+    return res.status(500).json({ error: err.message || 'Internal Server Error.' });
+  }
+});
+
 // Helper to verify token payload
 async function verifyTokenPayload(authHeader) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {

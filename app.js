@@ -5959,10 +5959,18 @@ async function handleEmailSignin() {
   const btn = document.getElementById('btn-email-signin');
   if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
   try {
-    if (!supabaseClient) throw new Error('Auth service unavailable. Please try again.');
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    if (data?.session) await handleSupabaseSession(data.session);
+    const res = await fetch('/api/auth/email-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || 'Sign in failed. Check credentials.');
+    }
+    if (result.session) {
+      await handleSupabaseSession(result.session, result.profile);
+    }
   } catch (err) {
     if (errEl) { errEl.textContent = err.message || 'Sign in failed. Check credentials.'; errEl.style.display = 'block'; }
   } finally {
@@ -5991,18 +5999,25 @@ async function handleEmailSignup() {
   const btn = document.getElementById('btn-email-signup');
   if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
   try {
-    if (!supabaseClient) throw new Error('Auth service unavailable. Please try again.');
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) throw error;
-    if (data?.user && !data?.session) {
-      // Email confirmation required
+    const res = await fetch('/api/auth/email-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || 'Registration failed. Please try again.');
+    }
+    
+    // Auto login on successful signup if session is returned
+    if (result.session) {
+      await handleSupabaseSession(result.session, result.profile);
+    } else if (result.user) {
       if (errEl) {
         errEl.style.color = '#2EC5FF';
-        errEl.textContent = '✅ Confirmation email sent! Check your inbox to complete registration.';
+        errEl.textContent = '✅ Registration successful! Please log in to complete setup.';
         errEl.style.display = 'block';
       }
-    } else if (data?.session) {
-      showOnboardingModal(data.session.user);
     }
   } catch (err) {
     if (errEl) { errEl.textContent = err.message || 'Registration failed. Please try again.'; errEl.style.display = 'block'; }
@@ -6011,35 +6026,39 @@ async function handleEmailSignup() {
   }
 }
 
-async function handleSupabaseSession(session) {
+async function handleSupabaseSession(session, profile = null) {
   const user = session.user;
   try {
-    const { data: profile, error } = await supabaseClient
-      .from('user_profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    let finalProfile = profile;
+    if (!finalProfile) {
+      const res = await fetch('/api/auth/profile', {
+        headers: { 'Authorization': `Bearer ${session.access_token}` }
+      });
+      if (res.ok) {
+        finalProfile = await res.json();
+      }
+    }
       
-    if (error || !profile || !profile.full_name || !profile.date_of_birth || !profile.gender || !profile.profession) {
+    if (!finalProfile || !finalProfile.full_name || !finalProfile.date_of_birth || !finalProfile.gender || !finalProfile.profession) {
       // First time login - trigger onboarding modal
       showOnboardingModal(user);
     } else {
       // User registered - complete sign in
       const now = Date.now();
-      const trialStart = profile.trial_started_at ? new Date(profile.trial_started_at).getTime() : null;
+      const trialStart = finalProfile.trial_started_at ? new Date(finalProfile.trial_started_at).getTime() : null;
       const trialDaysElapsed = trialStart ? (now - trialStart) / (1000 * 60 * 60 * 24) : 999;
-      const onTrial = trialDaysElapsed < 3 && !profile.plan_type;
+      const onTrial = trialDaysElapsed < 3 && !finalProfile.plan_type;
       
       state.user = {
         id: user.id,
-        name: profile.full_name,
+        name: finalProfile.full_name,
         email: user.email,
         picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
-        gender: profile.gender,
-        profession: profile.profession,
-        date_of_birth: profile.date_of_birth,
-        plan_type: onTrial ? 'Trial' : (profile.plan_type || 'Basic'),
-        trial_started_at: profile.trial_started_at || null,
+        gender: finalProfile.gender,
+        profession: finalProfile.profession,
+        date_of_birth: finalProfile.date_of_birth,
+        plan_type: onTrial ? 'Trial' : (finalProfile.plan_type || 'Basic'),
+        trial_started_at: finalProfile.trial_started_at || null,
         trial_days_remaining: onTrial ? Math.max(0, Math.ceil(3 - trialDaysElapsed)) : 0,
         token: session.access_token,
         is_coupon: false
@@ -6054,7 +6073,7 @@ async function handleSupabaseSession(session) {
       initTrialClock();
       toggleBusinessSectionView();
       
-      if (!profile.plan_type && !onTrial) {
+      if (!finalProfile.plan_type && !onTrial) {
         showPricingModal(true);
       } else {
         regenerateActiveRoadmap();
@@ -6080,7 +6099,7 @@ function showOnboardingModal(user) {
 
 async function handleOnboardingSubmit(e) {
   e.preventDefault();
-  if (!supabaseClient || !onboardingUser) return;
+  if (!onboardingUser) return;
   
   const fullName = document.getElementById('ob-fullname').value.trim();
   const dob = document.getElementById('ob-dob').value;
@@ -6111,30 +6130,36 @@ async function handleOnboardingSubmit(e) {
   
   try {
     const trialStart = new Date().toISOString();
-    const { error } = await supabaseClient
-      .from('user_profiles')
-      .upsert({
-        id: onboardingUser.id,
-        email: onboardingUser.email,
+    
+    // Fetch session token client-side to pass as auth header
+    if (!supabaseClient) throw new Error('Auth service is offline.');
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) throw new Error('No active authentication session found.');
+
+    const res = await fetch('/api/auth/update-profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({
         full_name: fullName,
         date_of_birth: dob,
         gender: gender,
         profession: profession,
         plan_type: null,
-        trial_started_at: trialStart,
-        updated_at: new Date().toISOString()
-      });
-      
-    if (error) throw error;
+        trial_started_at: trialStart
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Profile update failed.');
     
     // Close onboarding and complete session fetch
     const overlay = document.getElementById('onboarding-modal-overlay');
     if (overlay) overlay.style.display = 'none';
     
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-      await handleSupabaseSession(session);
-    }
+    await handleSupabaseSession(session, result.profile);
   } catch (err) {
     console.error("Onboarding failed:", err.message);
     if (errorEl) {

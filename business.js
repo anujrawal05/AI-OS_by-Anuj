@@ -176,33 +176,37 @@ async function handleGoogleLogin() {
   }
 }
 
-async function handleSupabaseSession(session) {
+async function handleSupabaseSession(session, profile = null) {
   const user = session.user;
   try {
-    const { data: profile, error } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    let finalProfile = profile;
+    if (!finalProfile) {
+      const res = await fetch('/api/auth/profile', {
+        headers: { 'Authorization': `Bearer ${session.access_token}` }
+      });
+      if (res.ok) {
+        finalProfile = await res.json();
+      }
+    }
       
-    if (error || !profile || !profile.full_name || !profile.date_of_birth || !profile.gender || !profile.profession) {
+    if (!finalProfile || !finalProfile.full_name || !finalProfile.date_of_birth || !finalProfile.gender || !finalProfile.profession) {
       showOnboardingModal(user);
     } else {
       const now = Date.now();
-      const trialStart = profile.trial_started_at ? new Date(profile.trial_started_at).getTime() : null;
+      const trialStart = finalProfile.trial_started_at ? new Date(finalProfile.trial_started_at).getTime() : null;
       const trialDaysElapsed = trialStart ? (now - trialStart) / (1000 * 60 * 60 * 24) : 999;
-      const onTrial = trialDaysElapsed < 3 && !profile.plan_type;
+      const onTrial = trialDaysElapsed < 3 && !finalProfile.plan_type;
 
       state.user = {
         id: user.id,
-        name: profile.full_name,
+        name: finalProfile.full_name,
         email: user.email,
-        picture: user.user_metadata.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile.full_name}`,
-        date_of_birth: profile.date_of_birth,
-        gender: profile.gender,
-        profession: profile.profession,
-        plan_type: onTrial ? 'Trial' : (profile.plan_type || 'Basic'),
-        trial_started_at: profile.trial_started_at || null,
+        picture: user.user_metadata.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${finalProfile.full_name}`,
+        date_of_birth: finalProfile.date_of_birth,
+        gender: finalProfile.gender,
+        profession: finalProfile.profession,
+        plan_type: onTrial ? 'Trial' : (finalProfile.plan_type || 'Basic'),
+        trial_started_at: finalProfile.trial_started_at || null,
         trial_days_remaining: onTrial ? Math.max(0, Math.ceil(3 - trialDaysElapsed)) : 0,
         token: session.access_token
       };
@@ -213,7 +217,7 @@ async function handleSupabaseSession(session) {
       initTrialClock();
       toggleBusinessSectionView();
       
-      if (!profile.plan_type && !onTrial) {
+      if (!finalProfile.plan_type && !onTrial) {
         showPricingModal(true);
       }
     }
@@ -259,28 +263,31 @@ async function handleOnboardingSubmit(e) {
   
   try {
     const trialStart = new Date().toISOString();
-    const { error } = await supabase
-      .from('user_profiles')
-      .upsert({
-        id: onboardingUser.id,
-        email: onboardingUser.email,
+    if (!supabase) throw new Error('Auth service is offline.');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('No active authentication session found.');
+
+    const res = await fetch('/api/auth/update-profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({
         full_name: fullName,
         date_of_birth: dob,
         gender: gender,
         profession: profession,
         plan_type: null,
-        trial_started_at: trialStart,
-        updated_at: new Date().toISOString()
-      });
-      
-    if (error) throw error;
+        trial_started_at: trialStart
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Profile update failed.');
     
     document.getElementById('onboarding-modal-overlay').style.display = 'none';
-    
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      await handleSupabaseSession(session);
-    }
+    await handleSupabaseSession(session, result.profile);
   } catch (err) {
     console.error("Onboarding failed:", err.message);
     if (errorEl) {
@@ -2318,10 +2325,18 @@ async function handleBusEmailSignin() {
   const btn = document.getElementById('btn-email-signin');
   if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
   try {
-    if (!supabaseClient) throw new Error('Auth service unavailable.');
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    if (data?.session) await handleSupabaseSession(data.session);
+    const res = await fetch('/api/auth/email-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || 'Sign in failed. Check credentials.');
+    }
+    if (result.session) {
+      await handleSupabaseSession(result.session, result.profile);
+    }
   } catch (err) {
     if (errEl) { errEl.textContent = err.message || 'Sign in failed.'; errEl.style.display = 'block'; }
   } finally {
@@ -2350,17 +2365,25 @@ async function handleBusEmailSignup() {
   const btn = document.getElementById('btn-email-signup');
   if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
   try {
-    if (!supabaseClient) throw new Error('Auth service unavailable.');
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) throw error;
-    if (data?.user && !data?.session) {
+    const res = await fetch('/api/auth/email-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || 'Registration failed.');
+    }
+    
+    // Auto login on successful signup if session is returned
+    if (result.session) {
+      await handleSupabaseSession(result.session, result.profile);
+    } else if (result.user) {
       if (errEl) {
         errEl.style.color = 'var(--bus-primary)';
-        errEl.textContent = '✅ Confirmation email sent! Check your inbox.';
+        errEl.textContent = '✅ Registration successful! Please log in to complete setup.';
         errEl.style.display = 'block';
       }
-    } else if (data?.session) {
-      showOnboardingModal(data.session.user);
     }
   } catch (err) {
     if (errEl) { errEl.textContent = err.message || 'Registration failed.'; errEl.style.display = 'block'; }
