@@ -62,9 +62,19 @@ app.post('/api/auth/email-signup', async (req, res) => {
         updated_at: new Date().toISOString()
       };
 
-      const { error: profileError } = await supabase
+      let { error: profileError } = await supabase
         .from('user_profiles')
         .upsert(profileData);
+
+      // Graceful fallback if trial_started_at column does not exist in database
+      if (profileError && (profileError.message.includes('trial_started_at') || profileError.message.includes('column'))) {
+        console.warn('[Signup Fallback] trial_started_at column missing/failed, retrying upsert without it...');
+        delete profileData.trial_started_at;
+        const retry = await supabase
+          .from('user_profiles')
+          .upsert(profileData);
+        profileError = retry.error;
+      }
 
       if (profileError) {
         console.error('[Signup Profile Error]:', profileError.message);
@@ -184,9 +194,19 @@ app.post('/api/auth/update-profile', async (req, res) => {
     if (plan_type !== undefined) profileData.plan_type = plan_type;
     if (trial_started_at !== undefined) profileData.trial_started_at = trial_started_at;
 
-    const { error: profileError } = await supabase
+    let { error: profileError } = await supabase
       .from('user_profiles')
       .upsert(profileData);
+
+    // Graceful fallback if trial_started_at column does not exist in database
+    if (profileError && (profileError.message.includes('trial_started_at') || profileError.message.includes('column'))) {
+      console.warn('[Update Profile Fallback] trial_started_at column missing/failed, retrying upsert without it...');
+      delete profileData.trial_started_at;
+      const retry = await supabase
+        .from('user_profiles')
+        .upsert(profileData);
+      profileError = retry.error;
+    }
 
     if (profileError) {
       return res.status(400).json({ error: profileError.message });
