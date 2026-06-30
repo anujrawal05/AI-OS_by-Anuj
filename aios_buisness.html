@@ -1282,95 +1282,182 @@
 
   <!-- Pricing Modal -->
   <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;">
-    <div class="pricing-hotstar-modal">
+    <div class="pricing-hotstar-modal premium-saas-layout">
       <!-- Close button mapped to original ID so existing JS hides modal -->
       <button id="pricing-modal-close-btn" class="hotstar-close-btn" aria-label="Close modal">&times;</button>
       
-      <!-- Left Column: Value Proposition -->
-      <div class="pricing-modal-left">
+      <!-- Left Column: Value Proposition & Premium Summary -->
+      <div class="pricing-modal-left saas-left-panel">
         <div class="pricing-left-content">
-          <div style="font-size: 2.5rem; margin-bottom: 12px; animation: authIconPulse 2s infinite alternate;">⭐</div>
-          <h2 style="font-family: var(--font-title); font-weight: 700; color: #fff; margin-bottom: 16px;">Subscribe to AI-OS Premium</h2>
-          <p>Unlock complete business blueprints, full academy modules, A.R. Strategist analytics, and custom premium media players.</p>
+          <div style="font-size: 2.2rem; margin-bottom: 8px; animation: authIconPulse 2s infinite alternate;">💎</div>
+          <h2 style="font-family: var(--font-title); font-weight: 800; color: #fff; margin-bottom: 8px; font-size: 1.6rem; letter-spacing: -0.02em;">AI-OS Premium</h2>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.4;">Execute business blueprints, prompt libraries, and interactive roadmaps at a world-class level.</p>
           
-          <ul class="pricing-feature-bullets">
-            <li>Unlimited Prompt Compilations</li>
-            <li>Full 40-Step Interactive Roadmaps</li>
-            <li>Unlocked AI-OS Business Dashboard</li>
-            <li>Premium Hindi & English Lecture Player</li>
-            <li>Lifetime Support & Updates</li>
-          </ul>
+          <!-- Premium Includes List -->
+          <div class="saas-summary-section">
+            <h4 class="saas-section-title">Premium Includes</h4>
+            <ul class="pricing-feature-bullets saas-bullet-list">
+              <li><span>Unlimited AI Roadmaps</span></li>
+              <li><span>Hindi & English Videos</span></li>
+              <li><span>Unlimited JSON Prompts</span></li>
+              <li><span>AI Business Academy</span></li>
+              <li><span>Business Blueprints</span></li>
+              <li><span>500+ Business Templates</span></li>
+              <li><span>Automation Workflows</span></li>
+              <li><span>Premium Prompt Library</span></li>
+              <li><span>A.R. Strategist AI Chat</span></li>
+              <li><span>Priority Support & Updates</span></li>
+            </ul>
+          </div>
+          
+          <!-- Premium Value Box -->
+          <div class="saas-value-box">
+            <div class="saas-value-box-title">🏆 Premium Value</div>
+            <ul class="saas-value-box-list">
+              <li>40+ Interactive AI Roadmaps</li>
+              <li>100+ Step-by-Step Video Tutorials</li>
+              <li>500+ Business Templates</li>
+              <li>Unlimited JSON Prompt Generation</li>
+              <li>Complete AI Business Academy</li>
+              <li>Lifetime Core Updates</li>
+            </ul>
+            <div class="saas-value-box-footer">Everything for only ₹99/month.</div>
+          </div>
         </div>
       </div>
       
       <!-- Right Column: Comparison Table & Plans -->
-      <div class="pricing-modal-right">
-        <div>
-          <table class="hotstar-table">
+      <div class="pricing-modal-right saas-right-panel">
+        <div class="saas-right-header">
+          <h3 class="saas-main-title">Everything Included in AI-OS Premium</h3>
+          <p class="saas-main-subtitle">Compare what you get with Free vs Premium.</p>
+        </div>
+        
+        <!-- Scrollable Comparison Table -->
+        <div class="saas-table-container">
+          <table class="hotstar-table saas-comparison-table">
             <thead>
               <tr>
-                <th style="text-align: left;">Features</th>
-                <th style="text-align: center; width: 80px;">Basic</th>
-                <th style="text-align: center; width: 100px; color: #2EC5FF;">Premium</th>
+                <th style="text-align: left; width: 45%;">Feature</th>
+                <th style="text-align: center; width: 25%;">Free</th>
+                <th style="text-align: center; width: 30%; color: #2EC5FF;">Premium</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="feature-name">SaaS Academy Lessons</td>
-                <td class="value-col">Standard</td>
-                <td class="value-col highlight">⚡ Full 12 Modules</td>
+                <td class="feature-name">AI Roadmaps</td>
+                <td class="value-col">Limited</td>
+                <td class="value-col highlight premium-gold-col"><span class="feature-icon-gold">⭐</span> Unlimited</td>
               </tr>
               <tr>
-                <td class="feature-name">Blueprint Compiler</td>
-                <td class="value-col">Lock Preview</td>
-                <td class="value-col highlight">✨ Unrestricted</td>
+                <td class="feature-name">Business Blueprints</td>
+                <td class="value-col">Preview Only</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✨</span> Full Access</td>
               </tr>
               <tr>
-                <td class="feature-name">A.R. Strategist Chat</td>
-                <td class="value-col">Lock Preview</td>
-                <td class="value-col highlight">💼 7-Tab Access</td>
+                <td class="feature-name">Video Roadmaps</td>
+                <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎥</span> Hindi + English</td>
               </tr>
               <tr>
-                <td class="feature-name">Premium Video Player</td>
-                <td class="value-col">🔒 Locked</td>
-                <td class="value-col highlight">🎥 Dual Tracks</td>
+                <td class="feature-name">Business Video Tutorials</td>
+                <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎥</span> Hindi + English</td>
+              </tr>
+              <tr>
+                <td class="feature-name">JSON Prompt Generation</td>
+                <td class="value-col">5 / Day</td>
+                <td class="value-col highlight premium-gold-col"><span class="feature-icon-gold">⚡</span> Unlimited</td>
+              </tr>
+              <tr>
+                <td class="feature-name">AI Business Academy</td>
+                <td class="value-col">Basic Lessons</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎓</span> Complete Academy</td>
+              </tr>
+              <tr>
+                <td class="feature-name">A.R. Strategist AI</td>
+                <td class="value-col">Limited</td>
+                <td class="value-col highlight premium-gold-col"><span class="feature-icon-gold">🤖</span> Unlimited</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Business Templates</td>
+                <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">📂</span> 500+ Templates</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Proposal Generator</td>
+                <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✓</span> Included</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Client Outreach Systems</td>
+                <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✓</span> Included</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Automation Workflows</td>
+                <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✓</span> Included</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Premium Prompt Library</td>
+                <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
+                <td class="value-col highlight premium-gold-col"><span class="feature-icon-gold">⚡</span> Unlimited</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Business Dashboard</td>
+                <td class="value-col">Limited</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✓</span> Full Access</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Lifetime Updates</td>
+                <td class="value-col">Basic</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✓</span> Included</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Priority Support</td>
+                <td class="value-col">Community</td>
+                <td class="value-col highlight premium-gold-col"><span class="feature-icon-gold">⭐</span> Priority</td>
               </tr>
             </tbody>
           </table>
+        </div>
+        
+        <!-- Pricing Cards Section -->
+        <div class="saas-pricing-container">
+          <!-- Basic Plan Option -->
+          <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)">
+            <div class="saas-card-header">Basic</div>
+            <div class="saas-card-price">₹0</div>
+            <div class="saas-card-subtitle">Lifetime Preview</div>
+          </div>
           
-          <div class="plan-cards-container">
-            <!-- Basic Plan Option -->
-            <div class="plan-option-card" onclick="selectHotstarPlan('free', this)">
-              <span class="plan-card-title">Basic</span>
-              <span class="plan-card-price">₹0</span>
-              <span class="plan-card-subtitle">Lifetime Preview</span>
-            </div>
-            
-            <!-- Premium Monthly Option -->
-            <div class="plan-option-card active" onclick="selectHotstarPlan('monthly', this)">
-              <span class="plan-card-title">Monthly</span>
-              <span class="plan-card-price">₹99</span>
-              <span class="plan-card-subtitle">per month</span>
-            </div>
-            
-            <!-- Premium Yearly Option -->
-            <div class="plan-option-card" onclick="selectHotstarPlan('yearly', this)">
-              <span class="plan-card-badge">Save 15%</span>
-              <span class="plan-card-title">Yearly</span>
-              <span class="plan-card-price">₹999</span>
-              <span class="plan-card-subtitle">per year</span>
-            </div>
+          <!-- Premium Monthly Option -->
+          <div class="saas-pricing-card active highlighted" id="card-plan-monthly" onclick="selectSassPlan('monthly', this)">
+            <span class="saas-card-badge">Most Popular</span>
+            <div class="saas-card-header">Monthly</div>
+            <div class="saas-card-price">₹99<span class="price-period">/mo</span></div>
+            <div class="saas-card-subtitle">Cancel Anytime</div>
+          </div>
+          
+          <!-- Premium Yearly Option -->
+          <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)">
+            <span class="saas-card-badge savings">Save 15%</span>
+            <div class="saas-card-header">Yearly</div>
+            <div class="saas-card-price">₹999<span class="price-period">/yr</span></div>
+            <div class="saas-card-subtitle">Best Value</div>
           </div>
         </div>
         
-        <div>
-          <!-- Proceed Button -->
-          <button class="btn-hotstar-proceed" onclick="proceedHotstarSelection()">
+        <!-- Call to Action Container -->
+        <div class="saas-cta-container">
+          <button class="btn-saas-proceed" onclick="proceedSassSelection()">
             <span>Continue with Monthly (₹99)</span> ➔
           </button>
+          <div class="saas-trust-text">Cancel Anytime • Secure Payment • Instant Access</div>
           
-          <!-- Coupon redemption link -->
-          <span class="coupon-trigger-link" onclick="document.getElementById('btn-pricing-coupon').click()">Have a promo code? Use Coupon</span>
+          <!-- Coupon link -->
+          <span class="coupon-trigger-link" style="margin-top: 10px;" onclick="document.getElementById('btn-pricing-coupon').click()">Have a promo code? Use Coupon</span>
         </div>
       </div>
       
@@ -1383,14 +1470,14 @@
       </div>
       
       <script>
-        let selectedHotstarPlan = 'monthly';
-        function selectHotstarPlan(planType, cardEl) {
-          selectedHotstarPlan = planType;
-          document.querySelectorAll('.plan-option-card').forEach(card => card.classList.remove('active'));
+        let selectedSassPlan = 'monthly';
+        function selectSassPlan(planType, cardEl) {
+          selectedSassPlan = planType;
+          document.querySelectorAll('.saas-pricing-card').forEach(card => card.classList.remove('active'));
           cardEl.classList.add('active');
           
           // Update proceed button text dynamically to match selection
-          const proceedBtnSpan = document.querySelector('.btn-hotstar-proceed span');
+          const proceedBtnSpan = document.querySelector('.btn-saas-proceed span');
           if (planType === 'free') {
             proceedBtnSpan.textContent = 'Continue with Basic';
           } else if (planType === 'monthly') {
@@ -1400,12 +1487,12 @@
           }
         }
         
-        function proceedHotstarSelection() {
-          if (selectedHotstarPlan === 'free') {
+        function proceedSassSelection() {
+          if (selectedSassPlan === 'free') {
             document.getElementById('btn-pricing-free').click();
-          } else if (selectedHotstarPlan === 'monthly') {
+          } else if (selectedSassPlan === 'monthly') {
             document.getElementById('btn-pricing-monthly').click();
-          } else if (selectedHotstarPlan === 'yearly') {
+          } else if (selectedSassPlan === 'yearly') {
             document.getElementById('btn-pricing-yearly').click();
           }
         }
