@@ -37,7 +37,7 @@ const siteUrl = process.env.KINDE_SITE_URL || `http://localhost:${PORT}`;
 const kindeConfig = {
   clientId: process.env.KINDE_CLIENT_ID,
   issuerBaseUrl: process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL,
-  siteUrl: process.env.KINDE_SITE_URL || `${siteUrl}/aios_buisness.html`,
+  siteUrl: process.env.KINDE_SITE_URL || siteUrl,
   secret: process.env.KINDE_CLIENT_SECRET,
   redirectUrl: process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`,
   postLogoutRedirectUrl: process.env.KINDE_POST_LOGOUT_REDIRECT_URL || process.env.KINDE_SITE_URL || siteUrl,

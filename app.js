@@ -6857,6 +6857,9 @@ async function initAuthSystem() {
             
             const authOverlay = document.getElementById('auth-modal-overlay');
             if (authOverlay) authOverlay.style.display = 'none';
+            
+            // Redirect authenticated users to the dashboard console
+            window.location.href = './aios_buisness.html';
           }
         } else {
           // Profile missing completely - show onboarding
