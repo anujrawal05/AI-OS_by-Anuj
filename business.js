@@ -30,18 +30,20 @@ async function initSupabase() {
       console.log("Supabase client initialized successfully on Business page.");
       
       // Listen to auth state transitions
-      supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log("Supabase Auth Event (Business):", event);
-        if (session) {
-          await handleSupabaseSession(session);
-        } else {
-          if (!sessionStorage.getItem('aios_coupon_session')) {
-            state.user = null;
-            updateUserProfileHeader();
-            toggleBusinessSectionView();
+      if (supabaseClient) {
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          console.log("Supabase Auth Event (Business):", event);
+          if (session) {
+            await handleSupabaseSession(session);
+          } else {
+            if (!sessionStorage.getItem('aios_coupon_session')) {
+              state.user = null;
+              updateUserProfileHeader();
+              toggleBusinessSectionView();
+            }
           }
-        }
-      });
+        });
+      }
     } else {
       console.warn("Supabase credentials missing from config API.");
     }
@@ -158,13 +160,13 @@ function updateUserProfileHeader() {
 }
 
 async function handleGoogleLogin() {
-  if (!supabase) {
+  if (!supabaseClient) {
     showToast("Supabase configuration is not loaded yet.", "error");
     return;
   }
   try {
     state.analytics.loginAttempts++;
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin + '/aios_buisness.html'
@@ -263,8 +265,8 @@ async function handleOnboardingSubmit(e) {
   
   try {
     const trialStart = new Date().toISOString();
-    if (!supabase) throw new Error('Auth service is offline.');
-    const { data: { session } } = await supabase.auth.getSession();
+    if (!supabaseClient) throw new Error('Auth service is offline.');
+    const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) throw new Error('No active authentication session found.');
 
     const res = await fetch('/api/auth/update-profile', {
@@ -593,9 +595,9 @@ async function handleCouponLogin(couponCode) {
 }
 
 async function logoutUser() {
-  if (supabase) {
+  if (supabaseClient) {
     try {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
     } catch (err) {}
   }
   sessionStorage.removeItem('aios_coupon_session');
@@ -2506,8 +2508,8 @@ async function handleBusEmailSignin() {
       throw new Error(result.error || 'Sign in failed. Check credentials.');
     }
     if (result.session) {
-      if (!supabase) throw new Error('Auth service is offline.');
-      const { error: setSessionError } = await supabase.auth.setSession({
+      if (!supabaseClient) throw new Error('Auth service is offline.');
+      const { error: setSessionError } = await supabaseClient.auth.setSession({
         access_token: result.session.access_token,
         refresh_token: result.session.refresh_token
       });
@@ -2543,10 +2545,10 @@ async function handleBusEmailSignup() {
   const btn = document.getElementById('btn-email-signup');
   if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
   try {
-    if (!supabase) throw new Error('Auth service is offline.');
+    if (!supabaseClient) throw new Error('Auth service is offline.');
     
-    // Call supabase.auth.signUp() first client-side
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    // Call supabaseClient.auth.signUp() first client-side
+    const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
       email,
       password
     });
@@ -2559,7 +2561,7 @@ async function handleBusEmailSignup() {
 
     if (session) {
       // Allow browser to automatically establish and persist session
-      const { data: { session: activeSession }, error: activeSessionError } = await supabase.auth.getSession();
+      const { data: { session: activeSession }, error: activeSessionError } = await supabaseClient.auth.getSession();
       if (activeSessionError || !activeSession) {
         throw new Error('Failed to verify active authentication session after signup.');
       }
