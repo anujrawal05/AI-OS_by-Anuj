@@ -32,6 +32,7 @@ async function initSupabase() {
       // Listen to auth state transitions
       if (supabaseClient) {
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          if (state.user?.provider === 'Kinde Auth') return;
           console.log("Supabase Auth Event (Business):", event);
           if (session) {
             await handleSupabaseSession(session);
@@ -683,6 +684,10 @@ async function logoutUser() {
   updateUserProfileHeader();
   toggleBusinessSectionView();
   showToast("Signed out successfully.");
+  
+  setTimeout(() => {
+    window.location.href = '/logout';
+  }, 1000);
 }
 
 function hideAuthModals() {
@@ -2320,6 +2325,23 @@ function initBusinessSimulators() {
 }
 
 async function initApp() {
+  // Try to synchronize and recover session from Kinde
+  try {
+    const kindeRes = await fetch('/api/auth/kinde-session');
+    if (kindeRes.ok) {
+      const kindeData = await kindeRes.json();
+      if (kindeData.authenticated) {
+        state.user = kindeData.user;
+        localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+      } else if (state.user && state.user.provider === 'Kinde Auth') {
+        state.user = null;
+        localStorage.removeItem('aios_user_profile');
+      }
+    }
+  } catch (err) {
+    console.warn('Kinde session synchronization failed:', err.message);
+  }
+
   const couponSession = sessionStorage.getItem('aios_coupon_session');
   if (couponSession) {
     try {
@@ -2562,124 +2584,11 @@ function switchAuthTab(tab) {
 }
 
 async function handleBusEmailSignin() {
-  const email = (document.getElementById('auth-signin-email') || {}).value?.trim();
-  const password = (document.getElementById('auth-signin-password') || {}).value;
-  const errEl = document.getElementById('auth-signin-error');
-  if (errEl) errEl.style.display = 'none';
-  if (!email || !password) {
-    if (errEl) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; }
-    return;
-  }
-  const btn = document.getElementById('btn-email-signin');
-  if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
-  try {
-    const res = await fetch('/api/auth/email-login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const result = await res.json();
-    if (!res.ok) {
-      throw new Error(result.error || 'Sign in failed. Check credentials.');
-    }
-    if (result.session) {
-      if (!supabaseClient) throw new Error('Auth service is offline.');
-      const { error: setSessionError } = await supabaseClient.auth.setSession({
-        access_token: result.session.access_token,
-        refresh_token: result.session.refresh_token
-      });
-      if (setSessionError) throw setSessionError;
-
-      await handleSupabaseSession(result.session, result.profile);
-    }
-  } catch (err) {
-    if (errEl) { errEl.textContent = err.message || 'Sign in failed.'; errEl.style.display = 'block'; }
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Sign In →'; }
-  }
+  window.location.href = '/login';
 }
 
 async function handleBusEmailSignup() {
-  const email = (document.getElementById('auth-signup-email') || {}).value?.trim();
-  const password = (document.getElementById('auth-signup-password') || {}).value;
-  const confirm = (document.getElementById('auth-signup-confirm') || {}).value;
-  const errEl = document.getElementById('auth-signup-error');
-  if (errEl) errEl.style.display = 'none';
-  if (!email || !password) {
-    if (errEl) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; }
-    return;
-  }
-  if (password.length < 8) {
-    if (errEl) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; }
-    return;
-  }
-  if (password !== confirm) {
-    if (errEl) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; }
-    return;
-  }
-  const btn = document.getElementById('btn-email-signup');
-  if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
-  try {
-    if (!supabaseClient) throw new Error('Auth service is offline.');
-    
-    // Call supabaseClient.auth.signUp() first client-side
-    const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
-      email,
-      password
-    });
-    
-    if (signUpError) throw signUpError;
-    console.log('[Client SignUp Success] data:', signUpData);
-
-    const user = signUpData.user;
-    const session = signUpData.session;
-
-    if (session) {
-      // Allow browser to automatically establish and persist session
-      const { data: { session: activeSession }, error: activeSessionError } = await supabaseClient.auth.getSession();
-      if (activeSessionError || !activeSession) {
-        throw new Error('Failed to verify active authentication session after signup.');
-      }
-      console.log('[Client Active Session Verified]:', activeSession);
-
-      // Call backend to update user profiles
-      const res = await fetch('/api/auth/update-profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${activeSession.access_token}`
-        },
-        body: JSON.stringify({
-          full_name: '',
-          date_of_birth: '',
-          gender: '',
-          profession: '',
-          plan_type: null,
-          trial_started_at: new Date().toISOString()
-        })
-      });
-      const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.error || 'Failed to initialize profile on server.');
-      }
-      console.log('[Signup Success Debug] user:', user);
-      console.log('[Signup Success Debug] session:', session);
-      console.log('[Signup Success Debug] current client session:', activeSession);
-
-      await handleSupabaseSession(activeSession, result.profile);
-    } else if (user) {
-      if (errEl) {
-        errEl.style.color = 'var(--bus-primary)';
-        errEl.textContent = '✅ Registration successful! A verification email has been sent. Please verify your email before continuing.';
-        errEl.style.display = 'block';
-      }
-    }
-  } catch (err) {
-    console.error('[Onboarding/Signup Failure]:', err);
-    if (errEl) { errEl.textContent = err.message || 'Registration failed.'; errEl.style.display = 'block'; }
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Create Account →'; }
-  }
+  window.location.href = '/register';
 }
 
 function showToast(message, type = "success") {

@@ -1,19 +1,21 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { createClient } = require('@supabase/supabase-js');
+let createClient;
+try {
+  createClient = require('@supabase/supabase-js').createClient;
+} catch (e) {
+  createClient = null;
+}
 
 // Initialize Supabase Client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
+const supabase = (createClient && supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 // Initialize Supabase Admin Client for database RLS bypass
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!supabaseServiceKey) {
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing in environment variables. Startup aborted.');
-}
-const supabaseAdmin = supabaseUrl ? createClient(supabaseUrl, supabaseServiceKey) : null;
+const supabaseAdmin = (createClient && supabaseUrl && supabaseServiceKey) ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // Premium 3-Day Trial Database Management
 const TRIALS_FILE = path.join(__dirname, '..', '..', 'data', 'premium_trials.json');
@@ -102,6 +104,12 @@ async function verifyTokenPayload(authHeader) {
         return null;
       }
       return { isCoupon: true, email: payload.email, plan_type: payload.plan_type || 'Premium', name: payload.name };
+    }
+    if (payload.signature === 'AIOS-AUTHENTICATED-KINDE') {
+      if (payload.expiry && Date.now() > payload.expiry) {
+        return null;
+      }
+      return { isCoupon: false, email: payload.email, plan_type: payload.plan_type || 'Basic', name: payload.name, id: payload.id };
     }
   } catch (err) {
     // Fail silently and proceed to Supabase token verification

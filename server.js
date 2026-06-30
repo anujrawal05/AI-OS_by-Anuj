@@ -1,14 +1,47 @@
+const moduleLib = require('module');
+const originalCreateRequire = moduleLib.createRequire;
+moduleLib.createRequire = function (filename) {
+  return originalCreateRequire(filename || __filename);
+};
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
+const fs = require('fs');
+const session = require('express-session');
+const { setupKinde, protectRoute, getUser, GrantType } = require("@kinde-oss/kinde-node-express");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'aios_session_secret_key_123',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: false,
+    httpOnly: true
+  }
+}));
+
+const siteUrl = process.env.KINDE_SITE_URL || `http://localhost:${PORT}`;
+const kindeConfig = {
+  clientId: process.env.KINDE_CLIENT_ID || 'mock_client_id',
+  issuerBaseUrl: process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || 'https://mock.kinde.com',
+  siteUrl: siteUrl,
+  secret: process.env.KINDE_CLIENT_SECRET || 'mock_secret',
+  redirectUrl: process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`,
+  postLogoutRedirectUrl: process.env.KINDE_POST_LOGOUT_REDIRECT_URL || siteUrl,
+  grantType: GrantType.AUTHORIZATION_CODE,
+  unAuthorisedUrl: process.env.KINDE_UNAUTHORISED_URL || `${siteUrl}/unauthorised`
+};
+
+setupKinde(kindeConfig, app);
 
 // Serve static files from root directory
 app.use(express.static(__dirname));
@@ -17,18 +50,21 @@ app.use(express.static(__dirname));
 const configHandler = require('./api/config');
 app.get('/api/config', configHandler);
 
-// Initialize Supabase Client
-const { createClient } = require('@supabase/supabase-js');
+// Initialize Supabase Client (Optional with Kinde integration)
+let createClient;
+try {
+  createClient = require('@supabase/supabase-js').createClient;
+} catch (e) {
+  createClient = null;
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
+const supabase = (createClient && supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
-// Initialize Supabase Admin Client for database RLS bypass
+// Initialize Supabase Admin Client for database RLS bypass (Optional with Kinde integration)
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!supabaseServiceKey) {
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing in environment variables. Startup aborted.');
-}
-const supabaseAdmin = supabaseUrl ? createClient(supabaseUrl, supabaseServiceKey) : null;
+const supabaseAdmin = (createClient && supabaseUrl && supabaseServiceKey) ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // Daily Prompt Limit Cache for Basic users
 const dailyPromptLimitCache = {};
@@ -39,6 +75,53 @@ const verifyPaymentHandler = require('./api/auth/verify-payment');
 
 app.post('/api/auth/coupon-login', couponLoginHandler);
 app.post('/api/auth/verify-payment', verifyPaymentHandler);
+
+app.get('/api/auth/kinde-session', getUser, async (req, res) => {
+  try {
+    if (req.user) {
+      const userEmail = req.user.email;
+      const userName = req.user.given_name ? `${req.user.given_name} ${req.user.family_name || ''}`.trim() : 'Premium User';
+      const key = req.user.id || userEmail;
+      
+      const trialInfo = getOrInitializeTrial(key, userEmail, 'Basic');
+      
+      const sessionPayload = {
+        id: key,
+        email: userEmail,
+        name: userName,
+        picture: req.user.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${userEmail}`,
+        plan_type: trialInfo.plan_type,
+        trial_started_at: trialInfo.trial_started_at,
+        trial_expires_at: trialInfo.trial_expires_at,
+        trial_used: trialInfo.trial_used,
+        provider: 'Kinde Auth',
+        signature: 'AIOS-AUTHENTICATED-KINDE'
+      };
+      const sessionToken = Buffer.from(JSON.stringify(sessionPayload)).toString('base64');
+      
+      return res.status(200).json({
+        authenticated: true,
+        user: {
+          id: key,
+          name: userName,
+          email: userEmail,
+          picture: sessionPayload.picture,
+          plan_type: trialInfo.plan_type,
+          trial_started_at: trialInfo.trial_started_at,
+          trial_expires_at: trialInfo.trial_expires_at,
+          trial_used: trialInfo.trial_used,
+          provider: 'Kinde Auth',
+          token: sessionToken
+        }
+      });
+    } else {
+      return res.status(200).json({ authenticated: false });
+    }
+  } catch (err) {
+    console.error('[Kinde Session Endpoint Error]:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 // Dynamic Video Auto-Discovery API
 app.get('/api/videos', (req, res) => {
@@ -385,6 +468,12 @@ async function verifyTokenPayload(authHeader) {
         return null;
       }
       return { isCoupon: true, email: payload.email, plan_type: payload.plan_type || 'Premium', name: payload.name };
+    }
+    if (payload.signature === 'AIOS-AUTHENTICATED-KINDE') {
+      if (payload.expiry && Date.now() > payload.expiry) {
+        return null;
+      }
+      return { isCoupon: false, email: payload.email, plan_type: payload.plan_type || 'Basic', name: payload.name, id: payload.id };
     }
   } catch (err) {
     // Fail silently and proceed to Supabase token verification

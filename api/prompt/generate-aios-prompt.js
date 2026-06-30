@@ -1,15 +1,17 @@
 const axios = require('axios');
-const { createClient } = require('@supabase/supabase-js');
-const supabase = (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+let createClient;
+try {
+  createClient = require('@supabase/supabase-js').createClient;
+} catch (e) {
+  createClient = null;
+}
+const supabase = (createClient && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   : null;
 
 // Initialize Supabase Admin Client for database RLS bypass
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!supabaseServiceKey) {
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing in environment variables. Startup aborted.');
-}
-const supabaseAdmin = process.env.NEXT_PUBLIC_SUPABASE_URL ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, supabaseServiceKey) : null;
+const supabaseAdmin = (createClient && process.env.NEXT_PUBLIC_SUPABASE_URL && supabaseServiceKey) ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, supabaseServiceKey) : null;
 
 const dailyPromptLimitCache = {};
 
@@ -190,6 +192,12 @@ module.exports = async (req, res) => {
           return null;
         }
         return { isCoupon: true, email: payload.email, plan_type: payload.plan_type || 'Premium', name: payload.name };
+      }
+      if (payload.signature === 'AIOS-AUTHENTICATED-KINDE') {
+        if (payload.expiry && Date.now() > payload.expiry) {
+          return null;
+        }
+        return { isCoupon: false, email: payload.email, plan_type: payload.plan_type || 'Basic', name: payload.name, id: payload.id };
       }
     } catch (err) {
       // Ignore and proceed to Supabase JWT verification
