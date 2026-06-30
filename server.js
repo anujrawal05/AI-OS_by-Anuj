@@ -31,10 +31,10 @@ app.use(session({
 
 const siteUrl = process.env.KINDE_SITE_URL || `http://localhost:${PORT}`;
 const kindeConfig = {
-  clientId: process.env.KINDE_CLIENT_ID || 'mock_client_id',
-  issuerBaseUrl: process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || 'https://mock.kinde.com',
+  clientId: process.env.KINDE_CLIENT_ID || `kinde_client_${process.env.VERCEL_ENV || 'local'}`,
+  issuerBaseUrl: process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || `https://${process.env.KINDE_SUBDOMAIN || 'auth'}.kinde.com`,
   siteUrl: siteUrl,
-  secret: process.env.KINDE_CLIENT_SECRET || 'mock_secret',
+  secret: process.env.KINDE_CLIENT_SECRET || `kinde_secret_${process.env.VERCEL_ENV || 'local'}`,
   redirectUrl: process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`,
   postLogoutRedirectUrl: process.env.KINDE_POST_LOGOUT_REDIRECT_URL || siteUrl,
   grantType: GrantType.AUTHORIZATION_CODE,
@@ -44,7 +44,7 @@ const kindeConfig = {
 setupKinde(kindeConfig, app);
 
 app.get('/logout', (req, res) => {
-  const domain = process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || 'https://mock.kinde.com';
+  const domain = process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || `https://${process.env.KINDE_SUBDOMAIN || 'auth'}.kinde.com`;
   const redirectUri = process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`;
   res.redirect(`${domain}/logout?redirect_uri=${redirectUri}`);
 });

@@ -6184,11 +6184,19 @@ function switchAuthTab(tab) {
 }
 
 async function handleEmailSignin() {
-  window.location.href = '/login';
+  if (window.kinde) {
+    window.kinde.login();
+  } else {
+    window.location.href = '/login';
+  }
 }
 
 async function handleEmailSignup() {
-  window.location.href = '/register';
+  if (window.kinde) {
+    window.kinde.register();
+  } else {
+    window.location.href = '/register';
+  }
 }
 
 async function handleSupabaseSession(session, profile = null) {
@@ -6795,6 +6803,11 @@ function initBusinessSimulators() {
 }
 
 
+window.kinde = {
+  login: () => { window.location.href = '/login'; },
+  register: () => { window.location.href = '/register'; }
+};
+
 async function initAuthSystem() {
   // Try to synchronize and recover session from Kinde
   try {
@@ -6802,8 +6815,33 @@ async function initAuthSystem() {
     if (kindeRes.ok) {
       const kindeData = await kindeRes.json();
       if (kindeData.authenticated) {
-        state.user = kindeData.user;
-        localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+        // Retrieve database profile details to check completeness
+        const profRes = await fetch('/api/auth/profile', {
+          headers: { 'Authorization': `Bearer ${kindeData.user.token}` }
+        });
+        if (profRes.ok) {
+          const profile = await profRes.json();
+          // If profile is missing or incomplete, show onboarding modal
+          if (!profile || !profile.full_name || !profile.date_of_birth || !profile.gender || !profile.profession) {
+            showOnboardingModal(kindeData.user);
+          } else {
+            state.user = {
+              ...kindeData.user,
+              name: profile.full_name,
+              gender: profile.gender,
+              profession: profile.profession,
+              date_of_birth: profile.date_of_birth,
+              plan_type: profile.plan_type || 'Basic'
+            };
+            localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+            
+            const authOverlay = document.getElementById('auth-modal-overlay');
+            if (authOverlay) authOverlay.style.display = 'none';
+          }
+        } else {
+          // Profile missing completely - show onboarding
+          showOnboardingModal(kindeData.user);
+        }
       } else if (state.user && state.user.provider === 'Kinde Auth') {
         state.user = null;
         localStorage.removeItem('aios_user_profile');
