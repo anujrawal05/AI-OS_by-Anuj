@@ -73,6 +73,7 @@
           <a href="#explore-library-section" class="nav-link" data-target="explore-library-section" data-i18n="nav.explore">Explore Tools</a>
           <a href="#category-explorer-section" class="nav-link" data-target="category-explorer-section" data-i18n="nav.categories">Categories</a>
           <a href="./aios_buisness.html" class="nav-btn-business" id="nav-business-btn">AI-OS Business</a>
+          <a href="./intro.html" class="nav-link" style="color: var(--accent-color); font-weight: 600;">System Guide ✦</a>
           <a href="#about-section" class="nav-link" data-target="about-section" data-i18n="nav.about">About</a>
           <a href="./ar-labs/" class="nav-link" data-target="ar-labs" data-i18n="nav.more">More from A.R. Labs</a>
         </nav>
@@ -832,6 +833,11 @@
               <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">💼 Full Access</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 16px; font-weight: 500;">Premium Video Masterclass</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">🔒 Locked</td>
+              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">🎥 Hindi/English Playlist & Seek/Speed Player</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 12px 16px; font-weight: 500;">Platform Advertisements</td>
               <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">Standard Ads</td>
               <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">🛡️ Non-intrusive Only</td>
@@ -936,9 +942,38 @@
     </div>
   </div>
 
+  <!-- Video Roadmap Choice Popup -->
+  <div id="video-roadmap-choice-modal" class="auth-modal-overlay" style="display: none; justify-content: center; align-items: center; z-index: 10000; background: rgba(5,5,8,0.9); backdrop-filter: blur(10px);">
+    <div class="auth-modal" style="width: 90%; max-width: 440px; background: #0A0A0C; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+      <h3 style="font-family: 'Space Grotesk', monospace; color: #fff; margin-bottom: 12px; font-weight: 700; font-size: 1.25rem;">Select Roadmap Format</h3>
+      <p style="color: rgba(255,255,255,0.7); font-size: 0.88rem; line-height: 1.5; margin-bottom: 24px;">Choose how you want to learn. Video Roadmaps feature ordered premium lectures with voice commentary.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button id="btn-choice-text" class="btn btn-secondary btn-full" style="text-align: left; padding: 16px; display: flex; align-items: center; justify-content: space-between; border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);">
+          <div>
+            <strong style="color: #fff; display: block; font-size: 0.95rem;">📖 Text Roadmap</strong>
+            <span style="font-size: 0.78rem; color: rgba(255,255,255,0.5);">Interactive 15-node timeline builder (Free)</span>
+          </div>
+          <span style="font-size: 1.2rem;">➔</span>
+        </button>
+        
+        <button id="btn-choice-video" class="btn btn-primary btn-full" style="text-align: left; padding: 16px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%); border: none;">
+          <div>
+            <strong style="color: #000; display: block; font-size: 0.95rem;">🎥 Video Roadmap (Premium)</strong>
+            <span style="font-size: 0.78rem; color: rgba(0,0,0,0.7);">5-Part masterclass playlist (English/Hindi)</span>
+          </div>
+          <span style="font-size: 1.2rem; color: #000;">👑</span>
+        </button>
+      </div>
+      
+      <button id="btn-close-choice" style="background: transparent; border: none; color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-top: 20px; width: 100%; text-align: center; cursor: pointer; text-decoration: underline;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Cancel</button>
+    </div>
+  </div>
+
   <script src="toolsData.js?v=3.6"></script>
   <script src="exploringAIData.js?v=3.6"></script>
   <script src="legalData.js?v=3.6"></script>
+  <script src="video-player.js?v=3.6"></script>
   <script src="app.js?v=3.6"></script>
 
 

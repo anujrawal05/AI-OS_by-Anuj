@@ -948,6 +948,134 @@ body {
   font-weight: bold;
 }
 
+/* Business Catalog Cards Grid Styling */
+.business-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.business-catalog-card {
+  background: var(--bus-surface);
+  border: 1px solid var(--bus-border);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.business-catalog-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(46, 197, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(46, 197, 255, 0.05);
+}
+
+.card-glow-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at top right, rgba(46, 197, 255, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.card-profit-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--bus-primary);
+  background: rgba(0, 208, 132, 0.08);
+  border: 1px solid rgba(0, 208, 132, 0.15);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.card-business-title {
+  font-family: 'Space Grotesk', monospace;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.card-business-subtitle {
+  color: var(--bus-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.card-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.card-btn-compile, .card-btn-video {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-family: 'Space Grotesk', monospace;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.card-btn-compile {
+  background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%);
+  border: none;
+  color: #000;
+}
+
+.card-btn-compile:hover {
+  box-shadow: 0 0 10px rgba(0, 208, 132, 0.4);
+  transform: translateY(-1px);
+}
+
+.card-btn-video {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.card-btn-video:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(46, 197, 255, 0.4);
+  color: #2EC5FF;
+  transform: translateY(-1px);
+}
+
 /* ==========================================================================
    WORKSPACE 2: BUILD (BUSINESS EXECUTION CONSOLE)
    ========================================================================== */
@@ -2536,5 +2664,76 @@ body {
   }
   .workspace-dropdown-trigger span:first-child {
     font-size: 0.7rem !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE SCREEN WIDTHS 360PX - 430PX SPECIFIC RESPONSIVENESS
+   ========================================================================== */
+@media (min-width: 360px) and (max-width: 430px) {
+  .business-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .business-catalog-card {
+    padding: 18px !important;
+  }
+  .card-business-title {
+    font-size: 0.95rem !important;
+  }
+  .card-business-subtitle {
+    font-size: 0.76rem !important;
+  }
+  
+  .blueprint-workspace {
+    gap: 16px !important;
+  }
+  
+  .blueprint-form-card, .blueprint-output-card {
+    padding: 16px !important;
+    border-radius: 12px !important;
+  }
+  
+  .blueprint-projections-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  
+  .blueprint-result-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  
+  #btn-watch-blueprint-video {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  /* Strategist Workspace layout */
+  .strategist-workspace {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 12px !important;
+  }
+  
+  .strategist-sidebar-card {
+    padding: 16px !important;
+  }
+  
+  /* Tabs selection horizontal scrollable */
+  .strategist-tabs-nav {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 6px !important;
+    padding-bottom: 8px !important;
+    width: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .strategist-tab-btn {
+    flex-shrink: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 0.72rem !important;
   }
 }

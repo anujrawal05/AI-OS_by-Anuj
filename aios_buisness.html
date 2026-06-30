@@ -63,6 +63,7 @@
         </div>
         
         <button class="btn-about-bus" id="btn-about-trigger">About & Methodology</button>
+        <a href="intro.html" class="btn-about-bus" style="text-decoration: none; color: #2ec5ff; display: inline-flex; align-items: center; justify-content: center;">System Guide ✦</a>
       </nav>
 
       <!-- Right Header Action buttons -->
@@ -941,6 +942,16 @@
          WORKSPACE 2: BUILD (BUSINESS LAUNCHPAD)
          ═══════════════════════════════════════════════════════ -->
       <div class="workspace-wrapper" id="pane-bus-build">
+        <!-- Vetted AI Business Catalog Grid -->
+        <div class="business-catalog-section" style="margin-bottom: 40px; border-bottom: 1px solid var(--bus-border); padding-bottom: 40px;">
+          <h3 style="color:#fff; margin-bottom: 24px; font-family: var(--font-mono); font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+            🚀 Vetted AI Business Catalog <span style="font-size: 0.72rem; color: var(--bus-accent); border: 1px solid var(--bus-accent); padding: 2px 8px; border-radius: 12px; font-family: sans-serif; font-weight: 500;">9 ACTIVE MODELS</span>
+          </h3>
+          <div class="business-cards-grid" id="business-cards-grid">
+            <!-- Dynamically populated in business.js -->
+          </div>
+        </div>
+
         <div class="blueprint-workspace">
           
           <!-- Configurator inputs panel -->
@@ -950,15 +961,15 @@
             <div class="blueprint-form-group">
               <label>Business Model Target</label>
               <select class="blueprint-form-select" id="blueprint-model-select">
-                <option value="agency">AI Automation Agency (AAA)</option>
-                <option value="dropservicing">Drop-Servicing Agency</option>
-                <option value="micro-saas">Micro-SaaS Subscriptions</option>
-                <option value="creator">Content Engine & Brand Monetization</option>
-                <option value="agency_video_ad">AI Video Ad Creation Pipeline</option>
-                <option value="creator_zackd_shorts">Motion Script Compiler Pipeline</option>
-                <option value="agency_voice_ai">OmniDimension Inbound Voice AI Studio</option>
-                <option value="creator_managed_network">Managed Creator Brand Network</option>
-                <option value="creator_kids_animation">AI Nursery Rhyme Engine</option>
+                <option value="agency">AI Business Automation</option>
+                <option value="dropservicing">Online Service Business</option>
+                <option value="micro-saas">Software Business</option>
+                <option value="creator">Content Creator Business</option>
+                <option value="agency_video_ad">Video Advertisement Business</option>
+                <option value="creator_zackd_shorts">Short Video Production Business</option>
+                <option value="agency_voice_ai">AI Voice Assistant Business</option>
+                <option value="creator_managed_network">Influencer Management Business</option>
+                <option value="creator_kids_animation">Kids Content Business</option>
               </select>
             </div>
 
@@ -1302,6 +1313,11 @@
               <td style="padding: 10px 14px; text-align: center;">Lock Preview</td>
               <td style="padding: 10px 14px; text-align: center; color: var(--bus-primary); font-weight: 600;">💼 Unlocked 7-Tab Analysis</td>
             </tr>
+            <tr style="border-bottom: 1px solid var(--bus-border);">
+              <td style="padding: 10px 14px; font-weight: 500;">Premium Video Lectures & Player</td>
+              <td style="padding: 10px 14px; text-align: center;">🔒 Locked</td>
+              <td style="padding: 10px 14px; text-align: center; color: var(--bus-primary); font-weight: 600;">🎥 Hindi & English Dual Commentary + Custom Seek/Speed/Resume Player</td>
+            </tr>
             <tr>
               <td style="padding: 10px 14px; font-weight: 500;">Workspace Ads</td>
               <td style="padding: 10px 14px; text-align: center;">Standard Ads</td>
@@ -1499,6 +1515,7 @@
   </div>
 
   <script src="ad-manager.js?v=3.6"></script>
+  <script src="video-player.js?v=3.6"></script>
   <script src="business.js?v=3.6"></script>
 
 </body>

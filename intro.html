@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Manual & Developer Documentation | AI-OS</title>
+  <meta name="description" content="Ultimate guide, developer documentation, visual specs, and interactive simulation console for AI-OS (Artificial Intelligence Overall Solutions).">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Typography */
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+      
+      /* Colors - Dark Theme (Default) */
+      --bg-color: #050508;
+      --bg-card: rgba(13, 13, 17, 0.75);
+      --bg-card-hover: rgba(22, 22, 28, 0.95);
+      --text-primary: #f5f5f7;
+      --text-secondary: #9a9a9f;
+      --text-muted: rgba(240, 240, 240, 0.32);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.25);
+      
+      /* Accents */
+      --accent-cyan: #2EC5FF;
+      --accent-emerald: #00D084;
+      --accent-purple: #9d4edd;
+      --accent-glow: rgba(46, 197, 255, 0.12);
+      --border-glow: rgba(46, 197, 255, 0.2);
+      
+      /* Transitions */
+      --transition-fast: 0.15s ease;
+      --transition-medium: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-slow: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-color: #f5f5f7;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-card-hover: rgba(255, 255, 255, 0.98);
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --text-muted: #8e8e93;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-focus: rgba(0, 0, 0, 0.3);
+      
+      /* Light accents */
+      --accent-cyan: #0a0a0c;
+      --accent-emerald: #1c1c1e;
+      --accent-purple: #48484a;
+      --accent-glow: rgba(0, 0, 0, 0.04);
+      --border-glow: rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Background decorative grids */
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(var(--border-color) 1.2px, transparent 1.2px),
+        linear-gradient(to right, rgba(255, 255, 255, 0.005) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.005) 1px, transparent 1px);
+      background-size: 30px 30px, 150px 150px, 150px 150px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-orb {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(46, 197, 255, 0.07) 0%, transparent 70%);
+      top: -200px;
+      right: -100px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-orb-2 {
+      position: fixed;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 208, 132, 0.04) 0%, transparent 70%);
+      bottom: -200px;
+      left: -200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Layout Wrapper */
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header Nav */
+    .nav-header {
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(5, 5, 8, 0.85);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px 0;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logo-symbol {
+      color: var(--accent-cyan);
+      font-size: 1.7rem;
+      animation: pulse 2.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); filter: drop-shadow(0 0 2px rgba(46,197,255,0.1)); }
+      50% { opacity: 1; transform: scale(1.18); filter: drop-shadow(0 0 8px rgba(46,197,255,0.4)); }
+    }
+
+    .logo-text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-text {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+    }
+
+    .logo-subtitle {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+      border-color: var(--text-secondary);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-emerald) 100%);
+      color: #000;
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(46, 197, 255, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(46, 197, 255, 0.4);
+    }
+
+    .btn-theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .btn-theme-toggle:hover {
+      background: var(--border-color);
+    }
+
+    /* Main Grid System Guide */
+    .guide-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 50px;
+      margin-top: 50px;
+      margin-bottom: 100px;
+    }
+
+    /* Sticky Sidebar Navigation */
+    .sidebar-nav {
+      position: sticky;
+      top: 110px;
+      height: fit-content;
+      z-index: 10;
+    }
+
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .sidebar-title-nav {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .sidebar-link a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 6px;
+      transition: var(--transition-fast);
+    }
+
+    .sidebar-link.active a,
+    .sidebar-link a:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .sidebar-link.active a {
+      border-left: 3px solid var(--accent-cyan);
+      border-radius: 0 6px 6px 0;
+      padding-left: 9px;
+      background: rgba(46, 197, 255, 0.05);
+      font-weight: 600;
+    }
+
+    .sidebar-link-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+
+    .sidebar-link.active .sidebar-link-badge {
+      background: var(--accent-cyan);
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* Main Content Area */
+    .content-area {
+      min-width: 0;
+    }
+
+    /* Section Styles */
+    .doc-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 45px;
+      margin-bottom: 50px;
+      backdrop-filter: blur(12px);
+      transition: var(--transition-medium);
+    }
+
+    .doc-section:hover {
+      border-color: var(--border-glow);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .section-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 1.08rem;
+      margin-bottom: 35px;
+      line-height: 1.75;
+    }
+
+    /* Paragraph headers */
+    .sub-heading {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 30px;
+      margin-bottom: 12px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sub-heading::before {
+      content: '⚡';
+      font-size: 0.95rem;
+      color: var(--accent-cyan);
+    }
+
+    /* Grid boxes */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin: 24px 0;
+    }
+
+    .detail-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      transition: var(--transition-fast);
+    }
+
+    .detail-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(46, 197, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .detail-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .detail-card-icon {
+      font-size: 1.5rem;
+      color: var(--accent-cyan);
+    }
+
+    .detail-card-title {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .detail-card-text {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    /* Alert styles */
+    .alert-box {
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.01);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    .alert-box strong {
+      color: #fff;
+    }
+
+    /* Branding visualizer */
+    .brand-showroom {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    .color-block {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .color-block:hover {
+      transform: translateY(-4px);
+      border-color: var(--text-secondary);
+    }
+
+    .color-preview {
+      height: 110px;
+      border-radius: 8px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+    }
+
+    .color-hex {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .color-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .color-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .color-usage {
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+    }
+
+    /* Logo showcase */
+    .logo-showcase {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .logo-showcase-card {
+      flex: 1;
+      min-width: 280px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 30px;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .logo-render-box {
+      background: #000;
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      border-radius: 8px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+
+    .logo-render-box .logo-symbol {
+      font-size: 2.2rem;
+    }
+
+    .logo-render-box .logo-text {
+      font-size: 1.8rem;
+    }
+
+    /* Simulator styling */
+    .simulator-wrap {
+      border: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 24px;
+      position: relative;
+    }
+
+    .simulator-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) 160px;
+      gap: 20px;
+      align-items: flex-end;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .simulator-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sim-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sim-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+    }
+
+    .sim-select {
+      background: #121214;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 11px 16px;
+      color: #fff;
+      font-size: 0.88rem;
+      outline: none;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .sim-select:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .sim-btn {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-emerald) 100%);
+      color: #000;
+      border: none;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      height: 42px;
+      text-transform: uppercase;
+    }
+
+    .sim-btn:hover {
+      box-shadow: 0 0 20px rgba(46, 197, 255, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .sim-timeline-panel {
+      border-top: 1px solid var(--border-color);
+      padding-top: 24px;
+      display: none;
+    }
+
+    .sim-status {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sim-loader {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2.5px solid var(--accent-cyan);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .sim-road {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .sim-road::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: repeating-linear-gradient(to bottom, var(--accent-cyan), var(--accent-cyan) 10px, transparent 10px, transparent 20px);
+    }
+
+    .sim-node {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      position: relative;
+      transform: translateX(12px);
+      opacity: 0;
+      animation: slideInNode 0.5s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideInNode {
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .sim-node::before {
+      content: '●';
+      position: absolute;
+      left: -24px;
+      top: 22px;
+      color: var(--accent-cyan);
+      font-size: 0.8rem;
+      background: var(--bg-color);
+      width: 12px;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sim-node-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .sim-node-title {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .sim-node-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--accent-cyan);
+    }
+
+    .sim-node-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .sim-node-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .sim-node-btn {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .sim-node-btn:hover {
+      border-color: var(--accent-cyan);
+      color: #fff;
+    }
+
+    /* Masterclass Accordions */
+    .masterclass-item {
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .masterclass-num {
+      font-family: var(--font-mono);
+      color: var(--accent-emerald);
+      font-weight: bold;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .masterclass-title {
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .masterclass-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .masterclass-step {
+      display: flex;
+      gap: 16px;
+    }
+
+    .step-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .step-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    /* Accordion FAQs */
+    .faq-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .faq-trigger {
+      width: 100%;
+      padding: 16px 20px;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition-fast);
+    }
+
+    .faq-trigger::after {
+      content: '+';
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      transition: var(--transition-fast);
+    }
+
+    .faq-item.active .faq-trigger::after {
+      content: '−';
+      transform: rotate(180deg);
+    }
+
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      padding: 0 20px;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-content {
+      max-height: 350px;
+      padding-bottom: 20px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 14px;
+    }
+
+    /* Info Table */
+    .specs-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .specs-table th,
+    .specs-table td {
+      border: 1px solid var(--border-color);
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    .specs-table th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .specs-table tr:hover td {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    /* Timeline visual representation */
+    .milestone-diagram {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .diag-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .diag-timeline {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      padding: 10px 0;
+    }
+
+    .diag-timeline::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--border-color);
+      z-index: 0;
+    }
+
+    .diag-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 1;
+      width: 30%;
+    }
+
+    .diag-node {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #000;
+      border: 2px solid var(--accent-cyan);
+      transition: var(--transition-fast);
+    }
+
+    .diag-step.active .diag-node {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    .diag-step.business .diag-node {
+      border-color: var(--accent-emerald);
+    }
+
+    .diag-step.business.active .diag-node {
+      background: var(--accent-emerald);
+      box-shadow: 0 0 10px var(--accent-emerald);
+    }
+
+    .diag-lbl {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .diag-step.active .diag-lbl {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Toast system */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #050508;
+      border: 1px solid var(--accent-cyan);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 14px 24px;
+      border-radius: 8px;
+      z-index: 1000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: none;
+      animation: toastIn 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .guide-layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-nav {
+        position: relative;
+        top: 0;
+        margin-bottom: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-bg"></div>
+  <div class="glow-orb"></div>
+  <div class="glow-orb-2"></div>
+
+  <!-- Navigation Header -->
+  <header class="nav-header">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <span class="logo-symbol">●</span>
+        <div class="logo-text-group">
+          <span class="logo-text">AI-OS</span>
+          <span class="logo-subtitle">Powered by A.R. Labs</span>
+        </div>
+      </a>
+      
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-secondary">← Return to App</a>
+        <a href="aios_buisness.html" class="btn btn-primary">Business Hub</a>
+        <button class="btn-theme-toggle" id="theme-toggle" aria-label="Toggle Theme">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout Container -->
+  <main class="container guide-layout">
+    
+    <!-- Navigation Sidebar -->
+    <aside class="sidebar-nav">
+      <div class="sidebar-card">
+        <h3 class="sidebar-title-nav">System Guide</h3>
+        <ul class="sidebar-links">
+          <li class="sidebar-link active" data-target="sec-intro"><a href="#sec-intro">Introduction <span class="sidebar-link-badge">1.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-vision"><a href="#sec-vision">Vision & Goals <span class="sidebar-link-badge">2.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-identity"><a href="#sec-identity">Branding Specs <span class="sidebar-link-badge">3.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-features"><a href="#sec-features">Feature Manual <span class="sidebar-link-badge">4.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-simulator"><a href="#sec-simulator">Live Simulator <span class="sidebar-link-badge">5.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-case-studies"><a href="#sec-case-studies">Masterclass Guides <span class="sidebar-link-badge">6.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-faq"><a href="#sec-faq">Troubleshooting <span class="sidebar-link-badge">7.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-roadmap"><a href="#sec-roadmap">Future Vision <span class="sidebar-link-badge">8.0</span></a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Docs Content Area -->
+    <div class="content-area">
+
+      <!-- Section 1.0: Introduction -->
+      <section id="sec-intro" class="doc-section">
+        <div class="section-kicker">SYSTEM DECK OVERVIEW // SEC_1.0</div>
+        <h2 class="section-title">Introduction to AI-OS</h2>
+        <p class="section-desc">
+          Welcome to the official developer manual and user guide for **AI-OS** (Artificial Intelligence Overall Solutions). 
+          AI-OS is a premium, decentralized artificial intelligence execution operating system engineered by **Anuj Rawal** and powered by **A.R. Labs**. 
+          <br><br>
+          Traditional AI guides focus on abstract concepts, theoretical limitations, and slow learning courses. **AI-OS rejects this framework.** It is engineered for immediate, real-world productivity. By cross-referencing an internal library of 162+ custom-configured artificial intelligence nodes, AI-OS translates complex user objectives into actionable, step-by-step pipeline structures.
+        </p>
+
+        <h3 class="sub-heading">Operational Metrics</h3>
+        <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.95rem;">
+          The system indexes, categories, and serves structural prompt nodes continuously. The live operational parameters of the active codebase are cataloged as follows:
+        </p>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Architecture Component</th>
+              <th>Platform Specification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Database Library Scope</td>
+              <td>162 Complete System Nodes (API & Web UI configurations)</td>
+            </tr>
+            <tr>
+              <td>Classification Sectors</td>
+              <td>12 Industry Partition Sectors</td>
+            </tr>
+            <tr>
+              <td>System Theme Base</td>
+              <td>Strict Monotone Dark (Soot Black) with Light Mode support</td>
+            </tr>
+            <tr>
+              <td>Primary Contrast Colors</td>
+              <td>Neon Cyan (#2EC5FF) & Emerald Green (#00D084)</td>
+            </tr>
+            <tr>
+              <td>Localization Engine</td>
+              <td>Triple Translation: Native English, Translated Hindi, Hybrid Hinglish</td>
+            </tr>
+            <tr>
+              <td>Premium Modules</td>
+              <td>Supabase User Management, Razerpay Integration, and AI-OS Business Hub</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Section 2.0: Vision & Goals -->
+      <section id="sec-vision" class="doc-section">
+        <div class="section-kicker">SYSTEM PHILOSOPHY // SEC_2.0</div>
+        <h2 class="section-title">Vision and Platform Goals</h2>
+        <p class="section-desc">
+          AI-OS was conceived as a solution to the growing problem of "AI fatigue" and tool overload. As hundreds of new tools launch weekly, users spend more time registering, testing, and reading documentation than actually executing their business or developer tasks.
+        </p>
+
+        <h3 class="sub-heading">The Core Philosophy</h3>
+        <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.95rem;">
+          The platform operates on a single principle: **Pure Execution over Pure Theory**. The goals driving this ecosystem are divided into three areas:
+        </p>
+
+        <div class="detail-grid">
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <div class="detail-card-icon">🚀</div>
+              <h4 class="detail-card-title">Frictionless Compilation</h4>
+            </div>
+            <p class="detail-card-text">
+              Eliminate setup delays. Instead of forcing users to build prompt systems, AI-OS matches their goal to a pre-tested workflow pipeline immediately.
+            </p>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <div class="detail-card-icon">🇮🇳</div>
+              <h4 class="detail-card-title">Localized Accessibility</h4>
+            </div>
+            <p class="detail-card-text">
+              Prompts written in standard English often fail to capture semantic context for hybrid-language speakers. AI-OS bridges this gap by creating prompts tailored for English, Hindi, and colloquial Hinglish.
+            </p>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <div class="detail-card-icon">💼</div>
+              <h4 class="detail-card-title">Wealth Creation Focus</h4>
+            </div>
+            <p class="detail-card-text">
+              Tools are useless without a financial structure. The AI-OS Business Hub is designed to help builders translate operational tool nodes directly into side-incomes and enterprise-level startups.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3.0: Branding & Color Specs -->
+      <section id="sec-identity" class="doc-section">
+        <div class="section-kicker">VISUAL GRAPHICS // SEC_3.0</div>
+        <h2 class="section-title">Brand and Identity Specifications</h2>
+        <p class="section-desc">
+          The visual styling of AI-OS is designed for clean, distraction-free productivity. By minimizing non-functional colors and emphasizing high-contrast neon highlights, the system mimics an advanced command terminal.
+        </p>
+
+        <h3 class="sub-heading">Logo Architectures</h3>
+        <div class="logo-showcase">
+          <div class="logo-showcase-card">
+            <h4 style="font-family:var(--font-mono); font-size:0.9rem; margin-bottom:12px; color:var(--accent-cyan);">PRIMARY DOT LOGO</h4>
+            <div class="logo-render-box">
+              <span class="logo-symbol" style="color: #2EC5FF;">●</span>
+              <div class="logo-text-group" style="text-align:left; margin-left:10px;">
+                <span class="logo-text" style="line-height:1.1;">AI-OS</span>
+                <span class="logo-subtitle">Powered by A.R. Labs</span>
+              </div>
+            </div>
+            <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:12px;">
+              The standard dot brand symbol (<code>●</code>) represents the single entry point for overall system execution.
+            </p>
+          </div>
+
+          <div class="logo-showcase-card">
+            <h4 style="font-family:var(--font-mono); font-size:0.9rem; margin-bottom:12px; color:var(--accent-emerald);">BUSINESS LOGO</h4>
+            <div class="logo-render-box">
+              <svg class="logo-icon-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00D084" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+                <path d="M2 20h20"></path>
+                <path d="M18 10l-6-6-6 10"></path>
+              </svg>
+              <div class="logo-text-group" style="text-align:left; margin-left:10px;">
+                <span class="logo-text" style="line-height:1.1; color: #00D084;">AI-OS BUSINESS</span>
+                <span class="logo-subtitle">Powered by A.R. Labs</span>
+              </div>
+            </div>
+            <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:12px;">
+              The Growth Circuit vector represents enterprise scaling, metrics tracking, and business launches.
+            </p>
+          </div>
+        </div>
+
+        <h3 class="sub-heading">System Color Theme (Click block to copy HEX value)</h3>
+        <div class="brand-showroom">
+          <div class="color-block" onclick="copyHex('#0a0a0c')">
+            <div class="color-preview" style="background-color: #0a0a0c;">
+              <span class="color-hex">#0A0A0C</span>
+            </div>
+            <div class="color-info">
+              <span class="color-name">Soot Black</span>
+              <span class="color-usage">Main workspace background</span>
+            </div>
+          </div>
+
+          <div class="color-block" onclick="copyHex('#2ec5ff')">
+            <div class="color-preview" style="background-color: #2ec5ff;">
+              <span class="color-hex" style="color:#000; background:rgba(255,255,255,0.85);">#2EC5FF</span>
+            </div>
+            <div class="color-info">
+              <span class="color-name">Neon Cyan</span>
+              <span class="color-usage">Primary operational accent</span>
+            </div>
+          </div>
+
+          <div class="color-block" onclick="copyHex('#00d084')">
+            <div class="color-preview" style="background-color: #00d084;">
+              <span class="color-hex" style="color:#000; background:rgba(255,255,255,0.85);">#00D084</span>
+            </div>
+            <div class="color-info">
+              <span class="color-name">Emerald Green</span>
+              <span class="color-usage">Success, highlights & business accent</span>
+            </div>
+          </div>
+
+          <div class="color-block" onclick="copyHex('#121216')">
+            <div class="color-preview" style="background-color: #121216;">
+              <span class="color-hex">#121216</span>
+            </div>
+            <div class="color-info">
+              <span class="color-name">Obsidian Gray</span>
+              <span class="color-usage">Card body and panel surfaces</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4.0: Feature Manual -->
+      <section id="sec-features" class="doc-section">
+        <div class="section-kicker">EXHAUSTIVE USER GUIDE // SEC_4.0</div>
+        <h2 class="section-title">Core Features & Function Explanations</h2>
+        <p class="section-desc">
+          AI-OS provides a highly-optimized suite of tools. Each feature is broken down below to help you master its operational flow.
+        </p>
+
+        <!-- Feature 1 -->
+        <h3 class="sub-heading" style="font-size:1.15rem;">1. Operational Configuration & Compiler (Dashboard)</h3>
+        <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
+          The system's control panel sits at the top of the workspace. Users can specify objective matrices to trigger the compiler.
+        </p>
+        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Task Select Dropdown</strong>: Maps to 14 objective databases, including software building, image/video generation, study optimization, interview cracking, and hardware design.</li>
+          <li><strong>Language Config</strong>: Instantly translates the compiler output. Selecting <i>Hinglish</i> will preload hybrid templates using Hindi nouns inside English instructions, optimized for local developers.</li>
+          <li><strong>Execution</strong>: Pressing <i>Compile Roadmap</i> queries the client-side database engine to render custom timeline pathways.</li>
+        </ul>
+
+        <!-- Feature 2 -->
+        <h3 class="sub-heading" style="font-size:1.15rem;">2. Winding Roadmap Timeline</h3>
+        <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
+          Once compiled, a linear path is rendered using an SVG coordinate generator.
+        </p>
+        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Visual Traveler Dot</strong>: A glowing cyan traveler indicator traces your scroll position along the center dashed centerline.</li>
+          <li><strong>Layer Toggles</strong>: Filter nodes dynamically between **Creation Layer** (content tools), **Engineering Layer** (setup and APIs), and **Analytics Layer** (metrics and deployment).</li>
+        </ul>
+
+        <!-- Feature 3 -->
+        <h3 class="sub-heading" style="font-size:1.15rem;">3. Detail Inspect Drawer</h3>
+        <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
+          Clicking any card opens a slide-in drawer revealing technical details.
+        </p>
+        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Performance Specs</strong>: Evaluates and displays average processing rate, response latency in milliseconds, accuracy rates, and context window limits.</li>
+          <li><strong>Sandbox Playground</strong>: An interactive code playground or canvas preview simulation environment.</li>
+          <li><strong>Alternatives</strong>: Lists other AI models in case the recommended option is offline or fails.</li>
+        </ul>
+
+        <!-- Feature 4 -->
+        <h3 class="sub-heading" style="font-size:1.15rem;">4. Side-by-Side Comparison Matrix</h3>
+        <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
+          Allows cross-tool benchmarking to make informed tooling decisions.
+        </p>
+        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Selection Mode</strong>: Check up to 3 tools in the Explore Library to trigger the compare status panel.</li>
+          <li><strong>Overlay Benchmarks</strong>: Click <i>Compare</i> to open a side-by-side comparison modal containing pricing plans, difficulty parameters, and performance latencies.</li>
+        </ul>
+
+        <!-- Feature 5 -->
+        <h3 class="sub-heading" style="font-size:1.15rem;">5. AI-OS Business Hub</h3>
+        <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
+          The SaaS framework designed for side-income and growth operations.
+        </p>
+        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Bloomberg Financial Ticker</strong>: Renders live metrics for projected side-income index, ARR, lead conversions, and automation progress.</li>
+          <li><strong>Business Academy</strong>: Structured blueprints covering customer discovery, SaaS scaling loop models, pricing loops, and agency operational strategies.</li>
+          <li><strong>Build (Launchpad)</strong>: Renders automated pitch proposals, investor pitch structures, and outbound outreach templates.</li>
+          <li><strong>Grow (Strategist Chat)</strong>: A tailored chat agent that models customer acquisition funnels based on industry sectors.</li>
+        </ul>
+      </section>
+
+      <!-- Section 5.0: Live Simulator -->
+      <section id="sec-simulator" class="doc-section">
+        <div class="section-kicker">SANDBOX INTERACTIVE // SEC_5.0</div>
+        <h2 class="section-title">Roadmap Compiler Simulator</h2>
+        <p class="section-desc">
+          Test the compilation logic directly within this documentation page. Select an objective, choose a language configuration, and click **Compile** to simulate a live roadmap compilation.
+        </p>
+
+        <div class="simulator-wrap">
+          <div class="simulator-controls">
+            <div class="sim-group">
+              <label class="sim-label">1. Select Target Objective</label>
+              <select id="sim-task" class="sim-select">
+                <option value="coding">Build Software / Coding Using AI</option>
+                <option value="images">Generate Professional AI Images</option>
+                <option value="video">Create a Complete AI Video</option>
+              </select>
+            </div>
+
+            <div class="sim-group">
+              <label class="sim-label">2. Select Target Language</label>
+              <select id="sim-lang" class="sim-select">
+                <option value="English">English</option>
+                <option value="Hinglish">Hinglish</option>
+              </select>
+            </div>
+
+            <div class="sim-group">
+              <button class="sim-btn" id="btn-run-sim" onclick="simulateCompilation()">Compile ✦</button>
+            </div>
+          </div>
+
+          <!-- Timeline output -->
+          <div class="sim-timeline-panel" id="sim-output">
+            <div class="sim-status" id="sim-status-message">
+              <span class="sim-loader"></span> Configuring system pipelines...
+            </div>
+            
+            <div class="sim-road" id="sim-road-nodes">
+              <!-- Dynamically populated simulator nodes -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6.0: Masterclass Guides -->
+      <section id="sec-case-studies" class="doc-section">
+        <div class="section-kicker">EXPERT HANDBOOK // SEC_6.0</div>
+        <h2 class="section-title">Masterclass: Step-by-Step Case Studies</h2>
+        <p class="section-desc">
+          Follow these detailed walkthroughs to become an expert user of the AI-OS ecosystem.
+        </p>
+
+        <div class="faq-accordion">
+          <!-- Case Study 1 -->
+          <div class="masterclass-item">
+            <span class="masterclass-num">CASE STUDY A // SOFTWARE</span>
+            <h3 class="masterclass-title">Building & Deploying a Web Application</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
+              Learn how to take a simple software idea and launch it on a custom domain in under 30 minutes using compiled tool roadmaps.
+            </p>
+            
+            <div class="masterclass-steps">
+              <div class="masterclass-step">
+                <span class="step-badge">1</span>
+                <div class="step-body">
+                  <span class="step-title">Compile Coding Roadmap</span>
+                  <span class="step-desc">Open the AI-OS Dashboard. Select "Build Software Using AI" as your task, set language to "Hinglish" (recommended for intuitive coding guides), and click Compile.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">2</span>
+                <div class="step-body">
+                  <span class="step-title">Deploy Claude 3.5 Sonnet Node</span>
+                  <span class="step-desc">Locate the first node on the compiled roadmap. Open the detail inspect drawer, copy the **Universal Master Prompt**, and click *Deploy Engine Pipeline* to launch Claude. Paste the prompt to generate your application layout files.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">3</span>
+                <div class="step-body">
+                  <span class="step-title">Integrate with local IDE</span>
+                  <span class="step-desc">Copy Claude's generated files into your local development dashboard (VS Code or Android Studio nodes). Use the **Antigravity 2.0** debugger steps listed in the roadmap to fix local errors.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">4</span>
+                <div class="step-body">
+                  <span class="step-title">Host Serverless</span>
+                  <span class="step-desc">Navigate to the final Engineering milestone card, copy the deployment prompts, open the Vercel or Netlify sandbox node, and bind your GitHub repository to go live instantly.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Case Study 2 -->
+          <div class="masterclass-item">
+            <span class="masterclass-num">CASE STUDY B // CONTENT</span>
+            <h3 class="masterclass-title">Launching a Faceless Video Channel</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
+              Create high-retention video content for YouTube or TikTok using automated asset generation models.
+            </p>
+            
+            <div class="masterclass-steps">
+              <div class="masterclass-step">
+                <span class="step-badge">1</span>
+                <div class="step-body">
+                  <span class="step-title">Draft the Master Script</span>
+                  <span class="step-desc">Compile "Generate a Complete AI Video". Click the ChatGPT/Gemini card, copy the scriptwriting Master Prompt, and input your topic guidelines to output a high-hook video script.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">2</span>
+                <div class="step-body">
+                  <span class="step-title">Synthesize Audio Voiceover</span>
+                  <span class="step-desc">Copy the generated script, click the **ElevenLabs** roadmap node, select a premium voice profile, and compile the audio track.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">3</span>
+                <div class="step-body">
+                  <span class="step-title">Generate Video B-Roll</span>
+                  <span class="step-desc">Open the **Runway Gen-3** or **Flow AI** node. Paste the script paragraph summaries into the prompt boxes to render cinematic visual scenes matching the audio sequence.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">4</span>
+                <div class="step-body">
+                  <span class="step-title">Automated Assembly</span>
+                  <span class="step-desc">Deploy the **CapCut AI** editing environment. Use the timeline editor to synchronize your ElevenLabs voiceover, Runway video segments, and trigger automatic dynamic caption subtitles before final export.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Case Study 3 -->
+          <div class="masterclass-item">
+            <span class="masterclass-num">CASE STUDY C // MONETIZATION</span>
+            <h3 class="masterclass-title">Structuring a Client Outbound Funnel</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
+              Utilize the AI-OS Business Hub to scale workflows into direct sales.
+            </p>
+            
+            <div class="masterclass-steps">
+              <div class="masterclass-step">
+                <span class="step-badge">1</span>
+                <div class="step-body">
+                  <span class="step-title">Analyze Unit Economics</span>
+                  <span class="step-desc">Open the AI-OS Business Academy. Study the side-income monetization loops and agency pricing templates. Calculate your client break-even margins.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">2</span>
+                <div class="step-body">
+                  <span class="step-title">Generate Outreach Copy</span>
+                  <span class="step-desc">Navigate to the **Launchpad (Build Tab)**. Select the outreach template generator, input your target service offering, and compile the personalized proposals.</span>
+                </div>
+              </div>
+              <div class="masterclass-step">
+                <span class="step-badge">3</span>
+                <div class="step-body">
+                  <span class="step-title">Map Lead Funnels via Strategist</span>
+                  <span class="step-desc">Open the **Strategist Chat (Grow Tab)**. Input your niche specifications: <i>"Cold outreach for digital design services to local retail businesses with a ₹10,000 budget."</i> Use the generated 90-day step-by-step strategy sheet.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7.0: FAQ -->
+      <section id="sec-faq" class="doc-section">
+        <div class="section-kicker">TROUBLESHOOTING DECK // SEC_7.0</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-desc">
+          Find solutions to technical configuration and roadmap generation errors.
+        </p>
+
+        <div class="faq-accordion">
+          <div class="faq-item">
+            <button class="faq-trigger" onclick="toggleFaq(this)">What is the difference between AI-OS and standard AI directories?</button>
+            <div class="faq-content">
+               directories list tools as simple directories. AI-OS analyzes the specific relationship between tools, ordering them into chronological steps called "roadmaps". It also provides pre-tested copyable prompts designed specifically for the steps inside that pipeline, rather than forcing you to write prompts from scratch.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" onclick="toggleFaq(this)">How do I bypass Supabase signup issues?</button>
+            <div class="faq-content">
+              If the database is undergoing maintanence, you can obtain a Lifetime Access Pass via our coupon redemption card. Enter a registered offline passcode (e.g. coupon keys generated by our payment gateways) to bypass registration parameters.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" onclick="toggleFaq(this)">How do I compare more than three tools at once?</button>
+            <div class="faq-content">
+              The benchmarking system is limited to three concurrent nodes to prevent visual layout breaking and maintain mobile comparison support. If you want to compare a fourth tool, uncheck one of the active selections in the directory.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" onclick="toggleFaq(this)">Where can I report database node errors or submit a tool?</button>
+            <div class="faq-content">
+              Submit your AI nodes to Anuj Rawal at <strong>arproduction050@gmail.com</strong>. Include your tool name, pricing model, performance latency rate, context size, and official landing page URL.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 8.0: Future Vision -->
+      <section id="sec-roadmap" class="doc-section">
+        <div class="section-kicker">FUTURE DEPLOYMENTS // SEC_8.0</div>
+        <h2 class="section-title">Vision and Future Roadmap</h2>
+        <p class="section-desc">
+          AI-OS is evolving. The future development cycle mapped out by A.R. Labs aims to shift the platform from a guide-and-compile system to a fully automated agent execution layer.
+        </p>
+
+        <div class="alert-box">
+          <strong>Under Development:</strong> Automated background prompt runners (V3.0 specs) are currently undergoing alpha testing.
+        </div>
+
+        <h3 class="sub-heading">V3.0 System Architecture Roadmap</h3>
+        <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.95rem;">
+          Our timeline for upcoming features includes the following phases:
+        </p>
+
+        <div class="diag-timeline">
+          <div class="diag-step active">
+            <div class="diag-node"></div>
+            <span class="diag-lbl">V1.5: UI/UX & Localization (Current)</span>
+          </div>
+          <div class="diag-step">
+            <div class="diag-node"></div>
+            <span class="diag-lbl">V2.0: Community Template Hub</span>
+          </div>
+          <div class="diag-step business">
+            <div class="diag-node"></div>
+            <span class="diag-lbl">V3.0: Agentic Execution (Auto API)</span>
+          </div>
+        </div>
+
+        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-top:30px; display:flex; flex-direction:column; gap:8px;">
+          <li><strong>Phase 1: Community Integration (V2.0)</strong>: Users will be able to share customized compiled pipelines, upvote prompts, and export JSON roadmaps to local storage.</li>
+          <li><strong>Phase 2: Decentralized API Bindings (V2.5)</strong>: Integrations with HuggingFace and Replicate endpoints to run lightweight tools directly inside the detail drawers.</li>
+          <li><strong>Phase 3: Agentic Execution Layer (V3.0)</strong>: Connect local AI-OS instances to agent systems (like Antigravity) to execute the compiled roadmap steps automatically in the background without user intervention.</li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="border-top: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.45); padding: 40px 0; font-family: var(--font-mono); font-size: 0.8rem; margin-top: auto; position: relative; z-index: 1;">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+      <p>© 2026 A.R. Labs. All Rights Reserved. Engineered by Anuj.</p>
+      <div style="display:flex; gap:16px;">
+        <a href="mailto:arproduction050@gmail.com" style="color:var(--text-secondary); text-decoration:none;">Contact Email</a> •
+        <a href="index.html#about-section" style="color:var(--text-secondary); text-decoration:none;">About A.R. Labs</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Copied to clipboard!</div>
+
+  <script>
+    // Copy Hex to Clipboard
+    function copyHex(hex) {
+      navigator.clipboard.writeText(hex).then(() => {
+        showToast(`Copied Hex: ${hex} to clipboard!`);
+      }).catch(err => {
+        console.error("Clipboard copy error: ", err);
+      });
+    }
+
+    // Toast mechanism
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2500);
+    }
+
+    // Accordion Toggle
+    function toggleFaq(button) {
+      const item = button.parentElement;
+      const isActive = item.classList.contains('active');
+      
+      // Close all first
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+      
+      if (!isActive) {
+        item.classList.add('active');
+      }
+    }
+
+    // Theme Toggle
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', targetTheme);
+      
+      // Toggle SVG Icon in Button
+      if (targetTheme === 'light') {
+        themeBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        `;
+      } else {
+        themeBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        `;
+      }
+    });
+
+    // Sidebar navigation active state scroll spy
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + 120;
+      const sections = document.querySelectorAll('.doc-section');
+      const navLinks = document.querySelectorAll('.sidebar-link');
+      
+      sections.forEach(sec => {
+        const top = sec.offsetTop;
+        const height = sec.offsetHeight;
+        const id = sec.getAttribute('id');
+        
+        if (scrollPos >= top && scrollPos < top + height) {
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-target') === id) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    });
+
+    // Simulated Compilation data
+    const compilationSimData = {
+      coding: {
+        English: [
+          { name: "Claude 3.5 Sonnet", step: "Step 1: Code Drafting", desc: "Use Claude to draft code segments, folder structures, and mock data models." },
+          { name: "Antigravity 2.0 IDE", step: "Step 2: Interactive Debugging", desc: "Deploy Antigravity agentic coding tool locally to parse files and execute test protocols." },
+          { name: "Vercel Platform", step: "Step 3: Serverless Deployment", desc: "Connect GitHub repository to Vercel for immediate global hosting and edge API compilation." }
+        ],
+        Hinglish: [
+          { name: "Claude 3.5 Sonnet", step: "Step 1: Planning and Logic", desc: "Claude se system architecture planning and database structure finalize karein." },
+          { name: "Antigravity 2.0", step: "Step 2: Development & Bug Fixes", desc: "Local environment me code integration and testing automatic complete karein." },
+          { name: "Vercel / Netlify", step: "Step 3: Web App Deploy", desc: "One-click deployment pipeline trigger karke app live karein aur domain bind karein." }
+        ]
+      },
+      images: {
+        English: [
+          { name: "Midjourney v6", step: "Step 1: Asset Concepting", desc: "Generate hyper-realistic art visuals using descriptive keyword prompts." },
+          { name: "Krea AI", step: "Step 2: Upscaling & Detail Enhancer", desc: "Upscale concept art to 4K resolution and enhance texture details with face corrections." },
+          { name: "Canva Pro", step: "Step 3: Composition Layout", desc: "Layer generated graphic assets into final social media cards and corporate banners." }
+        ],
+        Hinglish: [
+          { name: "Midjourney v6", step: "Step 1: Art Generation", desc: "Aesthetic prompt design karke high-quality digital assets render karein." },
+          { name: "Krea AI", step: "Step 2: Quality Enhancer", desc: "Low resolution output ko upscale karke crystal clear details generate karein." },
+          { name: "Canva Pro", step: "Step 3: Final Design Setup", desc: "Logo, overlay text aur typography align karke final export taiyar karein." }
+        ]
+      },
+      video: {
+        English: [
+          { name: "ElevenLabs AI", step: "Step 1: Professional Voiceover", desc: "Generate hyper-realistic human voiceover in target speech pace." },
+          { name: "Runway Gen-3", step: "Step 2: Video Asset Render", desc: "Synthesize high-fidelity cinematic video footage matching audio sequence segments." },
+          { name: "CapCut AI", step: "Step 3: Automated Assembly", desc: "Auto-sync frame timelines, subtitles, and backgrounds into a polished export." }
+        ],
+        Hinglish: [
+          { name: "ElevenLabs AI", step: "Step 1: Voiceover & Audio", desc: "Text input se emotional voice track generate karein multiple language variables me." },
+          { name: "Runway Gen-3 Alpha", step: "Step 2: Cinematic Video rendering", desc: "Scene descriptions se video segment render karein transitions smooth rakhne ke liye." },
+          { name: "CapCut AI", step: "Step 3: Dynamic Subtitle Editing", desc: "B-roll, voiceover and automatic text captions compile karke master render karein." }
+        ]
+      }
+    };
+
+    // Compilation Simulator Action
+    function simulateCompilation() {
+      const task = document.getElementById('sim-task').value;
+      const lang = document.getElementById('sim-lang').value;
+      const panel = document.getElementById('sim-output');
+      const road = document.getElementById('sim-road-nodes');
+      const status = document.getElementById('sim-status-message');
+      
+      panel.style.display = 'block';
+      road.innerHTML = '';
+      status.style.display = 'flex';
+      status.innerHTML = `<span class="sim-loader"></span> Compiling custom system roadmap for: ${task.toUpperCase()} in ${lang.toUpperCase()}...`;
+      
+      setTimeout(() => {
+        status.style.display = 'none';
+        const steps = compilationSimData[task][lang];
+        
+        steps.forEach((s, idx) => {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = 'sim-node';
+            div.style.animationDelay = `${idx * 0.1}s`;
+            div.innerHTML = `
+              <div class="sim-node-header">
+                <span class="sim-node-title">${s.name}</span>
+                <span class="sim-node-badge">${s.step}</span>
+              </div>
+              <p class="sim-node-desc">${s.desc}</p>
+              <div class="sim-node-actions">
+                <button class="sim-node-btn" onclick="showToast('Simulated: Universal Prompt Copied!')">📋 Copy Prompt</button>
+                <button class="sim-node-btn" onclick="showToast('Simulated: Opening ${s.name}')">🌐 Deploy Sandbox</button>
+              </div>
+            `;
+            road.appendChild(div);
+          }, idx * 400);
+        });
+      }, 1200);
+    }
+  </script>
+</body>
+
+</html>

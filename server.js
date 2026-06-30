@@ -40,6 +40,33 @@ const verifyPaymentHandler = require('./api/auth/verify-payment');
 app.post('/api/auth/coupon-login', couponLoginHandler);
 app.post('/api/auth/verify-payment', verifyPaymentHandler);
 
+// Dynamic Video Auto-Discovery API
+app.get('/api/videos', (req, res) => {
+  try {
+    const fs = require('fs');
+    const buildDir = path.join(__dirname, 'build tutorial');
+    const exploreDir = path.join(__dirname, 'explore AI');
+    
+    let buildVideos = [];
+    if (fs.existsSync(buildDir)) {
+      buildVideos = fs.readdirSync(buildDir).filter(file => file.endsWith('.mp4'));
+    }
+    
+    let exploreVideos = [];
+    if (fs.existsSync(exploreDir)) {
+      exploreVideos = fs.readdirSync(exploreDir).filter(file => file.endsWith('.mp4'));
+    }
+    
+    res.json({
+      success: true,
+      buildVideos,
+      exploreVideos
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 
 
 // Custom Email/Password Login Endpoint

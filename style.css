@@ -9160,3 +9160,123 @@ body.modal-open {
   font-weight: 600;
   color: #fff;
 }
+
+/* ==========================================================================
+   MOBILE SCREEN WIDTHS 360PX - 430PX SPECIFIC RESPONSIVENESS
+   ========================================================================== */
+@media (min-width: 360px) and (max-width: 430px) {
+  .app-container {
+    padding: 8px !important;
+  }
+  .main-content {
+    padding: 8px !important;
+  }
+  .app-section {
+    padding: 16px 8px !important;
+    margin-bottom: 20px !important;
+  }
+  .section-title {
+    font-size: 1.5rem !important;
+    letter-spacing: -0.02em !important;
+  }
+  .section-subtitle {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Filter bar navigation scrollable */
+  .filter-nav {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 8px !important;
+    padding-bottom: 6px !important;
+    width: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .filter-btn {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Chips scrollable */
+  .library-filter-chips {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 6px !important;
+    padding-bottom: 8px !important;
+    width: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .filter-chip {
+    flex-shrink: 0 !important;
+    font-size: 0.72rem !important;
+    padding: 4px 10px !important;
+  }
+
+  /* Dashboard controls */
+  .control-panel-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+  
+  /* Timeline rows */
+  .timeline-row {
+    grid-template-columns: 36px 1fr !important;
+    gap: 8px !important;
+  }
+  .timeline-list {
+    gap: 40px !important;
+  }
+  .timeline-card {
+    padding: 16px !important;
+  }
+  .card-title {
+    font-size: 1rem !important;
+  }
+  .card-desc {
+    font-size: 0.78rem !important;
+  }
+  
+  /* Modal responsive adjustments */
+  .auth-modal-card {
+    width: 95% !important;
+    padding: 20px 14px !important;
+    margin: 8px !important;
+  }
+  
+  .pricing-comparison-table-wrapper {
+    margin-bottom: 15px !important;
+  }
+  .pricing-table th, .pricing-table td {
+    padding: 8px 6px !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* Header adjustments */
+  .header-actions {
+    gap: 8px !important;
+  }
+  .profile-btn {
+    padding: 6px 10px !important;
+    font-size: 0.78rem !important;
+  }
+  
+  /* Premium Video Player controls height and layout */
+  .premium-player-container {
+    width: 95% !important;
+    border-radius: 12px !important;
+  }
+  .premium-player-controls-bar {
+    padding: 12px 12px 10px 12px !important;
+    gap: 8px !important;
+  }
+  .premium-controls-row {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+}

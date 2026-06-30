@@ -3323,6 +3323,48 @@ function initDashboardControls() {
     });
   }
 
+  // Helper to compile roadmap directly
+  function compileRoadmapDirectly(goal, format = 'text') {
+    state.roadmapFormat = format;
+    state.goalText = goal;
+    if (state.goalText !== "Exploring AI") {
+      state.analytics.compileRoadmapClicks++;
+    }
+    
+    let bVal = 100;
+    if (budgetSelect) {
+      const selVal = budgetSelect.value;
+      bVal = parseInt(selVal);
+    }
+    state.budgetLimit = bVal;
+    
+    state.selectedExperience = workflowSelect ? workflowSelect.value : 'Intermediate';
+    
+    // Reset active indices on compilation execution
+    state.activeStepIndex = 0;
+    state.quickStartStep = 1;
+    state.userIdeaDescription = '';
+    state.compiledQuickStartPrompt = '';
+    
+    regenerateActiveRoadmap();
+    
+    const targetSection = document.getElementById('roadmap-builder-section');
+    if (targetSection) {
+      const offset = 72;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = targetSection.getBoundingClientRect().top;
+      const offsetPosition = elementRect - bodyRect - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+    
+    setTimeout(() => {
+      drawRoad();
+    }, 350);
+  }
+
   if (compileBtn) {
     compileBtn.addEventListener('click', () => {
       if (!isUserAuthenticated()) {
@@ -3336,44 +3378,46 @@ function initDashboardControls() {
         showToast("Please select a plan to access roadmap features.", "warning");
         return;
       }
-      state.goalText = taskSelect ? taskSelect.value : 'Exploring AI';
       
-      if (state.goalText !== "Exploring AI") {
-        state.analytics.compileRoadmapClicks++;
+      const goal = taskSelect ? taskSelect.value : 'Exploring AI';
+      
+      if (goal === "Exploring AI") {
+        const choiceModal = document.getElementById('video-roadmap-choice-modal');
+        if (choiceModal) {
+          choiceModal.style.display = 'flex';
+        }
+      } else {
+        compileRoadmapDirectly(goal, 'text');
       }
+    });
+  }
+
+  // Bind Choice Modal Buttons
+  const choiceModal = document.getElementById('video-roadmap-choice-modal');
+  const btnChoiceText = document.getElementById('btn-choice-text');
+  const btnChoiceVideo = document.getElementById('btn-choice-video');
+  const btnCloseChoice = document.getElementById('btn-close-choice');
+
+  if (choiceModal && btnChoiceText && btnChoiceVideo && btnCloseChoice) {
+    btnChoiceText.addEventListener('click', () => {
+      choiceModal.style.display = 'none';
+      compileRoadmapDirectly('Exploring AI', 'text');
+    });
+
+    btnChoiceVideo.addEventListener('click', () => {
+      choiceModal.style.display = 'none';
       
-      let bVal = 100;
-      if (budgetSelect) {
-        const selVal = budgetSelect.value;
-        bVal = parseInt(selVal);
+      const isPremium = isUserAuthenticated() && state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial');
+      if (!isPremium) {
+        showToast("Upgrade to Premium or start trial to watch Video Roadmaps.", "warning");
+        showPricingModal(true);
+      } else {
+        compileRoadmapDirectly('Exploring AI', 'video');
       }
-      state.budgetLimit = bVal;
-      
-      state.selectedExperience = workflowSelect ? workflowSelect.value : 'Intermediate';
-      
-      // Reset active indices on compilation execution
-      state.activeStepIndex = 0;
-      state.quickStartStep = 1;
-      state.userIdeaDescription = '';
-      state.compiledQuickStartPrompt = '';
-      
-      regenerateActiveRoadmap();
-      
-      const targetSection = document.getElementById('roadmap-builder-section');
-      if (targetSection) {
-        const offset = 72;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = targetSection.getBoundingClientRect().top;
-        const offsetPosition = elementRect - bodyRect - offset;
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
-      
-      setTimeout(() => {
-        drawRoad();
-      }, 350);
+    });
+
+    btnCloseChoice.addEventListener('click', () => {
+      choiceModal.style.display = 'none';
     });
   }
 
@@ -3563,6 +3607,181 @@ function renderRoadmap(optimalWorkflow, steps) {
   removeRoadmapLock();
   
   if (state.goalText === "Exploring AI") {
+    if (state.roadmapFormat === 'video') {
+      // Hide SVG and timeline elements that are not needed
+      if (roadSvgContainer) roadSvgContainer.style.display = 'none';
+      if (timelineContainer) timelineContainer.style.display = 'block';
+      if (roadmapUxContainer) roadmapUxContainer.style.display = 'none';
+      
+      // Clear any card deck elements
+      const recContainer = document.getElementById('recommended-tool-container');
+      const qsContainer = document.getElementById('quick-start-container');
+      const deckContainer = document.getElementById('step-deck-container');
+      if (recContainer) recContainer.innerHTML = '';
+      if (qsContainer) qsContainer.innerHTML = '';
+      if (deckContainer) deckContainer.innerHTML = '';
+      
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+      
+      // Determine language
+      const vLang = localStorage.getItem('aios_video_roadmap_lang') || 'eng';
+
+      const translations = {
+        eng: {
+          headerTitle: "🎥 Video Roadmap Masterclass",
+          headerSubtitle: "Ordered 5-part learning curriculum (Premium Active)",
+          langLabel: "Language:",
+          badge: "Premium Video Lecture",
+          parts: [
+            {
+              part: 1,
+              title: "Part 01: Introduction to AI Systems",
+              desc: "Understand how neural nets process language tokens, context windows, and operational constraints. Learn the differences between prompt engineering and model fine-tuning, and when to apply them.",
+              duration: "10:17"
+            },
+            {
+              part: 2,
+              title: "Part 02: Advanced Reasoning Engines",
+              desc: "Master step-by-step rationalization, systemic chain-of-thought engineering, and multi-agent loops. Build workflows that allow LLMs to self-correct and execute complex reasoning sequences.",
+              duration: "10:49"
+            },
+            {
+              part: 3,
+              title: "Part 03: Multimodal Generation Systems",
+              desc: "Harness generative text-to-video interpolation, structural image rendering, and audio vectors. Master control nets, IP-adapters, and temporal consistency in AI cinematic creation.",
+              duration: "09:39"
+            },
+            {
+              part: 4,
+              title: "Part 04: Autonomous Agents & MCPs",
+              desc: "Build local tool-calling frameworks using Model Context Protocol hosts and server integrations. Connect databases, external APIs, and local systems directly to LLM runtimes safely.",
+              duration: "09:00"
+            },
+            {
+              part: 5,
+              title: "Part 05: Scaling AI Workflows",
+              desc: "Optimize high-volume batch runs, database caching architectures, and server load thresholds. Learn cost reduction tactics, latency mitigation, and deployment scaling rules.",
+              duration: "10:26"
+            }
+          ]
+        },
+        hindi: {
+          headerTitle: "🎥 वीडियो रोडमैप मास्टरक्लास",
+          headerSubtitle: "क्रमबद्ध 5-भाग का शिक्षण पाठ्यक्रम (प्रीमियम सक्रिय)",
+          langLabel: "भाषा:",
+          badge: "प्रीमियम वीडियो लेक्चर",
+          parts: [
+            {
+              part: 1,
+              title: "भाग 01: एआई सिस्टम्स का परिचय",
+              desc: "समझें कि न्यूरल नेटवर्क कैसे लैंग्वेज टोकन, कॉन्टेक्स्ट विंडो और ऑपरेशनल बाधाओं को प्रोसेस करते हैं। प्रॉम्प्ट इंजीनियरिंग और मॉडल फाइन-ट्यूनिंग के बीच अंतर सीखें।",
+              duration: "08:32"
+            },
+            {
+              part: 2,
+              title: "भाग 02: एडवांस रीजनिंग इंजन",
+              desc: "स्टेप-बाय-स्टेप तर्कसंगतता, सिस्टेमिक चेन-ऑफ-थॉट इंजीनियरिंग और मल्टी-एजेंट लूप्स में महारत हासिल करें। ऐसे वर्कफ्लो बनाएं जो एलएलएम को खुद को सुधारने में मदद करें।",
+              duration: "13:15"
+            },
+            {
+              part: 3,
+              title: "भाग 03: मल्टीमॉडल जनरेशन सिस्टम्स",
+              desc: "जेनरेटिव टेक्स्ट-टू-वीडियो इंटरपोलेशन, स्ट्रक्चरल इमेज रेंडरिंग और ऑडियो वेक्टर्स का उपयोग करें। एआई सिनेमाई निर्माण में कंट्रोल नेट और टेम्पोरल कंसिस्टेंसी सीखें।",
+              duration: "07:28"
+            },
+            {
+              part: 4,
+              title: "भाग 04: ऑटोनॉमस एजेंट्स और एमसीपी",
+              desc: "मॉडल कॉन्टेक्स्ट प्रोटोकॉल होस्ट और सर्वर इंटीग्रेशन का उपयोग करके लोकल टूल-कॉलिंग फ्रेमवर्क बनाएं। डेटाबेस और बाहरी एपीआई को सुरक्षित रूप से जोड़ें।",
+              duration: "08:59"
+            },
+            {
+              part: 5,
+              title: "भाग 05: एआई वर्कफ्लो को स्केल करना",
+              desc: "हाई-वॉल्यूम बैच रन, डेटाबेस कैशिंग आर्किटेक्चर और सर्वर लोड थ्रेशोल्ड को ऑप्टिमाइज़ करें। लागत में कमी और लेटेंसी को कम करने के नियम सीखें।",
+              duration: "07:44"
+            }
+          ]
+        }
+      };
+
+      const langData = translations[vLang] || translations.eng;
+
+      const playlistWrapper = document.createElement('div');
+      playlistWrapper.style.cssText = 'display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 800px; margin: 0 auto;';
+
+      const playlistHeader = document.createElement('div');
+      playlistHeader.className = 'video-playlist-header';
+      playlistHeader.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; margin-bottom: 8px; font-family: "Space Grotesk", monospace;';
+      playlistHeader.innerHTML = `
+        <div>
+          <h3 style="color: #fff; margin: 0; font-size: 1.15rem;">${langData.headerTitle}</h3>
+          <span style="font-size: 0.78rem; color: var(--text-secondary);">${langData.headerSubtitle}</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 0.78rem; color: rgba(255,255,255,0.6);">${langData.langLabel}</span>
+          <button class="video-playlist-lang-btn ${vLang === 'eng' ? 'active' : ''}" data-lang="eng" style="padding: 6px 12px; border-radius: 6px; border: 1px solid ${vLang === 'eng' ? '#2EC5FF' : 'rgba(255,255,255,0.1)'}; background: ${vLang === 'eng' ? 'rgba(46,197,255,0.15)' : 'transparent'}; color: ${vLang === 'eng' ? '#2EC5FF' : '#fff'}; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">English 🇺🇸</button>
+          <button class="video-playlist-lang-btn ${vLang === 'hindi' ? 'active' : ''}" data-lang="hindi" style="padding: 6px 12px; border-radius: 6px; border: 1px solid ${vLang === 'hindi' ? '#2EC5FF' : 'rgba(255,255,255,0.1)'}; background: ${vLang === 'hindi' ? 'rgba(46,197,255,0.15)' : 'transparent'}; color: ${vLang === 'hindi' ? '#2EC5FF' : '#fff'}; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">Hindi 🇮🇳</button>
+        </div>
+      `;
+      playlistWrapper.appendChild(playlistHeader);
+      
+      // Bind language buttons
+      playlistHeader.querySelectorAll('.video-playlist-lang-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = e.target.getAttribute('data-lang');
+          localStorage.setItem('aios_video_roadmap_lang', selected);
+          renderRoadmap(optimalWorkflow, steps); // Re-render
+        });
+      });
+      
+      langData.parts.forEach(p => {
+        const rowEl = document.createElement('div');
+        rowEl.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(18, 18, 22, 0.8); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; transition: all 0.2s; cursor: pointer;';
+        rowEl.addEventListener('mouseenter', () => {
+          rowEl.style.borderColor = 'rgba(46, 197, 255, 0.4)';
+          rowEl.style.transform = 'translateY(-2px)';
+        });
+        rowEl.addEventListener('mouseleave', () => {
+          rowEl.style.borderColor = 'rgba(255,255,255,0.06)';
+          rowEl.style.transform = 'none';
+        });
+        
+        rowEl.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 6px; flex: 1; padding-right: 20px;">
+            <strong style="color: #fff; font-size: 0.95rem; font-family: 'Space Grotesk', monospace;">${p.title}</strong>
+            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.4;">${p.desc}</span>
+            <span style="font-size: 0.75rem; color: #00D084; font-family: 'Space Grotesk', monospace;">⏱️ ${p.duration} • ${langData.badge}</span>
+          </div>
+          <button style="width: 42px; height: 42px; border-radius: 50%; background: rgba(46, 197, 255, 0.1); border: 1px solid rgba(46, 197, 255, 0.3); color: #2EC5FF; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0;">
+            ▶
+          </button>
+        `;
+        
+        rowEl.addEventListener('click', () => {
+          let filename = `part${p.part}_${vLang}.mp4`;
+          if (state.discoveredVideos && state.discoveredVideos.explore && state.discoveredVideos.explore.length > 0) {
+            const matched = state.discoveredVideos.explore.find(f => f.toLowerCase() === filename.toLowerCase());
+            if (matched) filename = matched;
+          }
+          const videoPath = `explore AI/${filename}`;
+          window.playPremiumVideo(videoPath, `Exploring AI - ${p.title}`);
+        });
+        
+        playlistWrapper.appendChild(rowEl);
+      });
+      
+      listContainer.appendChild(playlistWrapper);
+      
+      // Clean up road traveler positions
+      const rSvg = document.getElementById('road-svg');
+      const rTrav = document.getElementById('road-traveler');
+      if (rSvg) rSvg.style.display = 'none';
+      if (rTrav) rTrav.style.display = 'none';
+      return;
+    }
+
     // Show original detailed timeline layout exactly as it existed before
     if (timelineContainer) timelineContainer.style.display = 'block';
     if (roadSvgContainer) roadSvgContainer.style.display = 'block';
@@ -7018,3 +7237,22 @@ function downloadTemplate(templateName) {
 // Bind methods globally
 window.verifyQuizAnswer = verifyQuizAnswer;
 window.downloadTemplate = downloadTemplate;
+
+// Load Discovered Videos API
+state.discoveredVideos = { build: [], explore: [] };
+async function loadDiscoveredVideos() {
+  try {
+    const res = await fetch('/api/videos');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        state.discoveredVideos.build = data.buildVideos || [];
+        state.discoveredVideos.explore = data.exploreVideos || [];
+        console.log("Successfully auto-discovered videos:", state.discoveredVideos);
+      }
+    }
+  } catch (e) {
+    console.warn("Auto-discovery API offline. Static fallback loaded.", e);
+  }
+}
+loadDiscoveredVideos();

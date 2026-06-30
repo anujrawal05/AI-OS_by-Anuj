@@ -1150,7 +1150,7 @@ window.downloadTemplate = downloadTemplate;
 // Vetted ideas database matrix for constructor compilations
 const launchpadIdeas = {
   'agency': {
-    title: "AI Automation Agency (AAA)",
+    title: "AI Business Automation",
     desc: "Deploy conversational lead-capture chat bots, CRM database synchronizers, and intake form workflows for client services.",
     retail: {
       setup: "₹1,500 (Domain registration + clean custom email address)",
@@ -1228,7 +1228,7 @@ const launchpadIdeas = {
     }
   },
   'dropservicing': {
-    title: "High-Ticket Drop-Servicing Agency",
+    title: "Online Service Business",
     desc: "Broker high-value digital services (web design, copywriting, video editing) by securing contracts and outsourcing delivery to vetted contractors.",
     retail: {
       setup: "₹1,000 (Domain + basic landing site builder)",
@@ -1270,7 +1270,7 @@ const launchpadIdeas = {
     }
   },
   'micro-saas': {
-    title: "AI Micro-SaaS Product",
+    title: "Software Business",
     desc: "Launch a single-feature software tool that solves a highly specific operational task, monetizing via low-cost monthly subscriptions.",
     retail: {
       setup: "₹3,500 (API server + domain + database config)",
@@ -1312,7 +1312,7 @@ const launchpadIdeas = {
     }
   },
   'creator': {
-    title: "AI Creator Engine & Monetization",
+    title: "Content Creator Business",
     desc: "Build a highly-targeted content brand using AI video scripting tools, monetizing via sponsorships, templates, and courses.",
     retail: {
       setup: "₹0 (Free social accounts + organic editing tools)",
@@ -1354,7 +1354,7 @@ const launchpadIdeas = {
     }
   },
   'agency_video_ad': {
-    title: "AI Video Ad Creation Pipeline",
+    title: "Video Advertisement Business",
     desc: "Transform a single product or brand image into a premium commercial video ad using keyframe interpolation and motion vector blueprints.",
     retail: {
       setup: "₹1,500 (Domain + safe professional email mapping)",
@@ -1434,7 +1434,7 @@ const launchpadIdeas = {
     }
   },
   'creator_zackd_shorts': {
-    title: "Motion Script Compiler Pipeline",
+    title: "Short Video Production Business",
     desc: "Produce highly viral 3D cartoon-realistic educational shorts with fast-paced pacing and scientific cross-section reveals for social channels.",
     retail: {
       setup: "₹0 (Organic video channel registration)",
@@ -1514,7 +1514,7 @@ const launchpadIdeas = {
     }
   },
   'agency_voice_ai': {
-    title: "OmniDimension Inbound Voice AI Studio",
+    title: "AI Voice Assistant Business",
     desc: "Build and sell custom autonomous conversational voice AI booking assistants to handle administrative phone workloads for local healthcare clinics.",
     retail: {
       setup: "₹2,500 (Server endpoint configurations + custom portal mapping)",
@@ -1594,7 +1594,7 @@ const launchpadIdeas = {
     }
   },
   'creator_managed_network': {
-    title: "Managed Creator Brand Network",
+    title: "Influencer Management Business",
     desc: "Monetize digital vertical content channels through highly structured creator network partnerships, direct content contracts, and high-CPM performance applications.",
     retail: {
       setup: "₹0 (Free standard creator portal access)",
@@ -1674,7 +1674,7 @@ const launchpadIdeas = {
     }
   },
   'creator_kids_animation': {
-    title: "AI Nursery Rhyme Engine",
+    title: "Kids Content Business",
     desc: "Produce automated, high-view count children's animation channels using structured ChatGPT text storyboards and native mobile generation apps.",
     retail: {
       setup: "₹500 (Basic design templates)",
@@ -1923,11 +1923,26 @@ function initBusinessSimulators() {
           `;
         }
 
+        let videoBaseName = 'AAA';
+        if (model === 'dropservicing') videoBaseName = 'Drop-Servicing_Sprint';
+        else if (model === 'micro-saas') videoBaseName = 'SaaS';
+        else if (model === 'creator') videoBaseName = 'Content_Engine';
+        else if (model === 'agency_video_ad') videoBaseName = 'AI_Video_Ad_Pipeline';
+        else if (model === 'creator_zackd_shorts') videoBaseName = 'Motion_Script_Compiler';
+        else if (model === 'agency_voice_ai') videoBaseName = 'Inbound_Voice_AI_Studio';
+        else if (model === 'creator_managed_network') videoBaseName = 'Managed_Creator_Network';
+        else if (model === 'creator_kids_animation') videoBaseName = 'AI_Nursery_Rhyme_Engine';
+
         bOutput.innerHTML = `
-          <div class="blueprint-result-header">
-            <span class="blueprint-result-badge">LAUNCHPAD CORE V2.0 // ACTIVE</span>
-            <h3 class="blueprint-result-title">${modelData.title}</h3>
-            <p style="font-size:0.85rem; color:var(--bus-text-secondary); margin-top:4px;">${modelData.desc}</p>
+          <div class="blueprint-result-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+              <span class="blueprint-result-badge">LAUNCHPAD CORE V2.0 // ACTIVE</span>
+              <h3 class="blueprint-result-title">${modelData.title}</h3>
+              <p style="font-size:0.85rem; color:var(--bus-text-secondary); margin-top:4px;">${modelData.desc}</p>
+            </div>
+            <button class="card-btn-video" onclick="handleBusinessVideoPlay('${model}', '${videoBaseName}', '${modelData.title}')" style="padding: 10px 16px; background: rgba(46, 197, 255, 0.1); border: 1px solid rgba(46, 197, 255, 0.3); color: #2EC5FF; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 0.8rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(46, 197, 255, 0.2)'; this.style.borderColor='#2EC5FF';" onmouseout="this.style.background='rgba(46, 197, 255, 0.1)'; this.style.borderColor='rgba(46, 197, 255, 0.3)';">
+              <span>🎥 Watch Video Tutorial</span>
+            </button>
           </div>
           
           <div class="blueprint-projections-grid">
@@ -2263,6 +2278,10 @@ async function initApp() {
   // Load live data feeds initially
   loadLiveDashboardMetrics();
   loadLiveBusinessNews();
+
+  // Initialize Business Catalog Grid & Auto-Discovered Videos
+  renderBusinessCardsGrid();
+  loadDiscoveredVideos();
   updateConversionFunnel(launchpadIdeas['agency'], 0);
   
   // Reload live data feeds every 60 seconds
@@ -2594,6 +2613,174 @@ function showToast(message, type = "success") {
   setTimeout(() => {
     toast.classList.remove('active');
   }, 4000);
+}
+
+// Bind methods globally
+window.verifyQuizAnswer = verifyQuizAnswer;
+window.downloadTemplate = downloadTemplate;
+
+// Vetted Business Catalog dynamic cards rendering
+state.discoveredVideos = { build: [], explore: [] };
+
+async function loadDiscoveredVideos() {
+  try {
+    const res = await fetch('/api/videos');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        state.discoveredVideos.build = data.buildVideos || [];
+        state.discoveredVideos.explore = data.exploreVideos || [];
+        console.log("Successfully discovered videos:", state.discoveredVideos);
+      }
+    }
+  } catch (e) {
+    console.warn("Auto-discovery API failed. Using static structure fallback.", e);
+  }
+}
+
+function renderBusinessCardsGrid() {
+  const container = document.getElementById('business-cards-grid');
+  if (!container) return;
+  
+  const models = [
+    { key: 'agency', icon: '🤖', subtitle: 'Automate boring tasks and emails for local businesses.', video: 'AAA' },
+    { key: 'dropservicing', icon: '💼', subtitle: 'Broker premium digital services and outsource to contractors.', video: 'Drop-Servicing_Sprint' },
+    { key: 'micro-saas', icon: '⚡', subtitle: 'Launch simple single-purpose tools with monthly subscriptions.', video: 'SaaS' },
+    { key: 'creator', icon: '📸', subtitle: 'Build an audience and monetize with templates and sponsorships.', video: 'Content_Engine' },
+    { key: 'agency_video_ad', icon: '🎥', subtitle: 'Turn static product photos into high-converting video ads.', video: 'AI_Video_Ad_Pipeline' },
+    { key: 'creator_zackd_shorts', icon: '🎬', subtitle: 'Produce viral 3D shorts and bizarre facts videos using AI.', video: 'Motion_Script_Compiler' },
+    { key: 'agency_voice_ai', icon: '📞', subtitle: 'Deploy smart voice agents to answer phones for local clinics.', video: 'Inbound_Voice_AI_Studio' },
+    { key: 'creator_managed_network', icon: '🤝', subtitle: 'Manage social creators and secure brand sponsorships.', video: 'Managed_Creator_Network' },
+    { key: 'creator_kids_animation', icon: '👶', subtitle: 'Produce automated animated children\'s songs and rhymes.', video: 'AI_Nursery_Rhyme_Engine' }
+  ];
+
+  container.innerHTML = models.map(m => {
+    const idea = launchpadIdeas[m.key];
+    const profitRange = idea.retail.profit;
+    
+    return `
+      <div class="business-catalog-card" data-key="${m.key}">
+        <div class="card-glow-effect"></div>
+        <div class="card-header-row">
+          <div class="card-icon-wrapper">${m.icon}</div>
+          <span class="card-profit-badge">${profitRange.split(' /')[0]}</span>
+        </div>
+        <h4 class="card-business-title">${idea.title}</h4>
+        <p class="card-business-subtitle">${m.subtitle}</p>
+        
+        <div class="card-actions-row">
+          <button class="card-btn-compile" onclick="selectAndCompileBusiness('${m.key}')">
+            <span>Configure</span> ⚙️
+          </button>
+          <button class="card-btn-video" onclick="handleBusinessVideoPlay('${m.key}', '${m.video}', '${idea.title}')">
+            <span>Watch Video</span> ▶
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.selectAndCompileBusiness = function(key) {
+  const select = document.getElementById('blueprint-model-select');
+  if (select) {
+    select.value = key;
+    // Scroll to configurator output smoothly
+    const configPanel = document.querySelector('.blueprint-workspace');
+    if (configPanel) {
+      configPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    // Auto compile
+    const compileBtn = document.getElementById('btn-compile-blueprint');
+    if (compileBtn) compileBtn.click();
+  }
+};
+
+window.handleBusinessVideoPlay = function(key, videoBaseName, title) {
+  // Check if authenticated
+  if (!isUserAuthenticated()) {
+    document.getElementById('auth-modal-overlay').style.display = 'flex';
+    showToast("Please login first to watch business tutorials.", "warning");
+    return;
+  }
+  
+  // Premium lock check
+  const isPremium = state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial');
+  if (!isPremium) {
+    showToast("Upgrade to Premium or start trial to watch tutorials.", "warning");
+    showPricingModal(true);
+    return;
+  }
+
+  // Show Language Selection Modal
+  showLanguageSelectionPopup(videoBaseName, title);
+};
+
+function showLanguageSelectionPopup(videoBaseName, title) {
+  let modal = document.getElementById('premium-lang-modal-overlay');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'premium-lang-modal-overlay';
+    modal.className = 'auth-modal-overlay';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5,5,8,0.9); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 10000; opacity: 0; transition: opacity 0.2s ease;';
+    
+    modal.innerHTML = `
+      <div class="auth-modal" style="width: 90%; max-width: 400px; background: #0A0A0C; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); text-align: center; font-family: 'Outfit', sans-serif;">
+        <span style="font-size: 2.2rem; display: block; margin-bottom: 12px;">🌐</span>
+        <h3 style="font-family: 'Space Grotesk', monospace; color: #fff; margin-bottom: 8px; font-weight: 700; font-size: 1.15rem;" id="premium-lang-modal-title">Select Tutorial Language</h3>
+        <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem; line-height: 1.5; margin-bottom: 24px;">This premium lecture contains audio tracks in both Hindi and English. Please select your preference.</p>
+        
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-lang-hindi" class="btn btn-secondary btn-full" style="flex: 1; padding: 14px; font-weight: 700; font-family: 'Space Grotesk', monospace; border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: #fff; border-radius: 8px; cursor: pointer; transition: all 0.2s;">हिंदी 🇮🇳</button>
+          <button id="btn-lang-english" class="btn btn-primary btn-full" style="flex: 1; padding: 14px; font-weight: 700; font-family: 'Space Grotesk', monospace; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%); border: none; color: #000; border-radius: 8px; cursor: pointer; transition: all 0.2s;">English 🇺🇸</button>
+        </div>
+        
+        <button id="btn-lang-close" style="background: transparent; border: none; color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 20px; text-decoration: underline; cursor: pointer;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Cancel</button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById('premium-lang-modal-title').textContent = `Select Language: ${title}`;
+
+  modal.style.display = 'flex';
+  void modal.offsetWidth;
+  modal.style.opacity = '1';
+
+  const closePopup = () => {
+    modal.style.opacity = '0';
+    setTimeout(() => { modal.style.display = 'none'; }, 200);
+  };
+
+  const btnHindi = document.getElementById('btn-lang-hindi');
+  const btnEnglish = document.getElementById('btn-lang-english');
+  const btnClose = document.getElementById('btn-lang-close');
+
+  btnHindi.onclick = () => {
+    closePopup();
+    playVideoForLanguage('hindi');
+  };
+
+  btnEnglish.onclick = () => {
+    closePopup();
+    playVideoForLanguage('eng');
+  };
+
+  btnClose.onclick = closePopup;
+  modal.onclick = (e) => {
+    if (e.target === modal) closePopup();
+  };
+
+  function playVideoForLanguage(lang) {
+    let filename = `${videoBaseName}_${lang}.mp4`;
+    if (state.discoveredVideos && state.discoveredVideos.build && state.discoveredVideos.build.length > 0) {
+      const matched = state.discoveredVideos.build.find(f => f.toLowerCase() === filename.toLowerCase());
+      if (matched) filename = matched;
+    }
+    const videoPath = `build tutorial/${filename}`;
+    window.playPremiumVideo(videoPath, `${title} (${lang === 'eng' ? 'English' : 'Hindi'})`);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
