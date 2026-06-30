@@ -2342,6 +2342,14 @@ window.kinde = {
 };
 
 async function initApp() {
+  // Clean URL of Kinde query parameters to prevent state loop traps
+  const authUrlParams = new URLSearchParams(window.location.search);
+  if (authUrlParams.has('code') || authUrlParams.has('state') || authUrlParams.has('token') || authUrlParams.has('error')) {
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.search = '';
+    window.history.replaceState({}, document.title, cleanUrl.toString());
+  }
+
   // Try to synchronize and recover session from Kinde
   try {
     const kindeRes = await fetch('/api/auth/status');

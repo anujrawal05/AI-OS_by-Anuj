@@ -20,13 +20,16 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
+const isProd = process.env.NODE_ENV === 'production';
 app.use(session({
   secret: process.env.SESSION_SECRET || 'aios_session_secret_key_123',
   resave: false,
   saveUninitialized: true,
   cookie: {
-    secure: false,
-    httpOnly: true
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
   }
 }));
 
