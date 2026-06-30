@@ -800,63 +800,136 @@
   </div>
 
   <!-- Pricing Modal -->
+  <!-- Pricing Modal -->
   <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;">
-    <div class="auth-modal-card" style="max-width: 650px; width: 90%;">
-      <button id="pricing-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
-      <div class="auth-modal-icon" style="animation: authIconPulse 2s infinite alternate;">⭐</div>
-      <h3 style="font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 8px;">Choose Your Plan</h3>
-      <p style="color: var(--text-secondary); margin-bottom: 24px;">Unlock the full power of AI-OS for personal and professional execution.</p>
+    <div class="pricing-hotstar-modal">
+      <!-- Close button mapped to original ID so existing JS hides modal -->
+      <button id="pricing-modal-close-btn" class="hotstar-close-btn" aria-label="Close modal">&times;</button>
       
-      <div class="pricing-comparison-table-wrapper" style="overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.01); margin-bottom: 20px;">
-        <table class="pricing-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
-          <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
-              <th style="padding: 16px;">Features</th>
-              <th style="padding: 16px; text-align: center; color: var(--text-secondary);">Free<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹0</span></th>
-              <th style="padding: 16px; text-align: center; color: var(--accent-color);">Premium<br><span style="font-size: 1.1rem; color: #fff; font-weight: 700;">₹99/mo</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom: 1px solid var(--border-color);">
-              <td style="padding: 12px 16px; font-weight: 500;">JSON Prompts / Day</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">5 Prompts</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">⚡ Unlimited</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border-color);">
-              <td style="padding: 12px 16px; font-weight: 500;">Explore AI Roadmap</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">10 Steps Only</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">✨ Full 40 Steps</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border-color);">
-              <td style="padding: 12px 16px; font-weight: 500;">AI-OS Business Dashboard</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">Preview Only</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">💼 Full Access</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border-color);">
-              <td style="padding: 12px 16px; font-weight: 500;">Premium Video Masterclass</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">🔒 Locked</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">🎥 Hindi/English Playlist & Seek/Speed Player</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border-color);">
-              <td style="padding: 12px 16px; font-weight: 500;">Platform Advertisements</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">Standard Ads</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">🛡️ Non-intrusive Only</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 16px; font-weight: 500;">Price (Yearly Option)</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--text-secondary);">-</td>
-              <td style="padding: 12px 16px; text-align: center; color: var(--accent-color); font-weight: 600;">₹999/yr (Save 15%)</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Left Column: Value Proposition -->
+      <div class="pricing-modal-left">
+        <div class="pricing-left-content">
+          <div style="font-size: 2.5rem; margin-bottom: 12px; animation: authIconPulse 2s infinite alternate;">⭐</div>
+          <h2 style="font-family: var(--font-title); font-weight: 700; color: #fff; margin-bottom: 16px;">Subscribe to AI-OS Premium</h2>
+          <p>Unlock complete business blueprints, full academy modules, A.R. Strategist analytics, and custom premium media players.</p>
+          
+          <ul class="pricing-feature-bullets">
+            <li>Unlimited Prompt Compilations</li>
+            <li>Full 40-Step Interactive Roadmaps</li>
+            <li>Unlocked AI-OS Business Dashboard</li>
+            <li>Premium Hindi & English Lecture Player</li>
+            <li>Lifetime Support & Updates</li>
+          </ul>
+        </div>
       </div>
-
-      <div style="display: flex; flex-wrap: wrap; gap: 12px; width: 100%;">
-        <button id="btn-pricing-free" class="btn btn-secondary" style="flex: 1; min-width: 150px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px;">Choose Free Plan (₹0)</button>
-        <button id="btn-pricing-monthly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #7f00ff, #ff007f); border: none; box-shadow: 0 0 10px rgba(127,0,255,0.3);">Subscribe Monthly (₹99)</button>
-        <button id="btn-pricing-yearly" class="btn btn-primary" style="flex: 1; min-width: 200px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px; background: linear-gradient(135deg, #00c6ff, #0072ff); border: none; box-shadow: 0 0 10px rgba(0,198,255,0.3);">Subscribe Yearly (₹999)</button>
-        <button id="btn-pricing-coupon" class="btn btn-secondary" style="flex: 1; min-width: 150px; padding: 14px; font-weight: 600; font-size: 0.95rem; border-radius: 10px;">Redeem Coupon</button>
+      
+      <!-- Right Column: Comparison Table & Plans -->
+      <div class="pricing-modal-right">
+        <div>
+          <table class="hotstar-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Features</th>
+                <th style="text-align: center; width: 80px;">Basic</th>
+                <th style="text-align: center; width: 100px; color: #2EC5FF;">Premium</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="feature-name">SaaS Academy Lessons</td>
+                <td class="value-col">Standard</td>
+                <td class="value-col highlight">⚡ Full 12 Modules</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Blueprint Compiler</td>
+                <td class="value-col">Lock Preview</td>
+                <td class="value-col highlight">✨ Unrestricted</td>
+              </tr>
+              <tr>
+                <td class="feature-name">A.R. Strategist Chat</td>
+                <td class="value-col">Lock Preview</td>
+                <td class="value-col highlight">💼 7-Tab Access</td>
+              </tr>
+              <tr>
+                <td class="feature-name">Premium Video Player</td>
+                <td class="value-col">🔒 Locked</td>
+                <td class="value-col highlight">🎥 Dual Tracks</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="plan-cards-container">
+            <!-- Basic Plan Option -->
+            <div class="plan-option-card" onclick="selectHotstarPlan('free', this)">
+              <span class="plan-card-title">Basic</span>
+              <span class="plan-card-price">₹0</span>
+              <span class="plan-card-subtitle">Lifetime Preview</span>
+            </div>
+            
+            <!-- Premium Monthly Option -->
+            <div class="plan-option-card active" onclick="selectHotstarPlan('monthly', this)">
+              <span class="plan-card-title">Monthly</span>
+              <span class="plan-card-price">₹99</span>
+              <span class="plan-card-subtitle">per month</span>
+            </div>
+            
+            <!-- Premium Yearly Option -->
+            <div class="plan-option-card" onclick="selectHotstarPlan('yearly', this)">
+              <span class="plan-card-badge">Save 15%</span>
+              <span class="plan-card-title">Yearly</span>
+              <span class="plan-card-price">₹999</span>
+              <span class="plan-card-subtitle">per year</span>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <!-- Proceed Button -->
+          <button class="btn-hotstar-proceed" onclick="proceedHotstarSelection()">
+            <span>Continue with Monthly (₹99)</span> ➔
+          </button>
+          
+          <!-- Coupon redemption link -->
+          <span class="coupon-trigger-link" onclick="document.getElementById('btn-pricing-coupon').click()">Have a promo code? Use Coupon</span>
+        </div>
       </div>
+      
+      <!-- Hidden elements containing the original buttons for event listener mapping -->
+      <div style="display: none;">
+        <button id="btn-pricing-free"></button>
+        <button id="btn-pricing-monthly"></button>
+        <button id="btn-pricing-yearly"></button>
+        <button id="btn-pricing-coupon"></button>
+      </div>
+      
+      <script>
+        let selectedHotstarPlan = 'monthly';
+        function selectHotstarPlan(planType, cardEl) {
+          selectedHotstarPlan = planType;
+          document.querySelectorAll('.plan-option-card').forEach(card => card.classList.remove('active'));
+          cardEl.classList.add('active');
+          
+          // Update proceed button text dynamically to match selection
+          const proceedBtnSpan = document.querySelector('.btn-hotstar-proceed span');
+          if (planType === 'free') {
+            proceedBtnSpan.textContent = 'Continue with Basic';
+          } else if (planType === 'monthly') {
+            proceedBtnSpan.textContent = 'Continue with Monthly (₹99)';
+          } else if (planType === 'yearly') {
+            proceedBtnSpan.textContent = 'Continue with Yearly (₹999)';
+          }
+        }
+        
+        function proceedHotstarSelection() {
+          if (selectedHotstarPlan === 'free') {
+            document.getElementById('btn-pricing-free').click();
+          } else if (selectedHotstarPlan === 'monthly') {
+            document.getElementById('btn-pricing-monthly').click();
+          } else if (selectedHotstarPlan === 'yearly') {
+            document.getElementById('btn-pricing-yearly').click();
+          }
+        }
+      </script>
     </div>
   </div>
 
