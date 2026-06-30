@@ -43,6 +43,12 @@ const kindeConfig = {
 
 setupKinde(kindeConfig, app);
 
+app.get('/logout', (req, res) => {
+  const domain = process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || 'https://mock.kinde.com';
+  const redirectUri = process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`;
+  res.redirect(`${domain}/logout?redirect_uri=${redirectUri}`);
+});
+
 // Serve static files from root directory
 app.use(express.static(__dirname));
 
