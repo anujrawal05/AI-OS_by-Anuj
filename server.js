@@ -69,6 +69,77 @@ app.get('/api/videos', (req, res) => {
 
 
 
+// Premium 3-Day Trial Database Management
+const TRIALS_FILE = path.join(__dirname, 'data', 'premium_trials.json');
+
+function readTrials() {
+  try {
+    const dir = path.dirname(TRIALS_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (!fs.existsSync(TRIALS_FILE)) {
+      fs.writeFileSync(TRIALS_FILE, JSON.stringify({}, null, 2), 'utf8');
+    }
+    return JSON.parse(fs.readFileSync(TRIALS_FILE, 'utf8'));
+  } catch (err) {
+    console.error('[premium-trial] Failed to read trials database:', err);
+    return {};
+  }
+}
+
+function writeTrials(data) {
+  try {
+    fs.writeFileSync(TRIALS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.error('[premium-trial] Failed to write trials database:', err);
+  }
+}
+
+// Get or initialize trial status for a user
+function getOrInitializeTrial(userId, email, currentPlan) {
+  if (currentPlan === 'Premium') {
+    return {
+      plan_type: 'Premium',
+      trial_used: true
+    };
+  }
+
+  const trials = readTrials();
+  const key = userId || email;
+  if (!key) return null;
+
+  let userTrial = trials[key];
+  
+  if (!userTrial) {
+    const now = new Date();
+    const expires = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days
+    
+    userTrial = {
+      trial_started_at: now.toISOString(),
+      trial_expires_at: expires.toISOString(),
+      trial_used: true,
+      plan_type: 'Trial Premium'
+    };
+    
+    trials[key] = userTrial;
+    writeTrials(trials);
+    console.log(`[Premium Trial] Activated 3-day trial for user ${key}. Expires: ${userTrial.trial_expires_at}`);
+  }
+
+  // Expiry check
+  const now = new Date();
+  const expiresAt = new Date(userTrial.trial_expires_at);
+  if (now > expiresAt && userTrial.plan_type === 'Trial Premium') {
+    userTrial.plan_type = 'Basic';
+    trials[key] = userTrial;
+    writeTrials(trials);
+    console.log(`[Premium Trial] Trial expired for user ${key}. Downgraded to Basic.`);
+  }
+
+  return userTrial;
+}
+
 // Custom Email/Password Login Endpoint
 app.post('/api/auth/email-login', async (req, res) => {
   try {
@@ -98,10 +169,30 @@ app.post('/api/auth/email-login', async (req, res) => {
         .eq('id', data.user.id)
         .single();
 
+      // Check / Activate Premium Trial status
+      let effectivePlan = (profile && profile.plan_type) || 'Basic';
+      const trialInfo = getOrInitializeTrial(data.user.id, data.user.email, effectivePlan);
+      
+      let mergedProfile = profile || { id: data.user.id, email: data.user.email };
+      if (trialInfo) {
+        mergedProfile.plan_type = trialInfo.plan_type;
+        mergedProfile.trial_started_at = trialInfo.trial_started_at;
+        mergedProfile.trial_expires_at = trialInfo.trial_expires_at;
+        mergedProfile.trial_used = trialInfo.trial_used;
+        
+        // Sync to Supabase if it changed/expired
+        if (profile && profile.plan_type !== trialInfo.plan_type) {
+          await supabaseAdmin
+            .from('user_profiles')
+            .update({ plan_type: trialInfo.plan_type })
+            .eq('id', data.user.id);
+        }
+      }
+
       return res.status(200).json({
         user: data.user,
         session: data.session,
-        profile: profile || null
+        profile: mergedProfile
       });
     }
 
@@ -120,12 +211,22 @@ app.get('/api/auth/profile', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required.' });
     }
     const token = authHeader.split(' ')[1];
-    if (!supabase) {
-      return res.status(500).json({ error: 'Database service is not configured on the server.' });
+    let user = null;
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.auth.getUser(token);
+        if (!error && data) user = data.user;
+      } catch (err) {}
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
+    if (!user) {
+      const verified = await verifyTokenPayload(authHeader);
+      if (verified) {
+        user = { id: verified.id || 'trial-test-user-id', email: verified.email };
+      }
+    }
+
+    if (!user) {
       return res.status(401).json({ error: 'Invalid session.' });
     }
 
@@ -144,7 +245,27 @@ app.get('/api/auth/profile', async (req, res) => {
       });
     }
 
-    return res.status(200).json(profile || null);
+    // Check / Activate Premium Trial status
+    let effectivePlan = (profile && profile.plan_type) || 'Basic';
+    const trialInfo = getOrInitializeTrial(user.id, user.email, effectivePlan);
+    
+    let mergedProfile = profile || { id: user.id, email: user.email };
+    if (trialInfo) {
+      mergedProfile.plan_type = trialInfo.plan_type;
+      mergedProfile.trial_started_at = trialInfo.trial_started_at;
+      mergedProfile.trial_expires_at = trialInfo.trial_expires_at;
+      mergedProfile.trial_used = trialInfo.trial_used;
+      
+      // Sync to Supabase if it changed/expired
+      if (profile && profile.plan_type !== trialInfo.plan_type) {
+        await supabaseAdmin
+          .from('user_profiles')
+          .update({ plan_type: trialInfo.plan_type })
+          .eq('id', user.id);
+      }
+    }
+
+    return res.status(200).json(mergedProfile);
   } catch (err) {
     console.error('[Profile Fetch Endpoint Error]:', err.message);
     return res.status(500).json({ error: err.message });
@@ -159,16 +280,37 @@ app.post('/api/auth/update-profile', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required.' });
     }
     const token = authHeader.split(' ')[1];
-    if (!supabase) {
-      return res.status(500).json({ error: 'Database service is not configured on the server.' });
+    let user = null;
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.auth.getUser(token);
+        if (!error && data) user = data.user;
+      } catch (err) {}
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) {
+    if (!user) {
+      const verified = await verifyTokenPayload(authHeader);
+      if (verified) {
+        user = { id: verified.id || 'trial-test-user-id', email: verified.email };
+      }
+    }
+
+    if (!user) {
       return res.status(401).json({ error: 'Invalid or expired session. Please log in again.' });
     }
 
     const { full_name, date_of_birth, gender, profession, plan_type, trial_started_at } = req.body;
+
+    // Sync plan_type updates in local JSON database if they purchase Premium
+    if (plan_type === 'Premium') {
+      const trials = readTrials();
+      const key = user.id || user.email;
+      if (key) {
+        if (!trials[key]) trials[key] = {};
+        trials[key].plan_type = 'Premium';
+        writeTrials(trials);
+      }
+    }
 
     const profileData = {
       id: user.id,
@@ -182,6 +324,16 @@ app.post('/api/auth/update-profile', async (req, res) => {
 
     if (plan_type !== undefined) profileData.plan_type = plan_type;
     if (trial_started_at !== undefined) profileData.trial_started_at = trial_started_at;
+
+    // Enforce trial status checks
+    let effectivePlan = plan_type || 'Basic';
+    const trialInfo = getOrInitializeTrial(user.id, user.email, effectivePlan);
+    if (trialInfo) {
+      profileData.plan_type = trialInfo.plan_type;
+      profileData.trial_started_at = trialInfo.trial_started_at;
+      profileData.trial_expires_at = trialInfo.trial_expires_at;
+      profileData.trial_used = trialInfo.trial_used;
+    }
 
     let { error: profileError } = await supabaseAdmin
       .from('user_profiles')
@@ -257,11 +409,13 @@ async function verifyTokenPayload(authHeader) {
             code: profileError.code
           });
         }
+        let effectivePlan = (profile && profile.plan_type) || 'Basic';
+        const trialInfo = getOrInitializeTrial(user.id, user.email, effectivePlan);
         return {
           isCoupon: false,
           id: user.id,
           email: user.email,
-          plan_type: (profile && profile.plan_type) || 'Basic'
+          plan_type: (trialInfo && trialInfo.plan_type) || effectivePlan
         };
       }
     } catch (err) {

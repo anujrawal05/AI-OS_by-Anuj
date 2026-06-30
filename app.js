@@ -3407,7 +3407,7 @@ function initDashboardControls() {
     btnChoiceVideo.addEventListener('click', () => {
       choiceModal.style.display = 'none';
       
-      const isPremium = isUserAuthenticated() && state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial');
+      const isPremium = isUserAuthenticated() && state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial Premium' || state.user.plan_type === 'Trial');
       if (!isPremium) {
         showToast("Upgrade to Premium or start trial to watch Video Roadmaps.", "warning");
         showPricingModal(true);
@@ -6046,14 +6046,19 @@ function updateUserProfileHeader() {
   // Update Premium CTA visibility in the header actions
   const ctaBtn = document.getElementById('btn-upgrade-premium-cta');
   if (ctaBtn) {
-    if (state.user && state.user.plan_type === 'Premium') {
+    if (state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial Premium')) {
       ctaBtn.style.display = 'block';
-      ctaBtn.textContent = 'Premium Active';
-      ctaBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
-      ctaBtn.style.boxShadow = '0 0 10px rgba(46, 204, 113, 0.3)';
+      ctaBtn.textContent = (state.user.plan_type === 'Trial Premium') ? 'Trial Active' : 'Premium Active';
+      ctaBtn.style.background = (state.user.plan_type === 'Trial Premium') ? 'linear-gradient(135deg, #FFD54A, #2EC5FF)' : 'linear-gradient(135deg, #2ecc71, #27ae60)';
+      ctaBtn.style.color = (state.user.plan_type === 'Trial Premium') ? '#000' : '#fff';
+      ctaBtn.style.boxShadow = (state.user.plan_type === 'Trial Premium') ? '0 0 10px rgba(46, 197, 255, 0.3)' : '0 0 10px rgba(46, 204, 113, 0.3)';
       ctaBtn.style.animation = 'none';
       ctaBtn.onclick = () => {
-        showToast("You are currently on the Premium Plan! Full access unlocked.", "info");
+        if (state.user.plan_type === 'Trial Premium') {
+          showPricingModal();
+        } else {
+          showToast("You are currently on the Premium Plan! Full access unlocked.", "info");
+        }
       };
     } else {
       ctaBtn.style.display = 'block';
@@ -6070,6 +6075,18 @@ function updateUserProfileHeader() {
     const avatarToDisplay = state.user.picture || 'https://api.dicebear.com/7.x/bottts/svg';
     const statusText = state.user.plan_type || 'Basic';
     
+    let statusClass = '';
+    let statusStyle = '';
+    let statusDisplay = statusText.toUpperCase();
+    
+    if (statusText === 'Premium') {
+      statusClass = 'premium';
+    } else if (statusText === 'Trial Premium' || statusText === 'Trial') {
+      statusClass = 'premium-trial';
+      statusStyle = 'background: linear-gradient(135deg, #FFD54A 0%, #2EC5FF 100%) !important; color: #000 !important; font-weight: 700;';
+      statusDisplay = '✨ PREMIUM TRIAL';
+    }
+    
     container.innerHTML = `
       <div style="position: relative; display: flex; align-items: center;">
         <button id="btn-header-profile" class="profile-btn">
@@ -6079,7 +6096,7 @@ function updateUserProfileHeader() {
         <div id="header-profile-dropdown" class="profile-dropdown">
           <div class="profile-dropdown-name">${nameToDisplay}</div>
           <div class="profile-dropdown-email">${state.user.email || ''}</div>
-          <div class="profile-dropdown-status ${statusText.toLowerCase() === 'premium' ? 'premium' : ''}">${statusText.toUpperCase()}${state.user.plan_type === 'Trial' ? ` — ${state.user.trial_days_remaining || 0}d left` : ''}</div>
+          <div class="profile-dropdown-status ${statusClass}" style="${statusStyle}">${statusDisplay}</div>
           <button id="btn-dropdown-profile" class="profile-dropdown-item" style="width: 100%; text-align: left; background: transparent; border: none; color: #fff; padding: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 8px;">
             👤 <span>My Profile</span>
           </button>
@@ -6305,10 +6322,10 @@ async function handleSupabaseSession(session, profile = null) {
       showOnboardingModal(user);
     } else {
       // User registered - complete sign in
-      const now = Date.now();
-      const trialStart = finalProfile.trial_started_at ? new Date(finalProfile.trial_started_at).getTime() : null;
-      const trialDaysElapsed = trialStart ? (now - trialStart) / (1000 * 60 * 60 * 24) : 999;
-      const onTrial = trialDaysElapsed < 3 && !finalProfile.plan_type;
+      const isTrial = finalProfile.plan_type === 'Trial Premium';
+      const trialExpires = finalProfile.trial_expires_at;
+      const diffMs = trialExpires ? new Date(trialExpires).getTime() - Date.now() : 0;
+      const remainingDays = diffMs > 0 ? Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24))) : 0;
       
       state.user = {
         id: user.id,
@@ -6318,9 +6335,10 @@ async function handleSupabaseSession(session, profile = null) {
         gender: finalProfile.gender,
         profession: finalProfile.profession,
         date_of_birth: finalProfile.date_of_birth,
-        plan_type: onTrial ? 'Trial' : (finalProfile.plan_type || 'Basic'),
+        plan_type: finalProfile.plan_type || 'Basic',
         trial_started_at: finalProfile.trial_started_at || null,
-        trial_days_remaining: onTrial ? Math.max(0, Math.ceil(3 - trialDaysElapsed)) : 0,
+        trial_expires_at: finalProfile.trial_expires_at || null,
+        trial_days_remaining: remainingDays,
         token: session.access_token,
         is_coupon: false
       };
@@ -6334,7 +6352,13 @@ async function handleSupabaseSession(session, profile = null) {
       initTrialClock();
       toggleBusinessSectionView();
       
-      if (!finalProfile.plan_type && !onTrial) {
+      const trialUsed = finalProfile.trial_used || (finalProfile.trial_started_at ? true : false);
+      const isBasicNow = finalProfile.plan_type === 'Basic' || !finalProfile.plan_type;
+      
+      if (trialUsed && isBasicNow) {
+        showToast("⚠️ Your Premium Trial has ended. Premium features are now locked.", "warning");
+        showPricingModal(true);
+      } else if (isBasicNow) {
         showPricingModal(true);
       } else {
         regenerateActiveRoadmap();
@@ -6420,6 +6444,10 @@ async function handleOnboardingSubmit(e) {
     const overlay = document.getElementById('onboarding-modal-overlay');
     if (overlay) overlay.style.display = 'none';
     
+    // Trigger Trial Welcome Modal
+    const welcomeModal = document.getElementById('trial-welcome-modal-overlay');
+    if (welcomeModal) welcomeModal.style.display = 'flex';
+    
     await handleSupabaseSession(session, result.profile);
   } catch (err) {
     console.error("Onboarding failed:", err.message);
@@ -6432,19 +6460,53 @@ async function handleOnboardingSubmit(e) {
 
 /* ─── Trial Clock ───────────────────────────────────────────────────── */
 function isTrialActive() {
-  return state.user && state.user.plan_type === 'Trial' && state.user.trial_days_remaining > 0;
+  return state.user && (state.user.plan_type === 'Trial Premium' || state.user.plan_type === 'Trial') && state.user.trial_days_remaining > 0;
+}
+
+function getTrialRemainingTime() {
+  if (!state.user || !state.user.trial_expires_at) return null;
+  const now = Date.now();
+  const expires = new Date(state.user.trial_expires_at).getTime();
+  const diffMs = expires - now;
+  if (diffMs <= 0) return null;
+  
+  const totalHours = diffMs / (1000 * 60 * 60);
+  if (totalHours < 24) {
+    const hours = Math.ceil(totalHours);
+    return { isLastDay: true, text: `${hours} hour${hours !== 1 ? 's' : ''} remaining` };
+  } else {
+    const days = Math.ceil(totalHours / 24);
+    return { isLastDay: false, text: `${days} day${days !== 1 ? 's' : ''} remaining` };
+  }
 }
 
 function initTrialClock() {
   const banner = document.getElementById('trial-countdown-banner');
   if (!banner) return;
   if (isTrialActive()) {
-    const days = state.user.trial_days_remaining;
-    banner.innerHTML = `⏳ <strong>Free Trial Active</strong> — ${days} day${days !== 1 ? 's' : ''} remaining. <a href="#" onclick="showPricingModal(); return false;" style="color:#2EC5FF; text-decoration:underline; margin-left:8px;">Upgrade to Premium →</a>`;
+    const timeRemaining = getTrialRemainingTime();
+    let text = "";
+    if (timeRemaining) {
+      if (timeRemaining.isLastDay) {
+        text = `⚠️ <strong>Less than 24 hours remaining</strong> (${timeRemaining.text})! Recommend upgrading before trial expires.`;
+      } else {
+        text = `🎉 You're currently using your FREE 3-Day Premium Trial (${timeRemaining.text} left).`;
+      }
+    } else {
+      text = `🎉 You're currently using your FREE 3-Day Premium Trial.`;
+    }
+    
+    banner.innerHTML = `<span>${text}</span> <button onclick="showPricingModal();" style="margin-left: 12px; background: linear-gradient(135deg, #00D084, #2EC5FF); border: none; border-radius: 4px; padding: 4px 10px; color: #000; font-family: monospace; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: transform 0.2s;">Upgrade Now</button>`;
     banner.style.display = 'flex';
   } else {
     banner.style.display = 'none';
   }
+}
+
+function closeTrialWelcomeModal() {
+  const welcomeModal = document.getElementById('trial-welcome-modal-overlay');
+  if (welcomeModal) welcomeModal.style.display = 'none';
+  regenerateActiveRoadmap();
 }
 
 function showPricingModal(isMandatory = false) {
@@ -6624,8 +6686,20 @@ function showProfileModal() {
     if (accountTypeEl) accountTypeEl.textContent = 'Email User';
     if (accessStatusEl) {
       const isPremium = state.user.plan_type === 'Premium';
-      accessStatusEl.innerHTML = isPremium ? 'Premium' : 'Basic';
-      accessStatusEl.className = isPremium ? 'badge-access premium-badge' : 'badge-access basic-badge';
+      const isTrial = state.user.plan_type === 'Trial Premium';
+      if (isPremium) {
+        accessStatusEl.innerHTML = 'Premium';
+        accessStatusEl.className = 'badge-access premium-badge';
+        accessStatusEl.style = '';
+      } else if (isTrial) {
+        accessStatusEl.innerHTML = '✨ Premium Trial';
+        accessStatusEl.className = 'badge-access premium-badge';
+        accessStatusEl.style = 'background: linear-gradient(135deg, #FFD54A 0%, #2EC5FF 100%) !important; color: #000 !important; font-weight: 700; border: none !important;';
+      } else {
+        accessStatusEl.innerHTML = 'Basic';
+        accessStatusEl.className = 'badge-access basic-badge';
+        accessStatusEl.style = '';
+      }
     }
   }
   

@@ -432,12 +432,12 @@
     if (cachedProfile) {
       try {
         const u = JSON.parse(cachedProfile);
-        if (u && u.plan_type === 'Premium') return true;
+        if (u && (u.plan_type === 'Premium' || u.plan_type === 'Trial Premium' || u.plan_type === 'Trial')) return true;
       } catch (e) {}
     }
     
     // 3. Check global state
-    if (window.state && window.state.user && window.state.user.plan_type === 'Premium') {
+    if (window.state && window.state.user && (window.state.user.plan_type === 'Premium' || window.state.user.plan_type === 'Trial Premium' || window.state.user.plan_type === 'Trial')) {
       return true;
     }
     

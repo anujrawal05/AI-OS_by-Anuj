@@ -15,6 +15,77 @@ if (!supabaseServiceKey) {
 }
 const supabaseAdmin = supabaseUrl ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
+// Premium 3-Day Trial Database Management
+const TRIALS_FILE = path.join(__dirname, '..', '..', 'data', 'premium_trials.json');
+
+function readTrials() {
+  try {
+    const dir = path.dirname(TRIALS_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (!fs.existsSync(TRIALS_FILE)) {
+      fs.writeFileSync(TRIALS_FILE, JSON.stringify({}, null, 2), 'utf8');
+    }
+    return JSON.parse(fs.readFileSync(TRIALS_FILE, 'utf8'));
+  } catch (err) {
+    console.error('[premium-trial] Failed to read trials database:', err);
+    return {};
+  }
+}
+
+function writeTrials(data) {
+  try {
+    fs.writeFileSync(TRIALS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.error('[premium-trial] Failed to write trials database:', err);
+  }
+}
+
+// Get or initialize trial status for a user
+function getOrInitializeTrial(userId, email, currentPlan) {
+  if (currentPlan === 'Premium') {
+    return {
+      plan_type: 'Premium',
+      trial_used: true
+    };
+  }
+
+  const trials = readTrials();
+  const key = userId || email;
+  if (!key) return null;
+
+  let userTrial = trials[key];
+  
+  if (!userTrial) {
+    const now = new Date();
+    const expires = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days
+    
+    userTrial = {
+      trial_started_at: now.toISOString(),
+      trial_expires_at: expires.toISOString(),
+      trial_used: true,
+      plan_type: 'Trial Premium'
+    };
+    
+    trials[key] = userTrial;
+    writeTrials(trials);
+    console.log(`[Premium Trial] Activated 3-day trial for user ${key}. Expires: ${userTrial.trial_expires_at}`);
+  }
+
+  // Expiry check
+  const now = new Date();
+  const expiresAt = new Date(userTrial.trial_expires_at);
+  if (now > expiresAt && userTrial.plan_type === 'Trial Premium') {
+    userTrial.plan_type = 'Basic';
+    trials[key] = userTrial;
+    writeTrials(trials);
+    console.log(`[Premium Trial] Trial expired for user ${key}. Downgraded to Basic.`);
+  }
+
+  return userTrial;
+}
+
 // Helper to verify token payload
 async function verifyTokenPayload(authHeader) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -55,11 +126,13 @@ async function verifyTokenPayload(authHeader) {
             code: profileError.code
           });
         }
+        let effectivePlan = (profile && profile.plan_type) || 'Basic';
+        const trialInfo = getOrInitializeTrial(user.id, user.email, effectivePlan);
         return {
           isCoupon: false,
           id: user.id,
           email: user.email,
-          plan_type: (profile && profile.plan_type) || 'Basic'
+          plan_type: (trialInfo && trialInfo.plan_type) || effectivePlan
         };
       }
     } catch (err) {
@@ -144,6 +217,19 @@ module.exports = async (req, res) => {
           code: error.code
         });
         throw new Error('Database update failed');
+      }
+
+      // Also update the local premium trial record to 'Premium'
+      try {
+        const trials = readTrials();
+        const key = verifiedUser.id || verifiedUser.email;
+        if (key) {
+          if (!trials[key]) trials[key] = {};
+          trials[key].plan_type = 'Premium';
+          writeTrials(trials);
+        }
+      } catch (err) {
+        console.error('[VerifyPayment] Failed to sync payment to trials DB:', err);
       }
     }
 

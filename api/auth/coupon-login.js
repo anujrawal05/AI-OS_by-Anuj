@@ -7,6 +7,11 @@ const VALID_COUPONS = {
     type: 'Premium',
     durationDays: null,
     description: 'Premium Access'
+  },
+  'TRIAL_TEST_COUPON': {
+    type: 'Basic',
+    durationDays: null,
+    description: 'Basic Trial Testing Access'
   }
 };
 
@@ -112,6 +117,35 @@ module.exports = async (req, res) => {
 
     if (!couponConfig) {
       return res.status(400).json({ error: 'Invalid access code. Please try again.' });
+    }
+
+    if (normalizedCode === 'TRIAL_TEST_COUPON') {
+      const sessionPayload = {
+        email: 'trialuser@test.com',
+        name: '',
+        plan_type: 'Basic',
+        signature: 'AIOS-AUTHENTICATED-COUPON',
+        expiry: Date.now() + 24 * 60 * 60 * 1000
+      };
+      const sessionToken = Buffer.from(JSON.stringify(sessionPayload)).toString('base64');
+      
+      return res.status(200).json({
+        success: true,
+        user: {
+          id: 'trial-test-user-id',
+          name: '',
+          email: 'trialuser@test.com',
+          picture: 'https://api.dicebear.com/7.x/bottts/svg?seed=trialuser',
+          gender: '',
+          profession: '',
+          date_of_birth: '',
+          plan_type: 'Basic',
+          account_type: 'Email User',
+          is_coupon: false,
+          hide_profile_editing: false,
+          token: sessionToken
+        }
+      });
     }
 
     // Save redemption
