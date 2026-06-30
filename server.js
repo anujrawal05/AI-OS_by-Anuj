@@ -39,7 +39,7 @@ const kindeConfig = {
   issuerBaseUrl: process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL,
   siteUrl: process.env.KINDE_SITE_URL || siteUrl,
   secret: process.env.KINDE_CLIENT_SECRET,
-  redirectUrl: process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`,
+  redirectUrl: process.env.KINDE_REDIRECT_URL || `${siteUrl}/api/auth/kinde_callback`,
   postLogoutRedirectUrl: process.env.KINDE_POST_LOGOUT_REDIRECT_URL || process.env.KINDE_SITE_URL || siteUrl,
   grantType: GrantType.AUTHORIZATION_CODE,
   unAuthorisedUrl: process.env.KINDE_UNAUTHORISED_URL || `${siteUrl}/unauthorised`
@@ -49,7 +49,7 @@ const kindeClient = setupKinde(kindeConfig, app);
 
 app.get('/logout', (req, res) => {
   const domain = process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL;
-  const redirectUri = process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`;
+  const redirectUri = process.env.KINDE_REDIRECT_URL || `${siteUrl}/api/auth/kinde_callback`;
   if (!domain) {
     return res.status(500).send("Identity provider domain is not configured.");
   }

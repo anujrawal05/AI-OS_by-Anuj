@@ -11,7 +11,7 @@
     { "src": "/login", "dest": "server.js" },
     { "src": "/register", "dest": "server.js" },
     { "src": "/callback", "dest": "server.js" },
-    { "src": "/kinde-callback", "dest": "server.js" },
+    { "src": "/api/auth/kinde_callback", "dest": "server.js" },
     { "src": "/logout", "dest": "server.js" },
     { "src": "/api/(.*)", "dest": "server.js" },
     { "src": "/(.*)", "dest": "/$1" }
