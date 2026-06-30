@@ -1,21 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-let createClient;
-try {
-  createClient = require('@supabase/supabase-js').createClient;
-} catch (e) {
-  createClient = null;
-}
-
-// Initialize Supabase Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = (createClient && supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
-
-// Initialize Supabase Admin Client for database RLS bypass
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseAdmin = (createClient && supabaseUrl && supabaseServiceKey) ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // Premium 3-Day Trial Database Management
 const TRIALS_FILE = path.join(__dirname, '..', '..', 'data', 'premium_trials.json');
@@ -109,43 +94,20 @@ async function verifyTokenPayload(authHeader) {
       if (payload.expiry && Date.now() > payload.expiry) {
         return null;
       }
-      return { isCoupon: false, email: payload.email, plan_type: payload.plan_type || 'Basic', name: payload.name, id: payload.id };
+      const db = require('../db');
+      const profile = await db.userProfiles.findUnique({ where: { id: payload.id } });
+      let effectivePlan = (profile && profile.plan_type) || payload.plan_type || 'Basic';
+      const trialInfo = getOrInitializeTrial(payload.id, payload.email, effectivePlan);
+      return {
+        isCoupon: false,
+        email: payload.email,
+        plan_type: (trialInfo && trialInfo.plan_type) || effectivePlan,
+        name: payload.name,
+        id: payload.id
+      };
     }
   } catch (err) {
-    // Fail silently and proceed to Supabase token verification
-  }
-
-  // 2. Try to verify as a Supabase JWT Token
-  if (supabase) {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      if (!error && user) {
-        // Retrieve profile database row to get plan_type
-        const { data: profile, error: profileError } = await supabaseAdmin
-          .from('user_profiles')
-          .select('plan_type')
-          .eq('id', user.id)
-          .single();
-        if (profileError) {
-          console.error('[VerifyPayment verifyToken DB Error Object]:', {
-            message: profileError.message,
-            details: profileError.details,
-            hint: profileError.hint,
-            code: profileError.code
-          });
-        }
-        let effectivePlan = (profile && profile.plan_type) || 'Basic';
-        const trialInfo = getOrInitializeTrial(user.id, user.email, effectivePlan);
-        return {
-          isCoupon: false,
-          id: user.id,
-          email: user.email,
-          plan_type: (trialInfo && trialInfo.plan_type) || effectivePlan
-        };
-      }
-    } catch (err) {
-      // Fail silently and return null
-    }
+    // Fail silently
   }
   
   return null;
@@ -210,22 +172,13 @@ module.exports = async (req, res) => {
     });
     fs.writeFileSync(paymentsPath, JSON.stringify(payments, null, 2), 'utf8');
 
-    // Update user profile in Supabase to Premium if applicable
-    if (!verifiedUser.isCoupon && supabaseAdmin && verifiedUser.id) {
-      const { error } = await supabaseAdmin
-        .from('user_profiles')
-        .update({ plan_type: 'Premium', updated_at: new Date().toISOString() })
-        .eq('id', verifiedUser.id);
-        
-      if (error) {
-        console.error('[VerifyPayment DB Error Object]:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
-        throw new Error('Database update failed');
-      }
+    // Update user profile in decoupled db to Premium if applicable
+    if (!verifiedUser.isCoupon && verifiedUser.id) {
+      const db = require('../db');
+      await db.userProfiles.update({
+        where: { id: verifiedUser.id },
+        data: { plan_type: 'Premium' }
+      });
 
       // Also update the local premium trial record to 'Premium'
       try {

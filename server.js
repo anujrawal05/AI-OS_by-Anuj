@@ -32,7 +32,7 @@ app.use(session({
 const siteUrl = process.env.KINDE_SITE_URL || `http://localhost:${PORT}`;
 const kindeConfig = {
   clientId: process.env.KINDE_CLIENT_ID || 'mock_client_id',
-  issuerBaseUrl: process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || 'https://mock.kinde.com',
+  issuerBaseUrl: process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL || 'https://mock.kinde.com',
   siteUrl: siteUrl,
   secret: process.env.KINDE_CLIENT_SECRET || 'mock_secret',
   redirectUrl: process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`,
@@ -49,22 +49,6 @@ app.use(express.static(__dirname));
 // Register Config Route
 const configHandler = require('./api/config');
 app.get('/api/config', configHandler);
-
-// Initialize Supabase Client (Optional with Kinde integration)
-let createClient;
-try {
-  createClient = require('@supabase/supabase-js').createClient;
-} catch (e) {
-  createClient = null;
-}
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = (createClient && supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
-
-// Initialize Supabase Admin Client for database RLS bypass (Optional with Kinde integration)
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseAdmin = (createClient && supabaseUrl && supabaseServiceKey) ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // Daily Prompt Limit Cache for Basic users
 const dailyPromptLimitCache = {};
@@ -223,110 +207,33 @@ function getOrInitializeTrial(userId, email, currentPlan) {
   return userTrial;
 }
 
-// Custom Email/Password Login Endpoint
-app.post('/api/auth/email-login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required.' });
-    }
-    if (!supabase) {
-      return res.status(500).json({ error: 'Database service is not configured on the server.' });
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      console.error('[Login Auth Error Object]:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      });
-      return res.status(400).json({ error: error.message });
-    }
-
-    if (data && data.user) {
-      const { data: profile } = await supabaseAdmin
-        .from('user_profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-
-      // Check / Activate Premium Trial status
-      let effectivePlan = (profile && profile.plan_type) || 'Basic';
-      const trialInfo = getOrInitializeTrial(data.user.id, data.user.email, effectivePlan);
-      
-      let mergedProfile = profile || { id: data.user.id, email: data.user.email };
-      if (trialInfo) {
-        mergedProfile.plan_type = trialInfo.plan_type;
-        mergedProfile.trial_started_at = trialInfo.trial_started_at;
-        mergedProfile.trial_expires_at = trialInfo.trial_expires_at;
-        mergedProfile.trial_used = trialInfo.trial_used;
-        
-        // Sync to Supabase if it changed/expired
-        if (profile && profile.plan_type !== trialInfo.plan_type) {
-          await supabaseAdmin
-            .from('user_profiles')
-            .update({ plan_type: trialInfo.plan_type })
-            .eq('id', data.user.id);
-        }
-      }
-
-      return res.status(200).json({
-        user: data.user,
-        session: data.session,
-        profile: mergedProfile
-      });
-    }
-
-    return res.status(400).json({ error: 'Authentication failed.' });
-  } catch (err) {
-    console.error('[Login Endpoint Error]:', err.message);
-    return res.status(500).json({ error: err.message || 'Internal Server Error.' });
-  }
-});
-
 // Custom Profile Fetch Endpoint
 app.get('/api/auth/profile', async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authentication required.' });
-    }
-    const token = authHeader.split(' ')[1];
     let user = null;
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.auth.getUser(token);
-        if (!error && data) user = data.user;
-      } catch (err) {}
+    
+    // 1. Try to get user from native Kinde session
+    if (req.user) {
+      user = { id: req.user.id || req.user.email, email: req.user.email };
     }
-
+    
+    // 2. If not present in session, check authorization token header
     if (!user) {
-      const verified = await verifyTokenPayload(authHeader);
-      if (verified) {
-        user = { id: verified.id || 'trial-test-user-id', email: verified.email };
+      const authHeader = req.headers.authorization;
+      if (authHeader) {
+        const verified = await verifyTokenPayload(authHeader);
+        if (verified) {
+          user = { id: verified.id || verified.email, email: verified.email };
+        }
       }
     }
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid session.' });
+      return res.status(401).json({ error: 'Authentication required.' });
     }
 
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('user_profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError) {
-      console.error('[Profile Fetch Error Object]:', {
-        message: profileError.message,
-        details: profileError.details,
-        hint: profileError.hint,
-        code: profileError.code
-      });
-    }
+    const db = require('./api/db');
+    let profile = await db.userProfiles.findUnique({ where: { id: user.id } });
 
     // Check / Activate Premium Trial status
     let effectivePlan = (profile && profile.plan_type) || 'Basic';
@@ -339,12 +246,12 @@ app.get('/api/auth/profile', async (req, res) => {
       mergedProfile.trial_expires_at = trialInfo.trial_expires_at;
       mergedProfile.trial_used = trialInfo.trial_used;
       
-      // Sync to Supabase if it changed/expired
+      // Update local db profile if trial has changed/expired
       if (profile && profile.plan_type !== trialInfo.plan_type) {
-        await supabaseAdmin
-          .from('user_profiles')
-          .update({ plan_type: trialInfo.plan_type })
-          .eq('id', user.id);
+        await db.userProfiles.update({
+          where: { id: user.id },
+          data: { plan_type: trialInfo.plan_type }
+        });
       }
     }
 
@@ -358,23 +265,21 @@ app.get('/api/auth/profile', async (req, res) => {
 // Custom Profile Update Endpoint
 app.post('/api/auth/update-profile', async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authentication required.' });
-    }
-    const token = authHeader.split(' ')[1];
     let user = null;
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.auth.getUser(token);
-        if (!error && data) user = data.user;
-      } catch (err) {}
+    
+    // 1. Try to get user from native Kinde session
+    if (req.user) {
+      user = { id: req.user.id || req.user.email, email: req.user.email };
     }
-
+    
+    // 2. If not present in session, check authorization token header
     if (!user) {
-      const verified = await verifyTokenPayload(authHeader);
-      if (verified) {
-        user = { id: verified.id || 'trial-test-user-id', email: verified.email };
+      const authHeader = req.headers.authorization;
+      if (authHeader) {
+        const verified = await verifyTokenPayload(authHeader);
+        if (verified) {
+          user = { id: verified.id || verified.email, email: verified.email };
+        }
       }
     }
 
@@ -418,33 +323,16 @@ app.post('/api/auth/update-profile', async (req, res) => {
       profileData.trial_used = trialInfo.trial_used;
     }
 
-    let { error: profileError } = await supabaseAdmin
-      .from('user_profiles')
-      .upsert(profileData);
-
-    // Graceful fallback if trial_started_at column does not exist in database
-    if (profileError && (profileError.message.includes('trial_started_at') || profileError.message.includes('column'))) {
-      console.warn('[Update Profile Fallback] trial_started_at column missing/failed, retrying upsert without it...');
-      delete profileData.trial_started_at;
-      const retry = await supabaseAdmin
-        .from('user_profiles')
-        .upsert(profileData);
-      profileError = retry.error;
-    }
-
-    if (profileError) {
-      console.error('[Update Profile Error Object]:', {
-        message: profileError.message,
-        details: profileError.details,
-        hint: profileError.hint,
-        code: profileError.code
-      });
-      return res.status(400).json({ error: profileError.message });
-    }
+    const db = require('./api/db');
+    const profile = await db.userProfiles.upsert({
+      where: { id: user.id },
+      create: profileData,
+      update: profileData
+    });
 
     return res.status(200).json({
       success: true,
-      profile: profileData
+      profile: profile
     });
   } catch (err) {
     console.error('[Update Profile Endpoint Error]:', err.message);
@@ -473,43 +361,20 @@ async function verifyTokenPayload(authHeader) {
       if (payload.expiry && Date.now() > payload.expiry) {
         return null;
       }
-      return { isCoupon: false, email: payload.email, plan_type: payload.plan_type || 'Basic', name: payload.name, id: payload.id };
+      const db = require('./api/db');
+      const profile = await db.userProfiles.findUnique({ where: { id: payload.id } });
+      let effectivePlan = (profile && profile.plan_type) || payload.plan_type || 'Basic';
+      const trialInfo = getOrInitializeTrial(payload.id, payload.email, effectivePlan);
+      return {
+        isCoupon: false,
+        email: payload.email,
+        plan_type: (trialInfo && trialInfo.plan_type) || effectivePlan,
+        name: payload.name,
+        id: payload.id
+      };
     }
   } catch (err) {
-    // Fail silently and proceed to Supabase token verification
-  }
-
-  // 2. Try to verify as a Supabase JWT Token
-  if (supabase) {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      if (!error && user) {
-        // Retrieve profile database row to get plan_type
-        const { data: profile, error: profileError } = await supabaseAdmin
-          .from('user_profiles')
-          .select('plan_type')
-          .eq('id', user.id)
-          .single();
-        if (profileError) {
-          console.error('[VerifyToken Profile Error Object]:', {
-            message: profileError.message,
-            details: profileError.details,
-            hint: profileError.hint,
-            code: profileError.code
-          });
-        }
-        let effectivePlan = (profile && profile.plan_type) || 'Basic';
-        const trialInfo = getOrInitializeTrial(user.id, user.email, effectivePlan);
-        return {
-          isCoupon: false,
-          id: user.id,
-          email: user.email,
-          plan_type: (trialInfo && trialInfo.plan_type) || effectivePlan
-        };
-      }
-    } catch (err) {
-      console.error('[VerifyToken] Supabase validation failed:', err.message);
-    }
+    // Fail silently
   }
   
   return null;
@@ -1201,7 +1066,6 @@ app.get('*', (req, res) => {
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`AI-OS execution platform running on http://localhost:${PORT}`);
-    console.log(`Supabase URL: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`);
   });
 }
 

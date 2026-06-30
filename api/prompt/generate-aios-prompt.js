@@ -1,17 +1,4 @@
 const axios = require('axios');
-let createClient;
-try {
-  createClient = require('@supabase/supabase-js').createClient;
-} catch (e) {
-  createClient = null;
-}
-const supabase = (createClient && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-  ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-  : null;
-
-// Initialize Supabase Admin Client for database RLS bypass
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseAdmin = (createClient && process.env.NEXT_PUBLIC_SUPABASE_URL && supabaseServiceKey) ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, supabaseServiceKey) : null;
 
 const dailyPromptLimitCache = {};
 
@@ -197,41 +184,19 @@ module.exports = async (req, res) => {
         if (payload.expiry && Date.now() > payload.expiry) {
           return null;
         }
-        return { isCoupon: false, email: payload.email, plan_type: payload.plan_type || 'Basic', name: payload.name, id: payload.id };
+        const db = require('../db');
+        const profile = await db.userProfiles.findUnique({ where: { id: payload.id } });
+        let effectivePlan = (profile && profile.plan_type) || payload.plan_type || 'Basic';
+        return {
+          isCoupon: false,
+          email: payload.email,
+          plan_type: effectivePlan,
+          name: payload.name,
+          id: payload.id
+        };
       }
     } catch (err) {
-      // Ignore and proceed to Supabase JWT verification
-    }
-
-    // 2. Try to verify as Supabase JWT Token
-    if (supabase) {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser(token);
-        if (!error && user) {
-          // Fetch plan type from public.user_profiles
-          const { data: profile, error: profileError } = await supabaseAdmin
-            .from('user_profiles')
-            .select('plan_type')
-            .eq('id', user.id)
-            .single();
-          if (profileError) {
-            console.error('[VerifyToken DB Error Object]:', {
-              message: profileError.message,
-              details: profileError.details,
-              hint: profileError.hint,
-              code: profileError.code
-            });
-          }
-          return {
-            isCoupon: false,
-            id: user.id,
-            email: user.email,
-            plan_type: (profile && profile.plan_type) || 'Basic'
-          };
-        }
-      } catch (err) {
-        console.error('[Function VerifyToken] Supabase validation failed:', err.message);
-      }
+      // Fail silently
     }
 
     return null;

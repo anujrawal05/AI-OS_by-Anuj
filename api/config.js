@@ -14,8 +14,6 @@ module.exports = async (req, res) => {
   }
 
   return res.status(200).json({
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || null,
-    supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || null,
     razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || null
   });
 };
