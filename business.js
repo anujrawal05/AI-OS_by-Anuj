@@ -119,10 +119,13 @@ function updateUserProfileHeader() {
     }
 
     container.innerHTML = `
-      <div style="position: relative; display: flex; align-items: center;">
+      <div style="position: relative; display: flex; align-items: center; gap: 12px;">
         <button id="btn-header-profile" class="profile-btn">
           <img src="${avatarToDisplay}" class="profile-avatar" alt="Avatar">
           <span>${nameToDisplay.split(' ')[0]}</span>
+        </button>
+        <button id="btn-header-logout" class="profile-btn" style="border-radius: 20px; background: rgba(255, 90, 90, 0.12); border: 1px solid rgba(255, 90, 90, 0.3); color: #ff5a5a; font-weight: 700; padding: 8px 16px; cursor: pointer; transition: all 0.2s; font-family: var(--font-mono); font-size: 0.8rem;" onmouseover="this.style.background='rgba(255, 90, 90, 0.2)'" onmouseout="this.style.background='rgba(255, 90, 90, 0.12)'">
+          🚪 &nbsp; Logout
         </button>
         <div id="header-profile-dropdown" class="profile-dropdown">
           <div class="profile-dropdown-name">${nameToDisplay}</div>
@@ -164,6 +167,15 @@ function updateUserProfileHeader() {
       e.stopPropagation();
       logoutUser();
     });
+    
+    // Bind direct header logout button
+    const directLogoutBtn = document.getElementById('btn-header-logout');
+    if (directLogoutBtn) {
+      directLogoutBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        logoutUser();
+      });
+    }
   } else {
     container.innerHTML = `
       <button id="btn-header-signin" class="profile-btn">
@@ -2332,7 +2344,7 @@ window.kinde = {
 async function initApp() {
   // Try to synchronize and recover session from Kinde
   try {
-    const kindeRes = await fetch('/api/auth/kinde-session');
+    const kindeRes = await fetch('/api/auth/status');
     if (kindeRes.ok) {
       const kindeData = await kindeRes.json();
       if (kindeData.authenticated) {

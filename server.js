@@ -14,6 +14,7 @@ const session = require('express-session');
 const { setupKinde, protectRoute, getUser, GrantType } = require("@kinde-oss/kinde-node-express");
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
@@ -33,7 +34,7 @@ const siteUrl = process.env.KINDE_SITE_URL || `http://localhost:${PORT}`;
 const kindeConfig = {
   clientId: process.env.KINDE_CLIENT_ID,
   issuerBaseUrl: process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL,
-  siteUrl: process.env.KINDE_SITE_URL || siteUrl,
+  siteUrl: process.env.KINDE_SITE_URL || `${siteUrl}/aios_buisness.html`,
   secret: process.env.KINDE_CLIENT_SECRET,
   redirectUrl: process.env.KINDE_REDIRECT_URL || `${siteUrl}/kinde-callback`,
   postLogoutRedirectUrl: process.env.KINDE_POST_LOGOUT_REDIRECT_URL || process.env.KINDE_SITE_URL || siteUrl,
@@ -41,7 +42,7 @@ const kindeConfig = {
   unAuthorisedUrl: process.env.KINDE_UNAUTHORISED_URL || `${siteUrl}/unauthorised`
 };
 
-setupKinde(kindeConfig, app);
+const kindeClient = setupKinde(kindeConfig, app);
 
 app.get('/logout', (req, res) => {
   const domain = process.env.KINDE_DOMAIN || process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER_BASE_URL;
@@ -69,12 +70,14 @@ const verifyPaymentHandler = require('./api/auth/verify-payment');
 app.post('/api/auth/coupon-login', couponLoginHandler);
 app.post('/api/auth/verify-payment', verifyPaymentHandler);
 
-app.get('/api/auth/kinde-session', getUser, async (req, res) => {
+const kindeSessionHandler = async (req, res) => {
   try {
-    if (req.user) {
-      const userEmail = req.user.email;
-      const userName = req.user.given_name ? `${req.user.given_name} ${req.user.family_name || ''}`.trim() : 'Premium User';
-      const key = req.user.id || userEmail;
+    const authenticated = await kindeClient.isAuthenticated(req);
+    if (authenticated) {
+      const userProfile = await kindeClient.getUserProfile(req);
+      const userEmail = userProfile.email;
+      const userName = userProfile.given_name ? `${userProfile.given_name} ${userProfile.family_name || ''}`.trim() : 'Premium User';
+      const key = userProfile.id || userEmail;
       
       const trialInfo = getOrInitializeTrial(key, userEmail, 'Basic');
       
@@ -82,7 +85,7 @@ app.get('/api/auth/kinde-session', getUser, async (req, res) => {
         id: key,
         email: userEmail,
         name: userName,
-        picture: req.user.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${userEmail}`,
+        picture: userProfile.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${userEmail}`,
         plan_type: trialInfo.plan_type,
         trial_started_at: trialInfo.trial_started_at,
         trial_expires_at: trialInfo.trial_expires_at,
@@ -112,9 +115,12 @@ app.get('/api/auth/kinde-session', getUser, async (req, res) => {
     }
   } catch (err) {
     console.error('[Kinde Session Endpoint Error]:', err.message);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(200).json({ authenticated: false });
   }
-});
+};
+
+app.get('/api/auth/kinde-session', kindeSessionHandler);
+app.get('/api/auth/status', kindeSessionHandler);
 
 // Dynamic Video Auto-Discovery API
 app.get('/api/videos', (req, res) => {
