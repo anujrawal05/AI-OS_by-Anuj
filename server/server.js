@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 
 const prisma = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const { authMiddleware, requireAuth, requirePremium } = require('./middleware/authMiddleware');
+const { authMiddleware, optionalAuth, authorize } = require('./middleware/authMiddleware');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -46,7 +46,7 @@ app.use('/api/auth', authRoutes);
 const dailyPromptLimitCache = {};
 
 // AI JSON Prompt Generator
-app.post('/api/prompt/generate-aios-prompt', authMiddleware, requireAuth, async (req, res) => {
+app.post('/api/prompt/generate-aios-prompt', authMiddleware, authorize('premium'), async (req, res) => {
   try {
     const verifiedUser = req.user;
     let numericId = verifiedUser ? parseInt(verifiedUser.id, 10) : null;
@@ -249,7 +249,7 @@ app.post('/api/prompt/generate-aios-prompt', authMiddleware, requireAuth, async 
 });
 
 // A.R. Business Strategist Chat API
-app.post('/api/strategist/chat', authMiddleware, requirePremium, async (req, res) => {
+app.post('/api/strategist/chat', authMiddleware, authorize('premium'), async (req, res) => {
   try {
     const { mode, userInput, businessName, targetAudience, bottleneck, context, history } = req.body;
     
@@ -613,7 +613,7 @@ app.get('/api/business-news', async (req, res) => {
 });
 
 // Dynamic Video Auto-Discovery API
-app.get('/api/videos', (req, res) => {
+app.get('/api/videos', authMiddleware, authorize('premium'), (req, res) => {
   try {
     const buildDir = path.join(__dirname, '..', 'build tutorial');
     const exploreDir = path.join(__dirname, '..', 'explore AI');

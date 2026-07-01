@@ -2620,15 +2620,25 @@ async function initApp() {
           // Redirect immediately to the active 7-tab dashboard console
           switchBusinessWorkspace('dashboard');
         }
+      } else {
+        throw new Error('Invalid user payload');
       }
     } else {
-      if (state.user && !state.user.is_coupon) {
+      const couponSession = sessionStorage.getItem('aios_coupon_session');
+      if (!couponSession) {
         state.user = null;
         localStorage.removeItem('aios_user_profile');
+        window.location.href = './index.html?action=login';
       }
     }
   } catch (err) {
     console.warn('Session synchronization failed:', err.message);
+    const couponSession = sessionStorage.getItem('aios_coupon_session');
+    if (!couponSession) {
+      state.user = null;
+      localStorage.removeItem('aios_user_profile');
+      window.location.href = './index.html?action=login';
+    }
   }
 
   const couponSession = sessionStorage.getItem('aios_coupon_session');

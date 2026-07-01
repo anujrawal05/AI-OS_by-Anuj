@@ -7086,6 +7086,7 @@ async function initAuthSystem() {
         }
       }
     } else {
+      // Clear cache on authentication failure
       if (state.user && !state.user.is_coupon) {
         state.user = null;
         localStorage.removeItem('aios_user_profile');
@@ -7093,6 +7094,10 @@ async function initAuthSystem() {
     }
   } catch (err) {
     console.warn('Session synchronization failed:', err.message);
+    if (state.user && !state.user.is_coupon) {
+      state.user = null;
+      localStorage.removeItem('aios_user_profile');
+    }
   }
 
   // 1. Check coupon session storage first (tab isolation)
