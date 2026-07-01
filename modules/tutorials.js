@@ -8,19 +8,25 @@ import { showPricingModal } from './ui.js';
 import { playVideoWithPlayer } from './video.js';
 
 export async function loadDiscoveredVideos() {
-  try {
-    const res = await fetch('/api/videos');
-    if (res.ok) {
-      const data = await res.json();
-      if (data.success) {
-        state.discoveredVideos.build = data.buildVideos || [];
-        state.discoveredVideos.explore = data.exploreVideos || [];
-        console.log("Successfully discovered videos:", state.discoveredVideos);
-      }
-    }
-  } catch (e) {
-    console.warn("Auto-discovery API failed. Using static structure fallback.", e);
-  }
+  state.discoveredVideos.build = [
+    "AAA_eng.mp4", "AAA_hindi.mp4",
+    "AI_Nursery_Rhyme_Engine_eng.mp4", "AI_Nursery_Rhyme_Engine_hindi.mp4",
+    "AI_Video_Ad_Pipeline_eng.mp4", "AI_Video_Ad_Pipeline_hindi.mp4",
+    "Content_Engine_eng.mp4", "Content_Engine_hindi.mp4",
+    "Drop-Servicing_Sprint_eng.mp4", "Drop-Servicing_Sprint_hindi.mp4",
+    "Inbound_Voice_AI_Studio_eng.mp4", "Inbound_Voice_AI_Studio_hindi.mp4",
+    "Managed_Creator_Network_eng.mp4", "Managed_Creator_Network_hindi.mp4",
+    "Motion_Script_Compiler_eng.mp4", "Motion_Script_Compiler_hindi.mp4",
+    "SaaS_eng.mp4", "SaaS_hindi.mp4"
+  ];
+  state.discoveredVideos.explore = [
+    "part1_eng.mp4", "part1_hindi.mp4",
+    "part2_eng.mp4", "part2_hindi.mp4",
+    "part3_eng.mp4", "part3_hindi.mp4",
+    "part4_eng.mp4", "part4_hindi.mp4",
+    "part5_eng.mp4", "part5_hindi.mp4"
+  ];
+  console.log("[Static Video Discovery] Seeded static videos list:", state.discoveredVideos);
 }
 
 export function renderBusinessCardsGrid() {

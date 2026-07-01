@@ -1,0 +1,18 @@
+{
+  "name": "ai-os-backend",
+  "version": "2.0.0",
+  "description": "AI-OS v2 Backend Foundation - Clean Rebuild",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
