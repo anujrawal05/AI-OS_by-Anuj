@@ -1,23 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "server.js", "use": "@vercel/node" },
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "*.js", "use": "@vercel/static" },
-    { "src": "*.css", "use": "@vercel/static" },
-    { "src": "locales/*.json", "use": "@vercel/static" },
-    { "src": "build tutorial/**/*.mp4", "use": "@vercel/static" },
-    { "src": "explore AI/**/*.mp4", "use": "@vercel/static" },
-    { "src": "*.png", "use": "@vercel/static" },
-    { "src": "*.jpg", "use": "@vercel/static" }
-  ],
   "routes": [
-    { "src": "/login", "dest": "server.js" },
-    { "src": "/register", "dest": "server.js" },
-    { "src": "/callback", "dest": "server.js" },
-    { "src": "/api/auth/kinde_callback", "dest": "server.js" },
-    { "src": "/logout", "dest": "server.js" },
-    { "src": "/api/(.*)", "dest": "server.js" },
-    { "src": "/(.*)", "dest": "/$1" }
+    { "src": "/login", "dest": "/api/server.js" },
+    { "src": "/register", "dest": "/api/server.js" },
+    { "src": "/callback", "dest": "/api/server.js" },
+    { "src": "/api/auth/kinde_callback", "dest": "/api/server.js" },
+    { "src": "/logout", "dest": "/api/server.js" },
+    { "src": "/api/(.*)", "dest": "/api/server.js" }
   ]
 }
