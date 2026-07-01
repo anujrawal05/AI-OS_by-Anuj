@@ -53,7 +53,18 @@ async function signup(req, res) {
       }
     });
 
-    // Generate a secure 6-digit OTP verification token, ensuring uniqueness
+    // Audit log signup
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        actionType: 'USER_REGISTERED',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        details: `Registered account: ${normalizedEmail}`
+      }
+    });
+
+    // Generate a secure 6-digit OTP verification token
     let verifyToken;
     let isUnique = false;
     while (!isUnique) {
@@ -110,13 +121,77 @@ async function login(req, res) {
       where: { email: normalizedEmail },
       include: { subscription: true }
     });
+
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password.' });
     }
 
+    // Check account lockout status
+    const now = new Date();
+    if (user.lockoutUntil && user.lockoutUntil > now) {
+      const remainingMinutes = Math.ceil((user.lockoutUntil.getTime() - now.getTime()) / 60000);
+      return res.status(423).json({ 
+        error: 'Locked Out', 
+        message: `Account is temporarily locked. Please try again in ${remainingMinutes} minutes.` 
+      });
+    }
+
+    // Check password matching
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatch) {
-      return res.status(400).json({ error: 'Invalid email or password.' });
+      const newAttempts = user.failedLoginAttempts + 1;
+      
+      if (newAttempts >= 5) {
+        // Lockout user
+        const lockoutDuration = new Date(Date.now() + 15 * 60 * 1000); // 15 mins lock
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            failedLoginAttempts: 0,
+            lockoutUntil: lockoutDuration
+          }
+        });
+
+        await prisma.auditLog.create({
+          data: {
+            userId: user.id,
+            actionType: 'ACCOUNT_LOCKOUT',
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent'],
+            details: 'Account locked for 15 minutes due to 5 failed login attempts.'
+          }
+        });
+
+        return res.status(423).json({ 
+          error: 'Locked Out', 
+          message: 'Account locked due to too many failed attempts. Try again in 15 minutes.' 
+        });
+      } else {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { failedLoginAttempts: newAttempts }
+        });
+
+        await prisma.auditLog.create({
+          data: {
+            userId: user.id,
+            actionType: 'AUTH_FAILED',
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent'],
+            details: `Failed attempt #${newAttempts}.`
+          }
+        });
+
+        return res.status(400).json({ 
+          error: 'Invalid Credentials', 
+          message: `Invalid email or password. Remaining attempts: ${5 - newAttempts}` 
+        });
+      }
+    }
+
+    // Check suspension status
+    if (user.suspended) {
+      return res.status(403).json({ error: 'Suspended', message: 'Your account has been suspended. Please contact support.' });
     }
 
     // Only verified users can log in
@@ -124,13 +199,59 @@ async function login(req, res) {
       return res.status(400).json({ error: 'Please verify your email address before logging in.', unverified: true });
     }
 
-    // Sign session JWT
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+    // Successful login - reset failed attempt counts
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginAttempts: 0,
+        lockoutUntil: null
+      }
+    });
+
+    // Create database session token
+    const sessionToken = crypto.randomBytes(32).toString('hex');
+    await prisma.userSession.create({
+      data: {
+        userId: user.id,
+        token: sessionToken,
+        userAgent: req.headers['user-agent'] || 'Unknown Device',
+        ipAddress: req.ip || 'Unknown IP',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days session
+      }
+    });
+
+    // Sign session JWT containing sessionToken pointer
+    const token = jwt.sign(
+      { id: user.id, sessionToken }, 
+      JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+
     res.cookie('aios_token', token, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    // Inject stateless CSRF token cookie
+    const csrfToken = crypto.randomBytes(24).toString('hex');
+    res.cookie('aios_csrf', csrfToken, {
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    // Write audit log
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        actionType: 'AUTH_SUCCESS',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        details: 'User authenticated successfully.'
+      }
     });
 
     return res.status(200).json({
@@ -158,7 +279,32 @@ async function login(req, res) {
 }
 
 async function logout(req, res) {
+  try {
+    const verifiedUser = req.user;
+    if (verifiedUser && verifiedUser.sessionToken) {
+      const numericId = parseInt(verifiedUser.id, 10);
+      
+      // Delete matching session record from DB
+      await prisma.userSession.delete({
+        where: { token: verifiedUser.sessionToken }
+      }).catch(() => {});
+
+      await prisma.auditLog.create({
+        data: {
+          userId: numericId,
+          actionType: 'LOGOUT',
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          details: 'User logged out device session.'
+        }
+      });
+    }
+  } catch (err) {
+    console.error('[Logout Session Revocation Error]:', err.message);
+  }
+
   res.clearCookie('aios_token');
+  res.clearCookie('aios_csrf');
   return res.status(200).json({ success: true, message: 'Logged out successfully.' });
 }
 
@@ -182,7 +328,7 @@ async function forgotPassword(req, res) {
     const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    // Delete existing tokens for user to avoid record redundancy
+    // Delete existing tokens for user to avoid redundancy
     await prisma.passwordResetToken.deleteMany({
       where: { userId: user.id }
     });
@@ -243,6 +389,17 @@ async function resetPassword(req, res) {
       where: { id: resetTokenRecord.id }
     });
 
+    // Record audit event
+    await prisma.auditLog.create({
+      data: {
+        userId: updatedUser.id,
+        actionType: 'PASSWORD_RESET_SUCCESS',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        details: 'Successfully reset password via token.'
+      }
+    });
+
     // Send passwordChanged email
     await emailService.sendEmail('passwordChanged', updatedUser.email, null, {
       NAME: updatedUser.fullName || updatedUser.email.split('@')[0]
@@ -289,6 +446,17 @@ async function verifyEmail(req, res) {
       where: { id: verifyTokenRecord.id }
     });
 
+    // Record audit event
+    await prisma.auditLog.create({
+      data: {
+        userId: updatedUser.id,
+        actionType: 'EMAIL_VERIFIED',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        details: 'Successfully verified email address.'
+      }
+    });
+
     // Send welcome email
     await emailService.sendEmail('welcome', updatedUser.email, null, {
       NAME: updatedUser.fullName || updatedUser.email.split('@')[0]
@@ -318,11 +486,97 @@ async function verifyEmail(req, res) {
   }
 }
 
+async function getSessions(req, res) {
+  try {
+    const numericId = parseInt(req.user.id, 10);
+    const sessions = await prisma.userSession.findMany({
+      where: { userId: numericId },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const mapped = sessions.map(s => ({
+      id: s.id,
+      userAgent: s.userAgent,
+      ipAddress: s.ipAddress,
+      createdAt: s.createdAt,
+      isCurrent: s.token === req.user.sessionToken
+    }));
+
+    return res.status(200).json({ success: true, sessions: mapped });
+  } catch (err) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+async function logoutSession(req, res) {
+  try {
+    const { sessionId } = req.body;
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID is required.' });
+    }
+    const numericId = parseInt(req.user.id, 10);
+
+    const session = await prisma.userSession.findFirst({
+      where: { id: sessionId, userId: numericId }
+    });
+
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found.' });
+    }
+
+    await prisma.userSession.delete({
+      where: { id: sessionId }
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: numericId,
+        actionType: 'SESSION_REVOKED',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        details: `Revoked session ID: ${sessionId}`
+      }
+    });
+
+    return res.status(200).json({ success: true, message: 'Device session revoked successfully.' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+async function logoutAllSessions(req, res) {
+  try {
+    const numericId = parseInt(req.user.id, 10);
+    await prisma.userSession.deleteMany({
+      where: { userId: numericId }
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: numericId,
+        actionType: 'ALL_SESSIONS_REVOKED',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        details: 'Revoked all active sessions for this account.'
+      }
+    });
+
+    res.clearCookie('aios_token');
+    res.clearCookie('aios_csrf');
+    return res.status(200).json({ success: true, message: 'All devices logged out successfully.' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
   signup,
   login,
   logout,
   forgotPassword,
   resetPassword,
-  verifyEmail
+  verifyEmail,
+  getSessions,
+  logoutSession,
+  logoutAllSessions
 };

@@ -12,14 +12,21 @@ const authRoutes = require('./routes/authRoutes');
 const { authMiddleware, optionalAuth, authorize } = require('./middleware/authMiddleware');
 const quotaService = require('./services/quotaService');
 const jobService = require('./services/jobService');
+const rateLimit = require('./middleware/rateLimiter');
+const { csrfProtection, setCsrfCookie } = require('./middleware/csrfMiddleware');
 
 const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 8080;
 
+const authLimiter = rateLimit({ windowMs: 60 * 1000, max: 15, message: 'Too many authentication or checkout attempts. Please try again in a minute.' });
+const aiLimiter = rateLimit({ windowMs: 60 * 1000, max: 15, message: 'Too many AI generation attempts. Please try again in a minute.' });
+
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use(setCsrfCookie);
+app.use('/api', csrfProtection);
 
 const isProd = process.env.NODE_ENV === 'production';
 app.use(session({
@@ -41,14 +48,14 @@ app.use(express.static(path.join(__dirname, '..')));
 const configHandler = require('../api/config');
 app.get('/api/config', configHandler);
 
-// Mount Auth routes under /api/auth
-app.use('/api/auth', authRoutes);
+// Mount Auth routes under /api/auth with rate limiting
+app.use('/api/auth', authLimiter, authRoutes);
 
 // Daily Prompt Limit Cache
 const dailyPromptLimitCache = {};
 
-// AI JSON Prompt Generator
-app.post('/api/prompt/generate-aios-prompt', authMiddleware, async (req, res) => {
+// AI JSON Prompt Generator with rate limiting
+app.post('/api/prompt/generate-aios-prompt', authMiddleware, aiLimiter, async (req, res) => {
   try {
     const verifiedUser = req.user;
     let numericId = verifiedUser ? parseInt(verifiedUser.id, 10) : null;
@@ -234,8 +241,8 @@ app.post('/api/prompt/generate-aios-prompt', authMiddleware, async (req, res) =>
   }
 });
 
-// A.R. Business Strategist Chat API
-app.post('/api/strategist/chat', authMiddleware, authorize('premium'), async (req, res) => {
+// A.R. Business Strategist Chat API with rate limiting
+app.post('/api/strategist/chat', authMiddleware, authorize('premium'), aiLimiter, async (req, res) => {
   try {
     const { mode, userInput, businessName, targetAudience, bottleneck, context, history } = req.body;
     const numericId = parseInt(req.user.id, 10);
@@ -673,6 +680,36 @@ function getFallbackStrategy(text) {
     plan
   };
 }
+
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy', timestamp: new Date() });
+});
+
+// Readiness Probe Endpoint
+app.get('/ready', async (req, res) => {
+  let dbStatus = 'up';
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (err) {
+    dbStatus = 'down';
+  }
+
+  const status = {
+    server: 'up',
+    database: dbStatus,
+    razorpay: process.env.RAZORPAY_SECRET_KEY ? 'configured' : 'missing',
+    brevo: process.env.BREVO_API_KEY ? 'configured' : 'missing',
+    openRouter: process.env.OPENROUTER_API_KEY ? 'configured' : 'missing',
+    timestamp: new Date()
+  };
+
+  const isReady = dbStatus === 'up';
+  return res.status(isReady ? 200 : 503).json({
+    status: isReady ? 'ready' : 'not_ready',
+    ...status
+  });
+});
 
 // Wildcard fallback for frontend routing
 app.get('*', (req, res) => {

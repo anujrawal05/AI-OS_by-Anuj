@@ -1,3 +1,24 @@
+// --- Stateless CSRF Fetch Interceptor ---
+(function() {
+  const originalFetch = window.fetch;
+  window.fetch = function (url, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    if (['POST', 'PUT', 'DELETE'].includes(method)) {
+      options.headers = options.headers || {};
+      const match = document.cookie.match(new RegExp('(^| )aios_csrf=([^;]+)'));
+      const token = match ? match[2] : '';
+      if (token) {
+        if (options.headers instanceof Headers) {
+          options.headers.set('X-CSRF-Token', token);
+        } else {
+          options.headers['X-CSRF-Token'] = token;
+        }
+      }
+    }
+    return originalFetch(url, options);
+  };
+})();
+
 /* ==========================================================================
    KRONOS // APP ARCHITECTURE & INTERACTIVE CONTROLS
    ========================================================================== */
