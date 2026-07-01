@@ -531,7 +531,7 @@ This document details the REST API specifications for all feature modules of the
 
 ---
 
-## 🎟️ 6. Support & Admin Logs (`/api/support`, `/api/admin`)
+## 🎟️ 6. Support & Admin Module (`/api/support`, `/api/admin`)
 
 ### 6.1 Create Support Ticket
 - **Method**: `POST`
@@ -544,7 +544,7 @@ This document details the REST API specifications for all feature modules of the
     "message": "My payment went through but status is still trial."
   }
   ```
-- **Response**: `200 OK`
+- **Response**: `201 Created`
   ```json
   {
     "success": true,
@@ -554,21 +554,149 @@ This document details the REST API specifications for all feature modules of the
 
 ---
 
-### 6.2 Get Admin Operational Logs
+### 6.2 Get Admin Dashboard Stats
 - **Method**: `GET`
-- **Path**: `/api/admin/logs`
+- **Path**: `/api/admin/stats`
 - **Access**: Admin
 - **Response**: `200 OK`
   ```json
   {
     "success": true,
-    "logs": [
-      {
-        "id": "log-uuid-1",
-        "action_name": "USER_BAN",
-        "details": { "user_id": "u-12" },
-        "created_at": "2026-07-01T22:00:00Z"
-      }
-    ]
+    "stats": {
+      "totalUsers": 120,
+      "activePremium": 45,
+      "activeTrial": 15,
+      "totalRevenue": 44955.00,
+      "dailyAIPrompts": 320
+    }
+  }
+  ```
+
+---
+
+### 6.3 Get Admin User Directory (Search/Filter/Paginate)
+- **Method**: `GET`
+- **Path**: `/api/admin/users`
+- **Access**: Admin
+- **Query Params**:
+  - `page`: default 1
+  - `limit`: default 10
+  - `search`: search term matching email
+  - `role`: filter by User or Admin
+  - `plan`: filter by Free, Trial, or Premium
+  - `suspended`: true or false
+  - `sortBy`: field to sort (e.g. createdAt, email)
+  - `sortOrder`: asc or desc
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "users": [...],
+    "pagination": { "page": 1, "limit": 10, "total": 120, "totalPages": 12 }
+  }
+  ```
+
+---
+
+### 6.4 Manual User Plan Override
+- **Method**: `POST`
+- **Path**: `/api/admin/users/plan`
+- **Access**: Admin
+- **Request Body**:
+  ```json
+  {
+    "userId": "u-uuid-1234",
+    "plan": "Premium",
+    "durationDays": 30
+  }
+  ```
+- **Response**: `200 OK`
+
+---
+
+### 6.5 Toggle User Suspension
+- **Method**: `POST`
+- **Path**: `/api/admin/users/suspend`
+- **Access**: Admin
+- **Request Body**:
+  ```json
+  {
+    "userId": "u-uuid-1234",
+    "suspend": true
+  }
+  ```
+- **Response**: `200 OK`
+
+---
+
+### 6.6 Dispatch Notification Broadcast
+- **Method**: `POST`
+- **Path**: `/api/admin/broadcast`
+- **Access**: Admin
+- **Request Body**:
+  ```json
+  {
+    "title": "Maintenance Window",
+    "message": "System will undergo maintenance tonight."
+  }
+  ```
+- **Response**: `201 Created`
+
+---
+
+### 6.7 Query Operational Audit Logs
+- **Method**: `GET`
+- **Path**: `/api/admin/audit`
+- **Access**: Admin
+- **Query Params**: `page`, `limit`, `action` (e.g. LOGIN, SIGNUP), `userId`
+- **Response**: `200 OK`
+
+---
+
+### 6.8 Query System Health Diagnostics
+- **Method**: `GET`
+- **Path**: `/api/admin/health`
+- **Access**: Admin
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "health": {
+      "uptime": 124.50,
+      "memory": { ... },
+      "cpu": 8,
+      "platform": "linux",
+      "database": "Connected"
+    }
+  }
+  ```
+
+---
+
+## 🚦 7. System Monitoring & Probes (Public)
+
+### 7.1 Liveness Check
+- **Method**: `GET`
+- **Path**: `/health`
+- **Access**: Public
+- **Response**: `200 OK`
+  ```json
+  {
+    "status": "ok",
+    "timestamp": "2026-07-01T12:00:00.000Z"
+  }
+  ```
+
+---
+
+### 7.2 Readiness Check
+- **Method**: `GET`
+- **Path**: `/ready`
+- **Access**: Public
+- **Response**: `200 OK` (when DB answers) or `503 Service Unavailable`
+  ```json
+  {
+    "status": "ready",
+    "database": "connected"
   }
   ```
