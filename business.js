@@ -113,7 +113,7 @@ function isUserAuthenticated() {
       if (user && user.is_coupon) return true;
     } catch (e) {}
   }
-  if (state.user && !state.user.is_coupon && state.user.token) {
+  if (state.user && !state.user.is_coupon) {
     return true;
   }
   return false;

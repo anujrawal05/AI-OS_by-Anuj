@@ -6053,8 +6053,8 @@ function isUserAuthenticated() {
     } catch (e) {}
   }
   
-  // Check Supabase user state
-  if (state.user && !state.user.is_coupon && state.user.token) {
+  // Check user state
+  if (state.user && !state.user.is_coupon) {
     return true;
   }
   return false;
