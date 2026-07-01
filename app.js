@@ -7047,44 +7047,48 @@ async function initAuthSystem() {
     window.history.replaceState({}, document.title, cleanUrl.toString());
   }
 
-  // Try to synchronize and recover session from DB auth status check
+  // Try to synchronize and recover session from DB auth status check using /api/auth/me
   try {
-    const statusRes = await fetch('/api/auth/status');
-    if (statusRes.ok) {
-      const statusData = await statusRes.json();
-      if (statusData.authenticated) {
-        // Retrieve database profile details to check completeness
-        const profRes = await fetch('/api/auth/profile');
-        if (profRes.ok) {
-          const profile = await profRes.json();
-          // If profile details are missing, show onboarding modal
-          if (!profile || !profile.full_name || !profile.date_of_birth || !profile.gender || !profile.profession) {
-            showOnboardingModal(statusData.user);
-          } else {
-            state.user = {
-              ...statusData.user,
-              name: profile.full_name,
-              gender: profile.gender,
-              profession: profile.profession,
-              date_of_birth: profile.date_of_birth,
-              plan_type: profile.plan_type || 'Basic'
-            };
-            localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-            
-            const authOverlay = document.getElementById('auth-modal-overlay');
-            if (authOverlay) authOverlay.style.display = 'none';
-            
-            // Redirect authenticated users to the dashboard console
-            window.location.href = './aios_buisness.html';
-          }
+    const meRes = await fetch('/api/auth/me');
+    if (meRes.ok) {
+      const meData = await meRes.json();
+      if (meData.success && meData.user) {
+        const user = meData.user;
+        // Check profile completeness on user object directly
+        if (!user.fullName || !user.dateOfBirth || !user.gender || !user.profession) {
+          showOnboardingModal({
+            id: user.id,
+            email: user.email,
+            name: user.fullName || '',
+            gender: user.gender || '',
+            profession: user.profession || '',
+            date_of_birth: user.dateOfBirth || '',
+            plan_type: user.plan_type || 'Basic'
+          });
         } else {
-          showOnboardingModal(statusData.user);
+          state.user = {
+            id: user.id,
+            email: user.email,
+            name: user.fullName,
+            gender: user.gender,
+            profession: user.profession,
+            date_of_birth: user.dateOfBirth,
+            plan_type: user.plan_type || 'Basic',
+            is_coupon: false
+          };
+          localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+          
+          const authOverlay = document.getElementById('auth-modal-overlay');
+          if (authOverlay) authOverlay.style.display = 'none';
+          
+          // Redirect authenticated users to the dashboard console
+          window.location.href = './aios_buisness.html';
         }
-      } else {
-        if (state.user && !state.user.is_coupon) {
-          state.user = null;
-          localStorage.removeItem('aios_user_profile');
-        }
+      }
+    } else {
+      if (state.user && !state.user.is_coupon) {
+        state.user = null;
+        localStorage.removeItem('aios_user_profile');
       }
     }
   } catch (err) {
