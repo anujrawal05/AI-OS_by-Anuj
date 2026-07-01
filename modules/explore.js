@@ -3,8 +3,165 @@
 
 import { state } from './core.js';
 import { showToast, escapeHTML, playAudioTelemetry } from './utils.js';
-import { getActiveLanguage, setupCardInteractions } from './ui.js';
+import { getActiveLanguage, setupCardInteractions, showPricingModal } from './ui.js';
+import { isUserAuthenticated } from './auth.js';
 import { checkPromptLimit, incrementPromptLimit, applyRoadmapLock, removeRoadmapLock } from './premium.js';
+
+// --- DOM References ---
+const roadSvg = document.getElementById('road-svg');
+const roadBgPath = document.getElementById('road-bg-path');
+const roadFillPath = document.getElementById('road-fill-path');
+const roadDividerPath = document.getElementById('road-divider-path');
+const roadProgressPath = document.getElementById('road-progress-path');
+const roadTraveler = document.getElementById('road-traveler');
+const timelineContainer = document.querySelector('.timeline-container');
+const themeToggleBtn = document.getElementById('theme-toggle');
+const detailDrawer = document.getElementById('detail-drawer');
+const drawerCloseBtn = document.getElementById('drawer-close-btn');
+const drawerCloseOverlay = document.getElementById('drawer-close-overlay');
+const filterBtns = document.querySelectorAll('.filter-nav .filter-btn');
+const timelineRows = document.querySelectorAll('.timeline-row');
+const inspectBtns = document.querySelectorAll('.inspect-btn');
+const toastEl = document.getElementById('toast');
+
+const libraryGrid = document.getElementById('library-grid');
+const librarySearch = document.getElementById('library-search');
+const libraryFilterChipsContainer = document.getElementById('library-filter-chips');
+const categoryExplorerList = document.getElementById('category-explorer-list');
+const categoryActiveName = document.getElementById('category-active-name');
+const categoryActiveCount = document.getElementById('category-active-count');
+const categoryToolsGrid = document.getElementById('category-tools-grid');
+
+const viewGridBtn = document.getElementById('view-grid-btn');
+const viewListBtn = document.getElementById('view-list-btn');
+const viewCatBtn = document.getElementById('view-cat-btn');
+const librarySort = document.getElementById('library-sort');
+const libraryFavoritesToggle = document.getElementById('library-favorites-toggle');
+const compareStatusWrap = document.getElementById('compare-status-wrap');
+const compareCount = document.getElementById('compare-count');
+const compareTriggerBtn = document.getElementById('compare-trigger-btn');
+const compareClearBtn = document.getElementById('compare-clear-btn');
+
+const comparisonOverlay = document.getElementById('comparison-overlay');
+const comparisonCloseOverlay = document.getElementById('comparison-close-overlay');
+const comparisonCloseBtn = document.getElementById('comparison-close-btn');
+const comparisonTable = document.getElementById('comparison-table');
+
+const translationDB = {
+  English: {
+    purpose: "Purpose",
+    whyThisTool: "Why This Tool",
+    expectedOutput: "Expected Output",
+    masterPrompt: "Master Prompt",
+    alternativeTools: "Alternative Tools",
+    estimatedCost: "Estimated Cost",
+    estimatedTime: "Estimated Time",
+    starter: "Starter Prompt",
+    advanced: "Advanced Prompt",
+    professional: "Professional Prompt",
+    beginnerExplanation: "Beginner Explanation",
+    copyBtn: "Copy Prompt",
+    copied: "Copied!",
+    free: "Free",
+    monthly: "/ mo",
+    keyConcepts: "Key Concepts",
+    practicalExercise: "Practical Exercise",
+    expectedOutcome: "Expected Outcome",
+    docsPurpose: "Brainstorming, idea collection, planning and writing first draft.",
+    docsWhy: "Google Docs provides a clean, cloud-synchronized writing slate to gather unstructured thoughts, copy resources, and outline the initial copy.",
+    docsOutput: "A structured text draft containing raw content outline, research fragments, and core objectives.",
+    docsStarterPrompt: "Draft a comprehensive project brief outlining the target goals, core features, and target audience for this project.",
+    docsProPrompt: "Construct an exhaustive specifications document for this project, detailing system constraints, content scripts, and modular assets.",
+    docsExplanation: "Use Google Docs to dump all your raw ideas, texts, and scripts in one place. It serves as your staging ground before AI processing.",
+    chatgptPurpose: "Convert rough notes into structured JSON prompts, workflows and production-ready instructions.",
+    chatgptWhy: "ChatGPT excels at logical reasoning, parsing text structure, and formatting raw outlines into optimized prompts for downstream creative tools.",
+    chatgptOutput: "Structured XML/JSON system specs, formatted prompts, and precise instruction sets for specialized engines.",
+    chatgptStarterPrompt: "I will provide you my raw project notes. Format them into structured guidelines and optimized instructions.",
+    chatgptProPrompt: "Analyze the provided project specification draft. Break it down into modular JSON instructions and generate high-density prompts for other generative AI models.",
+    chatgptExplanation: "Paste your Google Docs draft here and ask ChatGPT to refine it. It acts as the orchestrator of your automated workflow."
+  },
+  Hindi: {
+    purpose: "उद्देश्य (Purpose)",
+    whyThisTool: "यही टूल क्यों (Why This Tool)",
+    expectedOutput: "अपेक्षित आउटपुट (Expected Output)",
+    masterPrompt: "मास्टर प्रॉम्प्ट (Master Prompt)",
+    alternativeTools: "वैकल्पिक टूल्स (Alternative Tools)",
+    estimatedCost: "अनुमानित खर्च (Estimated Cost)",
+    estimatedTime: "अनुमानित समय (Estimated Time)",
+    starter: "शुरुआती प्रॉम्प्ट (Starter)",
+    advanced: "उन्नत प्रॉम्प्ट (Advanced)",
+    professional: "प्रोफेशनल प्रॉम्प्ट (Professional)",
+    beginnerExplanation: "शुरुआती गाइड (Explanation)",
+    copyBtn: "प्रॉम्प्ट कॉपी करें",
+    copied: "कॉपी हुआ!",
+    free: "मुफ़्त",
+    monthly: "/ महीना",
+    keyConcepts: "मुख्य अवधारणाएँ (Key Concepts)",
+    practicalExercise: "व्यावहारिक अभ्यास (Exercise)",
+    expectedOutcome: "अपेक्षित परिणाम (Outcome)",
+    docsPurpose: "ब्रेनस्टॉर्मिंग, आइडिया कलेक्शन, प्लानिंग और पहला ड्राफ्ट लिखना।",
+    docsWhy: "गूगल डॉक्स बिना किसी रुकावट के विचारों को क्लाउड पर सुरक्षित रूप से लिखने और ड्राफ्ट तैयार करने की सुविधा देता है।",
+    docsOutput: "एक व्यवस्थित पाठ ड्राफ्ट जिसमें परियोजना की रूपरेखा, शोध के अंश और मुख्य उद्देश्य शामिल हों।",
+    docsStarterPrompt: "इस प्रोजेक्ट के मुख्य लक्ष्यों, आवश्यक फीचर्स और लक्षित दर्शकों की रूपरेखा तैयार करते हुए एक प्रोजेक्ट ब्रीफ लिखें।",
+    docsProPrompt: "सिस्टम की सीमाओं, कंटेंट स्क्रिप्ट और आवश्यक संपत्तियों का विवरण देते हुए इस प्रोजेक्ट के लिए एक विस्तृत विनिर्देश दस्तावेज़ तैयार करें।",
+    docsExplanation: "अपने सभी कच्चे विचारों, टेक्स्ट और स्क्रिप्ट को एक जगह लिखने के लिए गूगल डॉक्स का उपयोग करें। यह एआई प्रोसेसिंग से पहले आपका मुख्य स्टेजिंग प्लेटफॉर्म है।",
+    chatgptPurpose: "कच्चे नोट्स को व्यवस्थित JSON प्रॉम्प्ट, वर्कफ़्लो और उत्पादन के लिए तैयार निर्देशों में बदलना।",
+    chatgptWhy: "चैटजीपीटी तार्किक तर्क करने, टेक्स्ट संरचना को समझने और अन्य एआई टूल्स के लिए प्रॉम्प्ट को अनुकूलित करने में उत्कृष्ट है।",
+    chatgptOutput: "व्यवस्थित XML/JSON विनिर्देश, अनुकूलित प्रॉम्प्ट और विशिष्ट इंजनों के लिए सटीक निर्देश सेट।",
+    chatgptStarterPrompt: "मैं आपको अपने कच्चे प्रोजेक्ट नोट्स प्रदान करूँगा। उन्हें व्यवस्थित दिशानिर्देशों और अनुकूलित निर्देशों में बदलें।",
+    chatgptProPrompt: "प्रदान किए गए प्रोजेक्ट विनिर्देश ड्राफ्ट का विश्लेषण करें। इसे मॉड्यूलर निर्देशों में तोड़ें और अन्य एआई मॉडल के लिए प्रॉम्प्ट जनरेट करें।",
+    chatgptExplanation: "अपने गूगल डॉक्स ड्राफ्ट को यहाँ पेस्ट करें और चैटजीपीटी से इसे बेहतर बनाने के लिए कहें। यह आपके वर्कफ़्लो को नियंत्रित करता है।"
+  },
+  Hinglish: {
+    purpose: "Purpose (काम क्या है)",
+    whyThisTool: "Why This Tool (यही टूल क्यों)",
+    expectedOutput: "Expected Output (नतीजा क्या मिलेगा)",
+    masterPrompt: "Master Prompt (कॉपी करने योग्य प्रॉम्प्ट्स)",
+    alternativeTools: "Alternative Tools (दुसरे टूल्स)",
+    estimatedCost: "Estimated Cost (अनुमानित खर्च)",
+    estimatedTime: "Estimated Time (समय कितना लगेगा)",
+    starter: "Starter Prompt (शुरुआती प्रॉम्प्ट)",
+    advanced: "Advanced Prompt (मीडियम प्रॉम्प्ट)",
+    professional: "Professional Prompt (प्रोफेशनल प्रॉम्प्ट)",
+    beginnerExplanation: "Beginner Explanation (आसान हिंदी में समझें)",
+    copyBtn: "Prompt Copy karein",
+    copied: "Copied!",
+    free: "Free",
+    monthly: "/ month",
+    keyConcepts: "Key Concepts",
+    practicalExercise: "Practical Exercise",
+    expectedOutcome: "Expected Outcome (नतीजा)",
+    docsPurpose: "Brainstorming, ideas collect karna, planning aur first draft likhna.",
+    docsWhy: "Google Docs ek cloud-based writing board deta hai jisme bina distraction ke ideas likhe aur save kiye ja sakte hain.",
+    docsOutput: "Ek clear text draft jisme project ka outline, research aur core details hon.",
+    docsStarterPrompt: "Is project ke main goals, features aur target audience ko define karte hue ek summary draft likho.",
+    docsProPrompt: "Is project ke specifications ka deep document banao, jisme hardware requirements, constraints aur workflows mentioned hon.",
+    docsExplanation: "Google Docs par sabse pehle apne saare ideas ek jagah likh lo. Yeh aapka raw draft zone hai jahan se hum data copy karenge.",
+    chatgptPurpose: "Rough notes ko structured JSON prompts, workflows aur production-ready instructions me convert karna.",
+    chatgptWhy: "ChatGPT aapke raw draft ko optimize karke specific instructions aur prompts me badal deta hai jo dusre AI tools ko samajh aaye.",
+    chatgptOutput: "Formatted prompts, dynamic instructions aur custom JSON/XML config parameters.",
+    chatgptStarterPrompt: "Main aapko raw notes dunga. Aap inko structured project outline aur detailed commands me translate karein.",
+    chatgptProPrompt: "Niche diye gaye specifications ko analyze karein aur tasks ke liye customized system prompt banakar modular JSON templates generate karein.",
+    chatgptExplanation: "Apne Google Docs ke draft ko yahan paste karke ChatGPT se prompts nikalwayein, jo dusre engines ko input dene me kaam aayenge."
+  }
+}
+
+const optionToMatrixKey = {
+  "Exploring AI": "Exploring AI",
+  "Generating Video": "Generate a Complete AI Video",
+  "Generating Images": "Generate Professional AI Images",
+  "Designing": "Create Digital Designs Using AI",
+  "Coding": "Build Software Using AI",
+  "Building Apps": "Build Android Application",
+  "Tips to Earn Money": "Monetize AI Skills",
+  "Music Making": "Create Music Using AI",
+  "Voice Over Generation": "Generate Professional Voice Over",
+  "Brand Building": "Build a Brand Using AI",
+  "Personal AI Building": "Build a Personal AI Assistant",
+  "Hardware Building": "Design and Prototype Hardware"
+}
+
+
 
 export async function ensureDataLoaded() {
   if (!window.toolsData) {
@@ -2300,6 +2457,7 @@ export function initDashboardControls() {
       }, 150);
     });
   }
+  setupExploreEventListeners();
 }
 
 export function getMasterPromptTemplate(goalText) {
@@ -4451,3 +4609,83 @@ window.openComparisonOverlay = openComparisonOverlay;
 window.closeComparisonOverlay = closeComparisonOverlay;
 window.initLibrarySection = initLibrarySection;
 window.initCategoryExplorerSection = initCategoryExplorerSection;
+
+export function resetWizard() {
+  const wizardOverlay = document.getElementById('wizard-overlay');
+  const mainWrapper = document.getElementById('main-content-wrapper');
+  
+  if (mainWrapper) mainWrapper.classList.remove('active');
+  if (wizardOverlay) {
+    wizardOverlay.style.opacity = '1';
+    wizardOverlay.style.visibility = 'visible';
+  }
+  document.body.style.overflow = 'hidden';
+  
+  window.scrollTo(0, 0);
+}
+window.resetWizard = resetWizard;
+
+export function setupExploreEventListeners() {
+  const reconfigBtn = document.getElementById('reconfigure-btn');
+  if (reconfigBtn) {
+    reconfigBtn.addEventListener('click', resetWizard);
+  }
+  
+  window.addEventListener('resize', () => {
+    requestAnimationFrame(drawRoad);
+  });
+  
+  window.addEventListener('scroll', updateScrollProgress);
+  
+  const filterBtns = document.querySelectorAll('.filter-nav .filter-btn');
+  if (filterBtns) {
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.getAttribute('data-filter');
+        filterNodes(filter);
+      });
+    });
+  }
+
+  const mainWrapper = document.getElementById('main-content-wrapper');
+  if (mainWrapper) {
+    mainWrapper.addEventListener('click', (e) => {
+      if (e.target.closest('a') || e.target.closest('.card-action-btn') || e.target.closest('button:not(.inspect-btn)')) {
+        return;
+      }
+      
+      const card = e.target.closest('.timeline-card');
+      if (card) {
+        const nodeIdx = parseInt(card.getAttribute('data-node'));
+        if (!isNaN(nodeIdx)) {
+          openDrawer(nodeIdx);
+        }
+      }
+    });
+  }
+
+  const drawerCloseBtn = document.getElementById('drawer-close-btn');
+  if (drawerCloseBtn) {
+    drawerCloseBtn.addEventListener('click', closeDrawer);
+  }
+  const drawerCloseOverlay = document.getElementById('drawer-close-overlay');
+  if (drawerCloseOverlay) {
+    drawerCloseOverlay.addEventListener('click', closeDrawer);
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const detailDrawer = document.getElementById('detail-drawer');
+      if (detailDrawer && detailDrawer.getAttribute('aria-hidden') === 'false') {
+        closeDrawer();
+      }
+      const comparisonOverlay = document.getElementById('comparison-overlay');
+      if (comparisonOverlay && comparisonOverlay.getAttribute('aria-hidden') === 'false') {
+        closeComparisonOverlay();
+      }
+    }
+  });
+}
+window.setupExploreEventListeners = setupExploreEventListeners;

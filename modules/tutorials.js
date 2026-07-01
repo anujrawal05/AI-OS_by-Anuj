@@ -7,7 +7,7 @@ import { isUserAuthenticated } from './auth.js';
 import { showPricingModal } from './ui.js';
 import { playVideoWithPlayer } from './video.js';
 
-function loadDiscoveredVideos() {
+export async function loadDiscoveredVideos() {
   try {
     const res = await fetch('/api/videos');
     if (res.ok) {
@@ -23,7 +23,7 @@ function loadDiscoveredVideos() {
   }
 }
 
-function renderBusinessCardsGrid() {
+export function renderBusinessCardsGrid() {
   const container = document.getElementById('business-cards-grid');
   if (!container) return;
   
@@ -66,7 +66,7 @@ function renderBusinessCardsGrid() {
   }).join('');
 }
 
-function showLanguageSelectionPopup(videoBaseName, title) {
+export function showLanguageSelectionPopup(videoBaseName, title) {
   let modal = document.getElementById('premium-lang-modal-overlay');
   if (!modal) {
     modal = document.createElement('div');

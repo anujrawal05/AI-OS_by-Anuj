@@ -8,13 +8,21 @@ import { initNavigation, setupCardInteractions, openLegalDrawer, closeLegalDrawe
 import { initAuthSystem, handleEmailSignin, handleEmailSignup, handleVerifyOtp, handleForgotPassword } from './modules/auth.js';
 import { initTrialClock, closeTrialWelcomeModal } from './modules/premium.js';
 
+let exploreModuleInstance = null;
+
 // Heavy modules are loaded dynamically on demand!
 async function loadExploreModule() {
-  if (!window.exploringAIRoadmap) {
+  if (!exploreModuleInstance) {
     console.log("[Bootstrap] Lazy loading Explore AI module...");
-    const mod = await import('./modules/explore.js');
-    await mod.ensureDataLoaded();
+    exploreModuleInstance = await import('./modules/explore.js');
+    await exploreModuleInstance.ensureDataLoaded();
+    
+    // Automatically bind elements when loaded
+    if (exploreModuleInstance.initDashboardControls) exploreModuleInstance.initDashboardControls();
+    if (exploreModuleInstance.initLibrarySection) exploreModuleInstance.initLibrarySection();
+    if (exploreModuleInstance.initCategoryExplorerSection) exploreModuleInstance.initCategoryExplorerSection();
   }
+  return exploreModuleInstance;
 }
 
 // Global initialization
@@ -71,53 +79,53 @@ window.closeTrialWelcomeModal = closeTrialWelcomeModal;
 
 // Explore AI lazy loading proxies
 window.drawRoad = async function() {
-  await loadExploreModule();
-  if (window.drawRoad) window.drawRoad();
+  const mod = await loadExploreModule();
+  if (mod && mod.drawRoad) mod.drawRoad();
 };
 
 window.openDrawer = async function(nodeIdx, isEduNode = false, eduNodeData = null) {
-  await loadExploreModule();
-  if (window.openDrawer) window.openDrawer(nodeIdx, isEduNode, eduNodeData);
+  const mod = await loadExploreModule();
+  if (mod && mod.openDrawer) mod.openDrawer(nodeIdx, isEduNode, eduNodeData);
 };
 
 window.closeDrawer = async function() {
-  await loadExploreModule();
-  if (window.closeDrawer) window.closeDrawer();
+  const mod = await loadExploreModule();
+  if (mod && mod.closeDrawer) mod.closeDrawer();
 };
 
 window.regenerateActiveRoadmap = async function() {
-  await loadExploreModule();
-  if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
+  const mod = await loadExploreModule();
+  if (mod && mod.regenerateActiveRoadmap) mod.regenerateActiveRoadmap();
 };
 
 window.initLibrarySection = async function() {
-  await loadExploreModule();
-  if (window.initLibrarySection) window.initLibrarySection();
+  const mod = await loadExploreModule();
+  if (mod && mod.initLibrarySection) mod.initLibrarySection();
 };
 
 window.initCategoryExplorerSection = async function() {
-  await loadExploreModule();
-  if (window.initCategoryExplorerSection) window.initCategoryExplorerSection();
+  const mod = await loadExploreModule();
+  if (mod && mod.initCategoryExplorerSection) mod.initCategoryExplorerSection();
 };
 
 window.toggleFavorite = async function(id) {
-  await loadExploreModule();
-  if (window.toggleFavorite) window.toggleFavorite(id);
+  const mod = await loadExploreModule();
+  if (mod && mod.toggleFavorite) mod.toggleFavorite(id);
 };
 
 window.toggleComparison = async function(id) {
-  await loadExploreModule();
-  if (window.toggleComparison) window.toggleComparison(id);
+  const mod = await loadExploreModule();
+  if (mod && mod.toggleComparison) mod.toggleComparison(id);
 };
 
 window.openComparisonOverlay = async function() {
-  await loadExploreModule();
-  if (window.openComparisonOverlay) window.openComparisonOverlay();
+  const mod = await loadExploreModule();
+  if (mod && mod.openComparisonOverlay) mod.openComparisonOverlay();
 };
 
 window.closeComparisonOverlay = async function() {
-  await loadExploreModule();
-  if (window.closeComparisonOverlay) window.closeComparisonOverlay();
+  const mod = await loadExploreModule();
+  if (mod && mod.closeComparisonOverlay) mod.closeComparisonOverlay();
 };
 
 // Check if Service Worker is supported

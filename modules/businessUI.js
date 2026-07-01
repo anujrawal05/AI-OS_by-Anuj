@@ -5,7 +5,7 @@ import { state } from './core.js';
 import { showToast } from './utils.js';
 import { updateUserProfileHeader } from './auth.js';
 
-function switchBusinessWorkspace(workspaceName) {
+export function switchBusinessWorkspace(workspaceName) {
   if (workspaceName === 'learn') {
     switchBusinessWorkspace('dashboard');
     setTimeout(() => {
@@ -45,7 +45,7 @@ function switchBusinessWorkspace(workspaceName) {
   if (targetPane) targetPane.classList.add('active');
 }
 
-function toggleBusinessSectionView() {
+export function toggleBusinessSectionView() {
   const buildLock = document.getElementById('build-premium-lock');
   const expandLock = document.getElementById('expand-premium-lock');
   

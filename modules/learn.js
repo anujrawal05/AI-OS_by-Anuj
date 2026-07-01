@@ -4,7 +4,7 @@
 import { state } from './core.js';
 import { showToast } from './utils.js';
 
-function verifyQuizAnswer(btnElement, radioGroupName, expectedValue, explanationText) {
+export function verifyQuizAnswer(btnElement, radioGroupName, expectedValue, explanationText) {
   const container = btnElement.closest('.learn-quiz-box');
   const feedbackBox = container.querySelector('.quiz-feedback-box');
   const selectedRadio = container.querySelector(`input[name="${radioGroupName}"]:checked`);
@@ -36,7 +36,7 @@ function verifyQuizAnswer(btnElement, radioGroupName, expectedValue, explanation
   }
 }
 
-function downloadTemplate(templateName) {
+export function downloadTemplate(templateName) {
   const templates = {
     'business_model_canvas': [
       "==================================================",

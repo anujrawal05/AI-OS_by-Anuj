@@ -4,7 +4,7 @@
 import { state } from './core.js';
 import { showToast } from './utils.js';
 
-function updateConversionFunnel(modelData, budgetValue) {
+export function updateConversionFunnel(modelData, budgetValue) {
   const trafficEl = document.getElementById('funnel-traffic');
   const qualifiedEl = document.getElementById('funnel-qualified');
   const conversionsEl = document.getElementById('funnel-conversions');
@@ -63,7 +63,7 @@ function updateConversionFunnel(modelData, budgetValue) {
   }
 }
 
-function loadLiveDashboardMetrics() {
+export async function loadLiveDashboardMetrics() {
   const loadingEl = document.getElementById('market-data-loading');
   const errorEl = document.getElementById('market-data-error');
   const contentEl = document.getElementById('market-data-content');
@@ -184,7 +184,7 @@ function loadLiveDashboardMetrics() {
   }
 }
 
-function loadLiveBusinessNews() {
+export async function loadLiveBusinessNews() {
   const loadingEl = document.getElementById('news-data-loading');
   const errorEl = document.getElementById('news-data-error');
   const contentEl = document.getElementById('news-data-content');

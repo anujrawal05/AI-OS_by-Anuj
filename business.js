@@ -6,48 +6,55 @@ import { initTheme, toggleTheme } from './modules/core.js';
 import { initAuthSystem } from './modules/auth.js';
 import { initWorkspaceControls } from './modules/businessUI.js';
 
-// Lazy loading feature modules on demand when sections are entered
+let learnModuleInstance = null;
 async function loadLearnModule() {
-  if (!window.initLearnSection) {
+  if (!learnModuleInstance) {
     console.log("[Business Bootstrap] Lazy loading Learn module...");
-    await import('./modules/learn.js');
+    learnModuleInstance = await import('./modules/learn.js');
   }
+  return learnModuleInstance;
 }
 
+let buildModuleInstance = null;
 async function loadBuildModule() {
-  if (!window.initBuildSection) {
+  if (!buildModuleInstance) {
     console.log("[Business Bootstrap] Lazy loading Build module...");
-    await import('./modules/build.js');
+    buildModuleInstance = await import('./modules/build.js');
   }
+  return buildModuleInstance;
 }
 
+let expandModuleInstance = null;
 async function loadExpandModule() {
-  if (!window.initExpandSection) {
+  if (!expandModuleInstance) {
     console.log("[Business Bootstrap] Lazy loading Expand module...");
-    await import('./modules/expand.js');
+    expandModuleInstance = await import('./modules/expand.js');
   }
+  return expandModuleInstance;
 }
 
+let tutorialsModuleInstance = null;
 async function loadTutorialsModule() {
-  if (!window.initTutorialsSection) {
+  if (!tutorialsModuleInstance) {
     console.log("[Business Bootstrap] Lazy loading Tutorials module...");
-    await import('./modules/tutorials.js');
+    tutorialsModuleInstance = await import('./modules/tutorials.js');
   }
+  return tutorialsModuleInstance;
 }
 
 async function loadActiveWorkspaceModules(workspace) {
   if (workspace === 'dashboard') {
-    await loadTutorialsModule();
-    if (window.initTutorialsSection) window.initTutorialsSection();
+    const mod = await loadTutorialsModule();
+    if (mod && mod.initTutorialsSection) mod.initTutorialsSection();
   } else if (workspace === 'learn') {
-    await loadLearnModule();
-    if (window.initLearnSection) window.initLearnSection();
+    const mod = await loadLearnModule();
+    if (mod && mod.initLearnSection) mod.initLearnSection();
   } else if (workspace === 'build') {
-    await loadBuildModule();
-    if (window.initBuildSection) window.initBuildSection();
+    const mod = await loadBuildModule();
+    if (mod && mod.initBuildSection) mod.initBuildSection();
   } else if (workspace === 'grow') {
-    await loadExpandModule();
-    if (window.initExpandSection) window.initExpandSection();
+    const mod = await loadExpandModule();
+    if (mod && mod.initExpandSection) mod.initExpandSection();
   }
 }
 
@@ -84,21 +91,21 @@ window.toggleTheme = toggleTheme;
 
 // Lazy proxies for inline handlers
 window.verifyQuizAnswer = async function(quizIdx, answerIndex) {
-  await loadLearnModule();
-  if (window.verifyQuizAnswer) window.verifyQuizAnswer(quizIdx, answerIndex);
+  const mod = await loadLearnModule();
+  if (mod && mod.verifyQuizAnswer) mod.verifyQuizAnswer(quizIdx, answerIndex);
 };
 
 window.downloadTemplate = async function(templateKey, category) {
-  await loadLearnModule();
-  if (window.downloadTemplate) window.downloadTemplate(templateKey, category);
+  const mod = await loadLearnModule();
+  if (mod && mod.downloadTemplate) mod.downloadTemplate(templateKey, category);
 };
 
 window.selectAndCompileBusiness = async function(key) {
-  await loadTutorialsModule();
-  if (window.selectAndCompileBusiness) window.selectAndCompileBusiness(key);
+  const mod = await loadTutorialsModule();
+  if (mod && mod.selectAndCompileBusiness) mod.selectAndCompileBusiness(key);
 };
 
 window.handleBusinessVideoPlay = async function(key, videoBaseName, title) {
-  await loadTutorialsModule();
-  if (window.handleBusinessVideoPlay) window.handleBusinessVideoPlay(key, videoBaseName, title);
+  const mod = await loadTutorialsModule();
+  if (mod && mod.handleBusinessVideoPlay) mod.handleBusinessVideoPlay(key, videoBaseName, title);
 };
