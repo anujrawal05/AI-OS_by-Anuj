@@ -19,6 +19,7 @@ router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
 router.get('/verify-email', authController.verifyEmail);
 router.post('/verify-email', authController.verifyEmail);
+router.post('/verify-otp', authController.verifyEmail);
 
 // User Profile & status
 router.get('/status', optionalAuth, profileController.sessionStatus);

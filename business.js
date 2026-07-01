@@ -2421,6 +2421,18 @@ function initBusinessSimulators() {
 let authMode = 'signin';
 
 function updateAuthModalUI() {
+  // Hide OTP container if any
+  const otpSection = document.getElementById('otp-verification-section');
+  if (otpSection) otpSection.style.display = 'none';
+
+  const formFields = document.getElementById('auth-form-fields');
+  const actionButtons = document.getElementById('auth-action-buttons');
+  const couponSection = document.getElementById('auth-coupon-section');
+  
+  if (formFields) formFields.style.display = 'flex';
+  if (actionButtons) actionButtons.style.display = 'flex';
+  if (couponSection) couponSection.style.display = 'block';
+
   const title = document.getElementById('auth-modal-title');
   const desc = document.getElementById('auth-modal-desc');
   const pwdContainer = document.getElementById('auth-password-container');
@@ -2493,13 +2505,13 @@ async function handleBusEmailSignin() {
     const authOverlay = document.getElementById('auth-modal-overlay');
     if (authOverlay) authOverlay.style.display = 'none';
     
-    if (!data.user.name || !data.user.date_of_birth || !data.user.gender || !data.user.profession) {
-      showOnboardingModal(data.user);
-    } else {
+    if (data.hasDetails) {
       updateUserProfileHeader();
       initTrialClock();
       switchBusinessWorkspace('dashboard');
       showToast("Logged in successfully!");
+    } else {
+      showOnboardingModal(data.user);
     }
   } catch (err) {
     if (errorEl) { errorEl.textContent = 'Server connection failed.'; errorEl.style.display = 'block'; }
@@ -2537,14 +2549,92 @@ async function handleBusEmailSignup() {
       return;
     }
     
+    showOtpScreen();
+    showToast("Account created successfully! An OTP has been sent to your email.");
+  } catch (err) {
+    if (errorEl) { errorEl.textContent = 'Server connection failed.'; errorEl.style.display = 'block'; }
+  }
+}
+
+function showOtpScreen() {
+  const title = document.getElementById('auth-modal-title');
+  const desc = document.getElementById('auth-modal-desc');
+  if (title) title.textContent = 'Verify OTP';
+  if (desc) desc.textContent = 'A 6-digit verification code has been sent to your email. Enter it below to complete registration.';
+  
+  const formFields = document.getElementById('auth-form-fields');
+  const actionButtons = document.getElementById('auth-action-buttons');
+  const couponSection = document.getElementById('auth-coupon-section');
+  if (formFields) formFields.style.display = 'none';
+  if (actionButtons) actionButtons.style.display = 'none';
+  if (couponSection) couponSection.style.display = 'none';
+  
+  const otpSection = document.getElementById('otp-verification-section');
+  if (otpSection) {
+    otpSection.style.display = 'flex';
+    otpSection.style.flexDirection = 'column';
+  }
+}
+
+function hideOtpScreen() {
+  const otpSection = document.getElementById('otp-verification-section');
+  if (otpSection) otpSection.style.display = 'none';
+  
+  const formFields = document.getElementById('auth-form-fields');
+  const actionButtons = document.getElementById('auth-action-buttons');
+  const couponSection = document.getElementById('auth-coupon-section');
+  if (formFields) formFields.style.display = 'flex';
+  if (actionButtons) actionButtons.style.display = 'flex';
+  if (couponSection) couponSection.style.display = 'block';
+  
+  updateAuthModalUI();
+}
+
+async function handleVerifyOtp() {
+  const codeEl = document.getElementById('auth-otp-code');
+  const errorEl = document.getElementById('otp-error-msg');
+  const successEl = document.getElementById('otp-success-msg');
+  
+  const otp = codeEl ? codeEl.value.trim() : '';
+  if (!otp) {
+    if (errorEl) { errorEl.textContent = 'Please enter the verification code.'; errorEl.style.display = 'block'; }
+    return;
+  }
+  
+  if (errorEl) errorEl.style.display = 'none';
+  if (successEl) successEl.style.display = 'none';
+  
+  try {
+    const res = await fetch('/api/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ otp })
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      if (errorEl) { errorEl.textContent = data.error || 'Verification failed.'; errorEl.style.display = 'block'; }
+      return;
+    }
+    
+    if (successEl) { successEl.textContent = 'Email verified successfully!'; successEl.style.display = 'block'; }
+    
     state.user = data.user;
     localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
     
-    const authOverlay = document.getElementById('auth-modal-overlay');
-    if (authOverlay) authOverlay.style.display = 'none';
+    setTimeout(() => {
+      const authOverlay = document.getElementById('auth-modal-overlay');
+      if (authOverlay) authOverlay.style.display = 'none';
+      
+      if (codeEl) codeEl.value = '';
+      if (errorEl) errorEl.style.display = 'none';
+      if (successEl) successEl.style.display = 'none';
+      hideOtpScreen();
+      
+      showOnboardingModal(data.user);
+      showToast("Email verified successfully! Please complete your profile onboarding.");
+    }, 1000);
     
-    showOnboardingModal(data.user);
-    showToast("Account created successfully!");
   } catch (err) {
     if (errorEl) { errorEl.textContent = 'Server connection failed.'; errorEl.style.display = 'block'; }
   }
@@ -2836,6 +2926,11 @@ async function initApp() {
   if (bESignin) bESignin.addEventListener('click', handleBusEmailSignin);
   const bESignup = document.getElementById('btn-email-signup');
   if (bESignup) bESignup.addEventListener('click', handleBusEmailSignup);
+
+  const btnVerifyOtp = document.getElementById('btn-verify-otp');
+  if (btnVerifyOtp) btnVerifyOtp.addEventListener('click', handleVerifyOtp);
+  const btnBackToAuth = document.getElementById('btn-back-to-auth');
+  if (btnBackToAuth) btnBackToAuth.addEventListener('click', hideOtpScreen);
 
   ['auth-signin-email','auth-signin-password'].forEach(id => {
     const el = document.getElementById(id);

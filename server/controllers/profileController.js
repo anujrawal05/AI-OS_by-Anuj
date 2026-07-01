@@ -137,13 +137,22 @@ async function updateProfile(req, res) {
     const numericId = parseInt(user.id, 10);
     const { full_name, date_of_birth, gender, profession } = req.body;
 
-    const dbUser = await prisma.user.update({
+    const dbUser = await prisma.user.upsert({
       where: { id: numericId },
-      data: {
+      update: {
         fullName: full_name,
         dateOfBirth: date_of_birth,
         gender: gender,
         profession: profession
+      },
+      create: {
+        id: numericId,
+        email: user.email,
+        fullName: full_name,
+        dateOfBirth: date_of_birth,
+        gender: gender,
+        profession: profession,
+        passwordHash: '' // empty placeholder since user is already created in registration
       },
       include: { subscription: true }
     });

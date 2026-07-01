@@ -59,6 +59,13 @@ function replacePlaceholders(html, variables = {}) {
  */
 async function sendEmail(templateName, to, subject, variables = {}) {
   try {
+    // Strict conditional logic to prevent email exhaustion
+    const allowedTemplates = ['verifyEmail', 'welcome'];
+    if (!allowedTemplates.includes(templateName)) {
+      console.log(`[Email Service] Transactional email "${templateName}" bypassed (not dispatched via Brevo) to prevent email exhaustion.`);
+      return { success: true, bypassed: true };
+    }
+
     // 1. Get Subject (centralized or passed directly)
     const emailSubject = subject || SUBJECTS[templateName] || 'Notification from AI-OS';
 

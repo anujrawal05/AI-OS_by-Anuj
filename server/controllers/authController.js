@@ -256,6 +256,7 @@ async function login(req, res) {
 
     return res.status(200).json({
       success: true,
+      hasDetails: !!(user.fullName && user.dateOfBirth && user.gender && user.profession),
       user: {
         id: user.id.toString(),
         email: user.email,
@@ -439,7 +440,8 @@ async function verifyEmail(req, res) {
     // Set verified flag and clear token
     const updatedUser = await prisma.user.update({
       where: { id: verifyTokenRecord.userId },
-      data: { isVerified: true }
+      data: { isVerified: true },
+      include: { subscription: true }
     });
 
     await prisma.emailVerificationToken.delete({
@@ -463,7 +465,57 @@ async function verifyEmail(req, res) {
     });
 
     if (isJson) {
-      return res.status(200).json({ success: true, message: 'Email verified successfully.' });
+      // Auto-login verified user by establishing session and setting cookies
+      const sessionToken = crypto.randomBytes(32).toString('hex');
+      await prisma.userSession.create({
+        data: {
+          userId: updatedUser.id,
+          token: sessionToken,
+          userAgent: req.headers['user-agent'] || 'Unknown Device',
+          ipAddress: req.ip || 'Unknown IP',
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days session
+        }
+      });
+
+      const token = jwt.sign(
+        { id: updatedUser.id, sessionToken }, 
+        JWT_SECRET, 
+        { expiresIn: '7d' }
+      );
+
+      res.cookie('aios_token', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+
+      const csrfToken = crypto.randomBytes(24).toString('hex');
+      res.cookie('aios_csrf', csrfToken, {
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/'
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Email verified successfully.',
+        user: {
+          id: updatedUser.id.toString(),
+          email: updatedUser.email,
+          name: updatedUser.fullName || '',
+          picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${updatedUser.email}`,
+          gender: updatedUser.gender || '',
+          profession: updatedUser.profession || '',
+          date_of_birth: updatedUser.dateOfBirth || '',
+          plan_type: updatedUser.subscription ? updatedUser.subscription.planType : 'Basic',
+          trial_started_at: updatedUser.subscription ? updatedUser.subscription.trialStartedAt : null,
+          trial_expires_at: updatedUser.subscription ? updatedUser.subscription.trialExpiresAt : null,
+          trial_used: updatedUser.subscription ? updatedUser.subscription.trialUsed : false,
+          is_coupon: false
+        }
+      });
     }
 
     return res.status(200).send(`

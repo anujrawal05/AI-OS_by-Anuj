@@ -686,7 +686,7 @@
       </p>
 
       <!-- Input fields inside the card -->
-      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
+      <div id="auth-form-fields" style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
         <div>
           <label for="auth-email" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Email Address</label>
           <input type="email" id="auth-email" placeholder="Enter your email" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
@@ -703,7 +703,21 @@
         </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
+      <!-- OTP fields wrapper -->
+      <div id="otp-verification-section" style="display: none; flex-direction: column; gap: 12px; width: 100%; text-align: left; margin-bottom: 16px;">
+        <div>
+          <label for="auth-otp-code" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Verification Code (OTP)</label>
+          <input type="text" id="auth-otp-code" placeholder="Enter 6-digit code" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" autocomplete="one-time-code">
+        </div>
+        <div id="otp-error-msg" style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <div id="otp-success-msg" style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <button id="btn-verify-otp" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%); border: none; color: #000; cursor: pointer; transition: all 0.2s; margin-top: 8px;">
+          Verify OTP
+        </button>
+        <button id="btn-back-to-auth" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 10px; width: 100%; text-align: center; font-family: var(--font-mono);">Back to Login</button>
+      </div>
+
+      <div id="auth-action-buttons" style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
         <button id="btn-email-signin" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #2EC5FF 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s;">
           Sign In
         </button>
@@ -712,7 +726,7 @@
         </button>
       </div>
 
-      <div style="text-align: center; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+      <div id="auth-coupon-section" style="text-align: center; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
         <button id="btn-auth-coupon-trigger" style="background: none; border: none; color: var(--text-secondary); font-size: 0.82rem; cursor: pointer; text-decoration: underline; font-family: var(--font-mono);">
           🎫 Use Coupon Code instead
         </button>
