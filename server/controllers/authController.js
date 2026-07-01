@@ -53,9 +53,20 @@ async function signup(req, res) {
       }
     });
 
-    // Create verification token
-    const verifyToken = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    // Generate a secure 6-digit OTP verification token, ensuring uniqueness
+    let verifyToken;
+    let isUnique = false;
+    while (!isUnique) {
+      verifyToken = Math.floor(100000 + Math.random() * 900000).toString();
+      const existingToken = await prisma.emailVerificationToken.findUnique({
+        where: { token: verifyToken }
+      });
+      if (!existingToken) {
+        isUnique = true;
+      }
+    }
+
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiry
 
     await prisma.emailVerificationToken.create({
       data: {
@@ -70,36 +81,13 @@ async function signup(req, res) {
     const verifyLink = `${host}/api/auth/verify-email?token=${verifyToken}`;
     await emailService.sendEmail('verifyEmail', user.email, null, {
       NAME: user.fullName || user.email.split('@')[0],
-      VERIFY_LINK: verifyLink
-    });
-
-    // Auto-login after registration
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-    const isProd = process.env.NODE_ENV === 'production';
-    res.cookie('aios_token', token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      VERIFY_LINK: verifyLink,
+      OTP: verifyToken
     });
 
     return res.status(200).json({
       success: true,
-      user: {
-        id: user.id.toString(),
-        email: user.email,
-        name: user.fullName || '',
-        picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
-        gender: user.gender || '',
-        profession: user.profession || '',
-        date_of_birth: user.dateOfBirth || '',
-        plan_type: user.subscription.planType,
-        trial_started_at: user.subscription.trialStartedAt,
-        trial_expires_at: user.subscription.trialExpiresAt,
-        trial_used: user.subscription.trialUsed,
-        is_coupon: false,
-        token
-      }
+      message: 'Registration successful. A verification code has been sent to your email.'
     });
 
   } catch (error) {
@@ -129,6 +117,11 @@ async function login(req, res) {
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatch) {
       return res.status(400).json({ error: 'Invalid email or password.' });
+    }
+
+    // Only verified users can log in
+    if (!user.isVerified) {
+      return res.status(400).json({ error: 'Please verify your email address before logging in.', unverified: true });
     }
 
     // Sign session JWT
@@ -258,8 +251,13 @@ async function resetPassword(req, res) {
 
 async function verifyEmail(req, res) {
   try {
-    const token = req.query.token;
+    const token = req.query.token || req.body.token || req.body.otp;
+    const isJson = req.headers['accept']?.includes('application/json') || req.headers['content-type']?.includes('application/json') || req.method === 'POST';
+
     if (!token) {
+      if (isJson) {
+        return res.status(400).json({ error: 'Verification code or token is required.' });
+      }
       return res.status(400).send('<h2>Verification token is required.</h2>');
     }
 
@@ -268,6 +266,9 @@ async function verifyEmail(req, res) {
     });
 
     if (!verifyTokenRecord || verifyTokenRecord.expiresAt < new Date()) {
+      if (isJson) {
+        return res.status(400).json({ error: 'Invalid or expired verification code.' });
+      }
       return res.status(400).send('<h2>Invalid or expired verification token.</h2>');
     }
 
@@ -285,6 +286,10 @@ async function verifyEmail(req, res) {
     await emailService.sendEmail('welcome', updatedUser.email, null, {
       NAME: updatedUser.fullName || updatedUser.email.split('@')[0]
     });
+
+    if (isJson) {
+      return res.status(200).json({ success: true, message: 'Email verified successfully.' });
+    }
 
     return res.status(200).send(`
       <html>

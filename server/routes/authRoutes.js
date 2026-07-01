@@ -14,6 +14,7 @@ router.post('/logout', authController.logout);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
 router.get('/verify-email', authController.verifyEmail);
+router.post('/verify-email', authController.verifyEmail);
 
 // User Profile & status (apply authMiddleware)
 router.get('/status', authMiddleware, profileController.sessionStatus);
