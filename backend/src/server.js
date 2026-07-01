@@ -1,18 +1,17 @@
-const express = require('express');
-const cors = require('cors');
+const app = require('./app');
 require('dotenv').config();
 
-const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(cors());
-app.use(express.json());
-
-// Minimal Health Check Endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+const server = app.listen(PORT, () => {
+  console.log(`AI-OS v2 Backend Foundation running on port ${PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`AI-OS v2 Backend Foundation running on port ${PORT}`);
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  console.log('[Server] SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('[Server] HTTP connections closed. Process terminating.');
+    process.exit(0);
+  });
 });
