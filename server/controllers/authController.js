@@ -178,20 +178,26 @@ async function forgotPassword(req, res) {
     }
 
     // Create reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    // Delete existing tokens for user to avoid record redundancy
+    await prisma.passwordResetToken.deleteMany({
+      where: { userId: user.id }
+    });
 
     await prisma.passwordResetToken.create({
       data: {
         userId: user.id,
-        token: resetToken,
+        token: hashedToken,
         expiresAt
       }
     });
 
     // Send Email
     const host = `${req.protocol}://${req.get('host')}`;
-    const resetLink = `${host}/index.html?action=reset-password&token=${resetToken}`;
+    const resetLink = `${host}/index.html?action=reset-password&token=${rawToken}`;
     await emailService.sendEmail('forgotPassword', user.email, null, {
       NAME: user.fullName || user.email.split('@')[0],
       RESET_LINK: resetLink
@@ -212,8 +218,11 @@ async function resetPassword(req, res) {
       return res.status(400).json({ error: 'Token and new password are required.' });
     }
 
+    // Hash incoming raw token to find matched hashed token in DB
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
     const resetTokenRecord = await prisma.passwordResetToken.findUnique({
-      where: { token }
+      where: { token: hashedToken }
     });
 
     if (!resetTokenRecord || resetTokenRecord.expiresAt < new Date()) {
