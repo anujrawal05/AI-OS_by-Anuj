@@ -3817,7 +3817,7 @@ function renderRoadmap(optimalWorkflow, steps) {
             const matched = state.discoveredVideos.explore.find(f => f.toLowerCase() === filename.toLowerCase());
             if (matched) filename = matched;
           }
-          const videoPath = `explore AI/${filename}`;
+          const videoPath = `https://media.ai-os.in/explore/${filename}`;
           window.playPremiumVideo(videoPath, `Exploring AI - ${p.title}`);
         });
         

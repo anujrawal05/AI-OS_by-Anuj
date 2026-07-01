@@ -3159,7 +3159,7 @@ function showLanguageSelectionPopup(videoBaseName, title) {
       const matched = state.discoveredVideos.build.find(f => f.toLowerCase() === filename.toLowerCase());
       if (matched) filename = matched;
     }
-    const videoPath = `build tutorial/${filename}`;
+    const videoPath = `https://media.ai-os.in/build/${filename}`;
     window.playPremiumVideo(videoPath, `${title} (${lang === 'eng' ? 'English' : 'Hindi'})`);
   }
 }
