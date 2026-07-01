@@ -30,6 +30,11 @@ model User {
   suspended           Boolean                @default(false)
   sessions            UserSession[]
   auditLogs           AuditLog[]
+  
+  // Launch readiness extensions
+  notifications       Notification[]
+  supportTickets      SupportTicket[]
+  preferences         UserPreference?
 
   @@map("users")
 }
@@ -147,4 +152,43 @@ model RateLimit {
   expireAt DateTime @map("expire_at")
 
   @@map("rate_limits")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  title     String
+  message   String
+  type      String   @default("info")
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model SupportTicket {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @map("user_id")
+  title         String
+  description   String
+  type          String   @default("bug")
+  status        String   @default("open")
+  attachmentUrl String?  @map("attachment_url")
+  adminNotes    String?  @map("admin_notes")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("support_tickets")
+}
+
+model UserPreference {
+  userId        Int     @id @map("user_id")
+  emailPromo    Boolean @default(true) @map("email_promo")
+  emailBilling  Boolean @default(true) @map("email_billing")
+  emailSecurity Boolean @default(true) @map("email_security")
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
 }

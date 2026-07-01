@@ -14,6 +14,8 @@ const quotaService = require('./services/quotaService');
 const jobService = require('./services/jobService');
 const rateLimit = require('./middleware/rateLimiter');
 const { csrfProtection, setCsrfCookie } = require('./middleware/csrfMiddleware');
+const cacheService = require('./services/cacheService');
+const bootstrapper = require('./utils/bootstrapper');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -401,8 +403,14 @@ app.post('/api/strategist/chat', authMiddleware, authorize('premium'), aiLimiter
   }
 });
 
-// Proxy endpoint for live financial market data
+// Proxy endpoint for live financial market data with caching
 app.get('/api/market-data', async (req, res) => {
+  const cacheKey = 'market-data';
+  const cached = cacheService.get(cacheKey);
+  if (cached) {
+    return res.status(200).json(cached);
+  }
+
   const finnhubApiKey = process.env.FINNHUB_API_KEY;
   const symbolsMap = {
     'NIFTY': '^NSEI',
@@ -560,11 +568,20 @@ app.get('/api/market-data', async (req, res) => {
     { title: "Generative Support Orchestration", growth: `+${(64.5 + genSupportFluctuation).toFixed(1)}% CAGR`, desc: "Replacing traditional support staff pools with LLM agent ticket resolution pipelines." }
   ];
 
+  // Cache final computed object for 10 minutes
+  cacheService.set(cacheKey, results, 10 * 60 * 1000);
+
   return res.status(200).json(results);
 });
 
-// Proxy endpoint for live business and AI news
+// Proxy endpoint for live business and AI news with caching
 app.get('/api/business-news', async (req, res) => {
+  const cacheKey = 'business-news';
+  const cached = cacheService.get(cacheKey);
+  if (cached) {
+    return res.status(200).json(cached);
+  }
+
   const newsApiKey = process.env.NEWS_API_KEY;
   let articles = null;
 
@@ -618,6 +635,9 @@ app.get('/api/business-news', async (req, res) => {
   if (!articles || articles.length === 0) {
     return res.status(503).json({ error: 'Live news feed temporarily unavailable' });
   }
+
+  // Cache final articles list for 10 minutes
+  cacheService.set(cacheKey, articles, 10 * 60 * 1000);
 
   return res.status(200).json(articles);
 });
@@ -711,20 +731,111 @@ app.get('/ready', async (req, res) => {
   });
 });
 
+// Swagger Documentation Route (Stateless CDN Render)
+const openApiSpec = {
+  openapi: "3.0.0",
+  info: {
+    title: "AI-OS API Specification",
+    version: "1.0.0",
+    description: "API endpoints for authentication, profile settings, dynamic AI strategist, payment checkouts, support ticketing, notifications, and admin dashboards."
+  },
+  servers: [
+    { url: "" }
+  ],
+  paths: {
+    "/api/auth/signup": {
+      post: {
+        summary: "Register new user account",
+        responses: { 200: { description: "Verification code sent to email." } }
+      }
+    },
+    "/api/auth/login": {
+      post: {
+        summary: "Authenticate credentials and set HttpOnly token cookie",
+        responses: { 200: { description: "Session cookie set." } }
+      }
+    },
+    "/api/auth/me": {
+      get: {
+        summary: "Get currently authenticated session user",
+        responses: { 200: { description: "Session user details." } }
+      }
+    },
+    "/api/auth/sessions": {
+      get: {
+        summary: "Get all active devices/sessions for user",
+        responses: { 200: { description: "List of active sessions." } }
+      }
+    },
+    "/api/prompt/generate-aios-prompt": {
+      post: {
+        summary: "Generate AI-OS prompt using Llama model",
+        responses: { 200: { description: "Formatted JSON prompt template response." } }
+      }
+    },
+    "/api/strategist/chat": {
+      post: {
+        summary: "Interactive Strategic Business Consultation",
+        responses: { 200: { description: "Consultation response reply." } }
+      }
+    }
+  }
+};
+
+app.get('/api-docs', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>AI-OS Interactive API Documentation</title>
+      <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+      <style>
+        body { margin: 0; background: #0A0A0C; }
+        .swagger-ui { filter: invert(0.9) hue-rotate(180deg); }
+        .swagger-ui .info .title { color: #2EC5FF !important; }
+      </style>
+    </head>
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+      <script>
+        window.onload = () => {
+          window.ui = SwaggerUIBundle({
+            spec: ${JSON.stringify(openApiSpec)},
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [SwaggerUIBundle.presets.apis],
+            layout: "BaseLayout"
+          });
+        };
+      </script>
+    </body>
+    </html>
+  `);
+});
+
 // Wildcard fallback for frontend routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-
-
 // Standalone execution launcher or when required by root server.js wrapper
 if (require.main === module || (require.main && require.main.filename && require.main.filename.endsWith('server.js'))) {
-  // Start background jobs scheduler
-  jobService.startBackgroundJobs();
+  // Validate configuration before starting server
+  bootstrapper.validateConfig();
 
-  app.listen(PORT, () => {
-    console.log(`Modular AI-OS execution platform running on http://localhost:${PORT}`);
+  // Self-check database connectivity asynchronously
+  bootstrapper.verifyDatabase().then(() => {
+    // Start background jobs scheduler
+    jobService.startBackgroundJobs();
+
+    const server = app.listen(PORT, () => {
+      console.log(`Modular AI-OS execution platform running on http://localhost:${PORT}`);
+    });
+
+    // Register process signal event listeners for clean shutdown
+    bootstrapper.registerGracefulShutdown(server);
   });
 }
 
