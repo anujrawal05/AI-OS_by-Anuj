@@ -223,22 +223,7 @@ async function initSupabase() {
       });
       console.log("Supabase client initialized successfully on Business page.");
       
-      // Listen to auth state transitions
-      if (supabaseClient) {
-        supabaseClient.auth.onAuthStateChange(async (event, session) => {
-          if (state.user?.provider === 'Kinde Auth') return;
-          console.log("Supabase Auth Event (Business):", event);
-          if (session) {
-            await handleSupabaseSession(session);
-          } else {
-            if (!sessionStorage.getItem('aios_coupon_session')) {
-              state.user = null;
-              updateUserProfileHeader();
-              toggleBusinessSectionView();
-            }
-          }
-        });
-      }
+      // Listen to auth state transitions bypassed for static mode
     } else {
       console.warn("Supabase credentials missing from config API.");
     }
@@ -248,17 +233,7 @@ async function initSupabase() {
 }
 
 function isUserAuthenticated() {
-  const couponSession = sessionStorage.getItem('aios_coupon_session');
-  if (couponSession) {
-    try {
-      const user = JSON.parse(couponSession);
-      if (user && user.is_coupon) return true;
-    } catch (e) {}
-  }
-  if (state.user && !state.user.is_coupon) {
-    return true;
-  }
-  return false;
+  return true;
 }
 
 function updateUserProfileHeader() {
@@ -601,13 +576,7 @@ function closeTrialWelcomeModal() {
 }
 
 function showPricingModal(isMandatory = false) {
-  const overlay = document.getElementById('pricing-modal-overlay');
-  if (overlay) overlay.style.display = 'flex';
-  const closeBtn = document.getElementById('pricing-modal-close-btn');
-  if (closeBtn) {
-    closeBtn.style.display = isMandatory ? 'none' : 'block';
-  }
-  state.onboardingPricing = isMandatory;
+  // Bypassed for fully free static mode
 }
 
 async function handleChooseFreePlan() {
@@ -2906,23 +2875,7 @@ async function initApp() {
   // Session synchronization bypassed for static frontend mode
   console.log("[Static Mode] Session synchronization bypassed. Default Premium User active.");
 
-  const couponSession = sessionStorage.getItem('aios_coupon_session');
-  if (couponSession) {
-    try {
-      state.user = JSON.parse(couponSession);
-    } catch (e) {
-      state.user = null;
-    }
-  } else {
-    const storedUser = localStorage.getItem('aios_user_profile');
-    if (storedUser) {
-      try {
-        state.user = JSON.parse(storedUser);
-      } catch (e) {
-        state.user = null;
-      }
-    }
-  }
+  // Direct default premium user state session initialization
   
   updateUserProfileHeader();
   initTrialClock();
@@ -3152,21 +3105,7 @@ function switchAuthTab(tab) {
   }
 }
 
-async function handleBusEmailSignin() {
-  if (window.kinde) {
-    window.kinde.login();
-  } else {
-    window.location.href = '/login';
-  }
-}
-
-async function handleBusEmailSignup() {
-  if (window.kinde) {
-    window.kinde.register();
-  } else {
-    window.location.href = '/register';
-  }
-}
+// Bypassed kinde duplicate handlers
 
 function showToast(message, type = "success") {
   const toast = document.getElementById('toast');

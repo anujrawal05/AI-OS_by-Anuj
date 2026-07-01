@@ -6169,12 +6169,7 @@ async function initSupabase() {
       });
       console.log("Supabase client initialized successfully.");
       
-      // Verify if coupon session is active. If not, clear state.user
-      if (!sessionStorage.getItem('aios_coupon_session')) {
-        state.user = null;
-        updateUserProfileHeader();
-        toggleBusinessSectionView();
-      }
+      // Coupon session check bypassed for static mode
     } else {
       console.warn("Supabase credentials missing from config API.");
     }
@@ -6862,13 +6857,7 @@ function closeTrialWelcomeModal() {
 }
 
 function showPricingModal(isMandatory = false) {
-  const overlay = document.getElementById('pricing-modal-overlay');
-  if (overlay) overlay.style.display = 'flex';
-  const closeBtn = document.getElementById('pricing-modal-close-btn');
-  if (closeBtn) {
-    closeBtn.style.display = isMandatory ? 'none' : 'block';
-  }
-  state.onboardingPricing = isMandatory;
+  // Bypassed for fully free static mode
 }
 
 async function handleChooseFreePlan() {
@@ -7367,25 +7356,7 @@ async function initAuthSystem() {
   // Session synchronization bypassed for static frontend mode
   console.log("[Static Mode] Session synchronization bypassed. Default Premium User active.");
 
-  // 1. Check coupon session storage first (tab isolation)
-  const couponSession = sessionStorage.getItem('aios_coupon_session');
-  if (couponSession) {
-    try {
-      state.user = JSON.parse(couponSession);
-    } catch (e) {
-      state.user = null;
-    }
-  } else {
-    // 2. Check local storage cache profile
-    const storedUser = localStorage.getItem('aios_user_profile');
-    if (storedUser) {
-      try {
-        state.user = JSON.parse(storedUser);
-      } catch (e) {
-        state.user = null;
-      }
-    }
-  }
+  // Direct default premium user state session initialization
   
   updateUserProfileHeader();
   toggleBusinessSectionView();
