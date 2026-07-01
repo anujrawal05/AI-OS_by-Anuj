@@ -683,11 +683,9 @@ async function handleCouponLogin(couponCode) {
 }
 
 async function logoutUser() {
-  if (supabaseClient) {
-    try {
-      await supabaseClient.auth.signOut();
-    } catch (err) {}
-  }
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } catch (err) {}
   sessionStorage.removeItem('aios_coupon_session');
   localStorage.removeItem('aios_user_profile');
   state.user = null;
@@ -696,10 +694,6 @@ async function logoutUser() {
   updateUserProfileHeader();
   toggleBusinessSectionView();
   showToast("Signed out successfully.");
-  
-  setTimeout(() => {
-    window.location.href = '/logout';
-  }, 1000);
 }
 
 function hideAuthModals() {
@@ -2336,38 +2330,275 @@ function initBusinessSimulators() {
   }
 }
 
-window.kinde = {
-  login: () => { window.location.href = '/login'; },
-  register: () => { window.location.href = '/register'; }
-};
+let authMode = 'signin';
+
+function updateAuthModalUI() {
+  const title = document.getElementById('auth-modal-title');
+  const desc = document.getElementById('auth-modal-desc');
+  const pwdContainer = document.getElementById('auth-password-container');
+  const btnSignin = document.getElementById('btn-email-signin');
+  const btnSignup = document.getElementById('btn-email-signup');
+  const toggleBtn = document.getElementById('btn-toggle-auth-mode');
+  const forgotBtn = document.getElementById('btn-forgot-password');
+  const errorEl = document.getElementById('auth-modal-error');
+  const successEl = document.getElementById('auth-modal-success');
+
+  if (errorEl) errorEl.style.display = 'none';
+  if (successEl) successEl.style.display = 'none';
+
+  if (authMode === 'signin') {
+    if (title) title.textContent = 'Access AI-OS Business';
+    if (desc) desc.textContent = 'Securely sign in to access all platform features, timelines, and digital business modules.';
+    if (pwdContainer) pwdContainer.style.display = 'block';
+    if (btnSignin) { btnSignin.style.display = 'block'; btnSignin.textContent = 'Sign In'; }
+    if (btnSignup) btnSignup.style.display = 'none';
+    if (toggleBtn) toggleBtn.textContent = 'Create Account instead';
+    if (forgotBtn) forgotBtn.style.display = 'inline-block';
+  } else if (authMode === 'signup') {
+    if (title) title.textContent = 'Create Account';
+    if (desc) desc.textContent = 'Sign up to start your premium experience and build smart AI workspaces.';
+    if (pwdContainer) pwdContainer.style.display = 'block';
+    if (btnSignin) btnSignin.style.display = 'none';
+    if (btnSignup) { btnSignup.style.display = 'block'; btnSignup.textContent = 'Sign Up'; }
+    if (toggleBtn) toggleBtn.textContent = 'Sign In instead';
+    if (forgotBtn) forgotBtn.style.display = 'none';
+  } else if (authMode === 'forgot') {
+    if (title) title.textContent = 'Reset Password';
+    if (desc) desc.textContent = 'Enter your email address and we will generate a recovery link.';
+    if (pwdContainer) pwdContainer.style.display = 'none';
+    if (btnSignin) { btnSignin.style.display = 'block'; btnSignin.textContent = 'Send Reset Link'; }
+    if (btnSignup) btnSignup.style.display = 'none';
+    if (toggleBtn) toggleBtn.textContent = 'Back to Sign In';
+    if (forgotBtn) forgotBtn.style.display = 'none';
+  }
+}
+
+async function handleBusEmailSignin() {
+  const emailEl = document.getElementById('auth-email');
+  const passwordEl = document.getElementById('auth-password');
+  const errorEl = document.getElementById('auth-modal-error');
+  
+  const email = emailEl ? emailEl.value.trim() : '';
+  const password = passwordEl ? passwordEl.value : '';
+  
+  if (!email || !password) {
+    if (errorEl) { errorEl.textContent = 'Please enter email and password.'; errorEl.style.display = 'block'; }
+    return;
+  }
+  
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      if (errorEl) { errorEl.textContent = data.error || 'Login failed.'; errorEl.style.display = 'block'; }
+      return;
+    }
+    
+    state.user = data.user;
+    localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+    
+    const authOverlay = document.getElementById('auth-modal-overlay');
+    if (authOverlay) authOverlay.style.display = 'none';
+    
+    if (!data.user.name || !data.user.date_of_birth || !data.user.gender || !data.user.profession) {
+      showOnboardingModal(data.user);
+    } else {
+      updateUserProfileHeader();
+      initTrialClock();
+      switchBusinessWorkspace('dashboard');
+      showToast("Logged in successfully!");
+    }
+  } catch (err) {
+    if (errorEl) { errorEl.textContent = 'Server connection failed.'; errorEl.style.display = 'block'; }
+  }
+}
+
+async function handleBusEmailSignup() {
+  const emailEl = document.getElementById('auth-email');
+  const passwordEl = document.getElementById('auth-password');
+  const errorEl = document.getElementById('auth-modal-error');
+  
+  const email = emailEl ? emailEl.value.trim() : '';
+  const password = passwordEl ? passwordEl.value : '';
+  
+  if (!email || !password) {
+    if (errorEl) { errorEl.textContent = 'Please enter email and password.'; errorEl.style.display = 'block'; }
+    return;
+  }
+  
+  if (password.length < 6) {
+    if (errorEl) { errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.style.display = 'block'; }
+    return;
+  }
+  
+  try {
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      if (errorEl) { errorEl.textContent = data.error || 'Signup failed.'; errorEl.style.display = 'block'; }
+      return;
+    }
+    
+    state.user = data.user;
+    localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+    
+    const authOverlay = document.getElementById('auth-modal-overlay');
+    if (authOverlay) authOverlay.style.display = 'none';
+    
+    showOnboardingModal(data.user);
+    showToast("Account created successfully!");
+  } catch (err) {
+    if (errorEl) { errorEl.textContent = 'Server connection failed.'; errorEl.style.display = 'block'; }
+  }
+}
+
+async function handleBusForgotPassword() {
+  const emailEl = document.getElementById('auth-email');
+  const errorEl = document.getElementById('auth-modal-error');
+  const successEl = document.getElementById('auth-modal-success');
+  
+  const email = emailEl ? emailEl.value.trim() : '';
+  if (!email) {
+    if (errorEl) { errorEl.textContent = 'Please enter your email.'; errorEl.style.display = 'block'; }
+    return;
+  }
+  
+  try {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      if (errorEl) { errorEl.textContent = data.error || 'Failed to request reset.'; errorEl.style.display = 'block'; }
+      return;
+    }
+    
+    if (successEl) {
+      successEl.textContent = 'Recovery link sent successfully!';
+      successEl.style.display = 'block';
+    }
+  } catch (err) {
+    if (errorEl) { errorEl.textContent = 'Server connection failed.'; errorEl.style.display = 'block'; }
+  }
+}
 
 async function initApp() {
-  // Clean URL of Kinde query parameters to prevent state loop traps
   const authUrlParams = new URLSearchParams(window.location.search);
+  
+  // Handle Reset Password action
+  const resetAction = authUrlParams.get('action');
+  const resetTokenVal = authUrlParams.get('token');
+  if (resetAction === 'reset-password' && resetTokenVal) {
+    const resetOverlay = document.getElementById('reset-password-modal-overlay');
+    if (resetOverlay) resetOverlay.style.display = 'flex';
+  }
+
+  // Bind Switch Mode button inside the main auth card
+  const toggleBtn = document.getElementById('btn-toggle-auth-mode');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      if (authMode === 'signin') authMode = 'signup';
+      else authMode = 'signin';
+      updateAuthModalUI();
+    });
+  }
+
+  // Bind Forgot Password button inside the main auth card
+  const forgotBtn = document.getElementById('btn-forgot-password');
+  if (forgotBtn) {
+    forgotBtn.addEventListener('click', () => {
+      authMode = 'forgot';
+      updateAuthModalUI();
+    });
+  }
+
+  // Bind Save Password inside reset overlay
+  const btnSubmitReset = document.getElementById('btn-submit-reset-password');
+  if (btnSubmitReset) {
+    btnSubmitReset.addEventListener('click', async () => {
+      const newPasswordEl = document.getElementById('reset-new-password');
+      const errorEl = document.getElementById('reset-modal-error');
+      const successEl = document.getElementById('reset-modal-success');
+      const token = new URLSearchParams(window.location.search).get('token');
+      
+      const newPassword = newPasswordEl ? newPasswordEl.value : '';
+      if (!newPassword || newPassword.length < 6) {
+        if (errorEl) { errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.style.display = 'block'; }
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, newPassword })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (errorEl) { errorEl.textContent = data.error || 'Reset failed.'; errorEl.style.display = 'block'; }
+          return;
+        }
+        
+        if (errorEl) errorEl.style.display = 'none';
+        if (successEl) {
+          successEl.textContent = 'Password reset successfully! Redirecting...';
+          successEl.style.display = 'block';
+        }
+        setTimeout(() => {
+          const resetOverlay = document.getElementById('reset-password-modal-overlay');
+          if (resetOverlay) resetOverlay.style.display = 'none';
+          const authOverlay = document.getElementById('auth-modal-overlay');
+          if (authOverlay) authOverlay.style.display = 'flex';
+        }, 2000);
+      } catch (err) {
+        if (errorEl) { errorEl.textContent = 'Connection failed.'; errorEl.style.display = 'block'; }
+      }
+    });
+  }
+
+  const resetCloseBtn = document.getElementById('reset-password-modal-close-btn');
+  if (resetCloseBtn) {
+    resetCloseBtn.addEventListener('click', () => {
+      const resetOverlay = document.getElementById('reset-password-modal-overlay');
+      if (resetOverlay) resetOverlay.style.display = 'none';
+    });
+  }
+
   if (authUrlParams.has('code') || authUrlParams.has('state') || authUrlParams.has('token') || authUrlParams.has('error')) {
     const cleanUrl = new URL(window.location.href);
     cleanUrl.search = '';
     window.history.replaceState({}, document.title, cleanUrl.toString());
   }
 
-  // Try to synchronize and recover session from Kinde
+  // Try to synchronize and recover session from DB auth status check
   try {
-    const kindeRes = await fetch('/api/auth/status');
-    if (kindeRes.ok) {
-      const kindeData = await kindeRes.json();
-      if (kindeData.authenticated) {
+    const statusRes = await fetch('/api/auth/status');
+    if (statusRes.ok) {
+      const statusData = await statusRes.json();
+      if (statusData.authenticated) {
         // Retrieve database profile details to check completeness
-        const profRes = await fetch('/api/auth/profile', {
-          headers: { 'Authorization': `Bearer ${kindeData.user.token}` }
-        });
+        const profRes = await fetch('/api/auth/profile');
         if (profRes.ok) {
           const profile = await profRes.json();
           // If profile is missing or incomplete, show onboarding modal
           if (!profile || !profile.full_name || !profile.date_of_birth || !profile.gender || !profile.profession) {
-            showOnboardingModal(kindeData.user);
+            showOnboardingModal(statusData.user);
           } else {
             state.user = {
-              ...kindeData.user,
+              ...statusData.user,
               name: profile.full_name,
               gender: profile.gender,
               profession: profile.profession,
@@ -2383,16 +2614,17 @@ async function initApp() {
             switchBusinessWorkspace('dashboard');
           }
         } else {
-          // Profile missing completely - show onboarding
-          showOnboardingModal(kindeData.user);
+          showOnboardingModal(statusData.user);
         }
-      } else if (state.user && state.user.provider === 'Kinde Auth') {
-        state.user = null;
-        localStorage.removeItem('aios_user_profile');
+      } else {
+        if (state.user && !state.user.is_coupon) {
+          state.user = null;
+          localStorage.removeItem('aios_user_profile');
+        }
       }
     }
   } catch (err) {
-    console.warn('Kinde session synchronization failed:', err.message);
+    console.warn('Session synchronization failed:', err.message);
   }
 
   const couponSession = sessionStorage.getItem('aios_coupon_session');

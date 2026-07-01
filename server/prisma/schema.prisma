@@ -1,0 +1,87 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 Int                      @id @default(autoincrement())
+  email              String                   @unique
+  passwordHash       String                   @map("password_hash")
+  fullName           String?                  @map("full_name")
+  gender             String?
+  profession         String?
+  dateOfBirth        String?                  @map("date_of_birth")
+  isVerified         Boolean                  @default(false) @map("is_verified")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  subscription       Subscription?
+  payments           Payment[]
+  usageLimit         UsageLimit?
+  resetTokens        PasswordResetToken[]
+  verificationTokens EmailVerificationToken[]
+
+  @@map("users")
+}
+
+model Subscription {
+  userId         Int       @id @map("user_id")
+  planType       String    @default("Basic") @map("plan_type")
+  status         String    @default("trial")
+  trialStartedAt DateTime? @map("trial_started_at")
+  trialExpiresAt DateTime? @map("trial_expires_at")
+  trialUsed      Boolean   @default(false) @map("trial_used")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @map("user_id")
+  razorpayOrderId    String   @map("razorpay_order_id")
+  razorpayPaymentId  String   @map("razorpay_payment_id")
+  amount             Int
+  status             String
+  createdAt          DateTime @default(now()) @map("created_at")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model UsageLimit {
+  userId      Int      @id @map("user_id")
+  promptCount Int      @default(0) @map("prompt_count")
+  resetDate   DateTime @default(now()) @map("reset_date")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("usage_limits")
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}

@@ -680,17 +680,35 @@
     <div class="auth-modal-card" style="max-width: 400px; text-align: center; padding: 30px;">
       <button id="auth-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">🔑</div>
-      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px; color: #fff;">Access AI-OS</h3>
-      <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 24px; line-height: 1.5;">
-        Securely sign in or register with Kinde to access all platform features, timelines, and digital business modules.
+      <h3 id="auth-modal-title" style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px; color: #fff;">Access AI-OS</h3>
+      <p id="auth-modal-desc" style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 24px; line-height: 1.5;">
+        Securely sign in or register to access all platform features, timelines, and digital business modules.
       </p>
+
+      <!-- Input fields inside the card -->
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
+        <div>
+          <label for="auth-email" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Email Address</label>
+          <input type="email" id="auth-email" placeholder="Enter your email" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
+        </div>
+        <div id="auth-password-container">
+          <label for="auth-password" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Password</label>
+          <input type="password" id="auth-password" placeholder="Enter your password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
+        </div>
+        <div id="auth-modal-error" style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <div id="auth-modal-success" style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+          <button id="btn-forgot-password" type="button" style="background: none; border: none; color: #2EC5FF; font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: var(--font-mono);">Forgot Password?</button>
+          <button id="btn-toggle-auth-mode" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: var(--font-mono);">Create Account instead</button>
+        </div>
+      </div>
 
       <div style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
         <button id="btn-email-signin" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #2EC5FF 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s;">
           Sign In
         </button>
-        <button id="btn-email-signup" class="btn" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-          Create Account
+        <button id="btn-email-signup" class="btn" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; transition: all 0.2s; display: none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+          Sign Up
         </button>
       </div>
 
@@ -702,6 +720,29 @@
       <p style="font-size: 0.72rem; color: var(--text-muted); text-align: center; margin-top: 16px; line-height: 1.4;">
         By continuing you agree to our <a href="./terms.html" target="_blank" style="color: var(--accent-color);">Terms</a> and <a href="./policy.html" target="_blank" style="color: var(--accent-color);">Privacy Policy</a>.
       </p>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div id="reset-password-modal-overlay" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-card" style="max-width: 400px; text-align: center; padding: 30px;">
+      <button id="reset-password-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="auth-modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">🔒</div>
+      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px; color: #fff;">Reset Password</h3>
+      <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 20px; line-height: 1.5;">
+        Enter your new secure account password below.
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
+        <div>
+          <label for="reset-new-password" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">New Password</label>
+          <input type="password" id="reset-new-password" placeholder="Min 6 characters" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
+        </div>
+        <div id="reset-modal-error" style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <div id="reset-modal-success" style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+      </div>
+      <button id="btn-submit-reset-password" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #2EC5FF 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s;">
+        Save Password
+      </button>
     </div>
   </div>
 
