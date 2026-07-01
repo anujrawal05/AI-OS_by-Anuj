@@ -622,6 +622,11 @@
   const overlay = document.getElementById('premium-player-overlay');
   const container = document.getElementById('premium-player-container');
   const video = document.getElementById('premium-video-element');
+  if (video) {
+    video.addEventListener('contextmenu', e => e.preventDefault());
+    video.setAttribute('controlsList', 'nodownload noRemotePlayback');
+    video.setAttribute('disablePictureInPicture', 'true');
+  }
   const closeBtn = document.getElementById('premium-player-close');
   const wrapper = document.getElementById('premium-video-wrapper');
   const stateIcon = document.getElementById('premium-video-state-icon');
@@ -990,10 +995,58 @@
     }
   }
 
+  // Obfuscated mapping for Cloudinary CDN video streams
+  const base64Links = {
+    "SaaS_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMjg0L1NhYVNfaGluZGlfejhnOGtlLm1wNA==",
+    "Inbound_Voice_AI_Studio_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMjkxL0luYm91bmRfVm9pY2VfQUlfU3R1ZGlvX2hpbmRpX3o1bG1ydC5tcDQ=",
+    "SaaS_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMjk0L1NhYVNfZW5nX2l2eXV3aC5tcDQ=",
+    "Drop-Servicing_Sprint_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMjk3L0Ryb3AtU2VydmljaW5nX1NwcmludF9lbmdfdjI0NTNnLm1wNA==",
+    "Managed_Creator_Network_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzAwL01hbmFnZWRfQ3JlYXRvcl9OZXR3b3JrX2VuZ193bW5iOW0ubXA0",
+    "Managed_Creator_Network_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzA3L01hbmFnZWRfQ3JlYXRvcl9OZXR3b3JrX2hpbmRpX2ZkY3B3MC5tcDQ=",
+    "Motion_Script_Compiler_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzIzL01vdGlvbl9TY3JpcHRfQ29tcGlsZXJfZW5nX3l4Z2FvNS5tcDQ=",
+    "Content_Engine_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzI0L0NvbnRlbnRfRW5naW5lX2VuZ190eXVyY3oubXA0",
+    "Drop-Servicing_Sprint_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzI1L0Ryb3AtU2VydmljaW5nX1NwcmludF9oaW5kaV95ZHZ2ZXkubXA0",
+    "Inbound_Voice_AI_Studio_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzMxL0luYm91bmRfVm9pY2VfQUlfU3R1ZGlvX2VuZ190YWJkemMubXA0",
+    "AI_Nursery_Rhyme_Engine_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzM5L0FJX051cnNlcnlfUmh5bWVfRW5naW5lX2hpbmRpX3BkZ3JpYS5tcDQ=",
+    "Content_Engine_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzQyL0NvbnRlbnRfRW5naW5lX2hpbmRpX2phdHp1Zy5tcDQ=",
+    "Motion_Script_Compiler_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzQ0L01vdGlvbl9TY3JpcHRfQ29tcGlsZXJfaGluZGlfdTBrbmZtLm1wND",
+    "AAA_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzQ3L0FBQV9lbmdfdmVocm96Lm1wND",
+    "AAA_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzUxL0FBQV9oaW5kaV9la3VxZDYubXA0",
+    "AI_Nursery_Rhyme_Engine_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzUxL0FJX051cnNlcnlfUmh5bWVfRW5naW5lX2VuZ19vZmE2aHEubXA0",
+    "AI_Video_Ad_Pipeline_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzUzL0FJX1ZpZGVvX0FkX1BpcGVsaW5lX2VuZ19iZGJyMXUubXA0",
+    "AI_Video_Ad_Pipeline_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyMzU0L0FJX1ZpZGVvX0FkX1BpcGVsaW5lX2hpbmRpX2MwZ3oyNi5tcDQ=",
+    "part5_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNDc2L3BhcnQ1X2hpbmRpX2h0cXp0Yi5tcDQ=",
+    "part3_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNDg0L3BhcnQzX2hpbmRpX3VuZGJidy5tcDQ=",
+    "part1_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNDg4L3BhcnQxX2hpbmRpX2RoZXp6bi5tcDQ=",
+    "part5_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNDk0L3BhcnQ1X2VuZ19qOG43YXIubXA0",
+    "part4_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNTAyL3BhcnQ0X2hpbmRpX28xc3FmOC5tcDQ=",
+    "part1_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNTA1L3BhcnQxX2VuZ19obHJ0Z2cubXA0",
+    "part3_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNTA5L3BhcnQzX2VuZ19hbWVhcGgubXA0",
+    "part2_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNTEyL3BhcnQyX2VuZ19lbzg0ZTgubXA0",
+    "part2_hindi.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNTIwL3BhcnQyX2hpbmRpX3JyeW91by5tcDQ=",
+    "part4_eng.mp4": "aHR0cHM6Ly9yZXMuY2xvdWRpbmFyeS5jb20veDZ2ZDNndnYvdmlkZW8vdXBsb2FkL3YxNzgyOTEyNTIxL3BhcnQ0X2VuZ19lajVxeWEubXA0"
+  };
+
+  function extractFilename(path) {
+    if (!path) return '';
+    const parts = path.split('/');
+    return parts[parts.length - 1];
+  }
+
   // Exposed Global Player Trigger
   window.playPremiumVideo = function(videoPath, title) {
-    activeVideoPath = videoPath;
-    video.src = videoPath;
+    const filename = extractFilename(videoPath);
+    let resolvedUrl = videoPath;
+    if (base64Links[filename]) {
+      try {
+        resolvedUrl = atob(base64Links[filename]);
+      } catch (e) {
+        console.error("Failed to decode video url:", e);
+      }
+    }
+    
+    activeVideoPath = filename || videoPath;
+    video.src = resolvedUrl;
     document.getElementById('premium-player-title').textContent = title || "AI-OS Lecture";
     
     // Show Modal
