@@ -3,13 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
-const fs = require('fs');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
 const prisma = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const { authMiddleware, optionalAuth, authorize } = require('./middleware/authMiddleware');
+const { authMiddleware, authorize } = require('./middleware/authMiddleware');
 const quotaService = require('./services/quotaService');
 const jobService = require('./services/jobService');
 const rateLimit = require('./middleware/rateLimiter');
@@ -43,8 +42,11 @@ app.use(session({
   }
 }));
 
-// Serve static assets from project root directory
-app.use(express.static(path.join(__dirname, '..')));
+// Serve static assets from project root directory (guarded against Vercel static analyzer tracing)
+const staticPath = [__dirname, '..'].join(path.sep);
+if (!process.env.VERCEL) {
+  app.use(express.static(staticPath));
+}
 
 // Config handler route
 const configHandler = require('../api/config');
@@ -642,21 +644,42 @@ app.get('/api/business-news', async (req, res) => {
   return res.status(200).json(articles);
 });
 
-// Dynamic Video Auto-Discovery API
+// Dynamic Video Auto-Discovery API (Optimized: hardcoded video lists to prevent Vercel NFT directory-read bundle bloat)
 app.get('/api/videos', authMiddleware, authorize('premium'), (req, res) => {
   try {
-    const buildDir = path.join(__dirname, '..', 'build tutorial');
-    const exploreDir = path.join(__dirname, '..', 'explore AI');
+    const buildVideos = [
+      "AAA_eng.mp4",
+      "AAA_hindi.mp4",
+      "AI_Nursery_Rhyme_Engine_eng.mp4",
+      "AI_Nursery_Rhyme_Engine_hindi.mp4",
+      "AI_Video_Ad_Pipeline_eng.mp4",
+      "AI_Video_Ad_Pipeline_hindi.mp4",
+      "Content_Engine_eng.mp4",
+      "Content_Engine_hindi.mp4",
+      "Drop-Servicing_Sprint_eng.mp4",
+      "Drop-Servicing_Sprint_hindi.mp4",
+      "Inbound_Voice_AI_Studio_eng.mp4",
+      "Inbound_Voice_AI_Studio_hindi.mp4",
+      "Managed_Creator_Network_eng.mp4",
+      "Managed_Creator_Network_hindi.mp4",
+      "Motion_Script_Compiler_eng.mp4",
+      "Motion_Script_Compiler_hindi.mp4",
+      "SaaS_eng.mp4",
+      "SaaS_hindi.mp4"
+    ];
     
-    let buildVideos = [];
-    if (fs.existsSync(buildDir)) {
-      buildVideos = fs.readdirSync(buildDir).filter(file => file.endsWith('.mp4'));
-    }
-    
-    let exploreVideos = [];
-    if (fs.existsSync(exploreDir)) {
-      exploreVideos = fs.readdirSync(exploreDir).filter(file => file.endsWith('.mp4'));
-    }
+    const exploreVideos = [
+      "part1_eng.mp4",
+      "part1_hindi.mp4",
+      "part2_eng.mp4",
+      "part2_hindi.mp4",
+      "part3_eng.mp4",
+      "part3_hindi.mp4",
+      "part4_eng.mp4",
+      "part4_hindi.mp4",
+      "part5_eng.mp4",
+      "part5_hindi.mp4"
+    ];
     
     res.json({
       success: true,

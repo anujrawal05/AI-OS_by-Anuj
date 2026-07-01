@@ -5,7 +5,11 @@
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.js", "use": "@vercel/static" },
     { "src": "*.css", "use": "@vercel/static" },
-    { "src": "locales/*.json", "use": "@vercel/static" }
+    { "src": "locales/*.json", "use": "@vercel/static" },
+    { "src": "build tutorial/**/*.mp4", "use": "@vercel/static" },
+    { "src": "explore AI/**/*.mp4", "use": "@vercel/static" },
+    { "src": "*.png", "use": "@vercel/static" },
+    { "src": "*.jpg", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/login", "dest": "server.js" },

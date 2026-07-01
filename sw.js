@@ -2,7 +2,6 @@ const CACHE_NAME = 'ai-os-cache-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/explore.html',
   '/aios_buisness.html',
   '/style.css',
   '/business.css',
