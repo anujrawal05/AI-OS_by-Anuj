@@ -43,7 +43,7 @@ app.use(session({
 }));
 
 // Serve static assets from project root directory (guarded against Vercel static analyzer tracing)
-const staticPath = [__dirname, '..'].join(path.sep);
+const staticPath = [__dirname, '..', '..'].join(path.sep);
 if (!process.env.VERCEL) {
   app.use(express.static(staticPath));
 }
