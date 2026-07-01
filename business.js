@@ -19,6 +19,37 @@
   };
 })();
 
+// --- Client-side Session Cache Helper ---
+const ClientCache = {
+  get(key) {
+    try {
+      const data = sessionStorage.getItem(`aios_cache_${key}`);
+      if (!data) return null;
+      const { value, expiresAt } = JSON.parse(data);
+      if (Date.now() > expiresAt) {
+        sessionStorage.removeItem(`aios_cache_${key}`);
+        return null;
+      }
+      return value;
+    } catch (e) {
+      return null;
+    }
+  },
+  set(key, value, ttlMs = 5 * 60 * 1000) {
+    try {
+      const data = JSON.stringify({ value, expiresAt: Date.now() + ttlMs });
+      sessionStorage.setItem(`aios_cache_${key}`, data);
+    } catch (e) {}
+  }
+};
+
+// --- Client-side Anonymized Analytics ---
+const Analytics = {
+  logEvent(eventName, eventDetails = {}) {
+    console.log(`[Analytics Event] ${eventName}`, eventDetails);
+  }
+};
+
 // Standalone AI-OS Business Platform Logic Script
 // Powered by A.R. Labs
 
@@ -3120,3 +3151,12 @@ function showLanguageSelectionPopup(videoBaseName, title) {
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
+
+// Register Service Worker for PWA support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('[PWA] Service Worker registered.', reg.scope))
+      .catch(err => console.warn('[PWA] Service Worker registration failed:', err));
+  });
+}

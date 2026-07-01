@@ -1,0 +1,16 @@
+{
+  "name": "AI-OS Workspace Platform",
+  "short_name": "AI-OS",
+  "description": "Unified execution platform: prompt engineering, financial blueprints, and strategic roadmaps.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0A0A0C",
+  "theme_color": "#2EC5FF",
+  "icons": [
+    {
+      "src": "/aios_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
