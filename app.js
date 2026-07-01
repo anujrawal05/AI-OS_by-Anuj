@@ -6492,7 +6492,6 @@ function showOnboardingModal(user) {
 
 async function handleOnboardingSubmit(e) {
   e.preventDefault();
-  if (!onboardingUser) return;
   
   const fullName = document.getElementById('ob-fullname').value.trim();
   const dob = document.getElementById('ob-dob').value;
@@ -6522,26 +6521,16 @@ async function handleOnboardingSubmit(e) {
   }
   
   try {
-    const trialStart = new Date().toISOString();
-    
-    // Fetch session token client-side to pass as auth header
-    if (!supabaseClient) throw new Error('Auth service is offline.');
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) throw new Error('No active authentication session found.');
-
     const res = await fetch('/api/auth/update-profile', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         full_name: fullName,
         date_of_birth: dob,
         gender: gender,
-        profession: profession,
-        plan_type: null,
-        trial_started_at: trialStart
+        profession: profession
       })
     });
     
@@ -6556,7 +6545,30 @@ async function handleOnboardingSubmit(e) {
     const welcomeModal = document.getElementById('trial-welcome-modal-overlay');
     if (welcomeModal) welcomeModal.style.display = 'flex';
     
-    await handleSupabaseSession(session, result.profile);
+    // Sync UI with updated profile values
+    if (result.profile) {
+      const remainingDays = 3; // New trials start with 3 days
+      state.user = {
+        id: result.profile.id,
+        name: result.profile.full_name,
+        email: result.profile.email,
+        picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${result.profile.email}`,
+        gender: result.profile.gender,
+        profession: result.profile.profession,
+        date_of_birth: result.profile.date_of_birth,
+        plan_type: result.profile.plan_type || 'Trial Premium',
+        trial_started_at: result.profile.trial_started_at || new Date().toISOString(),
+        trial_expires_at: result.profile.trial_expires_at || new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+        trial_days_remaining: remainingDays,
+        is_coupon: false
+      };
+      
+      updateUserProfileHeader();
+      initTrialClock();
+      toggleBusinessSectionView();
+    }
+    
+    showToast("Profile completed successfully!");
   } catch (err) {
     console.error("Onboarding failed:", err.message);
     if (errorEl) {
@@ -7600,6 +7612,11 @@ async function loadDiscoveredVideos() {
   }
 }
 loadDiscoveredVideos();
+
+const onboardingForm = document.getElementById('onboarding-form');
+if (onboardingForm) {
+  onboardingForm.addEventListener('submit', handleOnboardingSubmit);
+}
 
 // Register Service Worker for PWA support
 if ('serviceWorker' in navigator) {
