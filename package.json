@@ -19,6 +19,7 @@
     "express-session": "latest",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.22.0",
-    "prisma": "^5.22.0"
+    "prisma": "^5.22.0",
+    "razorpay": "^2.9.6"
   }
 }

@@ -439,6 +439,7 @@ async function handlePremiumUpgrade(planName = 'Premium Monthly', amount = 99) {
     return;
   }
   
+  // Load Razorpay config
   let razorpayKey = 'rzp_test_review2026';
   try {
     const res = await fetch('/api/config');
@@ -450,10 +451,31 @@ async function handlePremiumUpgrade(planName = 'Premium Monthly', amount = 99) {
     console.error("Failed to fetch Razorpay config:", e);
   }
 
+  // Create secure backend order first
+  let backendOrderId = null;
+  try {
+    const orderRes = await fetch('/api/auth/create-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ amount, planName })
+    });
+    if (orderRes.ok) {
+      const orderData = await orderRes.json();
+      if (orderData.success) {
+        backendOrderId = orderData.orderId;
+      }
+    }
+  } catch (err) {
+    console.error("Failed to create Razorpay order on backend:", err);
+  }
+
   const options = {
     key: razorpayKey,
     amount: amount * 100,
     currency: 'INR',
+    order_id: backendOrderId,
     name: 'A.R. Labs',
     description: `AI-OS ${planName} Upgrade`,
     image: 'https://anujrawal05.github.io/AI-OS_by-Anuj/aiso_logo.png',

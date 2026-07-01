@@ -26,6 +26,7 @@ router.get('/me', authMiddleware, (req, res) => {
 });
 
 // Payments & Coupons (apply authMiddleware)
+router.post('/create-order', authMiddleware, paymentController.createOrder);
 router.post('/verify-payment', authMiddleware, paymentController.verifyPayment);
 router.post('/coupon-login', couponController.couponLogin);
 

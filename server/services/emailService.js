@@ -13,7 +13,9 @@ const SUBJECTS = {
   passwordChanged: 'Your AI-OS Password Has Been Changed',
   premiumActivated: 'Your AI-OS Premium Plan is Active!',
   trialStarted: 'Your AI-OS Premium Trial Has Started!',
-  paymentSuccess: 'Payment Successful - AI-OS'
+  paymentSuccess: 'Payment Successful - AI-OS',
+  trialEnding: 'Your AI-OS Premium Trial is Ending Soon!',
+  subscriptionEnding: 'Your AI-OS Premium Subscription is Expiring Soon'
 };
 
 /**

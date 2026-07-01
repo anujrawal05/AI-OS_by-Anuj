@@ -10,6 +10,8 @@ const cookieParser = require('cookie-parser');
 const prisma = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const { authMiddleware, optionalAuth, authorize } = require('./middleware/authMiddleware');
+const quotaService = require('./services/quotaService');
+const jobService = require('./services/jobService');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -46,41 +48,18 @@ app.use('/api/auth', authRoutes);
 const dailyPromptLimitCache = {};
 
 // AI JSON Prompt Generator
-app.post('/api/prompt/generate-aios-prompt', authMiddleware, authorize('premium'), async (req, res) => {
+app.post('/api/prompt/generate-aios-prompt', authMiddleware, async (req, res) => {
   try {
     const verifiedUser = req.user;
     let numericId = verifiedUser ? parseInt(verifiedUser.id, 10) : null;
 
-    // Daily Limit Enforcements for Basic user plan
-    if (!verifiedUser.is_coupon && verifiedUser.plan_type === 'Basic' && numericId) {
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      
-      let limit = await prisma.usageLimit.findUnique({
-        where: { userId: numericId }
-      });
-      
-      if (!limit) {
-        limit = await prisma.usageLimit.create({
-          data: { userId: numericId, promptCount: 0, resetDate: today }
-        });
-      }
-      
-      const limitResetDate = new Date(limit.resetDate);
-      limitResetDate.setHours(0,0,0,0);
-      
-      if (today.getTime() > limitResetDate.getTime()) {
-        limit = await prisma.usageLimit.update({
-          where: { userId: numericId },
-          data: { promptCount: 1, resetDate: today }
-        });
-      } else {
-        if (limit.promptCount >= 5) {
-          return res.status(403).json({ error: 'Daily limit of 5 prompts reached for the Basic plan. Please upgrade to Premium for unlimited access.' });
-        }
-        limit = await prisma.usageLimit.update({
-          where: { userId: numericId },
-          data: { promptCount: limit.promptCount + 1 }
+    // Daily Limit Enforcements using centralized quotaService
+    if (!verifiedUser.is_coupon && numericId) {
+      const remaining = await quotaService.getRemainingQuota(numericId, verifiedUser.plan);
+      if (remaining !== 'unlimited' && remaining <= 0) {
+        return res.status(403).json({ 
+          error: 'Daily limit of 5 prompts reached for the Basic plan. Please upgrade to Premium for unlimited access.', 
+          quotaExceeded: true 
         });
       }
     }
@@ -234,9 +213,16 @@ app.post('/api/prompt/generate-aios-prompt', authMiddleware, authorize('premium'
       else if (parsedJSON.suno_prompt) finalPrompt = parsedJSON.suno_prompt;
     }
 
+    // Increment usage in central DB logs
+    if (numericId) {
+      await quotaService.incrementUsage(numericId, 'prompt_generation', verifiedUser.plan);
+    }
+
+    const quotaStatus = await quotaService.getStandardizedResponse(req);
     return res.status(200).json({
       success: true,
-      prompt: finalPrompt
+      prompt: finalPrompt,
+      quota: quotaStatus
     });
 
   } catch (error) {
@@ -252,14 +238,24 @@ app.post('/api/prompt/generate-aios-prompt', authMiddleware, authorize('premium'
 app.post('/api/strategist/chat', authMiddleware, authorize('premium'), async (req, res) => {
   try {
     const { mode, userInput, businessName, targetAudience, bottleneck, context, history } = req.body;
-    
+    const numericId = parseInt(req.user.id, 10);
+    const userPlan = req.user.plan;
+
+    // Log AI Usage
+    await quotaService.incrementUsage(numericId, 'roadmap_generation', userPlan, mode || 'compile');
+
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
     if (!openRouterApiKey) {
       console.warn('[Strategist Server] OpenRouter API key not configured. Using fallback templates.');
+      const quotaStatus = await quotaService.getStandardizedResponse(req);
       if (mode === 'chat') {
-        return res.status(200).json({ reply: `I received your query: "${userInput}". Our live AI systems are currently offline. Please configure your OpenRouter API key.` });
+        return res.status(200).json({ 
+          reply: `I received your query: "${userInput}". Our live AI systems are currently offline. Please configure your OpenRouter API key.`, 
+          quota: quotaStatus 
+        });
       }
-      return res.status(200).json(getFallbackStrategy(businessName || userInput));
+      const fallback = getFallbackStrategy(businessName || userInput);
+      return res.status(200).json({ ...fallback, quota: quotaStatus });
     }
 
     const currentMode = mode || 'compile';
@@ -323,7 +319,8 @@ app.post('/api/strategist/chat', authMiddleware, authorize('premium'), async (re
       }
 
       const parsedJSON = JSON.parse(resultText);
-      return res.status(200).json(parsedJSON);
+      const quotaStatus = await quotaService.getStandardizedResponse(req);
+      return res.status(200).json({ ...parsedJSON, quota: quotaStatus });
 
     } else {
       // mode === 'chat' (Follow-up chat answers)
@@ -379,15 +376,21 @@ app.post('/api/strategist/chat', authMiddleware, authorize('premium'), async (re
       );
 
       const resultText = openRouterResponse?.data?.choices?.[0]?.message?.content || '';
-      return res.status(200).json({ reply: resultText.trim() });
+      const quotaStatus = await quotaService.getStandardizedResponse(req);
+      return res.status(200).json({ reply: resultText.trim(), quota: quotaStatus });
     }
 
   } catch (error) {
     console.error('[Strategist Server] Error:', error.message);
+    const quotaStatus = await quotaService.getStandardizedResponse(req);
     if (req.body && req.body.mode === 'chat') {
-      return res.status(200).json({ reply: "I failed to process your question due to a backend connection timeout. Please try again." });
+      return res.status(200).json({ 
+        reply: "I failed to process your question due to a backend connection timeout. Please try again.", 
+        quota: quotaStatus 
+      });
     }
-    return res.status(200).json(getFallbackStrategy(req.body ? (req.body.businessName || 'Business') : 'Business'));
+    const fallback = getFallbackStrategy(req.body ? (req.body.businessName || 'Business') : 'Business');
+    return res.status(200).json({ ...fallback, quota: quotaStatus });
   }
 });
 
@@ -680,6 +683,9 @@ app.get('*', (req, res) => {
 
 // Standalone execution launcher or when required by root server.js wrapper
 if (require.main === module || (require.main && require.main.filename && require.main.filename.endsWith('server.js'))) {
+  // Start background jobs scheduler
+  jobService.startBackgroundJobs();
+
   app.listen(PORT, () => {
     console.log(`Modular AI-OS execution platform running on http://localhost:${PORT}`);
   });

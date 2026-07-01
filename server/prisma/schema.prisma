@@ -22,6 +22,7 @@ model User {
   usageLimit         UsageLimit?
   resetTokens        PasswordResetToken[]
   verificationTokens EmailVerificationToken[]
+  usageLogs          UsageLog[]
 
   @@map("users")
 }
@@ -36,6 +37,11 @@ model Subscription {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Custom Subscription tracking
+  startDate      DateTime? @map("start_date")
+  endDate        DateTime? @map("end_date")
+  renewalStatus  String?   @default("active") @map("renewal_status")
 
   @@map("subscriptions")
 }
@@ -49,6 +55,11 @@ model Payment {
   status             String
   createdAt          DateTime @default(now()) @map("created_at")
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Custom transactional billing details
+  paymentStatus      String?  @map("payment_status")
+  invoiceNumber      String?  @map("invoice_number")
+  couponUsed         String?  @map("coupon_used")
 
   @@map("payments")
 }
@@ -73,8 +84,6 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
 }
 
-
-
 model EmailVerificationToken {
   id        Int      @id @default(autoincrement())
   userId    Int      @map("user_id")
@@ -84,4 +93,16 @@ model EmailVerificationToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("email_verification_tokens")
+}
+
+model UsageLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  actionType  String   @map("action_type")
+  promptCount Int      @default(1) @map("prompt_count")
+  details     String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("usage_logs")
 }
