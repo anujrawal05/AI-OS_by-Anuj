@@ -3698,6 +3698,23 @@ export function renderPremiumToolCard(mapping) {
   }
 }
 
+export async function syncBookmarksFromBackend() {
+  const localUser = localStorage.getItem('aios_user_profile');
+  if (!localUser) return;
+  try {
+    const res = await fetch('/api/bookmarks');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && data.bookmarks) {
+        const toolIds = data.bookmarks.map(b => b.toolId);
+        localStorage.setItem('ai-os-favorites', JSON.stringify(toolIds));
+      }
+    }
+  } catch (err) {
+    console.warn('[Bookmarks Sync Error]', err);
+  }
+}
+
 export function getFavorites() {
   try {
     const favs = localStorage.getItem('ai-os-favorites');
@@ -3718,12 +3735,25 @@ export function toggleFavorite(toolId) {
     isFav = true;
   }
   localStorage.setItem('ai-os-favorites', JSON.stringify(favs));
+
+  // Sync state in the background with backend
+  const localUser = localStorage.getItem('aios_user_profile');
+  if (localUser) {
+    fetch('/api/bookmarks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ toolId })
+    }).catch(err => console.warn('Failed to sync bookmark toggle to backend:', err));
+  }
+
   return isFav;
 }
 
 export function isFavorite(toolId) {
   return getFavorites().includes(toolId);
 }
+
+window.syncBookmarksFromBackend = syncBookmarksFromBackend;
 
 export function toggleComparison(toolId) {
   const index = state.comparisonList.indexOf(toolId);

@@ -164,7 +164,7 @@ window.handleBusinessVideoPlay = function(key, videoBaseName, title) {
     return;
   }
   
-  const isPremium = state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial Premium' || state.user.plan_type === 'Trial');
+  const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
   if (!isPremium) {
     showToast("Upgrade to Premium or start trial to watch tutorials.", "warning");
     showPricingModal(true);

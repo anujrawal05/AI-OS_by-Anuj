@@ -24,5 +24,6 @@ router.post('/reset-password', validateRequest(resetPasswordSchema), authControl
 router.get('/me', authenticateUser, authController.getMe);
 router.post('/logout', authenticateUser, authController.logout);
 router.post('/logout-all', authenticateUser, authController.logoutAllDevices);
+router.post('/update-profile', authenticateUser, authController.updateProfile);
 
 module.exports = router;

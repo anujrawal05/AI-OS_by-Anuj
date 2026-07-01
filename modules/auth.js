@@ -1,19 +1,19 @@
-// Mock Authentication Layer for AI-OS (Fully Frontend Static)
+// Authentication Layer for AI-OS (Connected to Express V2 Backend)
 // Powered by A.R. Labs
 
 import { state } from './core.js';
 import { showToast } from './utils.js';
+import { apiCall } from './apiClient.js';
 
 let authMode = 'signin';
 let onboardingUser = null;
 
 export async function initSupabase() {
-  console.log("[Static Auth] Supabase initialization stubbed.");
+  console.log("[Auth] Supabase legacy client disabled. Express session-token initialized.");
 }
 
 export function isUserAuthenticated() {
-  // Always authenticated in static mode
-  return true;
+  return !!state.user;
 }
 
 export function calculateUnlockRate() {
@@ -29,24 +29,42 @@ export function updateUserProfileHeader() {
   const ctaBtn = document.getElementById('btn-upgrade-premium-cta');
   const heroCtaBtn = document.getElementById('btn-hero-upgrade-cta');
   
+  // Set premium button active status based on the plan type loaded from the DB
+  const isPremium = state.user && (state.user.subscription?.plan === 'Premium' || state.user.subscription?.plan === 'Trial');
+
   if (ctaBtn) {
-    ctaBtn.style.display = 'block';
-    ctaBtn.textContent = 'Premium Active';
-    ctaBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
-    ctaBtn.style.color = '#fff';
-    ctaBtn.style.boxShadow = '0 0 10px rgba(46, 204, 113, 0.3)';
-    ctaBtn.style.animation = 'none';
-    ctaBtn.onclick = () => {
-      showToast("You are currently on the Premium Plan! Full access unlocked.", "info");
-    };
+    if (isPremium) {
+      ctaBtn.style.display = 'block';
+      ctaBtn.textContent = state.user.subscription.plan === 'Trial' ? 'Trial Plan Active' : 'Premium Active';
+      ctaBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+      ctaBtn.style.color = '#fff';
+      ctaBtn.style.boxShadow = '0 0 10px rgba(46, 204, 113, 0.3)';
+      ctaBtn.style.animation = 'none';
+      ctaBtn.onclick = () => {
+        showToast("Full access unlocked! Plan: " + state.user.subscription.plan, "info");
+      };
+    } else {
+      ctaBtn.style.display = 'block';
+      ctaBtn.textContent = 'Upgrade Premium';
+      ctaBtn.style.background = 'var(--accent-color)';
+      ctaBtn.style.color = '#000';
+      ctaBtn.style.boxShadow = 'none';
+      ctaBtn.onclick = () => {
+        const pricingOverlay = document.getElementById('pricing-modal-overlay');
+        if (pricingOverlay) pricingOverlay.style.display = 'flex';
+      };
+    }
   }
 
   if (heroCtaBtn) {
-    heroCtaBtn.style.display = 'none';
+    heroCtaBtn.style.display = isPremium ? 'none' : 'block';
   }
   
   if (state.user) {
-    const initials = state.user.name ? state.user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) : 'US';
+    const initials = state.user.profile?.name 
+      ? state.user.profile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) 
+      : state.user.email.split('@')[0].slice(0,2).toUpperCase();
+      
     container.innerHTML = `
       <div class="profile-dropdown-wrapper">
         <button id="btn-header-profile" class="profile-btn" style="background: linear-gradient(135deg, #2EC5FF 0%, #00D084 100%); color: #000; font-weight: 700; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.88rem; cursor: pointer; border: none; outline: none; transition: transform 0.2s;">
@@ -54,12 +72,16 @@ export function updateUserProfileHeader() {
         </button>
         <div id="header-profile-dropdown" class="profile-dropdown">
           <div class="profile-dropdown-header">
-            <strong>${state.user.name || 'AI-OS User'}</strong>
+            <strong>${state.user.profile?.name || 'AI-OS User'}</strong>
             <span>${state.user.email}</span>
           </div>
           <a href="#" id="btn-dropdown-profile" class="profile-dropdown-item">
             👤 &nbsp; Settings / Profile
           </a>
+          ${state.user.role === 'Admin' ? `
+          <a href="#" id="btn-dropdown-admin" class="profile-dropdown-item" style="color: var(--accent-color); font-weight: 600;">
+            ⚙️ &nbsp; Admin Control Panel
+          </a>` : ''}
           <a href="#" id="btn-header-logout" class="profile-dropdown-item logout">
             🔑 &nbsp; Sign Out
           </a>
@@ -82,6 +104,15 @@ export function updateUserProfileHeader() {
         e.stopPropagation();
         if (dropdown) dropdown.classList.remove('active');
         showProfileModal();
+      });
+    }
+
+    const adminMenuBtn = document.getElementById('btn-dropdown-admin');
+    if (adminMenuBtn) {
+      adminMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (dropdown) dropdown.classList.remove('active');
+        showAdminModal();
       });
     }
     
@@ -193,22 +224,41 @@ export async function handleEmailSignin() {
     return;
   }
   
-  // Set mock static premium user session
-  state.user = {
-    id: "static-user-id",
-    name: email.split('@')[0],
-    email: email,
-    plan_type: 'Premium',
-    is_coupon: false
-  };
-  localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-  
-  const authOverlay = document.getElementById('auth-modal-overlay');
-  if (authOverlay) authOverlay.style.display = 'none';
-  
-  updateUserProfileHeader();
-  if (window.initTrialClock) window.initTrialClock();
-  showToast("Logged in successfully!");
+  try {
+    const data = await apiCall('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+
+    if (data.success) {
+      // Re-fetch context to populate subscriptions & profile properties
+      const context = await apiCall('/api/auth/me');
+      state.user = context.user;
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+      
+      if (window.syncBookmarksFromBackend) {
+        window.syncBookmarksFromBackend();
+      }
+      
+      const authOverlay = document.getElementById('auth-modal-overlay');
+      if (authOverlay) authOverlay.style.display = 'none';
+      
+      updateUserProfileHeader();
+      if (window.initTrialClock) window.initTrialClock();
+      showToast("Logged in successfully!");
+    }
+  } catch (err) {
+    // If the account has not been verified yet
+    if (err.message.includes('verification required')) {
+      showOtpScreen();
+      showToast("Please verify the OTP code sent during registration.");
+    } else {
+      if (errorEl) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+      }
+    }
+  }
 }
 
 export async function handleEmailSignup() {
@@ -229,16 +279,29 @@ export async function handleEmailSignup() {
     return;
   }
   
-  // Mock registration sends user to OTP input modal
-  showOtpScreen();
-  showToast("Mock Registration: OTP code '123456' has been sent to your email!");
+  try {
+    const data = await apiCall('/api/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+
+    if (data.success) {
+      showOtpScreen();
+      showToast("Verification OTP code has been sent to your email!");
+    }
+  } catch (err) {
+    if (errorEl) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = 'block';
+    }
+  }
 }
 
 export function showOtpScreen() {
   const title = document.getElementById('auth-modal-title');
   const desc = document.getElementById('auth-modal-desc');
   if (title) title.textContent = 'Verify OTP';
-  if (desc) desc.textContent = 'Enter the mock verification code sent to your email address (use 123456).';
+  if (desc) desc.textContent = 'Enter the 6-digit verification code sent to your email address.';
   
   const formFields = document.getElementById('auth-form-fields');
   const actionButtons = document.getElementById('auth-action-buttons');
@@ -272,43 +335,55 @@ export async function handleVerifyOtp() {
   const codeEl = document.getElementById('auth-otp-code');
   const errorEl = document.getElementById('otp-error-msg');
   const successEl = document.getElementById('otp-success-msg');
-  
+  const emailEl = document.getElementById('auth-email');
+
   const otp = codeEl ? codeEl.value.trim() : '';
+  const email = emailEl ? emailEl.value.trim() : '';
+
   if (!otp) {
     if (errorEl) { errorEl.textContent = 'Please enter the verification code.'; errorEl.style.display = 'block'; }
     return;
   }
   
-  if (errorEl) errorEl.style.display = 'none';
-  if (successEl) successEl.style.display = 'none';
-  
-  if (successEl) { successEl.textContent = 'Mock code verified successfully!'; successEl.style.display = 'block'; }
-  
-  // Set mock static user session
-  const emailEl = document.getElementById('auth-email');
-  const email = emailEl ? emailEl.value.trim() : 'demo@aios.com';
-  
-  state.user = {
-    id: "static-user-id",
-    name: email.split('@')[0],
-    email: email,
-    plan_type: 'Premium',
-    is_coupon: false
-  };
-  localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-  
-  setTimeout(() => {
-    const authOverlay = document.getElementById('auth-modal-overlay');
-    if (authOverlay) authOverlay.style.display = 'none';
-    
-    if (codeEl) codeEl.value = '';
+  try {
     if (errorEl) errorEl.style.display = 'none';
     if (successEl) successEl.style.display = 'none';
-    hideOtpScreen();
-    
-    showOnboardingModal(state.user);
-    showToast("Email verified! Welcome to AI-OS.");
-  }, 1000);
+
+    const data = await apiCall('/api/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp })
+    });
+
+    if (data.success) {
+      if (successEl) { successEl.textContent = 'Code verified successfully!'; successEl.style.display = 'block'; }
+      
+      const context = await apiCall('/api/auth/me');
+      state.user = context.user;
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+
+      if (window.syncBookmarksFromBackend) {
+        window.syncBookmarksFromBackend();
+      }
+
+      setTimeout(() => {
+        const authOverlay = document.getElementById('auth-modal-overlay');
+        if (authOverlay) authOverlay.style.display = 'none';
+        
+        if (codeEl) codeEl.value = '';
+        if (errorEl) errorEl.style.display = 'none';
+        if (successEl) successEl.style.display = 'none';
+        hideOtpScreen();
+        
+        showOnboardingModal(state.user);
+        showToast("Email verified! Welcome to AI-OS.");
+      }, 1000);
+    }
+  } catch (err) {
+    if (errorEl) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = 'block';
+    }
+  }
 }
 
 export async function handleForgotPassword() {
@@ -322,14 +397,28 @@ export async function handleForgotPassword() {
     return;
   }
   
-  if (successEl) {
-    successEl.textContent = 'Mock recovery link sent to your email!';
-    successEl.style.display = 'block';
+  try {
+    const data = await apiCall('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+
+    if (data.success) {
+      if (successEl) {
+        successEl.textContent = 'Recovery instructions sent to your email!';
+        successEl.style.display = 'block';
+      }
+    }
+  } catch (err) {
+    if (errorEl) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = 'block';
+    }
   }
 }
 
 export async function handleSupabaseSession(session, profile = null) {
-  console.log("[Static Auth] Supabase session handler bypassed.");
+  console.log("[Auth] Supabase legacy session handler ignored.");
 }
 
 export function showOnboardingModal(user) {
@@ -372,40 +461,68 @@ export async function handleOnboardingSubmit(e) {
     return;
   }
   
-  const overlay = document.getElementById('onboarding-modal-overlay');
-  if (overlay) overlay.style.display = 'none';
-  
-  const welcomeModal = document.getElementById('trial-welcome-modal-overlay');
-  if (welcomeModal) welcomeModal.style.display = 'flex';
-  
-  state.user.name = fullName;
-  state.user.date_of_birth = dob;
-  state.user.gender = gender;
-  state.user.profession = profession;
-  localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-  
-  updateUserProfileHeader();
-  if (window.initTrialClock) window.initTrialClock();
-  showToast("Profile completed successfully!");
+  try {
+    const data = await apiCall('/api/auth/update-profile', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: fullName,
+        dateOfBirth: dob,
+        gender,
+        profession
+      })
+    });
+
+    if (data.success) {
+      const overlay = document.getElementById('onboarding-modal-overlay');
+      if (overlay) overlay.style.display = 'none';
+      
+      const welcomeModal = document.getElementById('trial-welcome-modal-overlay');
+      if (welcomeModal) welcomeModal.style.display = 'flex';
+      
+      const context = await apiCall('/api/auth/me');
+      state.user = context.user;
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+      
+      if (window.syncBookmarksFromBackend) {
+        window.syncBookmarksFromBackend();
+      }
+      
+      updateUserProfileHeader();
+      if (window.initTrialClock) window.initTrialClock();
+      showToast("Profile completed successfully!");
+    }
+  } catch (err) {
+    if (errorEl) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = 'block';
+    }
+  }
 }
 
 export function showProfileModal() {
   if (!state.user) return;
   
   document.getElementById('pf-email').value = state.user.email || '';
-  document.getElementById('pf-fullname').value = state.user.name || '';
-  document.getElementById('pf-dob').value = state.user.date_of_birth || '';
-  document.getElementById('pf-gender').value = state.user.gender || '';
-  document.getElementById('pf-profession').value = state.user.profession || '';
-  document.getElementById('pf-plan-display').textContent = 'Premium';
+  document.getElementById('pf-fullname').value = state.user.profile?.name || '';
+  document.getElementById('pf-dob').value = state.user.profile?.dateOfBirth ? state.user.profile.dateOfBirth.slice(0, 10) : '';
+  document.getElementById('pf-gender').value = state.user.profile?.gender || '';
+  document.getElementById('pf-profession').value = state.user.profile?.profession || '';
+  
+  const planName = state.user.subscription?.plan || 'Free';
+  document.getElementById('pf-plan-display').textContent = planName;
   
   const accountTypeEl = document.getElementById('pf-account-type-display');
   const accessStatusEl = document.getElementById('pf-access-status-display');
   
-  if (accountTypeEl) accountTypeEl.textContent = 'Email User';
+  if (accountTypeEl) accountTypeEl.textContent = state.user.role === 'Admin' ? 'Administrator' : 'Standard User';
+  
   if (accessStatusEl) {
-    accessStatusEl.innerHTML = 'Premium';
-    accessStatusEl.className = 'badge-access premium-badge';
+    accessStatusEl.innerHTML = planName;
+    if (planName === 'Premium' || planName === 'Trial') {
+      accessStatusEl.className = 'badge-access premium-badge';
+    } else {
+      accessStatusEl.className = 'badge-access free-badge';
+    }
   }
   
   const overlay = document.getElementById('profile-modal-overlay');
@@ -425,17 +542,30 @@ export async function handleProfileSave(e) {
     return;
   }
   
-  state.user.name = fullName;
-  state.user.date_of_birth = dob;
-  state.user.gender = gender;
-  state.user.profession = profession;
-  
-  localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-  
-  const overlay = document.getElementById('profile-modal-overlay');
-  if (overlay) overlay.style.display = 'none';
-  updateUserProfileHeader();
-  showToast("Profile settings saved successfully!");
+  try {
+    const data = await apiCall('/api/auth/update-profile', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: fullName,
+        dateOfBirth: dob,
+        gender,
+        profession
+      })
+    });
+
+    if (data.success) {
+      const context = await apiCall('/api/auth/me');
+      state.user = context.user;
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+      
+      const overlay = document.getElementById('profile-modal-overlay');
+      if (overlay) overlay.style.display = 'none';
+      updateUserProfileHeader();
+      showToast("Profile settings saved successfully!");
+    }
+  } catch (err) {
+    showToast("Failed to save profile: " + err.message, "error");
+  }
 }
 
 export async function handleCouponLogin(couponCode) {
@@ -450,50 +580,48 @@ export async function handleCouponLogin(couponCode) {
     return;
   }
   
-  state.user = {
-    id: "coupon-user-id",
-    name: "Premium Coupon User",
-    email: "coupon@aios.com",
-    plan_type: 'Premium',
-    is_coupon: true
-  };
-  
-  sessionStorage.setItem('aios_coupon_session', JSON.stringify(state.user));
-  state.analytics.couponRedemptions++;
-  
-  hideAuthModals();
-  updateUserProfileHeader();
-  if (window.AdManager) window.AdManager.updateAdVisibility();
-  if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
-  
-  showToast("Coupon redeemed successfully! Premium access unlocked.");
+  try {
+    const data = await apiCall('/api/payments/coupon', {
+      method: 'POST',
+      body: JSON.stringify({ couponCode })
+    });
+
+    if (data.success) {
+      const context = await apiCall('/api/auth/me');
+      state.user = context.user;
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+
+      hideAuthModals();
+      updateUserProfileHeader();
+      if (window.AdManager) window.AdManager.updateAdVisibility();
+      if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
+      
+      showToast("Coupon redeemed successfully! Premium access unlocked.");
+    }
+  } catch (err) {
+    if (errorEl) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = 'block';
+    }
+  }
 }
 
 export async function logoutUser() {
-  sessionStorage.removeItem('aios_coupon_session');
+  try {
+    await apiCall('/api/auth/logout', { method: 'POST' });
+  } catch (e) {}
+
+  // Reset local state cache
+  state.user = null;
   localStorage.removeItem('aios_user_profile');
-  
-  // Re-initialize default user profile for static sandbox
-  state.user = {
-    id: "demo-user-123",
-    email: "demo@aios.com",
-    name: "Demo Premium User",
-    gender: "Male",
-    profession: "Business Owner",
-    date_of_birth: "1995-01-01",
-    plan_type: "Premium",
-    trial_started_at: new Date().toISOString(),
-    trial_expires_at: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-    trial_days_remaining: 3,
-    is_coupon: false
-  };
-  localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+  sessionStorage.removeItem('aios_coupon_session');
+  localStorage.removeItem('ai-os-favorites');
   
   hideAuthModals();
   updateUserProfileHeader();
   if (window.AdManager) window.AdManager.updateAdVisibility();
   if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
-  showToast("Signed out. Static profile reset successfully.");
+  showToast("Logged out successfully.");
 }
 
 export function hideAuthModals() {
@@ -513,29 +641,20 @@ export function hideAuthModals() {
 }
 
 export async function initAuthSystem() {
-  // If user profile doesn't exist, seed it with default premium user
-  const localUser = localStorage.getItem('aios_user_profile');
-  if (localUser) {
-    try {
-      state.user = JSON.parse(localUser);
-    } catch(e) {}
-  }
-  
-  if (!state.user) {
-    state.user = {
-      id: "demo-user-123",
-      email: "demo@aios.com",
-      name: "Demo Premium User",
-      gender: "Male",
-      profession: "Business Owner",
-      date_of_birth: "1995-01-01",
-      plan_type: "Premium",
-      trial_started_at: new Date().toISOString(),
-      trial_expires_at: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-      trial_days_remaining: 3,
-      is_coupon: false
-    };
-    localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+  // Restore session context dynamically from backend on startup
+  try {
+    const data = await apiCall('/api/auth/me');
+    if (data && data.success) {
+      state.user = data.user;
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+      
+      if (window.syncBookmarksFromBackend) {
+        window.syncBookmarksFromBackend();
+      }
+    }
+  } catch (err) {
+    state.user = null;
+    localStorage.removeItem('aios_user_profile');
   }
   
   updateUserProfileHeader();
@@ -556,11 +675,251 @@ export async function initAuthSystem() {
       updateAuthModalUI();
     });
   }
-
-  console.log("[Static Mode] Static authentication initialized cleanly.");
 }
 
-// Global exposure for backwards compatibility
+export async function showAdminModal() {
+  let modal = document.getElementById('admin-dashboard-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'admin-dashboard-modal';
+    modal.className = 'auth-modal-overlay';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5,5,8,0.9); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 10001;';
+    
+    modal.innerHTML = `
+      <div class="auth-modal-card" style="max-width: 800px; width: 95%; max-height: 85vh; overflow-y: auto; background: #0A0A0C; border: 1px solid rgba(255,255,255,0.08); padding: 32px; border-radius: 16px; position: relative; font-family: sans-serif;">
+        <button id="admin-modal-close-btn" class="auth-modal-close-btn" style="position: absolute; right: 20px; top: 20px; background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+          <span style="font-size: 1.8rem;">⚙️</span>
+          <h2 style="font-family: monospace; color: #fff; margin: 0; font-weight: 700;">Admin Control Panel</h2>
+        </div>
+        
+        <!-- Tab buttons -->
+        <div style="display: flex; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 20px;">
+          <button class="admin-tab-btn active" data-tab="stats" style="background: transparent; border: none; color: var(--accent-color); font-weight: 600; cursor: pointer; padding: 4px 12px; font-family: inherit;">Dashboard Stats</button>
+          <button class="admin-tab-btn" data-tab="users" style="background: transparent; border: none; color: #888; font-weight: 600; cursor: pointer; padding: 4px 12px; font-family: inherit;">User Manager</button>
+          <button class="admin-tab-btn" data-tab="broadcast" style="background: transparent; border: none; color: #888; font-weight: 600; cursor: pointer; padding: 4px 12px; font-family: inherit;">Alert Broadcast</button>
+        </div>
+        
+        <!-- Tab Content Panes -->
+        <div id="admin-tab-stats" class="admin-tab-pane active">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px;" id="admin-stats-grid">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; text-align: center;">
+              <span style="color: #888; font-size: 0.8rem;">Total Users</span>
+              <h3 id="admin-stat-total" style="font-size: 1.8rem; margin: 8px 0 0 0; color: #fff; font-family: monospace;">...</h3>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; text-align: center;">
+              <span style="color: #888; font-size: 0.8rem;">Active Premium</span>
+              <h3 id="admin-stat-premium" style="font-size: 1.8rem; margin: 8px 0 0 0; color: var(--accent-color); font-family: monospace;">...</h3>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; text-align: center;">
+              <span style="color: #888; font-size: 0.8rem;">Trial Users</span>
+              <h3 id="admin-stat-trial" style="font-size: 1.8rem; margin: 8px 0 0 0; color: #2ecc71; font-family: monospace;">...</h3>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; text-align: center;">
+              <span style="color: #888; font-size: 0.8rem;">Revenue</span>
+              <h3 id="admin-stat-revenue" style="font-size: 1.8rem; margin: 8px 0 0 0; color: #f1c40f; font-family: monospace;">...</h3>
+            </div>
+          </div>
+          
+          <h4 style="color: #fff; margin-bottom: 12px; font-weight: 600;">Recent Audit Logs</h4>
+          <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.78rem;" id="admin-recent-logs">
+            Loading system events...
+          </div>
+        </div>
+        
+        <div id="admin-tab-users" class="admin-tab-pane" style="display: none;">
+          <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+            <input type="text" id="admin-user-search" placeholder="Search by email..." style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff;">
+            <button id="btn-admin-search-users" class="btn btn-secondary" style="padding: 8px 16px; font-family: inherit;">Search</button>
+          </div>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #888;">
+                  <th style="padding: 8px;">User</th>
+                  <th style="padding: 8px;">Tier</th>
+                  <th style="padding: 8px;">Status</th>
+                  <th style="padding: 8px; text-align: right;">Operations</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body">
+                <tr><td colspan="4" style="text-align: center; padding: 12px; color: #888;">Click search to retrieve users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="admin-tab-broadcast" class="admin-tab-pane" style="display: none;">
+          <form id="admin-broadcast-form" style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; margin-bottom: 4px; color: #888;">Notification Title</label>
+              <input type="text" id="broadcast-title" required placeholder="e.g. System Upgrade Scheduled" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; box-sizing: border-box;">
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; margin-bottom: 4px; color: #888;">Broadcast Message Body</label>
+              <textarea id="broadcast-message" required rows="4" placeholder="Type notification details here..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; font-family: sans-serif; resize: vertical; box-sizing: border-box;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px; font-family: inherit;">Dispatch Broadcast Alert</button>
+          </form>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Tab switching controls
+    modal.querySelectorAll('.admin-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        modal.querySelectorAll('.admin-tab-btn').forEach(b => {
+          b.classList.remove('active');
+          b.style.color = '#888';
+        });
+        btn.classList.add('active');
+        btn.style.color = 'var(--accent-color)';
+        
+        modal.querySelectorAll('.admin-tab-pane').forEach(p => p.style.display = 'none');
+        const activePane = modal.querySelector(`#admin-tab-${btn.getAttribute('data-tab')}`);
+        if (activePane) activePane.style.display = 'block';
+        
+        if (btn.getAttribute('data-tab') === 'users') {
+          loadAdminUserList();
+        }
+      });
+    });
+    
+    // Close handles
+    modal.querySelector('#admin-modal-close-btn').addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    
+    // User search button
+    modal.querySelector('#btn-admin-search-users').addEventListener('click', loadAdminUserList);
+    
+    // Broadcast submit
+    modal.querySelector('#admin-broadcast-form').addEventListener('submit', handleBroadcastSubmit);
+  }
+  
+  modal.style.display = 'flex';
+  loadAdminStats();
+}
+
+async function loadAdminStats() {
+  try {
+    const data = await apiCall('/api/admin/stats');
+    if (data && data.success) {
+      document.getElementById('admin-stat-total').textContent = data.stats.totalUsers;
+      document.getElementById('admin-stat-premium').textContent = data.stats.premiumUsers;
+      document.getElementById('admin-stat-trial').textContent = data.stats.trialUsers;
+      document.getElementById('admin-stat-revenue').textContent = `₹${data.stats.totalRevenue}`;
+      
+      const logsContainer = document.getElementById('admin-recent-logs');
+      if (logsContainer && data.stats.recentLogs) {
+        logsContainer.innerHTML = data.stats.recentLogs.map(l => {
+          const time = new Date(l.createdAt).toLocaleTimeString();
+          return `<div style="margin-bottom: 4px; color: rgba(255,255,255,0.7);"><span style="color:var(--accent-color);">[${time}]</span> User ${l.userId.slice(0,6)} performed <strong>${l.action}</strong></div>`;
+        }).join('') || '<div style="color: #666;">No audit log records available.</div>';
+      }
+    }
+  } catch (err) {
+    showToast("Failed to fetch admin statistics", "error");
+  }
+}
+
+async function loadAdminUserList() {
+  const searchQuery = document.getElementById('admin-user-search').value.trim();
+  const tableBody = document.getElementById('admin-users-table-body');
+  if (!tableBody) return;
+  
+  tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 12px; color: #888;">Fetching latest directory...</td></tr>`;
+  
+  try {
+    const endpoint = `/api/admin/users?search=${encodeURIComponent(searchQuery)}`;
+    const data = await apiCall(endpoint);
+    if (data && data.success) {
+      tableBody.innerHTML = data.users.map(u => {
+        const isSuspended = u.status === 'Suspended';
+        const plan = u.subscription?.plan || 'Free';
+        
+        return `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding: 10px; color: #fff;">
+              <div>${u.profile?.name || 'No Name'}</div>
+              <div style="font-size:0.75rem; color:#666;">${u.email}</div>
+            </td>
+            <td style="padding: 10px;">
+              <select onchange="updateUserTier('${u.id}', this.value)" style="background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 4px; border-radius: 4px;">
+                <option value="Free" ${plan === 'Free' ? 'selected' : ''}>Free</option>
+                <option value="Trial" ${plan === 'Trial' ? 'selected' : ''}>Trial</option>
+                <option value="Premium" ${plan === 'Premium' ? 'selected' : ''}>Premium</option>
+              </select>
+            </td>
+            <td style="padding: 10px;">
+              <span style="color: ${isSuspended ? '#ff4a4a' : '#2ecc71'};">${u.status || 'Active'}</span>
+            </td>
+            <td style="padding: 10px; text-align: right;">
+              <button onclick="toggleUserSuspension('${u.id}', ${isSuspended})" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.72rem; border-radius: 4px; background: ${isSuspended ? '#2ecc71' : '#ff4a4a'}; border: none; color: #000; cursor: pointer; font-family: inherit;">
+                ${isSuspended ? 'Activate' : 'Suspend'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('') || `<tr><td colspan="4" style="text-align: center; padding: 12px; color: #888;">No users found matching search filter.</td></tr>`;
+    }
+  } catch (err) {
+    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 12px; color: #ff4a4a;">Failed to load directory details.</td></tr>`;
+  }
+}
+
+async function handleBroadcastSubmit(e) {
+  e.preventDefault();
+  const title = document.getElementById('broadcast-title').value.trim();
+  const message = document.getElementById('broadcast-message').value.trim();
+  
+  try {
+    const data = await apiCall('/api/admin/broadcast', {
+      method: 'POST',
+      body: JSON.stringify({ title, message })
+    });
+    
+    if (data.success) {
+      showToast("Alert broadcast dispatched successfully to all profiles!", "success");
+      document.getElementById('broadcast-title').value = '';
+      document.getElementById('broadcast-message').value = '';
+    }
+  } catch (err) {
+    showToast("Failed to dispatch broadcast alert: " + err.message, "error");
+  }
+}
+
+async function updateUserTier(userId, newPlan) {
+  try {
+    const data = await apiCall(`/api/admin/users/${userId}/tier`, {
+      method: 'POST',
+      body: JSON.stringify({ tier: newPlan })
+    });
+    if (data.success) {
+      showToast("User subscription tier updated successfully!", "success");
+      loadAdminUserList();
+    }
+  } catch (err) {
+    showToast("Failed to update user tier: " + err.message, "error");
+  }
+}
+
+async function toggleUserSuspension(userId, currentSuspended) {
+  const endpoint = `/api/admin/users/${userId}/${currentSuspended ? 'activate' : 'suspend'}`;
+  try {
+    const data = await apiCall(endpoint, { method: 'POST' });
+    if (data.success) {
+      showToast(`User account ${currentSuspended ? 'activated' : 'suspended'} successfully.`, "success");
+      loadAdminUserList();
+    }
+  } catch (err) {
+    showToast("Failed to execute moderation change: " + err.message, "error");
+  }
+}
+
+// Global exposure for backwards compatibility with inline HTML events
 window.initSupabase = initSupabase;
 window.isUserAuthenticated = isUserAuthenticated;
 window.updateUserProfileHeader = updateUserProfileHeader;
@@ -581,3 +940,6 @@ window.handleCouponLogin = handleCouponLogin;
 window.logoutUser = logoutUser;
 window.hideAuthModals = hideAuthModals;
 window.initAuthSystem = initAuthSystem;
+window.showAdminModal = showAdminModal;
+window.updateUserTier = updateUserTier;
+window.toggleUserSuspension = toggleUserSuspension;

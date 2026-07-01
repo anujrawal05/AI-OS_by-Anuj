@@ -27,13 +27,13 @@ const lockTranslations = {
 };
 
 export function isTrialActive() {
-  return state.user && (state.user.plan_type === 'Trial Premium' || state.user.plan_type === 'Trial') && state.user.trial_days_remaining > 0;
+  return state.user && state.user.subscription && state.user.subscription.plan === 'Trial' && new Date(state.user.subscription.currentPeriodEnd) > new Date();
 }
 
 export function getTrialRemainingTime() {
-  if (!state.user || !state.user.trial_expires_at) return null;
+  if (!state.user || !state.user.subscription || !state.user.subscription.currentPeriodEnd) return null;
   const now = Date.now();
-  const expires = new Date(state.user.trial_expires_at).getTime();
+  const expires = new Date(state.user.subscription.currentPeriodEnd).getTime();
   const diffMs = expires - now;
   if (diffMs <= 0) return null;
   

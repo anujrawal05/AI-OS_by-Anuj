@@ -986,11 +986,25 @@
   // Save Viewing Progress throttled
   function saveProgress() {
     if (video.duration && activeVideoPath) {
-      // If close to the end, clear the saved time
-      if (video.currentTime > video.duration - 10) {
+      const isCompleted = video.currentTime > video.duration - 10;
+      if (isCompleted) {
         localStorage.removeItem(`aios_video_resume_${activeVideoPath}`);
       } else {
         localStorage.setItem(`aios_video_resume_${activeVideoPath}`, video.currentTime);
+      }
+
+      // Sync progress to PostgreSQL backend using API Client if user is logged in
+      const localUser = localStorage.getItem('aios_user_profile');
+      if (localUser) {
+        fetch('/api/videos/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            videoFilename: activeVideoPath,
+            progressSeconds: video.currentTime,
+            isCompleted
+          })
+        }).catch(err => console.warn('Failed to sync video progress to backend:', err));
       }
     }
   }
@@ -1049,10 +1063,30 @@
     video.src = resolvedUrl;
     document.getElementById('premium-player-title').textContent = title || "AI-OS Lecture";
     
-    // Show Modal
-    overlay.style.display = 'flex';
-    void overlay.offsetWidth; // force redraw
-    overlay.classList.add('active');
+    // Sync progress from backend database before displaying
+    const localUser = localStorage.getItem('aios_user_profile');
+    if (localUser) {
+      fetch('/api/videos/progress')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.success && data.logs) {
+            const log = data.logs.find(l => l.videoFilename.toLowerCase() === activeVideoPath.toLowerCase());
+            if (log && log.progressSeconds > 3 && !log.isCompleted) {
+              localStorage.setItem(`aios_video_resume_${activeVideoPath}`, log.progressSeconds);
+            }
+          }
+        })
+        .catch(err => console.warn('Failed to fetch video progress from backend:', err))
+        .finally(() => {
+          overlay.style.display = 'flex';
+          void overlay.offsetWidth; // force redraw
+          overlay.classList.add('active');
+        });
+    } else {
+      overlay.style.display = 'flex';
+      void overlay.offsetWidth; // force redraw
+      overlay.classList.add('active');
+    }
     
     // Start progress saver loop
     clearInterval(saveInterval);

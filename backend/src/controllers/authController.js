@@ -581,6 +581,45 @@ async function resetPassword(req, res, next) {
   }
 }
 
+// 10. UPDATE PROFILE DETAILS
+async function updateProfile(req, res, next) {
+  const { name, dateOfBirth, gender, profession } = req.body;
+
+  try {
+    const dob = dateOfBirth ? new Date(dateOfBirth) : null;
+    let validGender = 'Prefer_Not_To_Say';
+    if (gender === 'Male' || gender === 'Female' || gender === 'Other' || gender === 'Prefer_Not_To_Say') {
+      validGender = gender;
+    }
+
+    const updatedProfile = await prisma.profile.upsert({
+      where: { userId: req.user.id },
+      update: {
+        name,
+        dateOfBirth: dob,
+        gender: validGender,
+        profession,
+        updatedAt: new Date()
+      },
+      create: {
+        userId: req.user.id,
+        name: name || 'AI-OS User',
+        dateOfBirth: dob,
+        gender: validGender,
+        profession
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully.',
+      profile: updatedProfile
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   signup,
   verifyOtp,
@@ -590,5 +629,6 @@ module.exports = {
   logout,
   logoutAllDevices,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  updateProfile
 };
