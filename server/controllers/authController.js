@@ -126,11 +126,10 @@ async function login(req, res) {
 
     // Sign session JWT
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('aios_token', token, {
       httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
+      secure: true,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -148,8 +147,7 @@ async function login(req, res) {
         trial_started_at: user.subscription ? user.subscription.trialStartedAt : null,
         trial_expires_at: user.subscription ? user.subscription.trialExpiresAt : null,
         trial_used: user.subscription ? user.subscription.trialUsed : false,
-        is_coupon: false,
-        token
+        is_coupon: false
       }
     });
 
