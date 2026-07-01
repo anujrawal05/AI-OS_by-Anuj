@@ -1,2 +1,2 @@
-// Thin startup wrapper pointing to the modular server implementation
-require('../server/server.js');
+const app = require('../server/server.js');
+module.exports = app;

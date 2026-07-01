@@ -844,7 +844,7 @@ app.get('*', (req, res) => {
 });
 
 // Standalone execution launcher or when required by root server.js wrapper
-if (require.main === module || (require.main && require.main.filename && require.main.filename.endsWith('server.js'))) {
+if (!process.env.VERCEL && (require.main === module || (require.main && require.main.filename && require.main.filename.endsWith('server.js')))) {
   // Validate configuration before starting server
   bootstrapper.validateConfig();
 
