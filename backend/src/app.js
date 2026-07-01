@@ -2,12 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const strategistRoutes = require('./routes/strategistRoutes');
+const progressRoutes = require('./routes/progressRoutes');
 
 const app = express();
 
 // Standard parsers and security headers
 app.use(cors({
-  origin: true, // Echo origin back to support cross-origin HttpOnly cookies in staging/dev
+  origin: true, // Echo origin back to support cross-origin HttpOnly cookies
   credentials: true
 }));
 app.use(cookieParser());
@@ -20,8 +23,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register Authentication Routing Module
+// Register Routing Modules
 app.use('/api/auth', authRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/strategist', strategistRoutes);
+app.use('/api', progressRoutes); // Maps /api/videos/progress, /api/bookmarks, etc.
 
 // Minimal health check endpoint directly mapped on root app
 app.get('/health', (req, res) => {

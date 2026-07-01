@@ -150,13 +150,33 @@ async function verifyOtp(req, res, next) {
         }
       });
 
+      const durationMs = 3 * 24 * 60 * 60 * 1000; // 3 days
+      const trialEnd = new Date(Date.now() + durationMs);
+
       await tx.subscription.create({
         data: {
           userId: user.id,
-          plan: 'Free',
-          status: 'Expired',
+          plan: 'Trial',
+          status: 'Active',
           currentPeriodStart: new Date(),
-          currentPeriodEnd: new Date()
+          currentPeriodEnd: trialEnd
+        }
+      });
+
+      await tx.trial.create({
+        data: {
+          userId: user.id,
+          startedAt: new Date(),
+          expiresAt: trialEnd,
+          daysRemaining: 3
+        }
+      });
+
+      await tx.promptUsage.create({
+        data: {
+          userId: user.id,
+          promptCount: 0,
+          resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24-hour reset cycle
         }
       });
 
@@ -367,6 +387,9 @@ async function login(req, res, next) {
 // 5. GET ACTIVE PROFILE (/me)
 async function getMe(req, res, next) {
   try {
+    const { getSubscription } = require('../services/subscriptionService');
+    const subscription = await getSubscription(req.user.id);
+
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
       select: {
@@ -375,14 +398,16 @@ async function getMe(req, res, next) {
         role: true,
         isVerified: true,
         profile: true,
-        preferences: true,
-        subscription: true
+        preferences: true
       }
     });
 
     return res.status(200).json({
       success: true,
-      user
+      user: {
+        ...user,
+        subscription
+      }
     });
   } catch (err) {
     next(err);

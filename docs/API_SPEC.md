@@ -314,6 +314,157 @@ This document details the REST API specifications for all feature modules of the
 
 ---
 
+### 4.3 Get Video Progress Logs
+- **Method**: `GET`
+- **Path**: `/api/videos/progress`
+- **Access**: Session-User
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "logs": [
+      {
+        "id": "v-uuid",
+        "videoFilename": "AAA_eng.mp4",
+        "progressSeconds": "142.5",
+        "isCompleted": false
+      }
+    ]
+  }
+  ```
+
+---
+
+## 📈 4A. Business Progress & Bookmarks (`/api`)
+
+### 4A.1 Save Business Progress
+- **Method**: `POST`
+- **Path**: `/api/progress/business`
+- **Access**: Session-User
+- **Request Body**:
+  ```json
+  {
+    "stepKey": "expansion_marketing",
+    "isUnlocked": true,
+    "progressPercentage": 50
+  }
+  ```
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "progress": {
+      "id": "b-uuid",
+      "stepKey": "expansion_marketing",
+      "isUnlocked": true,
+      "progressPercentage": 50
+    }
+  }
+  ```
+
+---
+
+### 4A.2 Get Business Progress Logs
+- **Method**: `GET`
+- **Path**: `/api/progress/business`
+- **Access**: Session-User
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "logs": [
+      {
+        "id": "b-uuid",
+        "stepKey": "expansion_marketing",
+        "isUnlocked": true,
+        "progressPercentage": 50
+      }
+    ]
+  }
+  ```
+
+---
+
+### 4A.3 Toggle Bookmark
+- **Method**: `POST`
+- **Path**: `/api/bookmarks`
+- **Access**: Session-User
+- **Request Body**:
+  ```json
+  {
+    "toolId": "TOOL_002"
+  }
+  ```
+- **Response**: `200 OK` (if removed) or `201 Created` (if added)
+  ```json
+  {
+    "success": true,
+    "bookmarked": true,
+    "bookmark": {
+      "id": "bm-uuid",
+      "toolId": "TOOL_002"
+    }
+  }
+  ```
+
+---
+
+### 4A.4 Get Active Bookmarks
+- **Method**: `GET`
+- **Path**: `/api/bookmarks`
+- **Access**: Session-User
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "bookmarks": [
+      {
+        "id": "bm-uuid",
+        "toolId": "TOOL_002"
+      }
+    ]
+  }
+  ```
+
+---
+
+## 🔔 4B. Notifications Inbox (`/api`)
+
+### 4B.1 Get Notifications
+- **Method**: `GET`
+- **Path**: `/api/notifications`
+- **Access**: Session-User
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "notifications": [
+      {
+        "id": "n-uuid",
+        "title": "Welcome to premium",
+        "message": "Thank you for upgrading.",
+        "isRead": false,
+        "createdAt": "2026-07-01T12:00:00Z"
+      }
+    ]
+  }
+  ```
+
+---
+
+### 4B.2 Mark Notification As Read
+- **Method**: `POST`
+- **Path**: `/api/notifications/:id/read`
+- **Access**: Session-User
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true
+  }
+  ```
+
+---
+
 ## 💳 5. Billing & Payment Gateway (`/api/payments`)
 
 ### 5.1 Create Gateway Checkout Order
