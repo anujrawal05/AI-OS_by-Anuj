@@ -1,7 +1,137 @@
-// --- Stateless CSRF Fetch Interceptor ---
+// --- Stateless CSRF & Backend Mock API Interceptor ---
 (function() {
   const originalFetch = window.fetch;
+  const mockUser = {
+    id: "demo-user-123",
+    email: "demo@aios.com",
+    name: "Demo Premium User",
+    gender: "Male",
+    profession: "Business Owner",
+    date_of_birth: "1995-01-01",
+    plan_type: "Premium",
+    trial_started_at: new Date().toISOString(),
+    trial_expires_at: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+    trial_days_remaining: 3,
+    is_coupon: false
+  };
+
   window.fetch = function (url, options = {}) {
+    const urlString = String(url);
+    if (urlString.includes('/api/')) {
+      console.log(`[Mock API Interceptor] Intercepted: ${urlString}`);
+      
+      let responseBody = { success: true };
+      
+      if (urlString.includes('/api/auth/me') || urlString.includes('/api/auth/profile')) {
+        responseBody = { success: true, user: mockUser };
+      } else if (urlString.includes('/api/auth/status') || urlString.includes('/api/auth/kinde-session')) {
+        responseBody = { authenticated: true, user: mockUser };
+      } else if (urlString.includes('/api/auth/login')) {
+        responseBody = { success: true, hasDetails: true, user: mockUser, message: "Logged in successfully" };
+      } else if (urlString.includes('/api/auth/signup')) {
+        responseBody = { success: true, message: "Registration successful. A verification code has been sent to your email." };
+      } else if (urlString.includes('/api/auth/verify-otp') || urlString.includes('/api/auth/verify-email')) {
+        responseBody = { success: true, message: "Email verified successfully.", user: mockUser };
+      } else if (urlString.includes('/api/auth/update-profile')) {
+        let parsed = {};
+        try { parsed = JSON.parse(options.body || '{}'); } catch(e) {}
+        const updated = { ...mockUser, name: parsed.full_name || mockUser.name, gender: parsed.gender || mockUser.gender, profession: parsed.profession || mockUser.profession, date_of_birth: parsed.date_of_birth || mockUser.date_of_birth };
+        responseBody = { success: true, profile: { id: updated.id, email: updated.email, full_name: updated.name, date_of_birth: updated.date_of_birth, gender: updated.gender, profession: updated.profession, plan_type: "Premium" } };
+      } else if (urlString.includes('/api/auth/logout')) {
+        responseBody = { success: true, message: "Logged out successfully." };
+      } else if (urlString.includes('/api/auth/forgot-password') || urlString.includes('/api/auth/reset-password')) {
+        responseBody = { success: true, message: "Action completed successfully." };
+      } else if (urlString.includes('/api/config')) {
+        responseBody = { razorpayKeyId: 'rzp_test_mockKey123' };
+      } else if (urlString.includes('/api/create-order')) {
+        responseBody = { success: true, orderId: 'order_mock123', amount: 9900 };
+      } else if (urlString.includes('/api/verify-payment')) {
+        responseBody = { success: true, message: "Payment verified successfully." };
+      } else if (urlString.includes('/api/videos')) {
+        responseBody = {
+          success: true,
+          buildVideos: [
+            "AAA_eng.mp4", "AAA_hindi.mp4", "AI_Nursery_Rhyme_Engine_eng.mp4", "AI_Nursery_Rhyme_Engine_hindi.mp4",
+            "AI_Video_Ad_Pipeline_eng.mp4", "AI_Video_Ad_Pipeline_hindi.mp4", "Content_Engine_eng.mp4", "Content_Engine_hindi.mp4",
+            "Drop-Servicing_Sprint_eng.mp4", "Drop-Servicing_Sprint_hindi.mp4", "Inbound_Voice_AI_Studio_eng.mp4", "Inbound_Voice_AI_Studio_hindi.mp4",
+            "Managed_Creator_Network_eng.mp4", "Managed_Creator_Network_hindi.mp4", "Motion_Script_Compiler_eng.mp4", "Motion_Script_Compiler_hindi.mp4",
+            "SaaS_eng.mp4", "SaaS_hindi.mp4"
+          ],
+          exploreVideos: [
+            "part1_eng.mp4", "part1_hindi.mp4", "part2_eng.mp4", "part2_hindi.mp4", "part3_eng.mp4", "part3_hindi.mp4",
+            "part4_eng.mp4", "part4_hindi.mp4", "part5_eng.mp4", "part5_hindi.mp4"
+          ]
+        };
+      } else if (urlString.includes('/api/market-data')) {
+        responseBody = {
+          "NASDAQ": { "price": 19000, "change": 1.2 },
+          "SP500": { "price": 5400, "change": 0.8 },
+          "BTC": { "price": 65000, "change": -2.3 },
+          "ETH": { "price": 3500, "change": -1.5 },
+          "Gold": { "price": 2300, "change": 0.4 },
+          "USDINR": { "price": 83.5, "change": 0.1 },
+          "_valuations": {
+            "NVDA": { "price": 125.0, "change": 1.25, "capUsd": 3.0, "capInr": 250.0 },
+            "MSFT": { "price": 420.0, "change": -0.42, "capUsd": 3.1, "capInr": 258.0 },
+            "AAPL": { "price": 210.0, "change": 0.85, "capUsd": 3.2, "capInr": 267.0 },
+            "GOOGL": { "price": 175.0, "change": -1.15, "capUsd": 2.1, "capInr": 175.0 }
+          },
+          "_calendar": [
+            { "date": "JUL 12", "title": "US CPI Inflation Release", "desc": "Directly influences global interest rates & valuations" },
+            { "date": "JUL 28", "title": "Big Tech Earnings Season", "desc": "NVIDIA, Google, Microsoft report AI investment yields" },
+            { "date": "AUG 10", "title": "Global AI Governance Summit", "desc": "Standards on safety and commercial licensing released" }
+          ],
+          "_trends": [
+            { "title": "Programmatic SEO & Directory Sites", "growth": "+42.0% CAGR", "desc": "AI-generated regional catalog sites driving zero-cost incoming lead lists." },
+            { "title": "Generative Support Orchestration", "growth": "+64.5% CAGR", "desc": "Replacing traditional support staff pools with LLM agent ticket resolution pipelines." }
+          ]
+        };
+      } else if (urlString.includes('/api/business-news')) {
+        responseBody = [
+          { "title": "AI Agents Set to Transform Enterprise Automation in 2026", "link": "#", "pubDate": new Date().toISOString(), "source": "TechNews" },
+          { "title": "Startups Leverage Programmatic SEO for Hyper-Growth", "link": "#", "pubDate": new Date().toISOString(), "source": "BizVenture" },
+          { "title": "How LLMs are Restructuring Customer Support Pipelines", "link": "#", "pubDate": new Date().toISOString(), "source": "SaaSReview" },
+          { "title": "NVIDIA Releases Next-Generation Custom Inference Chips", "link": "#", "pubDate": new Date().toISOString(), "source": "InferenceWeekly" }
+        ];
+      } else if (urlString.includes('/api/prompt/generate-aios-prompt')) {
+        let parsed = {};
+        try { parsed = JSON.parse(options.body || '{}'); } catch(e) {}
+        responseBody = {
+          success: true,
+          prompt: "An award-winning cinematic scene: " + (parsed.userInput || "AI-OS custom prompt template"),
+          quota: { "remaining": "unlimited", "limit": "unlimited" }
+        };
+      } else if (urlString.includes('/api/strategist/chat')) {
+        let parsed = {};
+        try { parsed = JSON.parse(options.body || '{}'); } catch(e) {}
+        const mode = parsed.mode || 'compile';
+        if (mode === 'chat') {
+          responseBody = {
+            success: true,
+            reply: `I received your follow-up query: "<strong>${parsed.userInput}</strong>". As your corporate consultant, I recommend launching the automation sequences immediately.`,
+            quota: { "remaining": "unremaining", "limit": "unlimited" }
+          };
+        } else {
+          responseBody = {
+            success: true,
+            analysis: `Strategic diagnostics for "${parsed.businessName || 'Your Business'}": Identified customer-acquisition scale bottleneck. Transitioning to automated outbound sequences is highly recommended.`,
+            opportunities: "1. AAA Lead Chatbots: Sell custom lead-booking chatbots to local dentist or wellness offices.<br>2. Programmatic Landing Pages: Package automated directory templates targeting regional search strings.<br>3. CRM Sync flows: Charge ₹25,000 setups to link checkout webhooks to sales spreadsheets.",
+            automation: "Set up Make.com webhooks: Trigger on Stripe checkout capture --> parse variables via OpenAI GPT-4 API --> generate a PDF client contract --> draft email with document sign link and email template via Resend API.",
+            marketing: "Focus on cold outbound campaign workflows. Scrape directories for target contacts (marketing managers). Send a highly structured 3-part email template showing how customer retention bots improve signup rates by 40%.",
+            leads: "Acquire a directory list using scrapers. Filter target companies with >₹5M ARR. Schedule email sequencing (Smartreach/Instantly) targeting 30 contacts daily. Track open rates (target >60%) and reply rates (target >8%).",
+            revenue: "Shift billing from hourly packages to outcomes. Introduce setup retainers (₹50,000) plus a 10% commission on all monthly conversions generated, increasing customer lifetime value (LTV) by 2.5x.",
+            plan: "<strong>Days 1-30 (Launch Phase)</strong>:<br>- Build landing portfolio presenting live chatbot mockups.<br>- Vett contractors and establish freelancer relationships.<br><br><strong>Days 31-60 (Scale Phase)</strong>:<br>- Run Instantly campaigns contacting 40 leads daily.<br>- Conduct 5-minute video Loom audits for warm replies.<br><br><strong>Days 61-90 (Optimization Phase)</strong>:<br>- Close 3 retainers.<br>- Deploy WhatsApp booking automations and upsell retainer maintenance plans.",
+            quota: { "remaining": "unlimited", "limit": "unlimited" }
+          };
+        }
+      }
+
+      return Promise.resolve(new Response(JSON.stringify(responseBody), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }));
+    }
+
     const method = (options.method || 'GET').toUpperCase();
     if (['POST', 'PUT', 'DELETE'].includes(method)) {
       options.headers = options.headers || {};
@@ -54,7 +184,19 @@ const Analytics = {
 // Powered by A.R. Labs
 
 const state = {
-  user: null,
+  user: {
+    id: "demo-user-123",
+    email: "demo@aios.com",
+    name: "Demo Premium User",
+    gender: "Male",
+    profession: "Business Owner",
+    date_of_birth: "1995-01-01",
+    plan_type: "Premium",
+    trial_started_at: new Date().toISOString(),
+    trial_expires_at: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+    trial_days_remaining: 3,
+    is_coupon: false
+  },
   onboardingPricing: false,
   activeWorkspace: 'learn', // 'learn', 'build', 'grow'
   analytics: {
@@ -2761,63 +2903,8 @@ async function initApp() {
     window.history.replaceState({}, document.title, cleanUrl.toString());
   }
 
-  // Try to synchronize and recover session from DB auth status check using /api/auth/me
-  try {
-    const meRes = await fetch('/api/auth/me');
-    if (meRes.ok) {
-      const meData = await meRes.json();
-      if (meData.success && meData.user) {
-        const user = meData.user;
-        // Check profile completeness on user object directly
-        if (!user.fullName || !user.dateOfBirth || !user.gender || !user.profession) {
-          showOnboardingModal({
-            id: user.id,
-            email: user.email,
-            name: user.fullName || '',
-            gender: user.gender || '',
-            profession: user.profession || '',
-            date_of_birth: user.dateOfBirth || '',
-            plan_type: user.plan_type || 'Basic'
-          });
-        } else {
-          state.user = {
-            id: user.id,
-            email: user.email,
-            name: user.fullName,
-            gender: user.gender,
-            profession: user.profession,
-            date_of_birth: user.dateOfBirth,
-            plan_type: user.plan_type || 'Basic',
-            is_coupon: false
-          };
-          localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-          
-          const authOverlay = document.getElementById('auth-modal-overlay');
-          if (authOverlay) authOverlay.style.display = 'none';
-          
-          // Redirect immediately to the active 7-tab dashboard console
-          switchBusinessWorkspace('dashboard');
-        }
-      } else {
-        throw new Error('Invalid user payload');
-      }
-    } else {
-      const couponSession = sessionStorage.getItem('aios_coupon_session');
-      if (!couponSession) {
-        state.user = null;
-        localStorage.removeItem('aios_user_profile');
-        window.location.href = './index.html?action=login';
-      }
-    }
-  } catch (err) {
-    console.warn('Session synchronization failed:', err.message);
-    const couponSession = sessionStorage.getItem('aios_coupon_session');
-    if (!couponSession) {
-      state.user = null;
-      localStorage.removeItem('aios_user_profile');
-      window.location.href = './index.html?action=login';
-    }
-  }
+  // Session synchronization bypassed for static frontend mode
+  console.log("[Static Mode] Session synchronization bypassed. Default Premium User active.");
 
   const couponSession = sessionStorage.getItem('aios_coupon_session');
   if (couponSession) {
