@@ -659,20 +659,190 @@ export async function initAuthSystem() {
   
   updateUserProfileHeader();
   
+  // Handle Reset Password action extract on page load
+  const urlParams = new URLSearchParams(window.location.search);
+  const resetAction = urlParams.get('action');
+  const resetTokenVal = urlParams.get('token');
+  if (resetAction === 'reset-password' && resetTokenVal) {
+    const resetOverlay = document.getElementById('reset-password-modal-overlay');
+    if (resetOverlay) resetOverlay.style.display = 'flex';
+  }
+
+  // Bind Switch Mode button inside the main auth card
   const toggleBtn = document.getElementById('btn-toggle-auth-mode');
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
       if (authMode === 'signin') authMode = 'signup';
+      else if (authMode === 'signup') authMode = 'signin';
       else authMode = 'signin';
       updateAuthModalUI();
     });
   }
 
+  // Bind Forgot Password button inside the main auth card
   const forgotBtn = document.getElementById('btn-forgot-password');
   if (forgotBtn) {
     forgotBtn.addEventListener('click', () => {
       authMode = 'forgot';
       updateAuthModalUI();
+    });
+  }
+
+  // Sign In / Forgot Password Submit click
+  const btnSignin = document.getElementById('btn-email-signin');
+  if (btnSignin) {
+    btnSignin.addEventListener('click', () => {
+      if (authMode === 'signin') handleEmailSignin();
+      else if (authMode === 'forgot') handleForgotPassword();
+    });
+  }
+
+  // Sign Up Submit click
+  const btnSignup = document.getElementById('btn-email-signup');
+  if (btnSignup) {
+    btnSignup.addEventListener('click', handleEmailSignup);
+  }
+
+  // Verify OTP Submit click
+  const btnVerifyOtp = document.getElementById('btn-verify-otp');
+  if (btnVerifyOtp) {
+    btnVerifyOtp.addEventListener('click', handleVerifyOtp);
+  }
+
+  // Back to login/auth from OTP
+  const btnBackToAuth = document.getElementById('btn-back-to-auth');
+  if (btnBackToAuth) {
+    btnBackToAuth.addEventListener('click', hideOtpScreen);
+  }
+
+  // Close main auth modal
+  const closeBtn = document.getElementById('auth-modal-close-btn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', hideAuthModals);
+  }
+
+  // Coupon trigger inside main auth card
+  const couponTrigger = document.getElementById('btn-auth-coupon-trigger');
+  if (couponTrigger) {
+    couponTrigger.addEventListener('click', () => {
+      hideAuthModals();
+      const couponOverlay = document.getElementById('coupon-modal-overlay');
+      if (couponOverlay) couponOverlay.style.display = 'flex';
+    });
+  }
+
+  // Close coupon modal
+  const couponCloseBtn = document.getElementById('coupon-modal-close-btn');
+  if (couponCloseBtn) {
+    couponCloseBtn.addEventListener('click', hideAuthModals);
+  }
+
+  // Coupon Submit click
+  const couponSubmitBtn = document.getElementById('btn-coupon-submit');
+  if (couponSubmitBtn) {
+    couponSubmitBtn.addEventListener('click', () => {
+      const couponInput = document.getElementById('coupon-input');
+      if (couponInput) handleCouponLogin(couponInput.value.trim());
+    });
+  }
+
+  // Bind Submit Reset Password
+  const btnSubmitReset = document.getElementById('btn-submit-reset-password');
+  if (btnSubmitReset) {
+    btnSubmitReset.addEventListener('click', async () => {
+      const newPasswordEl = document.getElementById('reset-new-password');
+      const errorEl = document.getElementById('reset-modal-error');
+      const successEl = document.getElementById('reset-modal-success');
+      const token = new URLSearchParams(window.location.search).get('token');
+      
+      const newPassword = newPasswordEl ? newPasswordEl.value : '';
+      if (!newPassword || newPassword.length < 6) {
+        if (errorEl) { errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.style.display = 'block'; }
+        return;
+      }
+      
+      try {
+        const data = await apiCall('/api/auth/reset-password', {
+          method: 'POST',
+          body: JSON.stringify({ token, password: newPassword })
+        });
+        
+        if (errorEl) errorEl.style.display = 'none';
+        if (successEl) {
+          successEl.textContent = 'Password reset successfully! Redirecting...';
+          successEl.style.display = 'block';
+        }
+        setTimeout(() => {
+          const resetOverlay = document.getElementById('reset-password-modal-overlay');
+          if (resetOverlay) resetOverlay.style.display = 'none';
+          const authOverlay = document.getElementById('auth-modal-overlay');
+          if (authOverlay) authOverlay.style.display = 'flex';
+        }, 2000);
+      } catch (err) {
+        if (errorEl) { errorEl.textContent = err.message || 'Connection failed.'; errorEl.style.display = 'block'; }
+      }
+    });
+  }
+
+  // Close Reset Password Modal
+  const resetCloseBtn = document.getElementById('reset-password-modal-close-btn');
+  if (resetCloseBtn) {
+    resetCloseBtn.addEventListener('click', () => {
+      const resetOverlay = document.getElementById('reset-password-modal-overlay');
+      if (resetOverlay) resetOverlay.style.display = 'none';
+    });
+  }
+
+  // Close Profile Modal
+  const profileCloseBtn = document.getElementById('profile-modal-close-btn');
+  if (profileCloseBtn) {
+    profileCloseBtn.addEventListener('click', () => {
+      const profileOverlay = document.getElementById('profile-modal-overlay');
+      if (profileOverlay) profileOverlay.style.display = 'none';
+    });
+  }
+
+  // Profile Save submit
+  const profileForm = document.getElementById('profile-edit-form');
+  if (profileForm) {
+    profileForm.addEventListener('submit', handleProfileSave);
+  }
+
+  // Onboarding Save submit
+  const onboardingForm = document.getElementById('onboarding-form');
+  if (onboardingForm) {
+    onboardingForm.addEventListener('submit', handleOnboardingSubmit);
+  }
+
+  // Enter key bindings on input fields
+  const authEmailInput = document.getElementById('auth-email');
+  const authPasswordInput = document.getElementById('auth-password');
+  const authOtpInput = document.getElementById('auth-otp-code');
+
+  if (authEmailInput) {
+    authEmailInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (authMode === 'signin') handleEmailSignin();
+        else if (authMode === 'signup') handleEmailSignup();
+        else if (authMode === 'forgot') handleForgotPassword();
+      }
+    });
+  }
+
+  if (authPasswordInput) {
+    authPasswordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (authMode === 'signin') handleEmailSignin();
+        else if (authMode === 'signup') handleEmailSignup();
+      }
+    });
+  }
+
+  if (authOtpInput) {
+    authOtpInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        handleVerifyOtp();
+      }
     });
   }
 }
