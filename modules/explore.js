@@ -42,6 +42,10 @@ const compareCount = document.getElementById('compare-count');
 const compareTriggerBtn = document.getElementById('compare-trigger-btn');
 const compareClearBtn = document.getElementById('compare-clear-btn');
 
+// --- Library Section State ---
+let librarySearchQuery = '';
+let selectedLibrarySector = 'all';
+
 const comparisonOverlay = document.getElementById('comparison-overlay');
 const comparisonCloseOverlay = document.getElementById('comparison-close-overlay');
 const comparisonCloseBtn = document.getElementById('comparison-close-btn');
