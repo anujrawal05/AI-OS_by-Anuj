@@ -248,7 +248,7 @@ export async function handleEmailSignin() {
       showToast("Logged in successfully!");
     }
   } catch (err) {
-    // If the account was just registered and OTP hasn't been verified yet
+    if (err.message === 'No backend') return; // Banner already shown
     if (err.message && err.message.toLowerCase().includes('verification required')) {
       showOtpScreen();
       showToast("Please verify the OTP code sent during registration.", "warning");
@@ -290,6 +290,7 @@ export async function handleEmailSignup() {
       showToast("Verification OTP code has been sent to your email!");
     }
   } catch (err) {
+    if (err.message === 'No backend') return; // Banner already shown
     if (errorEl) {
       errorEl.textContent = err.message;
       errorEl.style.display = 'block';
@@ -653,6 +654,7 @@ export async function initAuthSystem() {
       }
     }
   } catch (err) {
+    // Silently ignore session restore failures (401 = no session, no backend = guest mode)
     state.user = null;
     localStorage.removeItem('aios_user_profile');
   }

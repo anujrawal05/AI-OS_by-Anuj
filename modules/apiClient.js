@@ -19,12 +19,51 @@ function resolveApiBase() {
 
 const API_BASE_URL = resolveApiBase();
 
+// Background-only endpoints that should silently fail when no backend
+const SILENT_ENDPOINTS = ['/api/auth/me'];
+
+export function isBackendAvailable() {
+  return API_BASE_URL !== '__NO_BACKEND__';
+}
+
+function showNoBackendBanner() {
+  // Only show once
+  if (document.getElementById('aios-no-backend-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'aios-no-backend-banner';
+  banner.style.cssText = `
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 1px solid rgba(46,197,255,0.3);
+    color: #fff; padding: 14px 24px; border-radius: 12px;
+    font-family: monospace; font-size: 0.82rem; z-index: 99999;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    max-width: 520px; text-align: left;
+  `;
+  banner.innerHTML = `
+    <span style="font-size:1.4rem">🔌</span>
+    <div>
+      <strong style="color:#2EC5FF">Backend not connected</strong><br>
+      <span style="color:#aaa">Sign-in &amp; AI features require the backend. 
+      <a href="https://github.com/anujrawal05/AI-OS_by-Anuj#backend-setup" 
+         target="_blank" style="color:#2EC5FF">Setup guide ↗</a></span>
+    </div>
+    <button onclick="this.parentElement.remove()" style="
+      background:none;border:none;color:#888;font-size:1.2rem;cursor:pointer;margin-left:auto;padding:0 4px;
+    ">×</button>
+  `;
+  document.body.appendChild(banner);
+  // Auto-dismiss after 8 seconds
+  setTimeout(() => banner.remove(), 8000);
+}
+
 export async function apiCall(endpoint, options = {}) {
-  // Guard: backend not deployed on this host
+  // No backend deployed: silently return null for background checks, show banner for interactive calls
   if (API_BASE_URL === '__NO_BACKEND__') {
-    const msg = 'Backend not connected. Please run the app locally or wait for a deployed backend.';
-    showToast(msg, 'error');
-    throw new Error(msg);
+    const isSilent = SILENT_ENDPOINTS.some(e => endpoint.includes(e));
+    if (!isSilent) showNoBackendBanner();
+    throw new Error('No backend');
   }
 
   const url = `${API_BASE_URL}${endpoint}`;
