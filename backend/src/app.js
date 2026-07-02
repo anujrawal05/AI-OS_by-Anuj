@@ -70,7 +70,16 @@ app.get('/ready', async (req, res) => {
 
 // Serve frontend static assets from workspace root (e.g. index.html, modules/, locales/)
 const staticPath = path.join(__dirname, '..', '..');
-app.use(express.static(staticPath));
+app.use(express.static(staticPath, {
+  setHeaders: (res, filePath) => {
+    // Never cache JS modules or HTML — ensures latest apiClient, auth, etc. always loads
+    if (filePath.endsWith('.js') || filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // Wildcard 404 handler
 app.use((req, res, next) => {
