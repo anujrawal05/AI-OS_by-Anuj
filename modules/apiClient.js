@@ -1,19 +1,19 @@
 import { state } from './core.js';
 import { showToast } from './utils.js';
 
-// Detect backend URL: use same-origin on localhost, else read from <meta name="api-base-url"> or env
+// Detect backend URL — meta tag takes top priority, then same-origin localhost, then no-backend
 function resolveApiBase() {
+  // 1. Explicit override via <meta name="api-base-url"> — highest priority
+  const metaTag = document.querySelector('meta[name="api-base-url"]');
+  if (metaTag && metaTag.content && metaTag.content.trim() !== '') {
+    return metaTag.content.trim().replace(/\/$/, '');
+  }
+  // 2. Running on localhost with no meta override → same-origin relative URLs
   const host = window.location.hostname;
-  // Running on localhost or 127.0.0.1 → backend is on same port via Express static serving
   if (host === 'localhost' || host === '127.0.0.1') {
     return '';
   }
-  // On Vercel or any other deployment → check for a meta tag override first
-  const metaTag = document.querySelector('meta[name="api-base-url"]');
-  if (metaTag && metaTag.content) {
-    return metaTag.content.replace(/\/$/, '');
-  }
-  // Default fallback — no backend deployed yet
+  // 3. No backend configured for this host
   return '__NO_BACKEND__';
 }
 
