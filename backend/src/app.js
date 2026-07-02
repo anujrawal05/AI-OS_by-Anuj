@@ -20,8 +20,22 @@ const app = express();
 app.use(compression());
 
 // Enable CORS and parsers
+const ALLOWED_ORIGINS = [
+  'http://localhost:8080',
+  'http://localhost:3000',
+  'http://127.0.0.1:8080',
+  'https://ai-os-powerd-by-ar-labs.vercel.app',
+  'https://anujrawal05.github.io'
+];
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    // Allow server-to-server (no origin) and any listed host
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    }
+  },
   credentials: true
 }));
 app.use(cookieParser());

@@ -1,9 +1,32 @@
 import { state } from './core.js';
 import { showToast } from './utils.js';
 
-const API_BASE_URL = ''; // Direct relative routing to leverage shared ports
+// Detect backend URL: use same-origin on localhost, else read from <meta name="api-base-url"> or env
+function resolveApiBase() {
+  const host = window.location.hostname;
+  // Running on localhost or 127.0.0.1 → backend is on same port via Express static serving
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return '';
+  }
+  // On Vercel or any other deployment → check for a meta tag override first
+  const metaTag = document.querySelector('meta[name="api-base-url"]');
+  if (metaTag && metaTag.content) {
+    return metaTag.content.replace(/\/$/, '');
+  }
+  // Default fallback — no backend deployed yet
+  return '__NO_BACKEND__';
+}
+
+const API_BASE_URL = resolveApiBase();
 
 export async function apiCall(endpoint, options = {}) {
+  // Guard: backend not deployed on this host
+  if (API_BASE_URL === '__NO_BACKEND__') {
+    const msg = 'Backend not connected. Please run the app locally or wait for a deployed backend.';
+    showToast(msg, 'error');
+    throw new Error(msg);
+  }
+
   const url = `${API_BASE_URL}${endpoint}`;
   
   // Enforce session credentials sharing for cookies
