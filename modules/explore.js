@@ -2190,7 +2190,7 @@ export function getToolEducationalData(tool, lang, stepName = '') {
 export async function regenerateActiveRoadmap() {
   await ensureDataLoaded();
   const section = document.getElementById('roadmap-builder-section');
-  if (!isUserAuthenticated() || (state.user && !state.user.plan_type)) {
+  if (!isUserAuthenticated()) {
     if (section) section.style.display = 'none';
     return;
   }
@@ -2377,7 +2377,8 @@ export function initDashboardControls() {
         showToast("Please login first to compile your roadmap.", "warning");
         return;
       }
-      if (state.user && !state.user.plan_type) {
+      const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+      if (state.user && !isPremium) {
         showPricingModal(true);
         showToast("Please select a plan to access roadmap features.", "warning");
         return;
@@ -2411,7 +2412,7 @@ export function initDashboardControls() {
     btnChoiceVideo.addEventListener('click', () => {
       choiceModal.style.display = 'none';
       
-      const isPremium = isUserAuthenticated() && state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial Premium' || state.user.plan_type === 'Trial');
+      const isPremium = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
       if (!isPremium) {
         showToast("Upgrade to Premium or start trial to watch Video Roadmaps.", "warning");
         showPricingModal(true);
@@ -2843,7 +2844,8 @@ export function renderRoadmap(optimalWorkflow, steps) {
       const stepIndex = index + 1;
       
       // Basic plan check: if Exploring AI and Basic user and index >= 10, blur this row
-      if (isUserAuthenticated() && state.user && state.user.plan_type === 'Basic' && index >= 10) {
+      const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
+      if (isUserAuthenticated() && isBasic && index >= 10) {
         rowEl.classList.add('locked-preview-blur');
       }
 
@@ -2863,7 +2865,8 @@ export function renderRoadmap(optimalWorkflow, steps) {
     });
     
     // Append premium upgrade card banner for Basic users at the bottom of the timeline list
-    if (isUserAuthenticated() && state.user && state.user.plan_type === 'Basic') {
+    const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
+    if (isUserAuthenticated() && isBasic) {
       const bannerEl = document.createElement('div');
       bannerEl.className = 'timeline-row left';
       bannerEl.style.gridTemplateColumns = '1fr';
@@ -3909,7 +3912,8 @@ export function renderComparisonTable() {
 }
 
 export function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = false, stepName = '', stepIndex = 0, effectiveCost = null, effectiveMode = '') {
-  const isLocked = !isUserAuthenticated() || (state.user && state.user.plan_type === 'Basic' && isTimeline && stepIndex > 10);
+  const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
+  const isLocked = !isUserAuthenticated() || (isBasic && isTimeline && stepIndex > 10);
   if (isLocked) {
     return `
       <div class="timeline-card-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px;">
