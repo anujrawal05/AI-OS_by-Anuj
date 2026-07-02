@@ -248,11 +248,11 @@ export async function handleEmailSignin() {
       showToast("Logged in successfully!");
     }
   } catch (err) {
-    // If the account has not been verified yet
-    if (err.message.includes('verification required')) {
+    // If the account was just registered and OTP hasn't been verified yet
+    if (err.message && err.message.toLowerCase().includes('verification required')) {
       showOtpScreen();
-      showToast("Please verify the OTP code sent during registration.");
-    } else {
+      showToast("Please verify the OTP code sent during registration.", "warning");
+    } else if (err.message && err.message !== 'Unauthorized') {
       if (errorEl) {
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';

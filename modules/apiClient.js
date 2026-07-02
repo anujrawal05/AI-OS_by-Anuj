@@ -1,3 +1,4 @@
+import { state } from './core.js';
 import { showToast } from './utils.js';
 
 const API_BASE_URL = ''; // Direct relative routing to leverage shared ports
@@ -20,33 +21,39 @@ export async function apiCall(endpoint, options = {}) {
     
     // 1. Handling HTTP 401 Unauthorized
     if (response.status === 401) {
-      // Clear local session storage
+      // Clear local session cache
       localStorage.removeItem('aios_user_profile');
       sessionStorage.removeItem('aios_coupon_session');
-      window.state.user = null;
+      state.user = null;
       
       if (window.updateUserProfileHeader) {
         window.updateUserProfileHeader();
       }
 
-      // Display the sign-in modal
-      const authOverlay = document.getElementById('auth-modal-overlay');
-      if (authOverlay) {
-        authOverlay.style.display = 'flex';
+      // Don't show toast or open modal for background session checks
+      const isBackgroundCheck = endpoint.includes('/api/auth/me') || endpoint.includes('/api/auth/login');
+      if (!isBackgroundCheck) {
+        const authOverlay = document.getElementById('auth-modal-overlay');
+        if (authOverlay) authOverlay.style.display = 'flex';
+        showToast("Your session has expired. Please sign in again.", "warning");
       }
       
-      showToast("Your session has expired. Please sign in again.", "warning");
       throw new Error("Unauthorized");
     }
 
-    // 2. Handling HTTP 403 Forbidden (Gated premium features)
+    // 2. Handling HTTP 403 Forbidden
     if (response.status === 403) {
       const errorData = await response.json().catch(() => ({}));
+      
+      // Email verification required — pass through so auth.js can show the OTP screen
+      if (errorData.emailVerificationRequired) {
+        throw new Error("Email verification required");
+      }
+      
+      // Premium subscription gate
       if (errorData.subscriptionRequired) {
         const pricingOverlay = document.getElementById('pricing-modal-overlay');
-        if (pricingOverlay) {
-          pricingOverlay.style.display = 'flex';
-        }
+        if (pricingOverlay) pricingOverlay.style.display = 'flex';
         showToast("Premium subscription required for this feature.", "warning");
       } else {
         showToast(errorData.error || "Access Denied.", "error");
@@ -54,7 +61,7 @@ export async function apiCall(endpoint, options = {}) {
       throw new Error(errorData.error || "Forbidden");
     }
 
-    // 3. Handling HTTP 429 Too Many Requests (Quotas limits)
+    // 3. Handling HTTP 429 Too Many Requests (quota limits)
     if (response.status === 429) {
       const errorData = await response.json().catch(() => ({}));
       showToast(errorData.error || "Limit exceeded. Please try again later.", "warning");
@@ -65,7 +72,6 @@ export async function apiCall(endpoint, options = {}) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errMsg = errorData.error || `HTTP error! status: ${response.status}`;
-      showToast(errMsg, "error");
       throw new Error(errMsg);
     }
 
@@ -80,3 +86,4 @@ export async function apiCall(endpoint, options = {}) {
 }
 
 window.apiCall = apiCall;
+

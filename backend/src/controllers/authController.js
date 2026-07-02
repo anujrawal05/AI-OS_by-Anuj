@@ -331,11 +331,11 @@ async function login(req, res, next) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Login successful
+    // Auto-verify existing users whose password matched — OTP is only required during initial signup flow
     if (!user.isVerified) {
-      return res.status(403).json({
-        error: 'Email verification required.',
-        emailVerificationRequired: true
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { isVerified: true }
       });
     }
 
