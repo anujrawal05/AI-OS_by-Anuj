@@ -85,8 +85,23 @@
      hidden below) - this is a genuinely different, native-app-style
      header, not a squeezed version of the desktop one.
      ============================================================ */
+  /* Instead of display:none (which would prevent the fixed slide-in .main-nav
+     from rendering), use absolute positioning + visibility so the nav drawer
+     can still show. The mobile header below replaces the visual function. */
   .app-header {
-    display: none !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: visible !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  /* The fixed-position slide-in nav must be visible and interactive */
+  .app-header .main-nav {
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
   .mobile-app-header {
@@ -190,16 +205,18 @@
     display: flex !important;
     align-items: stretch;
     justify-content: space-around;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
     height: calc(var(--mob-bottomnav-height) + env(safe-area-inset-bottom, 0px));
     padding-bottom: env(safe-area-inset-bottom, 0px);
     background: var(--bg-color);
     border-top: 1px solid var(--border-color);
-    z-index: var(--mob-bottomnav-z);
+    z-index: 50 !important;
     box-shadow: var(--mob-shadow-md);
+    box-sizing: border-box;
   }
 
   .mobile-nav-tab {
@@ -258,9 +275,11 @@
   /* ============================================================
      DASHBOARD (Operational Target Configuration) - native-app card
      ============================================================ */
+  /* style.css breakpoint rules use !important for margin-top on dashboard-controls
+     (100px at ≤480px, 110px at 481–768px). Override both with !important here. */
   .dashboard-controls {
-    margin-top: var(--mob-space-md);
-    padding: var(--mob-space-md) var(--mob-space-md) 0;
+    margin-top: var(--mob-space-md) !important;
+    padding: var(--mob-space-md) var(--mob-space-md) 0 !important;
   }
 
   .controls-container {
@@ -745,10 +764,20 @@
     padding: var(--mob-space-sm) var(--mob-space-md);
     gap: var(--mob-space-md);
     margin-bottom: var(--mob-space-lg);
+    /* Prevent ticker label from overlapping the scrolling content */
+    overflow: hidden;
+  }
+
+  /* Hide static label on mobile — avoids it colliding with scrolling text */
+  .financial-ticker-bar .ticker-label {
+    display: none !important;
   }
 
   .ticker-scroll {
     gap: var(--mob-space-lg);
+    /* Ensure ticker starts at left edge with no offset */
+    flex-shrink: 0;
+    min-width: 100%;
   }
 
   .business-tutorial-box {
@@ -766,6 +795,16 @@
     margin-bottom: var(--mob-space-lg);
     border-radius: var(--mob-radius-lg);
     gap: var(--mob-space-lg);
+  }
+
+  /* The badge is absolutely positioned for desktop (top-left corner).
+     On mobile the hero is single-column so it would overlap the title.
+     Revert to normal in-flow positioning so it renders above the h1. */
+  .hero-floating-badge {
+    position: static !important;
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: var(--mob-space-sm);
   }
 
   .business-hero-title {

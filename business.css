@@ -2,6 +2,38 @@
    AI-OS BUSINESS PLATFORM - PREMIUM SAAS STYLESHEET (APPLE + STRIPE + NOTION)
    ========================================================================== */
 
+/* ---- Subscription Tier Badge — shared styles with style.css ---- */
+.header-sub-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+  transition: opacity 0.2s;
+}
+.header-sub-badge[data-plan="Trial"] {
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: #fbbf24;
+}
+.header-sub-badge[data-plan="Premium"] {
+  background: rgba(0, 208, 132, 0.12);
+  border: 1px solid rgba(0, 208, 132, 0.35);
+  color: #00D084;
+}
+.header-sub-badge[data-plan="Standard"],
+.header-sub-badge[data-plan="Free"] {
+  background: rgba(0, 208, 132, 0.08);
+  border: 1px solid rgba(0, 208, 132, 0.2);
+  color: var(--bus-primary, #00D084);
+}
+
 /* Mobile-only elements: hidden by default so they never render in desktop/tablet
    flow. mobile.css overrides these with display:flex !important at <=767px. */
 .mobile-app-header,

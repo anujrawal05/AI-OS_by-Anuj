@@ -59,12 +59,21 @@ export function initMobileUI() {
     }
   });
 
-  // --- Mobile header "Menu" button (index.html only) reuses the existing
-  // hamburger nav-drawer toggle - zero duplicated drawer logic.
+  // --- Mobile header "Menu" button (index.html only) directly toggles the
+  // same nav/overlay/hamburger classes the desktop handler uses. We cannot
+  // simply proxy to hamburger-toggle.click() because .app-header has its
+  // visual display suppressed on mobile (position:absolute / visibility:hidden)
+  // which would prevent a display:none parent from rendering the fixed nav.
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-  const hamburgerToggle = document.getElementById('hamburger-toggle');
-  if (mobileMenuBtn && hamburgerToggle) {
-    mobileMenuBtn.addEventListener('click', () => hamburgerToggle.click());
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', () => {
+      const mainNav = document.querySelector('.main-nav');
+      const mobileOverlay = document.getElementById('mobile-nav-overlay');
+      const hamburger = document.getElementById('hamburger-toggle');
+      if (mainNav) mainNav.classList.toggle('mobile-active');
+      if (mobileOverlay) mobileOverlay.classList.toggle('active');
+      if (hamburger) hamburger.classList.toggle('active');
+    });
   }
 
   // --- Bottom nav "Profile" tab opens the existing profile modal directly.

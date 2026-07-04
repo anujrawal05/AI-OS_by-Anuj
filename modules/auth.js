@@ -21,7 +21,21 @@ export function calculateUnlockRate() {
 export function updateUserProfileHeader() {
   const container = document.getElementById('user-profile-header');
   if (!container) return;
-  
+
+  // ---- Subscription badge ----
+  const subBadge = document.getElementById('header-subscription-badge');
+  if (subBadge) {
+    if (state.user && state.user.subscription) {
+      const plan = state.user.subscription.plan || 'Free';
+      const LABELS = { Trial: '⏳ Trial', Premium: '★ Premium', Standard: 'Standard', Free: 'Free' };
+      subBadge.textContent = LABELS[plan] || plan;
+      subBadge.setAttribute('data-plan', plan);
+      subBadge.style.display = 'inline-flex';
+    } else {
+      subBadge.style.display = 'none';
+    }
+  }
+
   const ctaBtn = document.getElementById('btn-upgrade-premium-cta');
   const heroCtaBtn = document.getElementById('btn-hero-upgrade-cta');
   
@@ -617,6 +631,17 @@ export async function handlePremiumUpgrade(planLabel) {
     return;
   }
 
+  // Lazy-load Razorpay only when the user actually initiates a payment
+  // (prevents the browser Web Payment Handler permission prompt on page load)
+  if (!window.Razorpay) {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('Payment gateway failed to load'));
+      document.head.appendChild(s);
+    }).catch(err => { throw err; });
+  }
   if (!window.Razorpay) {
     showToast("Payment gateway failed to load. Please refresh and try again.", "error");
     return;

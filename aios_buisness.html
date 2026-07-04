@@ -17,12 +17,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   
   <!-- Dedicated Premium Business Layout Stylesheet -->
-  <link rel="stylesheet" href="business.css?v=3.6">
+  <link rel="stylesheet" href="business.css?v=3.7">
   <!-- Dedicated Mobile UI (native-app-style, <=767px only) -->
-  <link rel="stylesheet" href="mobile.css?v=1.0" media="(max-width: 767px)">
+  <link rel="stylesheet" href="mobile.css?v=1.1" media="(max-width: 767px)">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Razorpay is loaded lazily only when payment is initiated (see auth.js)
+       to prevent the browser Web Payment Handler API permission prompt -->
 </head>
 
 <body>
@@ -76,6 +77,8 @@
       <!-- Right Header Action buttons -->
       <div class="header-actions" style="display: flex; align-items: center; gap: 14px;">
         <button id="btn-upgrade-premium-cta" class="btn-upgrade-premium-bus" style="display: none;">Upgrade To Premium</button>
+        <!-- Subscription tier badge — populated dynamically by auth.js -->
+        <div id="header-subscription-badge" class="header-sub-badge" style="display:none;"></div>
         <!-- User Profile Header Dropdown -->
         <div id="user-profile-header" class="user-profile-header"></div>
       </div>
