@@ -70,6 +70,19 @@ app.use('/api/strategist', strategistRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', progressRoutes);
 
+// Serve frontend static assets from workspace root (e.g. index.html, modules/, locales/)
+const staticPath = path.join(__dirname, '..', '..');
+app.use(express.static(staticPath, {
+  setHeaders: (res, filePath) => {
+    // Never cache JS modules or HTML — ensures latest apiClient, auth, etc. always loads
+    if (filePath.endsWith('.js') || filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
+
 // Health Endpoint (Liveness Check)
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });

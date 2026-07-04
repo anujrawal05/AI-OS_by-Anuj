@@ -3,15 +3,15 @@ import { showToast } from './utils.js';
 
 // Detect backend URL — meta tag takes top priority, then same-origin localhost, then no-backend
 function resolveApiBase() {
-  // 1. Explicit override via <meta name="api-base-url"> — highest priority
-  const metaTag = document.querySelector('meta[name="api-base-url"]');
-  if (metaTag && metaTag.content && metaTag.content.trim() !== '') {
-    return metaTag.content.trim().replace(/\/$/, '');
-  }
-  // 2. Running on localhost with no meta override → same-origin relative URLs
+  // 1. Running on localhost → same-origin relative URLs take top priority for local testing
   const host = window.location.hostname;
   if (host === 'localhost' || host === '127.0.0.1') {
     return '';
+  }
+  // 2. Explicit override via <meta name="api-base-url"> (production mode)
+  const metaTag = document.querySelector('meta[name="api-base-url"]');
+  if (metaTag && metaTag.content && metaTag.content.trim() !== '') {
+    return metaTag.content.trim().replace(/\/$/, '');
   }
   // 3. No backend configured for this host
   return '__NO_BACKEND__';
