@@ -17,7 +17,7 @@ function getPaginationArgs(req) {
 // 1. DASHBOARD OVERVIEW STATISTICS
 async function getDashboardStats(req, res, next) {
   try {
-    const [totalUsers, premiumSubCount, trialSubCount, totalRevenue, promptCountToday] = await prisma.withBatchTransaction(() => [
+    const [totalUsers, premiumSubCount, trialSubCount, totalRevenue, promptCountToday, recentLogs] = await prisma.withBatchTransaction(() => [
       prisma.user.count(),
       prisma.subscription.count({ where: { plan: 'Premium', status: 'Active' } }),
       prisma.subscription.count({ where: { plan: 'Trial', status: 'Active' } }),
@@ -28,9 +28,15 @@ async function getDashboardStats(req, res, next) {
       prisma.aIHistory.count({
         where: {
           createdAt: {
-            gte: new Date(new Date().setHours(0,0,0,0))
+            gte: new Date(new Date().setHours(0, 0, 0, 0))
           }
         }
+      }),
+      // Recent audit logs for admin dashboard activity feed
+      prisma.auditLog.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        select: { userId: true, action: true, createdAt: true }
       })
     ]);
 
@@ -38,10 +44,12 @@ async function getDashboardStats(req, res, next) {
       success: true,
       stats: {
         totalUsers,
-        activePremium: premiumSubCount,
-        activeTrial: trialSubCount,
+        // Field names match what the admin panel frontend reads
+        premiumUsers: premiumSubCount,
+        trialUsers: trialSubCount,
         totalRevenue: totalRevenue._sum.amount || 0.0,
-        dailyAIPrompts: promptCountToday
+        dailyAIPrompts: promptCountToday,
+        recentLogs
       }
     });
 
@@ -101,7 +109,7 @@ async function getUsers(req, res, next) {
   }
 }
 
-// 3. EDIT USER SUBSCRIPTION MANUALLY
+// 3. EDIT USER SUBSCRIPTION MANUALLY (body-based — kept for backward compat)
 async function updateUserPlan(req, res, next) {
   const { userId, plan, durationDays } = req.body;
 
@@ -131,7 +139,44 @@ async function updateUserPlan(req, res, next) {
   }
 }
 
-// 4. SUSPEND OR ACTIVATE ACCOUNT
+// 3b. EDIT USER SUBSCRIPTION — RESTful: POST /users/:userId/tier  { tier }
+// Used by the admin panel frontend via updateUserTier(userId, newPlan)
+async function updateUserTierById(req, res, next) {
+  const { userId } = req.params;
+  const { tier } = req.body;
+
+  const VALID_PLANS = ['Free', 'Trial', 'Premium'];
+  if (!tier || !VALID_PLANS.includes(tier)) {
+    return res.status(400).json({ error: `tier must be one of: ${VALID_PLANS.join(', ')}.` });
+  }
+
+  try {
+    const durationDays = tier === 'Free' ? 0 : 30;
+    const now = new Date();
+    const endPeriod = tier === 'Free' ? now : new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+
+    const sub = await prisma.subscription.update({
+      where: { userId },
+      data: {
+        plan: tier,
+        status: tier === 'Free' ? 'Expired' : 'Active',
+        currentPeriodStart: now,
+        currentPeriodEnd: endPeriod
+      }
+    });
+
+    logger.info(`[Admin API] Tier override via REST for User ID: ${userId} → ${tier}`);
+    return res.status(200).json({ success: true, message: `Plan updated to ${tier}.`, subscription: sub });
+
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'User subscription record not found.' });
+    }
+    next(err);
+  }
+}
+
+// 4. SUSPEND OR ACTIVATE ACCOUNT (body-based — kept for backward compat)
 async function toggleUserSuspension(req, res, next) {
   const { userId, suspend } = req.body;
 
@@ -158,6 +203,61 @@ async function toggleUserSuspension(req, res, next) {
     });
 
   } catch (err) {
+    next(err);
+  }
+}
+
+// 4b. SUSPEND USER — RESTful: POST /users/:userId/suspend
+// Used by admin panel frontend via toggleUserSuspension(userId, false) when not currently suspended
+async function suspendUserById(req, res, next) {
+  const { userId } = req.params;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { suspended: true }
+    });
+
+    // Revoke all active sessions
+    await prisma.session.deleteMany({ where: { userId } });
+
+    logger.warn(`[Admin API] User suspended via REST. User ID: ${userId}`);
+    return res.status(200).json({
+      success: true,
+      message: 'User suspended successfully.',
+      user: { id: user.id, email: user.email, suspended: true }
+    });
+
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    next(err);
+  }
+}
+
+// 4c. ACTIVATE USER — RESTful: POST /users/:userId/activate
+// Used by admin panel frontend via toggleUserSuspension(userId, true) when currently suspended
+async function activateUserById(req, res, next) {
+  const { userId } = req.params;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { suspended: false }
+    });
+
+    logger.info(`[Admin API] User activated via REST. User ID: ${userId}`);
+    return res.status(200).json({
+      success: true,
+      message: 'User activated successfully.',
+      user: { id: user.id, email: user.email, suspended: false }
+    });
+
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'User not found.' });
+    }
     next(err);
   }
 }
@@ -349,7 +449,10 @@ module.exports = {
   getDashboardStats,
   getUsers,
   updateUserPlan,
+  updateUserTierById,
   toggleUserSuspension,
+  suspendUserById,
+  activateUserById,
   getPaymentHistory,
   getAuditLogs,
   broadcastNotification,

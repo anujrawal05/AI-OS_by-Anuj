@@ -19,6 +19,20 @@ function resolveApiBase() {
 
 const API_BASE_URL = resolveApiBase();
 
+// Log resolved base for debugging production connectivity issues
+if (API_BASE_URL === '__NO_BACKEND__') {
+  console.warn(
+    '[AI-OS] Backend not configured.\n' +
+    'To connect: deploy the backend (Railway / Render / etc.) then set:\n' +
+    '  <meta name="api-base-url" content="https://YOUR_BACKEND_URL">\n' +
+    'in index.html and aios_buisness.html.'
+  );
+} else if (API_BASE_URL === '') {
+  console.info('[AI-OS] Backend: same-origin (localhost development mode)');
+} else {
+  console.info(`[AI-OS] Backend: ${API_BASE_URL}`);
+}
+
 // Background-only endpoints that should silently fail when no backend
 const SILENT_ENDPOINTS = ['/api/auth/me'];
 

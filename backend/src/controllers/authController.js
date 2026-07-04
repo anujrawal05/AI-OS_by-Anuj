@@ -16,13 +16,27 @@ const {
 
 const JWT_SECRET = process.env.JWT_SECRET || '58198327e33d8ce0bc30d675062c6964';
 
-// Helper to set HttpOnly Session Cookie
+// Helper to set HttpOnly Session Cookie.
+// In production the frontend and backend are on different domains (Vercel vs Railway/Render),
+// so the cookie must be SameSite=None + Secure to be sent with cross-origin fetch requests.
+// In development (same-origin localhost) SameSite=Lax is sufficient and safer.
 function setSessionCookie(res, token) {
+  const isProduction = process.env.NODE_ENV === 'production';
   res.cookie('session_token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: SESSION_EXPIRY_MS
+  });
+}
+
+// Helper to clear the session cookie with matching attributes
+function clearSessionCookie(res) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.clearCookie('session_token', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax'
   });
 }
 
@@ -437,12 +451,8 @@ async function logout(req, res, next) {
 
   try {
     await prisma.session.delete({ where: { sessionToken: token } });
-    
-    res.clearCookie('session_token', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
-    });
+
+    clearSessionCookie(res);
 
     await logAuditEvent({
       userId: req.user.id,
@@ -471,11 +481,7 @@ async function logoutAllDevices(req, res, next) {
       where: { userId: req.user.id }
     });
 
-    res.clearCookie('session_token', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
-    });
+    clearSessionCookie(res);
 
     await logAuditEvent({
       userId: req.user.id,
@@ -521,9 +527,11 @@ async function forgotPassword(req, res, next) {
       }
     });
 
-    // Dispatch reset email with plain token link
-    const baseUrl = process.env.BASE_URL || 'http://localhost:8080';
-    const resetLink = `${baseUrl}/reset-password?token=${resetToken}`;
+    // Build reset link pointing to the FRONTEND (not backend).
+    // The frontend's initAuthSystem() reads ?action=reset-password&token=... from the URL
+    // and opens the Reset Password modal. FRONTEND_URL must be set in .env in production.
+    const frontendUrl = process.env.FRONTEND_URL || process.env.BASE_URL || 'http://localhost:8080';
+    const resetLink = `${frontendUrl}/?action=reset-password&token=${resetToken}`;
     
     await sendEmail('forgotPassword', email, null, { RESET_LINK: resetLink });
 

@@ -13,6 +13,9 @@ async function getSubscription(userId) {
 
   // Passive Downgrade Check: if currentPeriodEnd has passed and it is not already Free/Expired
   if (sub.plan !== 'Free' && new Date() > sub.currentPeriodEnd) {
+    // Capture the current plan BEFORE the update so the audit log reflects the real prior state
+    const planBefore = sub.plan;
+
     sub = await prisma.subscription.update({
       where: { userId },
       data: {
@@ -24,7 +27,7 @@ async function getSubscription(userId) {
     await logAuditEvent({
       userId,
       action: 'SUBSCRIPTION_DOWNGRADE',
-      details: { reason: 'Period expired', planBefore: sub.plan }
+      details: { reason: 'Period expired', planBefore }
     });
   }
 

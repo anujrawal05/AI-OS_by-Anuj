@@ -7,9 +7,12 @@
   <title>AI-OS | Powered by A.R. Labs</title>
   <meta name="description"
     content="AI-powered execution platform built by A.R. Labs.">
-  <!-- Backend API URL: leave content empty to auto-detect (localhost = relative,
-       deployed = no backend banner). Set to your production HTTPS URL when
-       the backend is hosted, e.g. content="https://api.yourdomain.com" -->
+  <!-- PRODUCTION SETUP — Backend API URL
+       ┌─ Leave blank  → localhost development (relative URLs)
+       │                 or "Backend not connected" banner on deployed site
+       └─ Set to HTTPS → e.g. content="https://ai-os-backend.up.railway.app"
+         (copy the value of BACKEND_URL from backend/.env after you deploy)
+       The backend must be running and CORS must list this frontend's origin. -->
   <meta name="api-base-url" content="">
 
   <link rel="icon" type="image/png" href="aios_logo.png">
