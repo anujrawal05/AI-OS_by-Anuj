@@ -19,25 +19,43 @@ const app = express();
 // Enable Gzip Compression for optimization of transfer payloads
 app.use(compression());
 
-// Enable CORS and parsers
-const ALLOWED_ORIGINS = [
+// ─── CORS Configuration ────────────────────────────────────────────────────────
+// Base allowed origins — always included
+const BASE_ALLOWED_ORIGINS = [
   'http://localhost:8080',
   'http://localhost:3000',
   'http://127.0.0.1:8080',
   'https://ai-os-powerd-by-ar-labs.vercel.app',
   'https://anujrawal05.github.io'
 ];
+
+// Allow additional origins to be added via environment variable (comma-separated)
+// e.g. CORS_ALLOWED_ORIGINS=https://my-preview.vercel.app,https://custom-domain.com
+const envOrigins = process.env.CORS_ALLOWED_ORIGINS
+  ? process.env.CORS_ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+  : [];
+
+const ALLOWED_ORIGINS = [...new Set([...BASE_ALLOWED_ORIGINS, ...envOrigins])];
+
+logger.info(`[CORS] Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow server-to-server (no origin) and any listed host
+    // Allow server-to-server (no origin — e.g. Postman, Railway healthchecks) and any listed host
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
+      logger.warn(`[CORS] Blocked request from unlisted origin: ${origin}`);
       callback(new Error(`CORS policy: origin ${origin} not allowed`));
     }
   },
   credentials: true
 }));
+
+// Trust the first proxy (Railway / Render / Vercel functions put X-Forwarded-* headers)
+// Required for correct req.ip and x-forwarded-proto detection (cookie SameSite fix)
+app.set('trust proxy', 1);
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -67,19 +85,6 @@ app.get('/ready', async (req, res) => {
     return res.status(503).json({ status: 'down', database: 'unavailable', error: err.message });
   }
 });
-
-// Serve frontend static assets from workspace root (e.g. index.html, modules/, locales/)
-const staticPath = path.join(__dirname, '..', '..');
-app.use(express.static(staticPath, {
-  setHeaders: (res, filePath) => {
-    // Never cache JS modules or HTML — ensures latest apiClient, auth, etc. always loads
-    if (filePath.endsWith('.js') || filePath.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
-    }
-  }
-}));
 
 // Wildcard 404 handler
 app.use((req, res, next) => {

@@ -2,6 +2,11 @@
 builder = nixpacks
 
 [deploy]
-startCommand = node src/server.js
-restartPolicyType = on_failure
+startCommand = "node src/server.js"
+restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
+
+[deploy.healthcheck]
+path = "/health"
+timeout = 30
+interval = 10
