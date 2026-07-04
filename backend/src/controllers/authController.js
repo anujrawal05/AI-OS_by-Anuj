@@ -14,29 +14,41 @@ const {
   MAX_OTP_RESENDS
 } = require('../constants/authConstants');
 
-const JWT_SECRET = process.env.JWT_SECRET || '58198327e33d8ce0bc30d675062c6964';
+if (!process.env.JWT_SECRET) {
+  throw new Error('[authController] JWT_SECRET environment variable is not set. Refusing to start.');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Helper to set HttpOnly Session Cookie.
 // In production the frontend and backend are on different domains (Vercel vs Railway/Render),
 // so the cookie must be SameSite=None + Secure to be sent with cross-origin fetch requests.
 // In development (same-origin localhost) SameSite=Lax is sufficient and safer.
+// BUG-010 fix: also detect production by checking x-forwarded-proto header so the cookie
+// works correctly even if NODE_ENV is not explicitly set to 'production' on the platform.
+function isProductionRequest(res) {
+  // res has access to req via res.req in Express
+  const req = res.req;
+  const proto = req && (req.headers['x-forwarded-proto'] || req.protocol);
+  return process.env.NODE_ENV === 'production' || proto === 'https';
+}
+
 function setSessionCookie(res, token) {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const prod = isProductionRequest(res);
   res.cookie('session_token', token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure: prod,
+    sameSite: prod ? 'none' : 'lax',
     maxAge: SESSION_EXPIRY_MS
   });
 }
 
 // Helper to clear the session cookie with matching attributes
 function clearSessionCookie(res) {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const prod = isProductionRequest(res);
   res.clearCookie('session_token', {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax'
+    secure: prod,
+    sameSite: prod ? 'none' : 'lax'
   });
 }
 
@@ -47,13 +59,14 @@ function clearSessionCookie(res) {
 // in the same transaction — skips existence lookups and creates unconditionally.
 // checkExisting=true: safe path for legacy users auto-verified via login who may
 // already have some (but not all) of these records — checks before creating.
-async function provisionUserDefaults(tx, userId, email, checkExisting = false) {
+async function provisionUserDefaults(tx, userId, email, checkExisting = false, displayName = null) {
   const durationMs = 3 * 24 * 60 * 60 * 1000; // 3 days
   const trialEnd = new Date(Date.now() + durationMs);
+  const profileName = displayName || email.split('@')[0]; // BUG-022: use provided name if given
 
   if (!checkExisting) {
     await tx.profile.create({
-      data: { userId, name: email.split('@')[0], dateOfBirth: new Date('1995-01-01'), profession: 'User' }
+      data: { userId, name: profileName, dateOfBirth: new Date('1995-01-01'), profession: 'User' }
     });
     await tx.userPreference.create({ data: { userId, theme: 'Dark', language: 'English' } });
     await tx.subscription.create({
@@ -67,7 +80,7 @@ async function provisionUserDefaults(tx, userId, email, checkExisting = false) {
   const existingProfile = await tx.profile.findUnique({ where: { userId } });
   if (!existingProfile) {
     await tx.profile.create({
-      data: { userId, name: email.split('@')[0], dateOfBirth: new Date('1995-01-01'), profession: 'User' }
+      data: { userId, name: profileName, dateOfBirth: new Date('1995-01-01'), profession: 'User' }
     });
   }
 
@@ -96,7 +109,7 @@ async function provisionUserDefaults(tx, userId, email, checkExisting = false) {
 
 // 1. SIGNUP ENDPOINT
 async function signup(req, res, next) {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body; // BUG-022: accept optional name
   const ipAddress = req.ip;
   const userAgent = req.headers['user-agent'];
 
@@ -158,7 +171,7 @@ async function signup(req, res, next) {
 
 // 2. VERIFY OTP ENDPOINT
 async function verifyOtp(req, res, next) {
-  const { email, otp } = req.body;
+  const { email, otp, name } = req.body; // BUG-022: accept optional display name
   const ipAddress = req.ip;
   const userAgent = req.headers['user-agent'];
 
@@ -201,7 +214,7 @@ async function verifyOtp(req, res, next) {
       });
 
       // Initialize default user settings, profile placeholder, trial subscription and quota
-      await provisionUserDefaults(tx, user.id, email);
+      await provisionUserDefaults(tx, user.id, email, false, name || null);
 
       // Create Active Device Session
       await tx.session.create({

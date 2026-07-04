@@ -1,16 +1,25 @@
 const jwt = require('jsonwebtoken');
 const prisma = require('../lib/db');
 
-const JWT_SECRET = process.env.JWT_SECRET || '58198327e33d8ce0bc30d675062c6964';
+if (!process.env.JWT_SECRET) {
+  throw new Error('[authMiddleware] JWT_SECRET environment variable is not set. Refusing to start.');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Cookie attributes must exactly mirror setSessionCookie / clearSessionCookie in authController.
 // SameSite=None + Secure is required for cross-origin (Vercel frontend + deployed backend).
-function clearSessionCookieMiddleware(res) {
-  const isProduction = process.env.NODE_ENV === 'production';
+// BUG-010 fix: detect production via x-forwarded-proto in addition to NODE_ENV.
+function isProductionRequest(req) {
+  const proto = req.headers['x-forwarded-proto'] || req.protocol;
+  return process.env.NODE_ENV === 'production' || proto === 'https';
+}
+
+function clearSessionCookieMiddleware(req, res) {
+  const prod = isProductionRequest(req);
   res.clearCookie('session_token', {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax'
+    secure: prod,
+    sameSite: prod ? 'none' : 'lax'
   });
 }
 
@@ -42,7 +51,7 @@ async function authenticateUser(req, res, next) {
     });
 
     if (!activeSession) {
-      clearSessionCookieMiddleware(res);
+      clearSessionCookieMiddleware(req, res);
       return res.status(401).json({ error: 'Session expired or revoked.' });
     }
 
@@ -56,7 +65,7 @@ async function authenticateUser(req, res, next) {
 
     next();
   } catch (err) {
-    clearSessionCookieMiddleware(res);
+    clearSessionCookieMiddleware(req, res);
     return res.status(401).json({ error: 'Invalid or expired session token.' });
   }
 }

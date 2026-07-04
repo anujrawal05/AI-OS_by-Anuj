@@ -37,7 +37,7 @@ export function updateUserProfileHeader() {
   }
 
   const ctaBtn = document.getElementById('btn-upgrade-premium-cta');
-  const heroCtaBtn = document.getElementById('btn-hero-upgrade-cta');
+  const heroCtaBtn = document.getElementById('btn-hero-upgrade-cta'); // may not exist on all pages
   
   // Set premium button active status based on the plan type loaded from the DB
   const isPremium = state.user && (state.user.subscription?.plan === 'Premium' || state.user.subscription?.plan === 'Trial');
@@ -143,6 +143,9 @@ export function updateUserProfileHeader() {
     const signinBtn = document.getElementById('btn-header-signin');
     if (signinBtn) {
       signinBtn.addEventListener('click', () => {
+        // BUG-012 fix: always reset to signin mode when opening via the header button
+        authMode = 'signin';
+        updateAuthModalUI();
         const authOverlay = document.getElementById('auth-modal-overlay');
         if (authOverlay) authOverlay.style.display = 'flex';
       });
@@ -150,23 +153,12 @@ export function updateUserProfileHeader() {
   }
 }
 
+// BUG-011: switchAuthTab() removed — the auth modal uses a single unified form
+// controlled by authMode + updateAuthModalUI(), not separate signin/signup form divs.
+// This stub is kept for backwards compatibility with any external callers.
 export function switchAuthTab(tab) {
-  const signinForm = document.getElementById('auth-form-signin');
-  const signupForm = document.getElementById('auth-form-signup');
-  const signinTab = document.getElementById('auth-tab-signin');
-  const signupTab = document.getElementById('auth-tab-signup');
-  if (!signinForm || !signupForm) return;
-  if (tab === 'signin') {
-    signinForm.style.display = 'flex';
-    signupForm.style.display = 'none';
-    if (signinTab) { signinTab.style.background = 'var(--accent-color)'; signinTab.style.color = '#000'; }
-    if (signupTab) { signupTab.style.background = 'transparent'; signupTab.style.color = 'var(--text-secondary)'; }
-  } else {
-    signinForm.style.display = 'none';
-    signupForm.style.display = 'flex';
-    if (signupTab) { signupTab.style.background = 'var(--accent-color)'; signupTab.style.color = '#000'; }
-    if (signinTab) { signinTab.style.background = 'transparent'; signinTab.style.color = 'var(--text-secondary)'; }
-  }
+  authMode = tab === 'signup' ? 'signup' : 'signin';
+  updateAuthModalUI();
 }
 
 export function updateAuthModalUI() {
@@ -194,10 +186,13 @@ export function updateAuthModalUI() {
   if (errorEl) errorEl.style.display = 'none';
   if (successEl) successEl.style.display = 'none';
 
+  const nameContainer = document.getElementById('auth-name-container');
+
   if (authMode === 'signin') {
     if (title) title.textContent = 'Access AI-OS';
     if (desc) desc.textContent = 'Securely sign in to access all platform features, timelines, and digital business modules.';
     if (pwdContainer) pwdContainer.style.display = 'block';
+    if (nameContainer) nameContainer.style.display = 'none';
     if (btnSignin) { btnSignin.style.display = 'block'; btnSignin.textContent = 'Sign In'; }
     if (btnSignup) btnSignup.style.display = 'none';
     if (toggleBtn) toggleBtn.textContent = 'Create Account instead';
@@ -206,6 +201,7 @@ export function updateAuthModalUI() {
     if (title) title.textContent = 'Create Account';
     if (desc) desc.textContent = 'Sign up to start your premium experience and build smart AI workspaces.';
     if (pwdContainer) pwdContainer.style.display = 'block';
+    if (nameContainer) nameContainer.style.display = 'block'; // BUG-022: show name field
     if (btnSignin) btnSignin.style.display = 'none';
     if (btnSignup) { btnSignup.style.display = 'block'; btnSignup.textContent = 'Sign Up'; }
     if (toggleBtn) toggleBtn.textContent = 'Sign In instead';
@@ -214,6 +210,7 @@ export function updateAuthModalUI() {
     if (title) title.textContent = 'Reset Password';
     if (desc) desc.textContent = 'Enter your email address and we will generate a recovery link.';
     if (pwdContainer) pwdContainer.style.display = 'none';
+    if (nameContainer) nameContainer.style.display = 'none';
     if (btnSignin) { btnSignin.style.display = 'block'; btnSignin.textContent = 'Send Reset Link'; }
     if (btnSignup) btnSignup.style.display = 'none';
     if (toggleBtn) toggleBtn.textContent = 'Back to Sign In';
@@ -274,10 +271,12 @@ export async function handleEmailSignin() {
 export async function handleEmailSignup() {
   const emailEl = document.getElementById('auth-email');
   const passwordEl = document.getElementById('auth-password');
+  const nameEl = document.getElementById('auth-name'); // BUG-022: optional name field
   const errorEl = document.getElementById('auth-modal-error');
   
   const email = emailEl ? emailEl.value.trim() : '';
   const password = passwordEl ? passwordEl.value : '';
+  const name = nameEl ? nameEl.value.trim() : '';
   
   if (!email || !password) {
     if (errorEl) { errorEl.textContent = 'Please enter email and password.'; errorEl.style.display = 'block'; }
@@ -290,9 +289,12 @@ export async function handleEmailSignup() {
   }
   
   try {
+    const payload = { email, password };
+    if (name) payload.name = name; // include optional display name
+
     const data = await apiCall('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify(payload)
     });
 
     if (data.success) {
@@ -360,9 +362,14 @@ export async function handleVerifyOtp() {
     if (errorEl) errorEl.style.display = 'none';
     if (successEl) successEl.style.display = 'none';
 
+    const nameEl = document.getElementById('auth-name'); // BUG-022: include name if provided
+    const name = nameEl ? nameEl.value.trim() : '';
+    const payload = { email, otp };
+    if (name) payload.name = name;
+
     const data = await apiCall('/api/auth/verify-otp', {
       method: 'POST',
-      body: JSON.stringify({ email, otp })
+      body: JSON.stringify(payload)
     });
 
     if (data.success) {
@@ -433,8 +440,10 @@ export function showOnboardingModal(user) {
   const overlay = document.getElementById('onboarding-modal-overlay');
   if (overlay) {
     overlay.style.display = 'flex';
+    // BUG-023 fix: Keep close button visible so user can dismiss if API call fails.
+    // Previously this was hidden, trapping users in the modal permanently on error.
     const closeBtn = overlay.querySelector('.auth-modal-close-btn');
-    if (closeBtn) closeBtn.style.display = 'none';
+    if (closeBtn) closeBtn.style.display = 'block';
   }
 }
 
@@ -509,14 +518,24 @@ export async function handleOnboardingSubmit(e) {
 export function showProfileModal() {
   if (!state.user) return;
   
-  document.getElementById('pf-email').value = state.user.email || '';
-  document.getElementById('pf-fullname').value = state.user.profile?.name || '';
-  document.getElementById('pf-dob').value = state.user.profile?.dateOfBirth ? state.user.profile.dateOfBirth.slice(0, 10) : '';
-  document.getElementById('pf-gender').value = state.user.profile?.gender || '';
-  document.getElementById('pf-profession').value = state.user.profile?.profession || '';
+  // BUG-020: Null-guard all profile modal element accesses
+  const pfEmail = document.getElementById('pf-email');
+  const pfFullname = document.getElementById('pf-fullname');
+  const pfDob = document.getElementById('pf-dob');
+  const pfGender = document.getElementById('pf-gender');
+  const pfProfession = document.getElementById('pf-profession');
+  const pfPlanDisplay = document.getElementById('pf-plan-display');
+
+  if (!pfEmail) return; // profile modal not in DOM on this page
+
+  pfEmail.value = state.user.email || '';
+  if (pfFullname) pfFullname.value = state.user.profile?.name || '';
+  if (pfDob) pfDob.value = state.user.profile?.dateOfBirth ? state.user.profile.dateOfBirth.slice(0, 10) : '';
+  if (pfGender) pfGender.value = state.user.profile?.gender || '';
+  if (pfProfession) pfProfession.value = state.user.profile?.profession || '';
   
   const planName = state.user.subscription?.plan || 'Free';
-  document.getElementById('pf-plan-display').textContent = planName;
+  if (pfPlanDisplay) pfPlanDisplay.textContent = planName;
   
   const accountTypeEl = document.getElementById('pf-account-type-display');
   const accessStatusEl = document.getElementById('pf-access-status-display');
@@ -532,7 +551,7 @@ export function showProfileModal() {
     }
   }
   
-  // Sync the mobile-only theme toggle row's label with the current theme
+  // BUG-021: Null-guard mobile theme toggle label
   const mobileThemeLabel = document.querySelector('#pf-mobile-theme-toggle .pf-theme-label');
   if (mobileThemeLabel) {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -670,8 +689,20 @@ export async function handlePremiumUpgrade(planLabel) {
       body: JSON.stringify({ planType: 'Premium' })
     });
 
+    // BUG-013: Read Razorpay key_id from data attribute injected by backend/env,
+    // falling back to the meta tag set in index.html by the deployment pipeline.
+    // Never hardcode credentials in frontend source.
+    const razorpayKeyEl = document.getElementById('razorpay-key-data');
+    const razorpayKeyId = (razorpayKeyEl && razorpayKeyEl.dataset.key) ||
+      document.querySelector('meta[name="razorpay-key-id"]')?.content ||
+      '';
+    if (!razorpayKeyId) {
+      showToast('Payment gateway not configured. Please contact support.', 'error');
+      return;
+    }
+
     const rzp = new window.Razorpay({
-      key: 'rzp_test_T4Mr1D3RBNpiEi',
+      key: razorpayKeyId,
       amount: Math.round(order.amount * 100),
       currency: order.currency,
       order_id: order.orderId,
@@ -768,7 +799,15 @@ export async function initAuthSystem() {
       }
     }
   } catch (err) {
-    // Silently ignore session restore failures (401 = no session, no backend = guest mode)
+    // BUG-025: Distinguish between "not logged in" (401) and "backend unavailable" (No backend / network error)
+    // In both cases we set state.user = null but log differently for debugging.
+    if (err.message === 'No backend') {
+      console.info('[auth] Backend not connected — running in guest mode.');
+    } else if (err.status === 401 || (err.message && err.message.toLowerCase().includes('401'))) {
+      console.info('[auth] No active session — guest mode.');
+    } else {
+      console.warn('[auth] Session restore failed:', err.message);
+    }
     state.user = null;
     localStorage.removeItem('aios_user_profile');
   }
@@ -825,16 +864,55 @@ export async function initAuthSystem() {
     btnVerifyOtp.addEventListener('click', handleVerifyOtp);
   }
 
+  // BUG-005: Resend OTP button — calls the /api/auth/resend-otp endpoint
+  const btnResendOtp = document.getElementById('btn-resend-otp');
+  if (btnResendOtp) {
+    btnResendOtp.addEventListener('click', async () => {
+      const emailEl = document.getElementById('auth-email');
+      const otpErrorEl = document.getElementById('otp-error-msg');
+      const otpSuccessEl = document.getElementById('otp-success-msg');
+      const email = emailEl ? emailEl.value.trim() : '';
+      if (!email) {
+        if (otpErrorEl) { otpErrorEl.textContent = 'Email address not found. Please go back and enter your email.'; otpErrorEl.style.display = 'block'; }
+        return;
+      }
+      try {
+        btnResendOtp.disabled = true;
+        btnResendOtp.textContent = 'Sending...';
+        if (otpErrorEl) otpErrorEl.style.display = 'none';
+        if (otpSuccessEl) otpSuccessEl.style.display = 'none';
+        const data = await apiCall('/api/auth/resend-otp', { method: 'POST', body: JSON.stringify({ email }) });
+        if (data.success) {
+          if (otpSuccessEl) { otpSuccessEl.textContent = 'New OTP sent! Check your email.'; otpSuccessEl.style.display = 'block'; }
+          // 30-second cooldown to prevent spam
+          let countdown = 30;
+          const interval = setInterval(() => {
+            btnResendOtp.textContent = `Resend OTP (${countdown}s)`;
+            countdown--;
+            if (countdown < 0) { clearInterval(interval); btnResendOtp.disabled = false; btnResendOtp.textContent = 'Resend OTP'; }
+          }, 1000);
+        }
+      } catch (err) {
+        if (otpErrorEl) { otpErrorEl.textContent = err.message || 'Failed to resend OTP.'; otpErrorEl.style.display = 'block'; }
+        btnResendOtp.disabled = false;
+        btnResendOtp.textContent = 'Resend OTP';
+      }
+    });
+  }
+
   // Back to login/auth from OTP
   const btnBackToAuth = document.getElementById('btn-back-to-auth');
   if (btnBackToAuth) {
     btnBackToAuth.addEventListener('click', hideOtpScreen);
   }
 
-  // Close main auth modal
+  // Close main auth modal — BUG-012 fix: reset authMode to 'signin' on close
   const closeBtn = document.getElementById('auth-modal-close-btn');
   if (closeBtn) {
-    closeBtn.addEventListener('click', hideAuthModals);
+    closeBtn.addEventListener('click', () => {
+      authMode = 'signin';
+      hideAuthModals();
+    });
   }
 
   // Coupon trigger inside main auth card

@@ -5,8 +5,11 @@ const { upgradeSubscription } = require('../services/subscriptionService');
 const { logAuditEvent } = require('../services/auditService');
 
 // Initialize Razorpay Client instance
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_T4Mr1D3RBNpiEi';
-const RAZORPAY_SECRET_KEY = process.env.RAZORPAY_SECRET_KEY || 'S27ABLaRbJzgBUJSrnlhx2DC';
+if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_SECRET_KEY) {
+  throw new Error('[paymentController] RAZORPAY_KEY_ID and RAZORPAY_SECRET_KEY environment variables must be set.');
+}
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_SECRET_KEY = process.env.RAZORPAY_SECRET_KEY;
 
 const razorpay = new Razorpay({
   key_id: RAZORPAY_KEY_ID,
@@ -36,12 +39,21 @@ async function createOrder(req, res, next) {
     });
 
     // Create a pending Payment record in our DB
-    const sub = await prisma.subscription.findUnique({
+    // BUG-014: If subscription record is missing (partial provisioning), create a Free one and proceed
+    let sub = await prisma.subscription.findUnique({
       where: { userId: req.user.id }
     });
 
     if (!sub) {
-      return res.status(404).json({ error: 'User subscription record not found.' });
+      // Auto-recover: provision a Free subscription for this user and continue
+      sub = await prisma.subscription.create({
+        data: {
+          userId: req.user.id,
+          plan: 'Free',
+          status: 'Active',
+          startDate: new Date()
+        }
+      });
     }
 
     await prisma.payment.create({
@@ -200,8 +212,15 @@ async function redeemCoupon(req, res, next) {
   try {
     const code = couponCode.trim().toUpperCase();
     
-    // Static coupon lookup mapping (extensible to DB coupon table later)
-    if (code !== 'VIP2026') {
+    // BUG-015: Coupon codes now read from COUPON_CODES env var (comma-separated).
+    // Rotate coupons by updating the deployment environment variable — no redeploy required.
+    // Falls back to 'VIP2026' if env var is not set for backwards compatibility.
+    const validCoupons = (process.env.COUPON_CODES || 'VIP2026')
+      .split(',')
+      .map(c => c.trim().toUpperCase())
+      .filter(Boolean);
+    
+    if (!validCoupons.includes(code)) {
       return res.status(400).json({ error: 'Invalid or expired promotional coupon code.' });
     }
 

@@ -8,12 +8,11 @@
   <meta name="description"
     content="AI-powered execution platform built by A.R. Labs.">
   <!-- PRODUCTION SETUP — Backend API URL
-       ┌─ Leave blank  → localhost development (relative URLs)
-       │                 or "Backend not connected" banner on deployed site
-       └─ Set to HTTPS → e.g. content="https://ai-os-backend.up.railway.app"
-         (copy the value of BACKEND_URL from backend/.env after you deploy)
-       The backend must be running and CORS must list this frontend's origin. -->
-  <meta name="api-base-url" content="">
+       Set this to your deployed backend URL (Railway/Render/etc.)
+       The backend must be running and CORS must list this frontend origin. -->
+  <meta name="api-base-url" content="https://ai-os-backend.up.railway.app">
+  <!-- Razorpay public key — replace rzp_test_* with rzp_live_* when going live -->
+  <meta name="razorpay-key-id" content="rzp_test_T4Mr1D3RBNpiEi">
 
   <link rel="icon" type="image/png" href="aios_logo.png">
   <link rel="apple-touch-icon" href="aios_logo.png">
@@ -23,10 +22,10 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://anujrawal05.github.io/AI-OS_by-Anuj/">
+  <meta property="og:url" content="https://ai-os-powerd-by-ar-labs.vercel.app/">
   <meta property="og:title" content="AI-OS">
   <meta property="og:description" content="AI-powered execution platform that generates personalized roadmaps, tool recommendations and workflows. Powered by A.R. Labs.">
-  <meta property="og:image" content="https://anujrawal05.github.io/AI-OS_by-Anuj/aios_logo.png">
+  <meta property="og:image" content="https://ai-os-powerd-by-ar-labs.vercel.app/aios_logo.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -34,10 +33,10 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://anujrawal05.github.io/AI-OS_by-Anuj/">
+  <meta name="twitter:url" content="https://ai-os-powerd-by-ar-labs.vercel.app/">
   <meta name="twitter:title" content="AI-OS">
   <meta name="twitter:description" content="AI-powered execution platform that generates personalized roadmaps, tool recommendations and workflows.">
-  <meta name="twitter:image" content="https://anujrawal05.github.io/AI-OS_by-Anuj/aios_logo.png">
+  <meta name="twitter:image" content="https://ai-os-powerd-by-ar-labs.vercel.app/aios_logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -264,7 +263,7 @@
                 <h3 class="banner-title" style="margin: 0 0 4px; font-family: var(--font-mono); font-weight: 800; font-size: 1.25rem;">AI-OS Business</h3>
                 <p class="banner-desc">Build, Grow & Scale Businesses Using AI. Go from absolute beginner to automation workflows.</p>
               </div>
-              <button class="btn-banner-cta" style="flex-shrink: 0;">
+              <button class="btn-banner-cta" style="flex-shrink: 0;" onclick="window.location.href='./aios_buisness.html'" id="btn-banner-explore-business">
                 <span>Explore Business</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -548,7 +547,7 @@
         <div class="footer-section-col">
           <h4 class="footer-col-title" data-i18n="footer.colProducts">Products</h4>
           <ul class="footer-links">
-            <li><a href="https://anujrawal05.github.io/AI-OS_by-Anuj/" class="footer-link">AI-OS</a></li>
+            <li><a href="https://ai-os-powerd-by-ar-labs.vercel.app/" class="footer-link">AI-OS</a></li>
             <li><a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank" rel="noopener" class="footer-link">RF Communication Portal</a></li>
             <li><a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener" class="footer-link">A.R. Publications</a></li>
             <li><a href="https://anujrawal05.github.io/apps-by-anujrawal/" target="_blank" rel="noopener" class="footer-link">Apps by Anuj Rawal</a></li>
@@ -737,6 +736,11 @@
           <label for="auth-email" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Email Address</label>
           <input type="email" id="auth-email" placeholder="Enter your email" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
         </div>
+        <!-- BUG-022: Name field shown only in signup mode (hidden in signin/forgot) -->
+        <div id="auth-name-container" style="display: none;">
+          <label for="auth-name" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Full Name</label>
+          <input type="text" id="auth-name" placeholder="Enter your full name" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" autocomplete="name">
+        </div>
         <div id="auth-password-container">
           <label for="auth-password" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Password</label>
           <input type="password" id="auth-password" placeholder="Enter your password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
@@ -760,7 +764,8 @@
         <button id="btn-verify-otp" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%); border: none; color: #000; cursor: pointer; transition: all 0.2s; margin-top: 8px;">
           Verify OTP
         </button>
-        <button id="btn-back-to-auth" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 10px; width: 100%; text-align: center; font-family: var(--font-mono);">Back to Login</button>
+        <button id="btn-resend-otp" type="button" style="background: none; border: none; color: #2EC5FF; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Resend OTP</button>
+        <button id="btn-back-to-auth" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Back to Login</button>
       </div>
 
       <div id="auth-action-buttons" style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
