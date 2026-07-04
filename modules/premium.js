@@ -57,7 +57,7 @@ export function initTrialClock() {
       if (timeRemaining.isLastDay) {
         text = `⚠️ <strong>Less than 24 hours remaining</strong> (${timeRemaining.text})! Recommend upgrading before trial expires.`;
       } else {
-        text = `🎉 You're currently using your FREE 3-Day Premium Trial (${timeRemaining.text} left).`;
+        text = `🎉 You're currently using your FREE 3-Day Premium Trial (${timeRemaining.text}).`;
       }
     } else {
       text = `🎉 You're currently using your FREE 3-Day Premium Trial.`;

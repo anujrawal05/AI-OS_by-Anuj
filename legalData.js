@@ -159,3 +159,5 @@ const legalData = {
     ]
   }
 };
+
+window.legalData = legalData;

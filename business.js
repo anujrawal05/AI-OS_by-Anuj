@@ -4,12 +4,12 @@
 import { state } from './modules/core.js';
 import { initTheme, toggleTheme } from './modules/core.js';
 import { initAuthSystem } from './modules/auth.js';
-import { initWorkspaceControls } from './modules/businessUI.js';
+import { initWorkspaceControls, switchBusinessWorkspace } from './modules/businessUI.js';
+import { initMobileUI } from './modules/mobileUI.js';
 
 let learnModuleInstance = null;
 async function loadLearnModule() {
   if (!learnModuleInstance) {
-    console.log("[Business Bootstrap] Lazy loading Learn module...");
     learnModuleInstance = await import('./modules/learn.js');
   }
   return learnModuleInstance;
@@ -18,7 +18,6 @@ async function loadLearnModule() {
 let buildModuleInstance = null;
 async function loadBuildModule() {
   if (!buildModuleInstance) {
-    console.log("[Business Bootstrap] Lazy loading Build module...");
     buildModuleInstance = await import('./modules/build.js');
   }
   return buildModuleInstance;
@@ -27,7 +26,6 @@ async function loadBuildModule() {
 let expandModuleInstance = null;
 async function loadExpandModule() {
   if (!expandModuleInstance) {
-    console.log("[Business Bootstrap] Lazy loading Expand module...");
     expandModuleInstance = await import('./modules/expand.js');
   }
   return expandModuleInstance;
@@ -36,7 +34,6 @@ async function loadExpandModule() {
 let tutorialsModuleInstance = null;
 async function loadTutorialsModule() {
   if (!tutorialsModuleInstance) {
-    console.log("[Business Bootstrap] Lazy loading Tutorials module...");
     tutorialsModuleInstance = await import('./modules/tutorials.js');
   }
   return tutorialsModuleInstance;
@@ -68,9 +65,15 @@ async function initBusiness() {
   
   // Initialize Workspace selectors and controllers
   initWorkspaceControls();
-  
-  // Load initial workspace modules based on the active tab
-  const activeWorkspace = state.activeWorkspace || 'dashboard';
+
+  // Initialize mobile-only header/bottom-nav behavior (<=767px)
+  initMobileUI();
+
+  // Support deep-linking a workspace via ?workspace=... (used by the mobile
+  // bottom-nav "Videos" tab on index.html to land directly on Learn/Academy)
+  const requestedWorkspace = new URLSearchParams(window.location.search).get('workspace');
+  const activeWorkspace = requestedWorkspace || state.activeWorkspace || 'dashboard';
+  if (requestedWorkspace) switchBusinessWorkspace(requestedWorkspace);
   await loadActiveWorkspaceModules(activeWorkspace);
   
   // Intercept workspace switches to lazy-load dependencies on transition

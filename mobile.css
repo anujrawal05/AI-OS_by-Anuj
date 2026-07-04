@@ -1,0 +1,974 @@
+/* ============================================================
+   AI-OS MOBILE UI
+   Powered by A.R. Labs
+
+   Dedicated, native-app-style mobile experience for viewports
+   <= 767px. This file is loaded ONLY at that breakpoint via a
+   media-gated <link> tag, and every rule below is additionally
+   wrapped in @media (max-width: 767px) as defense-in-depth so it
+   can NEVER leak into tablet (768-1023px) or desktop (>=1024px)
+   layouts, even if the <link> tag's media attribute is bypassed.
+
+   RULES THIS FILE MUST NEVER BREAK:
+   - Desktop (>=1024px) stays pixel/behavior identical.
+   - Tablet (768-1023px) is untouched by this file.
+   - No business logic / JS duplication - layouts only.
+   - Reuses existing design tokens (--accent-color, --bg-color,
+     --text-primary, --font-sans, --font-mono, --bus-*, etc.)
+     from style.css / business.css - never redefines their values.
+   ============================================================ */
+
+@media (max-width: 767px) {
+
+  :root {
+    /* ---- Mobile typography scale (per spec) ---- */
+    --mob-font-title: 22px;       /* 20-24px */
+    --mob-font-title-lg: 24px;
+    --mob-font-section: 17px;     /* 16-18px */
+    --mob-font-body: 14.5px;      /* 14-15px */
+    --mob-font-helper: 12.5px;    /* 12-13px */
+
+    /* ---- Spacing scale ---- */
+    --mob-space-xs: 4px;
+    --mob-space-sm: 8px;
+    --mob-space-md: 12px;
+    --mob-space-lg: 16px;
+    --mob-space-xl: 24px;
+
+    /* ---- Radius scale (premium rounded corners) ---- */
+    --mob-radius-sm: 10px;
+    --mob-radius-md: 14px;
+    --mob-radius-lg: 20px;
+    --mob-radius-pill: 999px;
+
+    /* ---- Touch target sizing ---- */
+    --mob-touch-target: 54px;     /* 52-56px per spec */
+    --mob-touch-target-sm: 44px;
+
+    /* ---- Layout ---- */
+    --mob-header-height: 60px;    /* 56-64px per spec */
+    --mob-bottomnav-height: 60px;
+    --mob-content-max-width: 560px; /* comfortable one-handed reading width */
+
+    /* ---- Shadows (premium elevation) ---- */
+    --mob-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
+    --mob-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.28);
+    --mob-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.38);
+
+    /* ---- Z-index reservations (see full audit) ----
+       app-header: 100, trial-banner: 90, hamburger/nav: 104-110,
+       drawers: 1000, modals: 9999-99999, toast: 10000.
+       Bottom nav sits at 85: below everything fixed/overlay-like,
+       always beneath modals/drawers/toasts. */
+    --mob-bottomnav-z: 85;
+    --mob-sheet-z: 9998;
+    --mob-sheet-overlay-z: 9997;
+    --mob-fab-z: 80;
+  }
+
+  /* Push the existing global toast up above the new bottom nav
+     so it never gets visually covered on mobile. */
+  .toast {
+    bottom: calc(30px + var(--mob-bottomnav-height)) !important;
+  }
+
+  /* Reserve breathing room at the bottom of the page so the last
+     bit of content isn't hidden behind the fixed bottom nav. */
+  body {
+    padding-bottom: var(--mob-bottomnav-height);
+  }
+
+  /* ============================================================
+     MOBILE APP HEADER
+     Compact logo + title + a single profile/menu action area.
+     Replaces the desktop .app-header entirely on mobile (which is
+     hidden below) - this is a genuinely different, native-app-style
+     header, not a squeezed version of the desktop one.
+     ============================================================ */
+  .app-header {
+    display: none !important;
+  }
+
+  .mobile-app-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--mob-header-height);
+    padding: 0 var(--mob-space-lg);
+    background: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 100;
+    box-sizing: border-box;
+  }
+
+  .mobile-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    min-width: 0;
+  }
+
+  .mobile-header-logo-dot {
+    color: var(--accent-color);
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .mobile-header-title {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: var(--mob-font-section);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--mob-space-sm);
+    flex-shrink: 0;
+  }
+
+  .mobile-header-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--mob-radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .mobile-header-icon-btn:active {
+    transform: scale(0.94);
+    background: var(--card-bg-hover);
+  }
+
+  /* The relocated #user-profile-header avatar widget - keep it compact
+     and vertically centered inside the new mobile header. */
+  .mobile-header-actions #user-profile-header .profile-btn {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Reposition its dropdown so it opens sensibly below a fixed mobile
+     header instead of relying on desktop's absolute-under-header math. */
+  .mobile-header-actions #header-profile-dropdown.profile-dropdown {
+    position: fixed;
+    top: calc(var(--mob-header-height) + 8px);
+    right: var(--mob-space-lg);
+    left: var(--mob-space-lg);
+    width: auto;
+    max-width: 320px;
+    margin-left: auto;
+    z-index: 9998;
+  }
+
+  /* Push page content below the new fixed mobile header. */
+  .main-content-wrapper,
+  .app-layout-wrapper {
+    padding-top: var(--mob-header-height);
+  }
+
+  /* ============================================================
+     MOBILE BOTTOM NAVIGATION
+     Dedicated native-app-style tab bar.
+     ============================================================ */
+  .mobile-bottom-nav {
+    display: flex !important;
+    align-items: stretch;
+    justify-content: space-around;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--mob-bottomnav-height) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--bg-color);
+    border-top: 1px solid var(--border-color);
+    z-index: var(--mob-bottomnav-z);
+    box-shadow: var(--mob-shadow-md);
+  }
+
+  .mobile-nav-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: var(--mob-font-helper);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-tab svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mobile-nav-tab.active {
+    color: var(--accent-color);
+  }
+
+  .mobile-nav-tab:active {
+    transform: scale(0.94);
+  }
+
+  /* ============================================================
+     Mobile-only Settings row (inside the shared Profile modal)
+     ============================================================ */
+  .mobile-only-settings-row {
+    display: block !important;
+  }
+
+  .mobile-settings-toggle-btn {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: var(--mob-radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--mob-font-body);
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  /* ============================================================
+     DASHBOARD (Operational Target Configuration) - native-app card
+     ============================================================ */
+  .dashboard-controls {
+    margin-top: var(--mob-space-md);
+    padding: var(--mob-space-md) var(--mob-space-md) 0;
+  }
+
+  .controls-container {
+    max-width: var(--mob-content-max-width);
+    padding: var(--mob-space-lg);
+    border-radius: var(--mob-radius-lg);
+    box-shadow: var(--mob-shadow-sm);
+  }
+
+  .controls-label {
+    font-size: var(--mob-font-helper);
+    margin-bottom: var(--mob-space-md);
+  }
+
+  /* Compact expandable "How To Execute" guide */
+  .onboarding-guide-box {
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    border-radius: var(--mob-radius-md);
+    margin-bottom: var(--mob-space-md);
+    position: relative;
+  }
+
+  .onboarding-guide-text {
+    font-size: var(--mob-font-helper);
+    line-height: 1.4;
+    /* Collapsed by default: clamp to 2 lines until expanded */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    padding-right: 28px;
+  }
+
+  .onboarding-guide-box.expanded .onboarding-guide-text {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+  }
+
+  .onboarding-guide-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 4px;
+    position: absolute;
+    top: var(--mob-space-sm);
+    right: var(--mob-space-sm);
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .onboarding-guide-toggle-label {
+    display: none;
+  }
+
+  .onboarding-guide-toggle svg {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--transition-fast);
+  }
+
+  .onboarding-guide-box.expanded .onboarding-guide-toggle svg {
+    transform: rotate(180deg);
+  }
+
+  /* Single-column, full-width form controls (native-app forms) */
+  .controls-inputs-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mob-space-md);
+  }
+
+  .control-label-style {
+    font-size: var(--mob-font-helper);
+  }
+
+  .control-dropdown-select,
+  .wizard-select {
+    height: var(--mob-touch-target);
+    font-size: var(--mob-font-body);
+    border-radius: var(--mob-radius-sm);
+  }
+
+  #control-compile-btn.btn-full {
+    height: var(--mob-touch-target);
+    font-size: var(--mob-font-body);
+    border-radius: var(--mob-radius-sm);
+  }
+
+  /* AI-OS Business entry banner: stack graphics/content/CTA vertically */
+  .business-entry-banner {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    padding: var(--mob-space-md);
+    border-radius: var(--mob-radius-lg);
+    gap: var(--mob-space-sm);
+  }
+
+  .business-banner-graphics {
+    margin: 0 auto;
+  }
+
+  .banner-desc {
+    max-width: 100%;
+  }
+
+  .btn-banner-cta {
+    width: 100%;
+    justify-content: center;
+    height: var(--mob-touch-target-sm);
+  }
+
+  /* ============================================================
+     ROADMAP BUILDER - Recommended Tool / Quick Start / Step Deck
+     ============================================================ */
+  .roadmap-ux-container {
+    padding: 0 var(--mob-space-md);
+    gap: var(--mob-space-md);
+  }
+
+  .recommended-tool-card,
+  .quick-start-card,
+  .step-card {
+    padding: var(--mob-space-md);
+    border-radius: var(--mob-radius-md);
+  }
+
+  .recommended-tool-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--mob-space-sm);
+  }
+
+  .recommended-tool-label {
+    font-size: var(--mob-font-helper);
+  }
+
+  .recommended-tool-value {
+    font-size: var(--mob-font-body);
+  }
+
+  .quick-start-title,
+  .step-card-title {
+    font-size: var(--mob-font-section);
+  }
+
+  .quick-start-subtitle,
+  .quick-start-step-desc,
+  .step-card-desc {
+    font-size: var(--mob-font-helper);
+  }
+
+  .quick-start-step-title {
+    font-size: var(--mob-font-body);
+  }
+
+  .prompt-idea-textarea {
+    font-size: var(--mob-font-body);
+  }
+
+  .quick-start-action-btn {
+    width: 100%;
+    min-height: var(--mob-touch-target-sm);
+    font-size: var(--mob-font-body);
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .json-prompt-display {
+    font-size: 12px;
+  }
+
+  /* ============================================================
+     EXPLORE LIBRARY - Search, Toolbar & Cards
+     ============================================================ */
+  .library-toolbar {
+    gap: var(--mob-space-md);
+    margin-bottom: var(--mob-space-lg);
+    padding: 0 var(--mob-space-md);
+  }
+
+  .library-search-input {
+    height: var(--mob-touch-target-sm);
+    padding: 0 var(--mob-space-md) 0 44px;
+    font-size: var(--mob-font-body);
+    border-radius: var(--mob-radius-pill);
+  }
+
+  .search-icon {
+    left: var(--mob-space-md);
+  }
+
+  /* Toolbar becomes a stacked, full-width control panel */
+  .library-controls-panel {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--mob-space-md);
+    padding: var(--mob-space-md);
+    border-radius: var(--mob-radius-md);
+  }
+
+  .control-group {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .control-select {
+    height: var(--mob-touch-target-sm);
+    font-size: var(--mob-font-body);
+  }
+
+  .view-btn {
+    width: var(--mob-touch-target-sm);
+    height: var(--mob-touch-target-sm);
+  }
+
+  /* Single-column card grid - the core "not a squeezed desktop grid" fix */
+  .library-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mob-space-md);
+    padding: 0 var(--mob-space-md);
+  }
+
+  .timeline-card,
+  .library-item-card {
+    padding: var(--mob-space-lg);
+    border-radius: var(--mob-radius-md);
+    min-height: 0;
+  }
+
+  .card-header {
+    margin-bottom: var(--mob-space-md);
+  }
+
+  .library-grid:not(.list-view) .timeline-card .card-header,
+  .library-grid:not(.list-view) .library-item-card .card-header {
+    padding-right: 64px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .card-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .card-title {
+    font-size: var(--mob-font-section);
+    margin-bottom: var(--mob-space-sm);
+  }
+
+  .card-desc {
+    font-size: var(--mob-font-helper);
+    margin-bottom: var(--mob-space-md);
+  }
+
+  .card-footer {
+    flex-wrap: wrap;
+    gap: var(--mob-space-sm);
+  }
+
+  .card-footer .btn,
+  .card-footer .btn-secondary {
+    min-height: var(--mob-touch-target-sm);
+    font-size: var(--mob-font-helper);
+  }
+
+  .card-badge {
+    font-size: 10.5px;
+  }
+
+  /* Category explorer: sidebar stacks above the tools grid */
+  .category-explorer-container {
+    flex-direction: column;
+    gap: var(--mob-space-lg);
+    margin-top: var(--mob-space-lg);
+    padding: 0 var(--mob-space-md);
+  }
+
+  .category-sidebar {
+    width: 100%;
+    padding: var(--mob-space-md);
+    border-radius: var(--mob-radius-md);
+  }
+
+  /* Detail drawer: full-width native-app panel with roomier tap targets */
+  .drawer-content {
+    max-width: 100%;
+  }
+
+  .drawer-header {
+    padding: var(--mob-space-lg);
+  }
+
+  #drawer-close-btn {
+    width: var(--mob-touch-target-sm);
+    height: var(--mob-touch-target-sm);
+  }
+
+  /* ============================================================
+     MODAL -> BOTTOM SHEET CONVERSION
+     Every existing modal (auth / coupon / trial / onboarding /
+     pricing / profile / about / journey / business-popup) already
+     shares a common overlay + card structure. Re-docking them here
+     is purely visual - open/close/business logic is 100% reused
+     (see modules/mobileUI.js's initModalBottomSheetSwipe).
+     ============================================================ */
+  .auth-modal-overlay,
+  .journey-modal-overlay,
+  .business-popup-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .auth-modal-card,
+  .auth-modal,
+  .journey-modal-card,
+  .business-popup-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: var(--mob-radius-lg) var(--mob-radius-lg) 0 0 !important;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: var(--mob-space-lg) var(--mob-space-lg)
+      calc(var(--mob-space-xl) + env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing: border-box;
+    transform: none !important;
+    scale: 1 !important;
+    animation: mobSheetSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+
+  @keyframes mobSheetSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* Drag handle affordance signalling swipe-to-close */
+  .auth-modal-card::before,
+  .auth-modal::before,
+  .journey-modal-card::before,
+  .business-popup-card::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--mob-radius-pill);
+    margin: 0 auto var(--mob-space-md);
+  }
+
+  .auth-modal-close-btn,
+  .hotstar-close-btn {
+    width: var(--mob-touch-target-sm);
+    height: var(--mob-touch-target-sm);
+  }
+
+  /* ============================================================
+     AI STRATEGIST CHAT (GROW workspace) - native-app chat console
+     Structure/JS are 100% reused: .strategist-workspace already
+     collapses to a single column below 992px (business.css), and
+     the input bar is already the last flex child of the fixed-
+     height chat container, so it is structurally bottom-anchored
+     inside the console without any new sticky/fixed positioning
+     or JS - only spacing/typography are adjusted here.
+     ============================================================ */
+  .strategist-workspace {
+    gap: var(--mob-space-lg);
+  }
+
+  .strategist-sidebar-panel {
+    padding: var(--mob-space-lg);
+    border-radius: var(--mob-radius-md);
+    gap: var(--mob-space-md) !important;
+  }
+
+  .blueprint-form-group label {
+    font-size: var(--mob-font-helper) !important;
+  }
+
+  .blueprint-form-select {
+    font-size: 16px !important; /* prevents iOS Safari auto-zoom-on-focus */
+  }
+
+  .btn-blueprint-compile {
+    min-height: var(--mob-touch-target-sm);
+    font-size: var(--mob-font-body) !important;
+  }
+
+  .strategist-chat-container {
+    height: min(64vh, 480px);
+    border-radius: var(--mob-radius-md);
+  }
+
+  .strategist-chat-messages {
+    padding: var(--mob-space-md);
+    gap: var(--mob-space-md);
+  }
+
+  .chat-bubble {
+    max-width: 85%;
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    font-size: var(--mob-font-body);
+  }
+
+  .strategist-chat-input-bar {
+    padding: var(--mob-space-md);
+    padding-bottom: calc(var(--mob-space-md) + env(safe-area-inset-bottom, 0px));
+    gap: var(--mob-space-sm);
+  }
+
+  .strategist-chat-input {
+    font-size: 16px; /* prevents iOS Safari auto-zoom-on-focus */
+    padding: var(--mob-space-sm) var(--mob-space-md);
+  }
+
+  .btn-chat-send {
+    min-width: var(--mob-touch-target-sm);
+    padding: 0 var(--mob-space-md);
+    font-size: var(--mob-font-helper);
+  }
+
+  .business-lock-overlay-premium {
+    padding: var(--mob-space-lg);
+  }
+
+  .lock-gold-icon {
+    font-size: 2.2rem;
+    margin-bottom: var(--mob-space-sm);
+  }
+
+  .lock-premium-title {
+    font-size: var(--mob-font-section);
+  }
+
+  .lock-premium-desc {
+    font-size: var(--mob-font-helper);
+    margin-bottom: var(--mob-space-md);
+  }
+
+  .btn-lock-upgrade {
+    min-height: var(--mob-touch-target-sm);
+  }
+
+  /* 7-tab output panel: horizontally-scrollable tab strip is already
+     built in (overflow-x: auto in business.css) - just compact it */
+  .strategist-output-panel {
+    margin-top: var(--mob-space-xl);
+    padding: var(--mob-space-lg);
+    border-radius: var(--mob-radius-md);
+  }
+
+  .strategist-tabs-bar {
+    margin-bottom: var(--mob-space-lg);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .strategist-tab-btn {
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    font-size: 11.5px;
+  }
+
+  .premium-gate-overlay {
+    padding: var(--mob-space-lg);
+  }
+
+  /* ============================================================
+     AI-OS BUSINESS HUB - Dashboard / Learn / Build workspaces
+     Grid collapses already exist in business.css at 768-992px
+     (business-hero-area, learn-modules-grid, dashboard-widgets-
+     grid, blueprint-workspace) - reused as-is. This block only
+     compacts spacing/typography for the mobile card stack.
+     ============================================================ */
+  .financial-ticker-bar {
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    gap: var(--mob-space-md);
+    margin-bottom: var(--mob-space-lg);
+  }
+
+  .ticker-scroll {
+    gap: var(--mob-space-lg);
+  }
+
+  .business-tutorial-box {
+    padding: var(--mob-space-md);
+    margin-bottom: var(--mob-space-lg);
+  }
+
+  .business-tutorial-text {
+    font-size: var(--mob-font-helper);
+  }
+
+  /* Hero card */
+  .business-hero-area {
+    padding: var(--mob-space-lg) !important;
+    margin-bottom: var(--mob-space-lg);
+    border-radius: var(--mob-radius-lg);
+    gap: var(--mob-space-lg);
+  }
+
+  .business-hero-title {
+    font-size: var(--mob-font-title-lg);
+    margin: var(--mob-space-sm) 0 var(--mob-space-sm);
+  }
+
+  .business-hero-subtitle {
+    font-size: var(--mob-font-body);
+    margin-bottom: var(--mob-space-lg);
+  }
+
+  .hero-art-wrapper {
+    min-height: 180px;
+  }
+
+  .hero-graphs-widget {
+    width: 170px;
+    padding: var(--mob-space-sm);
+    right: var(--mob-space-sm);
+    bottom: var(--mob-space-sm);
+  }
+
+  .business-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--mob-space-md);
+    margin-top: var(--mob-space-lg);
+  }
+
+  /* Dashboard widgets */
+  .dashboard-widgets-grid {
+    gap: var(--mob-space-md);
+    margin-bottom: var(--mob-space-lg) !important;
+  }
+
+  .dashboard-card {
+    padding: var(--mob-space-lg);
+    min-height: 0;
+  }
+
+  .widget-card-title {
+    font-size: var(--mob-font-body);
+  }
+
+  .market-table,
+  .valuations-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .market-table th,
+  .market-table td,
+  .valuations-table th,
+  .valuations-table td {
+    padding: var(--mob-space-sm) 4px;
+  }
+
+  /* Learn / Academy */
+  .learn-grid-layout {
+    gap: var(--mob-space-lg);
+  }
+
+  .learn-header-banner {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    padding: var(--mob-space-lg);
+    gap: var(--mob-space-md);
+  }
+
+  .learn-header-banner #btn-skip-basics {
+    width: 100% !important;
+    min-height: var(--mob-touch-target-sm);
+  }
+
+  .learn-banner-info h3 {
+    font-size: var(--mob-font-section);
+  }
+
+  .learn-banner-info p {
+    font-size: var(--mob-font-helper);
+  }
+
+  .learn-modules-grid {
+    gap: var(--mob-space-md);
+  }
+
+  .learn-module-header {
+    padding: var(--mob-space-md);
+  }
+
+  .learn-module-header h4 {
+    font-size: var(--mob-font-body);
+  }
+
+  .learn-module-body {
+    padding: 0 var(--mob-space-md) var(--mob-space-md);
+  }
+
+  .learn-module-text,
+  .learn-checklist-list li {
+    font-size: var(--mob-font-helper);
+  }
+
+  /* Build / Launchpad */
+  .business-cards-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mob-space-md);
+  }
+
+  .business-catalog-card {
+    padding: var(--mob-space-lg);
+  }
+
+  .card-actions-row {
+    gap: var(--mob-space-sm);
+  }
+
+  .card-btn-compile,
+  .card-btn-video {
+    min-height: var(--mob-touch-target-sm);
+  }
+
+  .blueprint-workspace {
+    gap: var(--mob-space-lg);
+  }
+
+  .blueprint-form-card {
+    padding: var(--mob-space-lg);
+    border-radius: var(--mob-radius-md);
+  }
+
+  .blueprint-output-panel {
+    min-height: 320px;
+    border-radius: var(--mob-radius-md);
+  }
+
+  /* ============================================================
+     GLOBAL BUTTON CONSISTENCY - site-wide touch-target floor
+     Every clickable control on index.html/aios_buisness.html that
+     isn't already covered by a phase above gets bumped to the same
+     44px touch-target floor used throughout this redesign, with
+     compact mobile font-sizing where the desktop value runs larger
+     than needed. Colors, branding, and behavior are untouched.
+     ============================================================ */
+  .btn {
+    min-height: var(--mob-touch-target-sm);
+    font-size: var(--mob-font-body);
+  }
+
+  .filter-btn {
+    min-height: var(--mob-touch-target-sm);
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    font-size: var(--mob-font-helper);
+  }
+
+  .btn-show-more {
+    min-height: var(--mob-touch-target-sm);
+    padding: var(--mob-space-sm) var(--mob-space-lg);
+    font-size: var(--mob-font-helper);
+  }
+
+  .compare-clear-btn {
+    min-height: var(--mob-touch-target-sm);
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    font-size: var(--mob-font-helper);
+  }
+
+  .premium-cta-btn {
+    min-height: var(--mob-touch-target-sm);
+  }
+
+  .nav-btn-business {
+    min-height: var(--mob-touch-target-sm);
+  }
+
+  .btn-upgrade-premium-bus {
+    min-height: var(--mob-touch-target-sm);
+  }
+
+  .btn-saas-proceed {
+    min-height: var(--mob-touch-target);
+  }
+
+  .btn-submit-quiz {
+    min-height: var(--mob-touch-target-sm);
+    padding: var(--mob-space-sm) var(--mob-space-lg);
+  }
+
+  .premium-gate-overlay .btn-gate-upgrade {
+    min-height: var(--mob-touch-target-sm);
+  }
+
+  .business-popup-opt-btn {
+    min-height: var(--mob-touch-target);
+    padding: var(--mob-space-md);
+  }
+
+  .learn-module-toggle-btn {
+    min-width: var(--mob-touch-target-sm);
+    min-height: var(--mob-touch-target-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

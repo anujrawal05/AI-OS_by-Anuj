@@ -26,6 +26,60 @@ function setSessionCookie(res, token) {
   });
 }
 
+// Helper to provision default records (profile, preferences, subscription,
+// trial, prompt quota) for a newly verified user.
+//
+// checkExisting=false (default): fast path for brand-new users created earlier
+// in the same transaction — skips existence lookups and creates unconditionally.
+// checkExisting=true: safe path for legacy users auto-verified via login who may
+// already have some (but not all) of these records — checks before creating.
+async function provisionUserDefaults(tx, userId, email, checkExisting = false) {
+  const durationMs = 3 * 24 * 60 * 60 * 1000; // 3 days
+  const trialEnd = new Date(Date.now() + durationMs);
+
+  if (!checkExisting) {
+    await tx.profile.create({
+      data: { userId, name: email.split('@')[0], dateOfBirth: new Date('1995-01-01'), profession: 'User' }
+    });
+    await tx.userPreference.create({ data: { userId, theme: 'Dark', language: 'English' } });
+    await tx.subscription.create({
+      data: { userId, plan: 'Trial', status: 'Active', currentPeriodStart: new Date(), currentPeriodEnd: trialEnd }
+    });
+    await tx.trial.create({ data: { userId, startedAt: new Date(), expiresAt: trialEnd, daysRemaining: 3 } });
+    await tx.promptUsage.create({ data: { userId, promptCount: 0, resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000) } });
+    return;
+  }
+
+  const existingProfile = await tx.profile.findUnique({ where: { userId } });
+  if (!existingProfile) {
+    await tx.profile.create({
+      data: { userId, name: email.split('@')[0], dateOfBirth: new Date('1995-01-01'), profession: 'User' }
+    });
+  }
+
+  const existingPrefs = await tx.userPreference.findUnique({ where: { userId } });
+  if (!existingPrefs) {
+    await tx.userPreference.create({ data: { userId, theme: 'Dark', language: 'English' } });
+  }
+
+  const existingSub = await tx.subscription.findUnique({ where: { userId } });
+  if (!existingSub) {
+    await tx.subscription.create({
+      data: { userId, plan: 'Trial', status: 'Active', currentPeriodStart: new Date(), currentPeriodEnd: trialEnd }
+    });
+  }
+
+  const existingTrial = await tx.trial.findUnique({ where: { userId } });
+  if (!existingTrial) {
+    await tx.trial.create({ data: { userId, startedAt: new Date(), expiresAt: trialEnd, daysRemaining: 3 } });
+  }
+
+  const existingUsage = await tx.promptUsage.findUnique({ where: { userId } });
+  if (!existingUsage) {
+    await tx.promptUsage.create({ data: { userId, promptCount: 0, resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000) } });
+  }
+}
+
 // 1. SIGNUP ENDPOINT
 async function signup(req, res, next) {
   const { email, password } = req.body;
@@ -46,7 +100,7 @@ async function signup(req, res, next) {
     const otpExpires = new Date(Date.now() + OTP_EXPIRY_MS);
 
     // Database transactional write: Create User & store Verification code
-    const newUser = await prisma.$transaction(async (tx) => {
+    const newUser = await prisma.withTransaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           email,
@@ -121,7 +175,7 @@ async function verifyOtp(req, res, next) {
     const sessionToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
     const sessionExpires = new Date(Date.now() + SESSION_EXPIRY_MS);
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.withTransaction(async (tx) => {
       await tx.user.update({
         where: { id: user.id },
         data: { isVerified: true }
@@ -132,53 +186,8 @@ async function verifyOtp(req, res, next) {
         data: { isUsed: true }
       });
 
-      // Initialize default user settings and profile placeholder
-      await tx.profile.create({
-        data: {
-          userId: user.id,
-          name: email.split('@')[0],
-          dateOfBirth: new Date('1995-01-01'),
-          profession: 'User'
-        }
-      });
-
-      await tx.userPreference.create({
-        data: {
-          userId: user.id,
-          theme: 'Dark',
-          language: 'English'
-        }
-      });
-
-      const durationMs = 3 * 24 * 60 * 60 * 1000; // 3 days
-      const trialEnd = new Date(Date.now() + durationMs);
-
-      await tx.subscription.create({
-        data: {
-          userId: user.id,
-          plan: 'Trial',
-          status: 'Active',
-          currentPeriodStart: new Date(),
-          currentPeriodEnd: trialEnd
-        }
-      });
-
-      await tx.trial.create({
-        data: {
-          userId: user.id,
-          startedAt: new Date(),
-          expiresAt: trialEnd,
-          daysRemaining: 3
-        }
-      });
-
-      await tx.promptUsage.create({
-        data: {
-          userId: user.id,
-          promptCount: 0,
-          resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24-hour reset cycle
-        }
-      });
+      // Initialize default user settings, profile placeholder, trial subscription and quota
+      await provisionUserDefaults(tx, user.id, email);
 
       // Create Active Device Session
       await tx.session.create({
@@ -333,9 +342,15 @@ async function login(req, res, next) {
 
     // Auto-verify existing users whose password matched — OTP is only required during initial signup flow
     if (!user.isVerified) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { isVerified: true }
+      await prisma.withTransaction(async (tx) => {
+        await tx.user.update({
+          where: { id: user.id },
+          data: { isVerified: true }
+        });
+        // Users verified via this path skipped verifyOtp, so their default
+        // records (profile, subscription, trial, quota) may be missing —
+        // check before creating since some legacy users may be partially provisioned.
+        await provisionUserDefaults(tx, user.id, user.email, true);
       });
     }
 
@@ -343,7 +358,7 @@ async function login(req, res, next) {
     const sessionToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
     const sessionExpires = new Date(Date.now() + SESSION_EXPIRY_MS);
 
-    await prisma.$transaction([
+    await prisma.withBatchTransaction(() => [
       prisma.session.create({
         data: {
           userId: user.id,
@@ -549,7 +564,7 @@ async function resetPassword(req, res, next) {
 
     const newPasswordHash = await bcrypt.hash(password, 12);
 
-    await prisma.$transaction([
+    await prisma.withBatchTransaction(() => [
       prisma.user.update({
         where: { id: resetRequest.userId },
         data: { passwordHash: newPasswordHash, failedLoginAttempts: 0, lockoutUntil: null }
@@ -586,27 +601,32 @@ async function updateProfile(req, res, next) {
   const { name, dateOfBirth, gender, profession } = req.body;
 
   try {
-    const dob = dateOfBirth ? new Date(dateOfBirth) : null;
-    let validGender = 'Prefer_Not_To_Say';
+    // dateOfBirth and profession are non-nullable in the Profile schema —
+    // only touch fields the client actually sent, and use safe defaults on create.
+    const dob = dateOfBirth ? new Date(dateOfBirth) : undefined;
+    if (dob && isNaN(dob.getTime())) {
+      return res.status(400).json({ error: 'Invalid dateOfBirth value.' });
+    }
+    let validGender;
     if (gender === 'Male' || gender === 'Female' || gender === 'Other' || gender === 'Prefer_Not_To_Say') {
       validGender = gender;
     }
 
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (dob !== undefined) updateData.dateOfBirth = dob;
+    if (validGender !== undefined) updateData.gender = validGender;
+    if (profession !== undefined) updateData.profession = profession;
+
     const updatedProfile = await prisma.profile.upsert({
       where: { userId: req.user.id },
-      update: {
-        name,
-        dateOfBirth: dob,
-        gender: validGender,
-        profession,
-        updatedAt: new Date()
-      },
+      update: updateData,
       create: {
         userId: req.user.id,
         name: name || 'AI-OS User',
-        dateOfBirth: dob,
-        gender: validGender,
-        profession
+        dateOfBirth: dob || new Date('1995-01-01'),
+        gender: validGender || 'Prefer_Not_To_Say',
+        profession: profession || 'User'
       }
     });
 

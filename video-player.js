@@ -502,6 +502,95 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    /* ============================================================
+       MOBILE (<=767px) - fullscreen native-app style player.
+       Structure/JS are 100% reused - only layout/touch-target
+       tweaks. The --mob-* tokens are declared in mobile.css's
+       media-scoped :root and resolve correctly here too, since
+       CSS custom properties cascade through the whole document
+       regardless of which stylesheet/style tag declares them.
+       ============================================================ */
+    @media (max-width: 767px) {
+      /* !important below deliberately outranks the pre-existing legacy
+         "@media (max-width:430px)" block in style.css (width:95%!important;
+         border-radius:12px!important etc.) so the full-bleed native-player
+         treatment is consistent across the whole <=767px mobile range,
+         not just phones <=430px, and across every page the player is
+         invoked from (index.html loads style.css, aios_buisness.html
+         does not - this block lives with the component itself so both
+         get identical behavior). */
+      .premium-player-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        aspect-ratio: unset !important;
+        border-radius: 0 !important;
+        border: none !important;
+      }
+
+      .premium-player-header {
+        padding: var(--mob-space-md, 12px) var(--mob-space-lg, 16px);
+      }
+
+      .premium-player-title {
+        font-size: var(--mob-font-body, 14.5px);
+        max-width: 70%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .premium-player-close {
+        width: var(--mob-touch-target-sm, 44px);
+        height: var(--mob-touch-target-sm, 44px);
+        flex-shrink: 0;
+      }
+
+      .premium-player-controls-bar {
+        padding: var(--mob-space-md, 12px) var(--mob-space-md, 12px) calc(var(--mob-space-md, 12px) + env(safe-area-inset-bottom, 0px)) !important;
+        gap: var(--mob-space-sm, 8px) !important;
+      }
+
+      .premium-player-btn {
+        width: var(--mob-touch-target-sm, 44px);
+        height: var(--mob-touch-target-sm, 44px);
+      }
+
+      .premium-player-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .premium-controls-left,
+      .premium-controls-right {
+        gap: var(--mob-space-sm, 8px);
+      }
+
+      /* Device hardware buttons handle volume on mobile; the hover-
+         driven slider isn't usable via touch, so it's hidden here. */
+      .premium-volume-wrap {
+        display: none;
+      }
+
+      .premium-time-counter {
+        font-size: 11px;
+      }
+
+      .premium-speed-menu {
+        bottom: 48px;
+        width: 76px;
+      }
+
+      .premium-resume-alert {
+        width: min(320px, 85vw);
+        padding: var(--mob-space-lg, 16px);
+      }
+
+      .double-tap-ripple {
+        font-size: var(--mob-font-helper, 12.5px);
+      }
+    }
   `;
   document.head.appendChild(styleEl);
 

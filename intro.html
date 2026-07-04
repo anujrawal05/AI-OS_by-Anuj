@@ -6,7 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>System Manual & Developer Documentation | AI-OS</title>
   <meta name="description" content="Ultimate guide, developer documentation, visual specs, and interactive simulation console for AI-OS (Artificial Intelligence Overall Solutions).">
-  
+
+  <link rel="icon" type="image/png" href="aios_logo.png">
+  <link rel="apple-touch-icon" href="aios_logo.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1251,7 +1254,7 @@
 
         <h3 class="sub-heading">System Color Theme (Click block to copy HEX value)</h3>
         <div class="brand-showroom">
-          <div class="color-block" onclick="copyHex('#0a0a0c')">
+          <div class="color-block" onclick="copyHex('#0a0a0c')" role="button" tabindex="0" aria-label="Copy hex code #0a0a0c" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #0a0a0c;">
               <span class="color-hex">#0A0A0C</span>
             </div>
@@ -1261,7 +1264,7 @@
             </div>
           </div>
 
-          <div class="color-block" onclick="copyHex('#2ec5ff')">
+          <div class="color-block" onclick="copyHex('#2ec5ff')" role="button" tabindex="0" aria-label="Copy hex code #2ec5ff" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #2ec5ff;">
               <span class="color-hex" style="color:#000; background:rgba(255,255,255,0.85);">#2EC5FF</span>
             </div>
@@ -1271,7 +1274,7 @@
             </div>
           </div>
 
-          <div class="color-block" onclick="copyHex('#00d084')">
+          <div class="color-block" onclick="copyHex('#00d084')" role="button" tabindex="0" aria-label="Copy hex code #00d084" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #00d084;">
               <span class="color-hex" style="color:#000; background:rgba(255,255,255,0.85);">#00D084</span>
             </div>
@@ -1281,7 +1284,7 @@
             </div>
           </div>
 
-          <div class="color-block" onclick="copyHex('#121216')">
+          <div class="color-block" onclick="copyHex('#121216')" role="button" tabindex="0" aria-label="Copy hex code #121216" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #121216;">
               <span class="color-hex">#121216</span>
             </div>
@@ -1367,7 +1370,7 @@
         <div class="simulator-wrap">
           <div class="simulator-controls">
             <div class="sim-group">
-              <label class="sim-label">1. Select Target Objective</label>
+              <label class="sim-label" for="sim-task">1. Select Target Objective</label>
               <select id="sim-task" class="sim-select">
                 <option value="coding">Build Software / Coding Using AI</option>
                 <option value="images">Generate Professional AI Images</option>
@@ -1376,7 +1379,7 @@
             </div>
 
             <div class="sim-group">
-              <label class="sim-label">2. Select Target Language</label>
+              <label class="sim-label" for="sim-lang">2. Select Target Language</label>
               <select id="sim-lang" class="sim-select">
                 <option value="English">English</option>
                 <option value="Hinglish">Hinglish</option>

@@ -26,7 +26,6 @@ export async function loadDiscoveredVideos() {
     "part4_eng.mp4", "part4_hindi.mp4",
     "part5_eng.mp4", "part5_hindi.mp4"
   ];
-  console.log("[Static Video Discovery] Seeded static videos list:", state.discoveredVideos);
 }
 
 export function renderBusinessCardsGrid() {

@@ -139,7 +139,7 @@ export function applyTranslations(translations) {
 
 export async function loadTranslations(lang) {
   const state = window.state || {};
-  const langKey = lang.toLowerCase();
+  const langKey = (lang || 'English').toLowerCase();
   const fileMap = {
     english: 'en',
     hindi: 'hi',

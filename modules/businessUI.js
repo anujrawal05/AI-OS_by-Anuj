@@ -26,8 +26,9 @@ export function switchBusinessWorkspace(workspaceName) {
     swBtn.querySelector('span').textContent = `Workspace: ${formatted}`;
   }
   
-  // Update Dropdown Active Option
-  const dropdownItems = document.querySelectorAll('.workspace-dropdown-item');
+  // Update Dropdown Active Option (also syncs the mobile bottom-nav tabs,
+  // which share the same data-workspace attribute)
+  const dropdownItems = document.querySelectorAll('.workspace-dropdown-item, .mobile-nav-tab[data-workspace]');
   dropdownItems.forEach(item => {
     if (item.getAttribute('data-workspace') === workspaceName) {
       item.classList.add('active');

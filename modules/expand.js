@@ -333,9 +333,9 @@ export function initExpandSection() {
 
   if (btnAnalyze) {
     btnAnalyze.addEventListener('click', async () => {
-      const nameEl = document.getElementById('in-bus-name');
-      const audienceEl = document.getElementById('in-bus-audience');
-      const bottleneckEl = document.getElementById('in-bus-bottleneck');
+      const nameEl = document.getElementById('strategist-business-name');
+      const audienceEl = document.getElementById('strategist-target-audience');
+      const bottleneckEl = document.getElementById('strategist-bottleneck');
       
       const name = nameEl ? nameEl.value.trim() : '';
       const audience = audienceEl ? audienceEl.value.trim() : '';

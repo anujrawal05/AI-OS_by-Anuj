@@ -131,7 +131,9 @@ export function setupCardInteractions() {
 }
 
 export function initNavigation() {
-  const navLinks = document.querySelectorAll('.main-nav .nav-link');
+  // Includes the mobile bottom-nav tabs so they share the exact same
+  // scroll-spy + smooth-scroll-on-click behavior as the desktop nav links.
+  const navLinks = document.querySelectorAll('.main-nav .nav-link, .mobile-nav-tab[data-target]');
   const sections = document.querySelectorAll('section[id], header[id]');
   
   const appHeader = document.querySelector('.app-header');
@@ -305,3 +307,22 @@ window.openLegalDrawer = openLegalDrawer;
 window.closeLegalDrawer = closeLegalDrawer;
 window.showPricingModal = showPricingModal;
 window.getActiveLanguage = getActiveLanguage;
+
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('.legal-trigger');
+  if (trigger) {
+    e.preventDefault();
+    const type = trigger.getAttribute('data-legal');
+    openLegalDrawer(type);
+  }
+});
+
+const legalCloseBtn = document.getElementById('legal-close-btn');
+if (legalCloseBtn) {
+  legalCloseBtn.addEventListener('click', closeLegalDrawer);
+}
+
+const legalCloseOverlay = document.getElementById('legal-close-overlay');
+if (legalCloseOverlay) {
+  legalCloseOverlay.addEventListener('click', closeLegalDrawer);
+}

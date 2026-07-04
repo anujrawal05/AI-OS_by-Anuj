@@ -7,13 +7,13 @@ import { initTheme, toggleTheme } from './modules/core.js';
 import { initNavigation, setupCardInteractions, openLegalDrawer, closeLegalDrawer } from './modules/ui.js';
 import { initAuthSystem, handleEmailSignin, handleEmailSignup, handleVerifyOtp, handleForgotPassword } from './modules/auth.js';
 import { initTrialClock, closeTrialWelcomeModal } from './modules/premium.js';
+import { initMobileUI } from './modules/mobileUI.js';
 
 let exploreModuleInstance = null;
 
 // Heavy modules are loaded dynamically on demand!
 async function loadExploreModule() {
   if (!exploreModuleInstance) {
-    console.log("[Bootstrap] Lazy loading Explore AI module...");
     exploreModuleInstance = await import('./modules/explore.js');
     await exploreModuleInstance.ensureDataLoaded();
     
@@ -32,10 +32,14 @@ async function initApp() {
   
   // Initialize navigation and scrollspies
   initNavigation();
+
+  // Initialize mobile-only header/bottom-nav behavior (<=767px)
+  initMobileUI();
   
   // Load initial translation package
   try {
-    await loadTranslations();
+    const savedLang = localStorage.getItem('aios_language') || 'English';
+    await loadTranslations(savedLang);
   } catch (e) {
     console.error("Failed to load translations:", e);
   }
@@ -132,7 +136,7 @@ window.closeComparisonOverlay = async function() {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('ServiceWorker registered successfully:', reg.scope))
+      .then(() => {})
       .catch(err => console.warn('ServiceWorker registration failed:', err));
   });
 }

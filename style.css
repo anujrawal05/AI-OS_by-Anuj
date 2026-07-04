@@ -3875,6 +3875,21 @@ select option {
 }
 
 /* =========================================================================
+   MOBILE-ONLY UI (native-app header + bottom nav) - HIDDEN BASELINE
+   Actual visual styling for these elements lives entirely in mobile.css,
+   which is only loaded via a media-gated <link> at <=767px. This baseline
+   rule is defense-in-depth so these new elements stay invisible on
+   tablet/desktop even if mobile.css fails to load for any reason. This does
+   NOT alter any existing desktop rule - it only hides new elements.
+   ========================================================================= */
+.mobile-app-header,
+.mobile-bottom-nav,
+.mobile-only-settings-row,
+.onboarding-guide-toggle {
+  display: none;
+}
+
+/* =========================================================================
    MOBILE HAMBURGER MENU
    ========================================================================= */
 
@@ -9195,7 +9210,7 @@ body.modal-open {
 /* ==========================================================================
    MOBILE SCREEN WIDTHS 360PX - 430PX SPECIFIC RESPONSIVENESS
    ========================================================================== */
-@media (min-width: 360px) and (max-width: 430px) {
+@media (max-width: 430px) {
   .app-container {
     padding: 8px !important;
   }
@@ -9290,7 +9305,11 @@ body.modal-open {
   
   /* Header adjustments */
   .header-actions {
-    gap: 8px !important;
+    gap: 6px !important;
+  }
+  .premium-cta-btn {
+    padding: 6px 8px !important;
+    font-size: 0.7rem !important;
   }
   .profile-btn {
     padding: 6px 10px !important;

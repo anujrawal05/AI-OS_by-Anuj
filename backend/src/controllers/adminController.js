@@ -17,7 +17,7 @@ function getPaginationArgs(req) {
 // 1. DASHBOARD OVERVIEW STATISTICS
 async function getDashboardStats(req, res, next) {
   try {
-    const [totalUsers, premiumSubCount, trialSubCount, totalRevenue, promptCountToday] = await prisma.$transaction([
+    const [totalUsers, premiumSubCount, trialSubCount, totalRevenue, promptCountToday] = await prisma.withBatchTransaction(() => [
       prisma.user.count(),
       prisma.subscription.count({ where: { plan: 'Premium', status: 'Active' } }),
       prisma.subscription.count({ where: { plan: 'Trial', status: 'Active' } }),
@@ -289,11 +289,19 @@ async function getSupportTickets(req, res, next) {
   }
 }
 
+const VALID_TICKET_STATUSES = ['Open', 'In_Progress', 'Closed'];
+
 async function updateTicketStatus(req, res, next) {
   const { ticketId, status } = req.body;
 
   if (!ticketId || !status) {
     return res.status(400).json({ error: 'ticketId and status are required.' });
+  }
+
+  if (!VALID_TICKET_STATUSES.includes(status)) {
+    return res.status(400).json({
+      error: `Invalid status. Must be one of: ${VALID_TICKET_STATUSES.join(', ')}.`
+    });
   }
 
   try {
@@ -304,6 +312,9 @@ async function updateTicketStatus(req, res, next) {
 
     return res.status(200).json({ success: true, message: 'Ticket status updated.', ticket });
   } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'Ticket not found.' });
+    }
     next(err);
   }
 }

@@ -6,14 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI-OS Business Hub | Powered by A.R. Labs</title>
   <meta name="description" content="Redefining Enterprise Scaling. Build, Grow & Scale Businesses Using AI. A standalone SaaS platform dedicated to wealth creation.">
-  
+
+  <link rel="icon" type="image/png" href="aios_logo.png">
+  <link rel="apple-touch-icon" href="aios_logo.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2EC5FF">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   
   <!-- Dedicated Premium Business Layout Stylesheet -->
   <link rel="stylesheet" href="business.css?v=3.6">
-  
+  <!-- Dedicated Mobile UI (native-app-style, <=767px only) -->
+  <link rel="stylesheet" href="mobile.css?v=1.0" media="(max-width: 767px)">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
@@ -27,7 +34,7 @@
   <!-- Apple-Style fixed Navigation Header -->
   <header class="app-header">
     <div class="header-container">
-      <div class="logo" onclick="window.location.href='index.html'">
+      <div class="logo" onclick="window.location.href='index.html'" role="link" tabindex="0" aria-label="Go to AI-OS homepage" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
         <!-- Growth Circuit SVG Icon -->
         <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -72,6 +79,21 @@
         <!-- User Profile Header Dropdown -->
         <div id="user-profile-header" class="user-profile-header"></div>
       </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MOBILE-ONLY APP HEADER (native-app style, <=767px)
+       Hidden by default in style.css; shown + styled by mobile.css.
+       The desktop header above (.app-header) is completely untouched.
+       ============================================================ -->
+  <header class="mobile-app-header" id="mobile-app-header">
+    <div class="mobile-header-brand" onclick="window.location.href='index.html'" role="link" tabindex="0" aria-label="Go to AI-OS homepage" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+      <span class="mobile-header-logo-dot">●</span>
+      <span class="mobile-header-title">AI-OS Business</span>
+    </div>
+    <div class="mobile-header-actions" id="mobile-header-actions">
+      <!-- #user-profile-header is relocated here at mobile widths by modules/mobileUI.js -->
     </div>
   </header>
 
@@ -959,7 +981,7 @@
             <h4 style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem;">Launch Matrix Config</h4>
             
             <div class="blueprint-form-group">
-              <label>Business Model Target</label>
+              <label for="blueprint-model-select">Business Model Target</label>
               <select class="blueprint-form-select" id="blueprint-model-select">
                 <option value="agency">AI Business Automation</option>
                 <option value="dropservicing">Online Service Business</option>
@@ -1015,17 +1037,17 @@
             <h4 style="color:#fff; margin-bottom: 5px; font-family: var(--font-mono); font-size: 1rem;">📊 Enterprise Matrix</h4>
             
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">1. What is your business name, domain niche, or core service offer?</label>
+              <label for="strategist-business-name" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">1. What is your business name, domain niche, or core service offer?</label>
               <textarea class="blueprint-form-select" id="strategist-business-name" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Apex AI Solutions, custom LLM fine-tuning..."></textarea>
             </div>
 
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">2. Describe your primary target audience or ideal client avatar</label>
+              <label for="strategist-target-audience" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">2. Describe your primary target audience or ideal client avatar</label>
               <textarea class="blueprint-form-select" id="strategist-target-audience" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Mid-sized healthcare clinics, operations managers..."></textarea>
             </div>
 
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">3. What is your biggest current business bottleneck? (e.g., Traffic, Sales Conversions, Retention)</label>
+              <label for="strategist-bottleneck" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">3. What is your biggest current business bottleneck? (e.g., Traffic, Sales Conversions, Retention)</label>
               <textarea class="blueprint-form-select" id="strategist-bottleneck" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Getting qualified leads, sales closing rates..."></textarea>
             </div>
 
@@ -1052,7 +1074,7 @@
 
             <!-- Input bar -->
             <div class="strategist-chat-input-bar">
-              <input type="text" id="chat-strategist-input" class="strategist-chat-input" placeholder="Ask about customer acquisition, conversion rates, or scaling...">
+              <input type="text" id="chat-strategist-input" class="strategist-chat-input" aria-label="Ask the AI Strategist a question" placeholder="Ask about customer acquisition, conversion rates, or scaling...">
               <button class="btn-chat-send" id="btn-chat-strategist-send">Send</button>
             </div>
 
@@ -1126,7 +1148,7 @@
   <div id="toast" class="toast"></div>
 
   <!-- First Visit Onboarding Journey Selector Modal -->
-  <div id="journey-modal-overlay" class="journey-modal-overlay" style="display: none;">
+  <div id="journey-modal-overlay" class="journey-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="journey-modal-card">
       <h3 class="journey-modal-title">Welcome to AI-OS Business</h3>
       <p class="journey-modal-subtitle" style="margin-bottom: 24px;">Choose the journey that best matches your current goal.</p>
@@ -1159,7 +1181,7 @@
   </div>
 
   <!-- Auth Overlay / Modal -->
-  <div id="auth-modal-overlay" class="auth-modal-overlay" style="display: none;">
+  <div id="auth-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
     <div class="auth-modal-card" style="max-width: 400px; text-align: center; padding: 30px;">
       <button id="auth-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">🔑</div>
@@ -1221,7 +1243,7 @@
   </div>
 
   <!-- Reset Password Modal -->
-  <div id="reset-password-modal-overlay" class="auth-modal-overlay" style="display: none;">
+  <div id="reset-password-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card" style="max-width: 400px; text-align: center; padding: 30px;">
       <button id="reset-password-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">🔒</div>
@@ -1244,7 +1266,7 @@
   </div>
 
   <!-- Coupon Code Modal -->
-  <div id="coupon-modal-overlay" class="auth-modal-overlay" style="display: none;">
+  <div id="coupon-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card">
       <button id="coupon-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon">🎫</div>
@@ -1252,7 +1274,7 @@
       <p>Enter your institutional or promotional coupon code below to unlock premium access.</p>
       
       <div style="text-align: left;">
-        <input type="text" id="coupon-input" class="coupon-input" placeholder="e.g. AIOS-VIP-PASS" autocomplete="off" />
+        <input type="text" id="coupon-input" class="coupon-input" aria-label="Coupon code" placeholder="e.g. AIOS-VIP-PASS" autocomplete="off" />
         <div id="coupon-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; margin-top: 8px; font-family: var(--font-mono);"></div>
         <button id="btn-coupon-submit" class="btn-upgrade-premium-bus" style="margin-top: 20px; width: 100%; padding: 12px !important; justify-content: center;">
           Activate Access Code
@@ -1262,7 +1284,7 @@
   </div>
 
   <!-- Trial Welcome Modal -->
-  <div id="trial-welcome-modal-overlay" class="auth-modal-overlay" style="display: none; z-index: 1000;">
+  <div id="trial-welcome-modal-overlay" class="auth-modal-overlay" style="display: none; z-index: 1000;" role="dialog" aria-modal="true">
     <div class="auth-modal-card" style="max-width: 480px; text-align: center; padding: 36px; border: 1px solid rgba(46, 197, 255, 0.25); box-shadow: 0 0 40px rgba(46, 197, 255, 0.2); background: #0c0c0e; border-radius: 20px;">
       <div style="font-size: 3.5rem; margin-bottom: 16px;">🎉</div>
       <h3 style="font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 8px; color: #fff; font-weight: 800;">Welcome to AI-OS!</h3>
@@ -1277,25 +1299,25 @@
   </div>
 
   <!-- Onboarding Modal -->
-  <div id="onboarding-modal-overlay" class="auth-modal-overlay" style="display: none;">
+  <div id="onboarding-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card" style="max-width: 550px;">
       <h3 style="font-size: 1.6rem; margin-bottom: 8px;">Complete Profile Onboarding</h3>
       <p>Configure your workspace details to proceed with business calculations.</p>
       
       <form id="onboarding-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
         <div>
-          <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full Name *</label>
+          <label for="ob-fullname" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full Name *</label>
           <input type="text" id="ob-fullname" required class="coupon-input" placeholder="e.g. Jane Doe" style="margin-top:0;">
         </div>
         
         <div style="display: flex; gap: 12px;">
           <div style="flex: 1;">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date of Birth *</label>
+            <label for="ob-dob" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date of Birth *</label>
             <input type="date" id="ob-dob" required class="coupon-input" style="margin-top:0; color-scheme: dark;">
           </div>
           
           <div style="flex: 1;">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender *</label>
+            <label for="ob-gender" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender *</label>
             <select id="ob-gender" required class="coupon-input" style="margin-top:0; background: #111;">
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
@@ -1307,7 +1329,7 @@
         </div>
         
         <div>
-          <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession *</label>
+          <label for="ob-profession" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession *</label>
           <select id="ob-profession" required class="coupon-input" style="margin-top:0; background: #111;">
             <option value="">Select Profession</option>
             <option value="Student">Student</option>
@@ -1344,7 +1366,7 @@
   </div>
 
   <!-- Pricing Modal -->
-  <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;">
+  <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="pricing-hotstar-modal premium-saas-layout">
       <!-- Close button mapped to original ID so existing JS hides modal -->
       <button id="pricing-modal-close-btn" class="hotstar-close-btn" aria-label="Close modal">&times;</button>
@@ -1499,14 +1521,14 @@
         <!-- Pricing Cards Section -->
         <div class="saas-pricing-container">
           <!-- Basic Plan Option -->
-          <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)">
+          <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="saas-card-header">Basic</div>
             <div class="saas-card-price">₹0</div>
             <div class="saas-card-subtitle">Lifetime Preview</div>
           </div>
           
           <!-- Premium Monthly Option -->
-          <div class="saas-pricing-card active highlighted" id="card-plan-monthly" onclick="selectSassPlan('monthly', this)">
+          <div class="saas-pricing-card active highlighted" id="card-plan-monthly" onclick="selectSassPlan('monthly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <span class="saas-card-badge">Most Popular</span>
             <div class="saas-card-header">Monthly</div>
             <div class="saas-card-price">₹99<span class="price-period">/mo</span></div>
@@ -1514,7 +1536,7 @@
           </div>
           
           <!-- Premium Yearly Option -->
-          <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)">
+          <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <span class="saas-card-badge savings">Save 15%</span>
             <div class="saas-card-header">Yearly</div>
             <div class="saas-card-price">₹999<span class="price-period">/yr</span></div>
@@ -1530,7 +1552,7 @@
           <div class="saas-trust-text">Cancel Anytime • Secure Payment • Instant Access</div>
           
           <!-- Coupon link -->
-          <span class="coupon-trigger-link" style="margin-top: 10px;" onclick="document.getElementById('btn-pricing-coupon').click()">Have a promo code? Use Coupon</span>
+          <span class="coupon-trigger-link" style="margin-top: 10px;" onclick="document.getElementById('btn-pricing-coupon').click()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Have a promo code? Use Coupon</span>
         </div>
       </div>
       
@@ -1574,7 +1596,7 @@
   </div>
 
   <!-- Profile Modal -->
-  <div id="profile-modal-overlay" class="auth-modal-overlay" style="display: none;">
+  <div id="profile-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card">
       <button id="profile-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon">👤</div>
@@ -1583,23 +1605,23 @@
       
       <form id="profile-edit-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
         <div>
-          <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Email Address</label>
+          <label for="pf-email" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Email Address</label>
           <input type="email" id="pf-email" readonly class="coupon-input" style="margin-top:0; background: rgba(0,0,0,0.15); color: #888; cursor: not-allowed;">
         </div>
         
         <div>
-          <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full Name *</label>
+          <label for="pf-fullname" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full Name *</label>
           <input type="text" id="pf-fullname" required class="coupon-input" style="margin-top:0;">
         </div>
         
         <div style="display: flex; gap: 12px;">
           <div style="flex: 1;">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date of Birth</label>
+            <label for="pf-dob" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date of Birth</label>
             <input type="date" id="pf-dob" class="coupon-input" style="margin-top:0; color-scheme: dark;">
           </div>
           
           <div style="flex: 1;">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender</label>
+            <label for="pf-gender" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender</label>
             <select id="pf-gender" class="coupon-input" style="margin-top:0; background: #111;">
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
@@ -1611,7 +1633,7 @@
         </div>
         
         <div>
-          <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession</label>
+          <label for="pf-profession" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession</label>
           <select id="pf-profession" class="coupon-input" style="margin-top:0; background: #111;">
             <option value="">Select Profession</option>
             <option value="Student">Student</option>
@@ -1626,12 +1648,12 @@
 
         <div style="display: flex; gap: 12px;">
           <div style="flex: 1;">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Account Type</label>
+            <span style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Account Type</span>
             <div id="pf-account-type-display" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bus-border); background: rgba(0,0,0,0.15); color: #ccc; font-weight: 600; font-size: 0.85rem; min-height: 38px;">Email User</div>
           </div>
           
           <div style="flex: 1;">
-            <label style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Access Level</label>
+            <span style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Access Level</span>
             <div style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--bus-border); background: rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; min-height: 38px;">
               <span id="pf-access-status-display" class="profile-dropdown-status" style="margin-bottom:0; font-weight:700;">Basic</span>
               <button type="button" id="btn-pf-upgrade" class="btn-upgrade-premium-bus" style="padding: 4px 8px !important; font-size: 0.65rem !important;">Upgrade</button>
@@ -1651,7 +1673,7 @@
   </div>
 
   <!-- Custom Business About Modal -->
-  <div id="about-bus-modal-overlay" class="auth-modal-overlay" style="display: none;">
+  <div id="about-bus-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card" style="max-width: 550px; text-align: left;">
       <button id="about-bus-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon" style="text-align: center; font-size: 3rem;">💼</div>
@@ -1752,6 +1774,33 @@
   </div>
 
   <script src="ad-manager.js?v=3.6"></script>
+  <!-- ============================================================
+       MOBILE-ONLY BOTTOM NAVIGATION (native-app style, <=767px)
+       Hidden by default in style.css; shown + styled by mobile.css.
+       ============================================================ -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Primary mobile navigation">
+    <button type="button" class="mobile-nav-tab active" data-workspace="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
+      <span>Dashboard</span>
+    </button>
+    <button type="button" class="mobile-nav-tab" data-workspace="learn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <span>Learn</span>
+    </button>
+    <button type="button" class="mobile-nav-tab" data-workspace="build">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"></path></svg>
+      <span>Build</span>
+    </button>
+    <button type="button" class="mobile-nav-tab" data-workspace="grow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 6"></polyline><polyline points="14 6 21 6 21 13"></polyline></svg>
+      <span>Grow</span>
+    </button>
+    <button type="button" class="mobile-nav-tab" id="mobile-nav-profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
+      <span>Profile</span>
+    </button>
+  </nav>
+
   <script type="module" src="business.js?v=3.6"></script>
 
 </body>

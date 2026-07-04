@@ -2,6 +2,15 @@
    AI-OS BUSINESS PLATFORM - PREMIUM SAAS STYLESHEET (APPLE + STRIPE + NOTION)
    ========================================================================== */
 
+/* Mobile-only elements: hidden by default so they never render in desktop/tablet
+   flow. mobile.css overrides these with display:flex !important at <=767px. */
+.mobile-app-header,
+.mobile-bottom-nav,
+.mobile-only-settings-row,
+.onboarding-guide-toggle {
+  display: none;
+}
+
 :root {
   --bus-bg: #090909;
   --bus-surface: #121212;

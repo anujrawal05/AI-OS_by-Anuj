@@ -46,10 +46,32 @@ const compareClearBtn = document.getElementById('compare-clear-btn');
 let librarySearchQuery = '';
 let selectedLibrarySector = 'all';
 
+// --- Category Explorer Section State ---
+let activeCategoryName;
+
 const comparisonOverlay = document.getElementById('comparison-overlay');
 const comparisonCloseOverlay = document.getElementById('comparison-close-overlay');
 const comparisonCloseBtn = document.getElementById('comparison-close-btn');
 const comparisonTable = document.getElementById('comparison-table');
+
+if (compareClearBtn) {
+  compareClearBtn.addEventListener('click', () => {
+    state.comparisonList = [];
+    updateComparisonUI();
+    renderLibraryGrid();
+  });
+}
+
+if (compareTriggerBtn) {
+  compareTriggerBtn.addEventListener('click', openComparisonOverlay);
+}
+
+if (comparisonCloseBtn) {
+  comparisonCloseBtn.addEventListener('click', closeComparisonOverlay);
+}
+if (comparisonCloseOverlay) {
+  comparisonCloseOverlay.addEventListener('click', closeComparisonOverlay);
+}
 
 const translationDB = {
   English: {
@@ -169,11 +191,9 @@ const optionToMatrixKey = {
 
 export async function ensureDataLoaded() {
   if (!window.toolsData) {
-    console.log("[Explore Module] Loading toolsData.js dynamically...");
     await import('../toolsData.js');
   }
   if (!window.exploringAIRoadmap) {
-    console.log("[Explore Module] Loading exploringAIData.js dynamically...");
     await import('../exploringAIData.js');
   }
 }
@@ -4538,7 +4558,11 @@ export function renderLibraryGrid() {
 export async function initCategoryExplorerSection() {
   await ensureDataLoaded();
   if (!categoryExplorerList) return;
-  
+
+  if (!activeCategoryName) {
+    activeCategoryName = industriesList[0];
+  }
+
   // Render all 12 categories sidebar options with tool counts
   categoryExplorerList.innerHTML = '';
   industriesList.forEach(sector => {

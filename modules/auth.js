@@ -8,10 +8,6 @@ import { apiCall } from './apiClient.js';
 let authMode = 'signin';
 let onboardingUser = null;
 
-export async function initSupabase() {
-  console.log("[Auth] Supabase legacy client disabled. Express session-token initialized.");
-}
-
 export function isUserAuthenticated() {
   return !!state.user;
 }
@@ -418,10 +414,6 @@ export async function handleForgotPassword() {
   }
 }
 
-export async function handleSupabaseSession(session, profile = null) {
-  console.log("[Auth] Supabase legacy session handler ignored.");
-}
-
 export function showOnboardingModal(user) {
   onboardingUser = user;
   const overlay = document.getElementById('onboarding-modal-overlay');
@@ -526,6 +518,13 @@ export function showProfileModal() {
     }
   }
   
+  // Sync the mobile-only theme toggle row's label with the current theme
+  const mobileThemeLabel = document.querySelector('#pf-mobile-theme-toggle .pf-theme-label');
+  if (mobileThemeLabel) {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    mobileThemeLabel.textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
+  }
+
   const overlay = document.getElementById('profile-modal-overlay');
   if (overlay) overlay.style.display = 'flex';
 }
@@ -596,7 +595,8 @@ export async function handleCouponLogin(couponCode) {
       updateUserProfileHeader();
       if (window.AdManager) window.AdManager.updateAdVisibility();
       if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
-      
+      if (window.initTrialClock) window.initTrialClock();
+
       showToast("Coupon redeemed successfully! Premium access unlocked.");
     }
   } catch (err) {
@@ -604,6 +604,78 @@ export async function handleCouponLogin(couponCode) {
       errorEl.textContent = err.message;
       errorEl.style.display = 'block';
     }
+  }
+}
+
+export async function handlePremiumUpgrade(planLabel) {
+  if (!state.user) {
+    const pricingOverlay = document.getElementById('pricing-modal-overlay');
+    if (pricingOverlay) pricingOverlay.style.display = 'none';
+    const authOverlay = document.getElementById('auth-modal-overlay');
+    if (authOverlay) authOverlay.style.display = 'flex';
+    showToast("Please sign in to upgrade to Premium.", "warning");
+    return;
+  }
+
+  if (!window.Razorpay) {
+    showToast("Payment gateway failed to load. Please refresh and try again.", "error");
+    return;
+  }
+
+  try {
+    const order = await apiCall('/api/payments/checkout', {
+      method: 'POST',
+      body: JSON.stringify({ planType: 'Premium' })
+    });
+
+    const rzp = new window.Razorpay({
+      key: 'rzp_test_T4Mr1D3RBNpiEi',
+      amount: Math.round(order.amount * 100),
+      currency: order.currency,
+      order_id: order.orderId,
+      name: 'AI-OS Premium',
+      description: `${planLabel} Plan Upgrade`,
+      prefill: { email: state.user.email },
+      theme: { color: '#00D084' },
+      handler: async (response) => {
+        try {
+          await apiCall('/api/payments/verify', {
+            method: 'POST',
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          });
+
+          const context = await apiCall('/api/auth/me');
+          state.user = context.user;
+          localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+
+          hideAuthModals();
+          updateUserProfileHeader();
+          if (window.AdManager) window.AdManager.updateAdVisibility();
+          if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
+          if (window.initTrialClock) window.initTrialClock();
+          showToast("Payment successful! Premium access unlocked.");
+        } catch (err) {
+          showToast(err.message || "Payment verification failed. Please contact support.", "error");
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          showToast("Payment cancelled.", "warning");
+        }
+      }
+    });
+
+    rzp.on('payment.failed', (resp) => {
+      showToast(resp?.error?.description || "Payment failed. Please try again.", "error");
+    });
+
+    rzp.open();
+  } catch (err) {
+    showToast(err.message || "Unable to start checkout. Please try again.", "error");
   }
 }
 
@@ -737,6 +809,37 @@ export async function initAuthSystem() {
   const couponCloseBtn = document.getElementById('coupon-modal-close-btn');
   if (couponCloseBtn) {
     couponCloseBtn.addEventListener('click', hideAuthModals);
+  }
+
+  // Close pricing modal
+  const pricingCloseBtn = document.getElementById('pricing-modal-close-btn');
+  if (pricingCloseBtn) {
+    pricingCloseBtn.addEventListener('click', hideAuthModals);
+  }
+
+  // Pricing plan selection (hidden proxy buttons clicked by the inline pricing-modal script)
+  const pricingFreeBtn = document.getElementById('btn-pricing-free');
+  if (pricingFreeBtn) {
+    pricingFreeBtn.addEventListener('click', hideAuthModals);
+  }
+
+  const pricingMonthlyBtn = document.getElementById('btn-pricing-monthly');
+  if (pricingMonthlyBtn) {
+    pricingMonthlyBtn.addEventListener('click', () => handlePremiumUpgrade('Monthly'));
+  }
+
+  const pricingYearlyBtn = document.getElementById('btn-pricing-yearly');
+  if (pricingYearlyBtn) {
+    pricingYearlyBtn.addEventListener('click', () => handlePremiumUpgrade('Yearly'));
+  }
+
+  const pricingCouponBtn = document.getElementById('btn-pricing-coupon');
+  if (pricingCouponBtn) {
+    pricingCouponBtn.addEventListener('click', () => {
+      hideAuthModals();
+      const couponOverlay = document.getElementById('coupon-modal-overlay');
+      if (couponOverlay) couponOverlay.style.display = 'flex';
+    });
   }
 
   // Coupon Submit click
@@ -1092,7 +1195,6 @@ async function toggleUserSuspension(userId, currentSuspended) {
 }
 
 // Global exposure for backwards compatibility with inline HTML events
-window.initSupabase = initSupabase;
 window.isUserAuthenticated = isUserAuthenticated;
 window.updateUserProfileHeader = updateUserProfileHeader;
 window.switchAuthTab = switchAuthTab;
@@ -1103,12 +1205,12 @@ window.showOtpScreen = showOtpScreen;
 window.hideOtpScreen = hideOtpScreen;
 window.handleVerifyOtp = handleVerifyOtp;
 window.handleForgotPassword = handleForgotPassword;
-window.handleSupabaseSession = handleSupabaseSession;
 window.showOnboardingModal = showOnboardingModal;
 window.handleOnboardingSubmit = handleOnboardingSubmit;
 window.showProfileModal = showProfileModal;
 window.handleProfileSave = handleProfileSave;
 window.handleCouponLogin = handleCouponLogin;
+window.handlePremiumUpgrade = handlePremiumUpgrade;
 window.logoutUser = logoutUser;
 window.hideAuthModals = hideAuthModals;
 window.initAuthSystem = initAuthSystem;

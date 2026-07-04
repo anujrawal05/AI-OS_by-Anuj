@@ -3,7 +3,6 @@
 
 export async function playVideoWithPlayer(videoPath, title) {
   if (!window.playPremiumVideo) {
-    console.log("[Video Module] Loading video-player.js dynamically...");
     await import('../video-player.js');
   }
   if (window.playPremiumVideo) {

@@ -122,7 +122,7 @@ async function verifySignature(req, res, next) {
     const invoiceNumber = `INV-${dateStr}-${randCode}`;
 
     // Transactional write: Update Payment, upgrade subscription, write transaction record
-    await prisma.$transaction(async (tx) => {
+    await prisma.withTransaction(async (tx) => {
       // Fetch corresponding subscription to link constraints
       const payment = await tx.payment.findUnique({
         where: { gatewayOrderId: razorpay_order_id }

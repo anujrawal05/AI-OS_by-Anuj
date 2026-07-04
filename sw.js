@@ -1,13 +1,16 @@
-const CACHE_NAME = 'aios-v5.8';
+const CACHE_NAME = 'aios-v5.10';
 const ASSETS = [
   '/',
   '/index.html',
   '/aios_buisness.html',
   '/style.css',
   '/business.css',
+  '/mobile.css',
   '/app.js',
   '/business.js',
-  '/aios_logo.png'
+  '/aios_logo.png',
+  '/business_hero.png',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', event => {
@@ -39,24 +42,26 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
     return;
   }
-  
+
+  // Network-first: always prefer the freshest JS/HTML from the server so
+  // deployed bugfixes reach clients immediately. Cache is only a fallback
+  // for offline access, never a source of truth while the network is up.
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      
-      return fetch(event.request).then(networkResponse => {
-        if (!networkResponse || networkResponse.status !== 200) {
-          return networkResponse;
-        }
-        
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseToCache);
-        });
+    fetch(event.request).then(networkResponse => {
+      if (!networkResponse || networkResponse.status !== 200) {
         return networkResponse;
-      }).catch(() => {
+      }
+
+      const responseToCache = networkResponse.clone();
+      caches.open(CACHE_NAME).then(cache => {
+        cache.put(event.request, responseToCache);
+      });
+      return networkResponse;
+    }).catch(() => {
+      return caches.match(event.request).then(cachedResponse => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
         if (event.request.mode === 'navigate') {
           return caches.match('/index.html');
         }
