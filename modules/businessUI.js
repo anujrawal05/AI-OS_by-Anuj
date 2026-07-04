@@ -50,8 +50,15 @@ export function toggleBusinessSectionView() {
   const buildLock = document.getElementById('build-premium-lock');
   const expandLock = document.getElementById('expand-premium-lock');
   
-  const isPremium = state.user && (state.user.plan_type === 'Premium' || state.user.plan_type === 'Trial Premium');
-  const isTrial = state.user && state.user.plan_type === 'Trial';
+  const isPremium = state.user && (
+    state.user.plan_type === 'Premium' || 
+    state.user.plan_type === 'Trial Premium' ||
+    state.user.subscription?.plan === 'Premium'
+  );
+  const isTrial = state.user && (
+    state.user.plan_type === 'Trial' ||
+    state.user.subscription?.plan === 'Trial'
+  );
   
   if (isPremium) {
     if (buildLock) buildLock.style.display = 'none';

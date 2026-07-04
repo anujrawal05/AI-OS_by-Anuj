@@ -381,25 +381,27 @@ async function login(req, res, next) {
       });
     }
 
-    // Generate JWT and register session
-    const sessionToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
-    const sessionExpires = new Date(Date.now() + SESSION_EXPIRY_MS);
-
-    await prisma.withBatchTransaction(() => [
-      prisma.session.create({
-        data: {
-          userId: user.id,
-          sessionToken,
-          ipAddress,
-          userAgent,
-          expiresAt: sessionExpires
-        }
-      }),
-      prisma.user.update({
-        where: { id: user.id },
-        data: { failedLoginAttempts: 0, lockoutUntil: null }
-      })
-    ]);
+    // Generate JWT and register session inside the transaction callback
+    let sessionToken;
+    await prisma.withBatchTransaction(() => {
+      sessionToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+      const sessionExpires = new Date(Date.now() + SESSION_EXPIRY_MS);
+      return [
+        prisma.session.create({
+          data: {
+            userId: user.id,
+            sessionToken,
+            ipAddress,
+            userAgent,
+            expiresAt: sessionExpires
+          }
+        }),
+        prisma.user.update({
+          where: { id: user.id },
+          data: { failedLoginAttempts: 0, lockoutUntil: null }
+        })
+      ];
+    });
 
     setSessionCookie(res, sessionToken);
 

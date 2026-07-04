@@ -84,12 +84,12 @@ app.use(express.static(staticPath, {
 }));
 
 // Health Endpoint (Liveness Check)
-app.get('/health', (req, res) => {
+app.get(['/health', '/api/health'], (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });
 });
 
 // Ready Endpoint (Readiness Check verifying DB connections)
-app.get('/ready', async (req, res) => {
+app.get(['/ready', '/api/ready'], async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     return res.status(200).json({ status: 'ready', database: 'connected' });

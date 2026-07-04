@@ -565,10 +565,20 @@ export function showProfileModal() {
 export async function handleProfileSave(e) {
   e.preventDefault();
   
-  const fullName = document.getElementById('pf-fullname').value.trim();
-  const dob = document.getElementById('pf-dob').value;
-  const gender = document.getElementById('pf-gender').value;
-  const profession = document.getElementById('pf-profession').value;
+  const fullNameEl = document.getElementById('pf-fullname');
+  const dobEl = document.getElementById('pf-dob');
+  const genderEl = document.getElementById('pf-gender');
+  const professionEl = document.getElementById('pf-profession');
+
+  if (!fullNameEl) {
+    showToast("Profile elements not found.", "error");
+    return;
+  }
+
+  const fullName = fullNameEl.value.trim();
+  const dob = dobEl ? dobEl.value : '';
+  const gender = genderEl ? genderEl.value : '';
+  const profession = professionEl ? professionEl.value : '';
   
   if (!fullName) {
     showToast("Name is required.", "error");
@@ -684,22 +694,17 @@ export async function handlePremiumUpgrade(planLabel) {
   }
 
   try {
-    const order = await apiCall('/api/payments/checkout', {
-      method: 'POST',
-      body: JSON.stringify({ planType: 'Premium' })
-    });
-
-    // BUG-013: Read Razorpay key_id from data attribute injected by backend/env,
-    // falling back to the meta tag set in index.html by the deployment pipeline.
-    // Never hardcode credentials in frontend source.
-    const razorpayKeyEl = document.getElementById('razorpay-key-data');
-    const razorpayKeyId = (razorpayKeyEl && razorpayKeyEl.dataset.key) ||
-      document.querySelector('meta[name="razorpay-key-id"]')?.content ||
-      '';
+    const keyData = await apiCall('/api/payments/key');
+    const razorpayKeyId = keyData && keyData.key;
     if (!razorpayKeyId) {
       showToast('Payment gateway not configured. Please contact support.', 'error');
       return;
     }
+
+    const order = await apiCall('/api/payments/checkout', {
+      method: 'POST',
+      body: JSON.stringify({ planType: 'Premium' })
+    });
 
     const rzp = new window.Razorpay({
       key: razorpayKeyId,

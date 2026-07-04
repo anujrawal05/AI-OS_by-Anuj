@@ -13,7 +13,16 @@ export const state = {
   sortOption: 'default',     // 'default', 'name-asc', 'name-desc', 'price-low', 'difficulty'
   showFavoritesOnly: false,
   comparisonList: [],         // array of tool IDs (max 3)
-  
+
+  // Discovered video filenames (populated by tutorials.js on init)
+  discoveredVideos: {
+    build: [],
+    explore: []
+  },
+
+  // Currently active roadmap goal text (set by explore.js on compile)
+  goalText: 'Exploring AI',
+
   // Hardcoded authenticated premium session by default
   user: {
     id: "demo-user-123",

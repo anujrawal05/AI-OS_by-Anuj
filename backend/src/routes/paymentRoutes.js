@@ -6,5 +6,6 @@ const { authenticateUser } = require('../middleware/authMiddleware');
 router.post('/checkout', authenticateUser, paymentController.createOrder);
 router.post('/verify', authenticateUser, paymentController.verifySignature);
 router.post('/coupon', authenticateUser, paymentController.redeemCoupon);
+router.get('/key', authenticateUser, paymentController.getPaymentKey);
 
 module.exports = router;

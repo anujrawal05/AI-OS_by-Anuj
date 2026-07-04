@@ -246,8 +246,21 @@ async function redeemCoupon(req, res, next) {
   }
 }
 
+// 4. RETRIEVE PUBLIC PAYMENT KEY ID
+async function getPaymentKey(req, res, next) {
+  try {
+    return res.status(200).json({
+      success: true,
+      key: process.env.RAZORPAY_KEY_ID || 'rzp_test_T4Mr1D3RBNpiEi'
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createOrder,
   verifySignature,
-  redeemCoupon
+  redeemCoupon,
+  getPaymentKey
 };

@@ -97,6 +97,12 @@
     overflow: visible !important;
     visibility: hidden !important;
     pointer-events: none !important;
+    /* backdrop-filter (like filter) creates a new containing block for
+       position:fixed descendants. Left in place, .main-nav's fixed
+       top/right offsets resolve against this 0x0 offscreen box instead
+       of the viewport, pushing the whole slide-in drawer offscreen. */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
   /* The fixed-position slide-in nav must be visible and interactive */
   .app-header .main-nav {

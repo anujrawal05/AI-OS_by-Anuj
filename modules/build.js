@@ -625,7 +625,13 @@ export function initBuildSection() {
         return;
       }
       
-      if (state.user && state.user.plan_type !== 'Premium' && state.user.plan_type !== 'Trial') {
+      const isPremium = state.user && (
+        state.user.plan_type === 'Premium' || 
+        state.user.plan_type === 'Trial' ||
+        state.user.subscription?.plan === 'Premium' ||
+        state.user.subscription?.plan === 'Trial'
+      );
+      if (state.user && !isPremium) {
         showPricingModal(true);
         showToast("Upgrade to Premium or start trial to compile executable blueprints.", "warning");
         return;
@@ -647,7 +653,7 @@ export function initBuildSection() {
       setTimeout(() => {
         const modelData = launchpadIdeas[model] || launchpadIdeas['agency'];
         const profile = modelData[niche] || modelData['retail'] || Object.values(modelData)[1];
-        const isTrial = state.user && state.user.plan_type === 'Trial';
+        const isTrial = state.user && (state.user.plan_type === 'Trial' || state.user.subscription?.plan === 'Trial');
 
         let detailsHtml = '';
         if (profile.details && profile.details.length > 0) {

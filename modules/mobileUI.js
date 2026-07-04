@@ -59,6 +59,29 @@ export function initMobileUI() {
     }
   });
 
+  // --- Move .main-nav out of .app-header at mobile widths so that the
+  // fixed-position slide-in drawer is guaranteed to be viewport-relative.
+  // backdrop-filter on .app-header creates a new containing block for
+  // position:fixed children (even when reset to none by mobile.css, some
+  // browsers evaluate the cascade too late). Moving the node to <body>
+  // is the only bulletproof fix.
+  const mainNav = document.querySelector('.main-nav');
+  let navOriginalParent = null;
+  let navOriginalNextSibling = null;
+  if (mainNav) {
+    navOriginalParent = mainNav.parentElement;
+    navOriginalNextSibling = mainNav.nextElementSibling;
+  }
+
+  watchBreakpoint(mq, (isMobile) => {
+    if (!mainNav) return;
+    if (isMobile && mainNav.parentElement !== document.body) {
+      document.body.appendChild(mainNav);
+    } else if (!isMobile && navOriginalParent && mainNav.parentElement !== navOriginalParent) {
+      navOriginalParent.insertBefore(mainNav, navOriginalNextSibling);
+    }
+  });
+
   // --- Mobile header "Menu" button (index.html only) directly toggles the
   // same nav/overlay/hamburger classes the desktop handler uses. We cannot
   // simply proxy to hamburger-toggle.click() because .app-header has its
@@ -67,12 +90,24 @@ export function initMobileUI() {
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener('click', () => {
-      const mainNav = document.querySelector('.main-nav');
-      const mobileOverlay = document.getElementById('mobile-nav-overlay');
+      const nav = document.querySelector('.main-nav');
+      const overlay = document.getElementById('mobile-nav-overlay');
       const hamburger = document.getElementById('hamburger-toggle');
-      if (mainNav) mainNav.classList.toggle('mobile-active');
-      if (mobileOverlay) mobileOverlay.classList.toggle('active');
+      if (nav) nav.classList.toggle('mobile-active');
+      if (overlay) overlay.classList.toggle('active');
       if (hamburger) hamburger.classList.toggle('active');
+    });
+  }
+
+  // --- Close mobile nav when the backdrop overlay is tapped
+  const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+  if (mobileNavOverlay) {
+    mobileNavOverlay.addEventListener('click', () => {
+      const nav = document.querySelector('.main-nav');
+      if (nav) nav.classList.remove('mobile-active');
+      mobileNavOverlay.classList.remove('active');
+      const hamburger = document.getElementById('hamburger-toggle');
+      if (hamburger) hamburger.classList.remove('active');
     });
   }
 

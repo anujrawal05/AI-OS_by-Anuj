@@ -39,19 +39,41 @@ async function loadTutorialsModule() {
   return tutorialsModuleInstance;
 }
 
+// Each workspace's init*Section() binds addEventListener without removing
+// prior listeners, so it must only ever run once per module (mirrors the
+// singleton-guarded pattern used by app.js's loadExploreModule). Calling it
+// again on every workspace switch stacks duplicate listeners and makes
+// toggle-style UI (e.g. the Learn accordion) appear stuck.
+let dashboardSectionInitialized = false;
+let learnSectionInitialized = false;
+let buildSectionInitialized = false;
+let expandSectionInitialized = false;
+
 async function loadActiveWorkspaceModules(workspace) {
   if (workspace === 'dashboard') {
     const mod = await loadTutorialsModule();
-    if (mod && mod.initTutorialsSection) mod.initTutorialsSection();
+    if (!dashboardSectionInitialized && mod && mod.initTutorialsSection) {
+      mod.initTutorialsSection();
+      dashboardSectionInitialized = true;
+    }
   } else if (workspace === 'learn') {
     const mod = await loadLearnModule();
-    if (mod && mod.initLearnSection) mod.initLearnSection();
+    if (!learnSectionInitialized && mod && mod.initLearnSection) {
+      mod.initLearnSection();
+      learnSectionInitialized = true;
+    }
   } else if (workspace === 'build') {
     const mod = await loadBuildModule();
-    if (mod && mod.initBuildSection) mod.initBuildSection();
+    if (!buildSectionInitialized && mod && mod.initBuildSection) {
+      mod.initBuildSection();
+      buildSectionInitialized = true;
+    }
   } else if (workspace === 'grow') {
     const mod = await loadExpandModule();
-    if (mod && mod.initExpandSection) mod.initExpandSection();
+    if (!expandSectionInitialized && mod && mod.initExpandSection) {
+      mod.initExpandSection();
+      expandSectionInitialized = true;
+    }
   }
 }
 

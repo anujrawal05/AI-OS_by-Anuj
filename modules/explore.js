@@ -6,6 +6,8 @@ import { showToast, escapeHTML, playAudioTelemetry } from './utils.js';
 import { getActiveLanguage, setupCardInteractions, showPricingModal } from './ui.js';
 import { isUserAuthenticated } from './auth.js';
 import { checkPromptLimit, incrementPromptLimit, applyRoadmapLock, removeRoadmapLock } from './premium.js';
+import { playVideoWithPlayer } from './video.js';
+import { apiCall } from './apiClient.js';
 
 // --- DOM References ---
 const roadSvg = document.getElementById('road-svg');
@@ -189,6 +191,9 @@ const optionToMatrixKey = {
 
 
 
+let toolsData = [];
+let exploringAIRoadmap = [];
+
 export async function ensureDataLoaded() {
   if (!window.toolsData) {
     await import('../toolsData.js');
@@ -196,6 +201,8 @@ export async function ensureDataLoaded() {
   if (!window.exploringAIRoadmap) {
     await import('../exploringAIData.js');
   }
+  toolsData = window.toolsData;
+  exploringAIRoadmap = window.exploringAIRoadmap;
 }
 
 const industriesList = [
@@ -2795,7 +2802,7 @@ export function renderRoadmap(optimalWorkflow, steps) {
             if (matched) filename = matched;
           }
           const videoPath = `https://media.ai-os.in/explore/${filename}`;
-          window.playPremiumVideo(videoPath, `Exploring AI - ${p.title}`);
+          playVideoWithPlayer(videoPath, `Exploring AI - ${p.title}`);
         });
         
         playlistWrapper.appendChild(rowEl);
@@ -3729,13 +3736,10 @@ export async function syncBookmarksFromBackend() {
   const localUser = localStorage.getItem('aios_user_profile');
   if (!localUser) return;
   try {
-    const res = await fetch('/api/bookmarks');
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.success && data.bookmarks) {
-        const toolIds = data.bookmarks.map(b => b.toolId);
-        localStorage.setItem('ai-os-favorites', JSON.stringify(toolIds));
-      }
+    const data = await apiCall('/api/bookmarks');
+    if (data && data.success && data.bookmarks) {
+      const toolIds = data.bookmarks.map(b => b.toolId);
+      localStorage.setItem('ai-os-favorites', JSON.stringify(toolIds));
     }
   } catch (err) {
     console.warn('[Bookmarks Sync Error]', err);
@@ -3766,9 +3770,8 @@ export function toggleFavorite(toolId) {
   // Sync state in the background with backend
   const localUser = localStorage.getItem('aios_user_profile');
   if (localUser) {
-    fetch('/api/bookmarks', {
+    apiCall('/api/bookmarks', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ toolId })
     }).catch(err => console.warn('Failed to sync bookmark toggle to backend:', err));
   }

@@ -29,6 +29,8 @@ async function loadExploreModule() {
 async function initApp() {
   // Initialize theme
   initTheme();
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
   
   // Initialize navigation and scrollspies
   initNavigation();

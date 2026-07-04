@@ -295,9 +295,12 @@ export function closeLegalDrawer() {
   }
 }
 
-// Bypassed showPricingModal for static mode
 export function showPricingModal(isMandatory = false) {
-  // Pricing locks are deactivated in fully unlocked static frontend
+  const overlay = document.getElementById('pricing-modal-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  const closeBtn = document.getElementById('pricing-modal-close-btn');
+  if (closeBtn) closeBtn.style.display = isMandatory ? 'none' : '';
 }
 
 // Global exposure for backwards compatibility

@@ -28,7 +28,6 @@
   <!-- Dedicated Mobile UI (native-app-style, <=767px only) -->
   <link rel="stylesheet" href="mobile.css?v=1.1" media="(max-width: 767px)">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Razorpay is loaded lazily only when payment is initiated (see auth.js)
        to prevent the browser Web Payment Handler API permission prompt -->
 </head>
@@ -1206,6 +1205,11 @@
           <label for="auth-email" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Email Address</label>
           <input type="email" id="auth-email" placeholder="Enter your email" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
         </div>
+        <!-- BUG-022: Name field shown only in signup mode (hidden in signin/forgot) -->
+        <div id="auth-name-container" style="display: none;">
+          <label for="auth-name" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Full Name</label>
+          <input type="text" id="auth-name" placeholder="Enter your full name" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" autocomplete="name">
+        </div>
         <div id="auth-password-container">
           <label for="auth-password" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Password</label>
           <input type="password" id="auth-password" placeholder="Enter your password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
@@ -1229,7 +1233,8 @@
         <button id="btn-verify-otp" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, var(--bus-primary) 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s; margin-top: 8px;">
           Verify OTP
         </button>
-        <button id="btn-back-to-auth" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 10px; width: 100%; text-align: center; font-family: var(--font-mono);">Back to Login</button>
+        <button id="btn-resend-otp" type="button" style="background: none; border: none; color: var(--bus-primary); font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Resend OTP</button>
+        <button id="btn-back-to-auth" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Back to Login</button>
       </div>
 
       <div id="auth-action-buttons" style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
@@ -1311,6 +1316,7 @@
   <!-- Onboarding Modal -->
   <div id="onboarding-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card" style="max-width: 550px;">
+      <button type="button" class="auth-modal-close-btn" onclick="document.getElementById('onboarding-modal-overlay').style.display='none'" aria-label="Close modal">&times;</button>
       <h3 style="font-size: 1.6rem; margin-bottom: 8px;">Complete Profile Onboarding</h3>
       <p>Configure your workspace details to proceed with business calculations.</p>
       
