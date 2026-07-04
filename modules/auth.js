@@ -585,7 +585,7 @@ export async function handleProfileSave(e) {
 export async function handleCouponLogin(couponCode) {
   const errorEl = document.getElementById('coupon-error-msg');
   if (errorEl) errorEl.style.display = 'none';
-  
+
   if (!couponCode || couponCode.trim().length < 4) {
     if (errorEl) {
       errorEl.textContent = 'Invalid access code. Please try again.';
@@ -593,7 +593,24 @@ export async function handleCouponLogin(couponCode) {
     }
     return;
   }
-  
+
+  // The coupon endpoint requires an active session — the code upgrades the
+  // subscription of an existing account, it does not create one.
+  // If the user is not signed in, redirect them to sign-in first.
+  if (!state.user) {
+    if (errorEl) {
+      errorEl.textContent = 'Please sign in or create a free account first, then redeem your code.';
+      errorEl.style.display = 'block';
+    }
+    setTimeout(() => {
+      const couponOverlay = document.getElementById('coupon-modal-overlay');
+      if (couponOverlay) couponOverlay.style.display = 'none';
+      const authOverlay = document.getElementById('auth-modal-overlay');
+      if (authOverlay) authOverlay.style.display = 'flex';
+    }, 1800);
+    return;
+  }
+
   try {
     const data = await apiCall('/api/payments/coupon', {
       method: 'POST',
