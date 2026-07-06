@@ -3,67 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Simple Claude Setup Guide</title>
+  <title>Monthly Tips & Tricks — AI-OS</title>
+  <!-- Link AI-OS Core Design Styles -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="mobile.css" media="(max-width: 767px)">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Configure Tailwind to resolve classes using AI-OS design token variables
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           colors: {
             brand: {
-              50: '#f5f3ff',
-              100: '#ede9fe',
-              200: '#ddd6fe',
-              500: '#8b5cf6',
-              600: '#7c3aed',
-              700: '#6d28d9',
-              900: '#4c1d95',
+              400: 'var(--accent-color)',
+              500: 'var(--accent-color)',
+              600: 'var(--accent-color)',
+              700: 'var(--accent-color)',
+              900: 'var(--accent-color)'
+            },
+            slate: {
+              950: 'var(--bg-color)',
+              900: 'var(--card-bg)',
+              800: 'var(--border-color)',
+              850: 'var(--border-color)',
+              700: 'var(--border-color)',
+              100: 'var(--text-primary)',
+              300: 'var(--text-secondary)',
+              400: 'var(--text-secondary)',
+              500: 'var(--text-secondary)'
             }
           }
         }
       }
     }
   </script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    // Initialize current active theme from storage
+    const storedTheme = localStorage.getItem('kronos-theme') || 'dark';
+    document.documentElement.className = storedTheme;
+  </script>
   <style>
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: var(--font-sans) !important;
+      background: var(--bg-gradient) !important;
+      color: var(--text-primary) !important;
     }
-    code, pre {
-      font-family: 'JetBrains Mono', monospace;
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-title) !important;
+      color: #fff !important;
     }
-    .step-card.completed {
-      border-color: #8b5cf6;
-      background-color: rgba(139, 92, 246, 0.03);
+    .step-card, .bg-slate-900 {
+      background: var(--card-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-radius: var(--radius-md) !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+    .bg-slate-950 {
+      background: var(--bg-color) !important;
+    }
+    .border-slate-900, .border-slate-800, .border-slate-850 {
+      border-color: var(--border-color) !important;
+    }
+    /* Customize checkboxes to match accent color */
+    .step-checkbox {
+      accent-color: var(--accent-color);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    /* Fix sticky app-header overlay issues */
+    .app-header {
+      position: static !important;
+      margin-bottom: 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    /* Mobile-only app header visibility */
+    @media (max-width: 767px) {
+      .app-header {
+        display: none !important;
+      }
+      .mobile-app-header {
+        display: flex !important;
+        position: static !important;
+        background: var(--bg-color) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        margin-bottom: 16px;
+      }
+      body {
+        padding-top: 0 !important;
+      }
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white pb-24">
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased pb-24">
 
-  <header class="border-b border-slate-900 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-3xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-brand-500/10 rounded-xl flex items-center justify-center border border-brand-500/20 text-brand-400 text-xl shadow-inner animate-bounce">
-          🌱
-        </div>
-        <div>
-          <h1 class="font-extrabold text-lg text-white tracking-tight">subh.tly <span class="text-brand-500">family</span></h1>
-          <p class="text-xs text-slate-400">The Simplest Step-by-Step Claude App Setup</p>
+  <!-- Desktop Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo" onclick="window.location.href='./index.html'">
+        <span class="logo-symbol">●</span>
+        <div class="logo-text-group">
+          <span class="logo-text">AI-OS</span>
+          <span class="logo-subtitle">Powered by A.R. Labs</span>
         </div>
       </div>
-      <div class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-semibold">
-        No subscription! Extremely Cheap!
+      <nav class="main-nav">
+        <a href="./index.html" class="nav-link">Home</a>
+        <a href="./index.html#roadmap-builder-section" class="nav-link">Roadmaps</a>
+        <a href="./index.html#explore-library-section" class="nav-link">Explore Tools</a>
+        <a href="./aios_buisness.html" class="nav-btn-business">AI-OS Business</a>
+      </nav>
+      <div class="header-actions">
+        <a href="./index.html" class="premium-cta-btn" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Back to Hub</a>
       </div>
+    </div>
+  </header>
+
+  <!-- Mobile Header -->
+  <header class="mobile-app-header" style="display: none;">
+    <div class="mobile-header-brand" onclick="window.location.href='./index.html'">
+      <span class="mobile-header-logo-dot">●</span>
+      <span class="mobile-header-title">AI-OS</span>
+    </div>
+    <div class="mobile-header-actions">
+      <a href="./index.html" style="font-size: 0.8rem; color: var(--accent-color); font-weight:600; text-decoration:none;">Back</a>
     </div>
   </header>
 
   <main class="max-w-3xl mx-auto px-4 py-8">
     
+    <h1 class="text-3xl font-black text-white mb-6 uppercase tracking-wider" style="font-family: var(--font-title); border-bottom: 2px solid var(--accent-color); padding-bottom: 12px; margin-top: 8px;">
+      Monthly Tips & Tricks
+    </h1>
+
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-8">
       <div class="flex justify-between items-center mb-2">
         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Setup Progress</span>

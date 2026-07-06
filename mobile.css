@@ -1163,5 +1163,236 @@
   .gm-toast-icon { font-size: 1.6rem; }
   .gm-toast-label { font-size: var(--mob-font-body); }
   .gm-toast-desc  { font-size: 0.7rem; }
+
+  /* ============================================================
+     HIDE MISSIONS/CHALLENGES ON MOBILE HOME PAGE ONLY
+     ============================================================ */
+  .daily-dashboard-section .gm-mission-card,
+  .daily-dashboard-section .gm-challenge-card {
+    display: none !important;
+  }
+
+  /* ============================================================
+     MOBILE ONLY UPDATES PAGE TOGGLE VIEWS
+     ============================================================ */
+  #mobile-updates-section {
+    display: none;
+  }
+  
+  body.mobile-updates-active #mobile-updates-section {
+    display: block !important;
+  }
+  
+  body.mobile-updates-active .daily-dashboard-section,
+  body.mobile-updates-active .dashboard-controls,
+  body.mobile-updates-active #roadmap-builder-section,
+  body.mobile-updates-active #explore-library-section,
+  body.mobile-updates-active #category-explorer-section,
+  body.mobile-updates-active #about-section,
+  body.mobile-updates-active footer {
+    display: none !important;
+  }
+
+  /* ============================================================
+     MOBILE ONLY UPDATES HUB LAYOUT & STYLES
+     ============================================================ */
+  .updates-page-wrapper {
+    padding: var(--mob-space-md);
+    max-width: var(--mob-content-max-width);
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-bottom: 100px; /* buffer for bottom nav */
+  }
+
+  .updates-header {
+    margin-bottom: var(--mob-space-lg);
+  }
+
+  .updates-title {
+    font-family: var(--font-title);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .updates-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Stats Summary Row */
+  .updates-stats-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--mob-radius-md);
+    padding: 12px;
+    margin-bottom: var(--mob-space-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .updates-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .updates-stat-item:last-child {
+    border-right: none;
+  }
+
+  .updates-stat-val {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent-color);
+  }
+
+  .updates-stat-lbl {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Core Gamification Wrappers */
+  .updates-core-gamification {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mob-space-md);
+    margin-bottom: var(--mob-space-lg);
+  }
+
+  .updates-core-gamification .gm-card {
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* Tips & Tricks Card Link */
+  .updates-tips-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(0, 208, 132, 0.06) 0%, rgba(46, 197, 255, 0.03) 100%);
+    border: 1px solid rgba(0, 208, 132, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--mob-radius-md);
+    padding: 16px;
+    margin-bottom: var(--mob-space-lg);
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+  }
+
+  .updates-tips-card:active {
+    transform: scale(0.98);
+  }
+
+  .updates-tips-icon {
+    font-size: 1.8rem;
+  }
+
+  .updates-tips-content {
+    flex: 1;
+    text-align: left;
+  }
+
+  .updates-tips-title {
+    font-family: var(--font-title);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px 0;
+  }
+
+  .updates-tips-desc {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .updates-tips-arrow {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  /* Future Updates Grid */
+  .updates-section-title {
+    font-family: var(--font-title);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px 0;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    text-align: left;
+  }
+
+  .updates-future-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .updates-future-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--mob-radius-md);
+    padding: 16px;
+    box-sizing: border-box;
+    text-align: left;
+  }
+
+  .future-card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+
+  .future-card-title {
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px 0;
+  }
+
+  .future-card-desc {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .future-card-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--accent-color);
+    background: rgba(0, 208, 132, 0.1);
+    border: 1px solid rgba(0, 208, 132, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
 }
 

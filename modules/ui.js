@@ -187,6 +187,12 @@ export function initNavigation() {
 
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
+      document.body.classList.remove('mobile-updates-active');
+      document.querySelectorAll('.mobile-bottom-nav .mobile-nav-tab').forEach(t => t.classList.remove('active'));
+      if (link.classList.contains('mobile-nav-tab')) {
+        link.classList.add('active');
+      }
+
       const targetId = link.getAttribute('href');
       if (targetId && targetId.startsWith('#')) {
         e.preventDefault();

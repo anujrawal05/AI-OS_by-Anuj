@@ -119,6 +119,17 @@ export function initMobileUI() {
     });
   }
 
+  // --- Bottom nav "Updates" tab activates updates view.
+  const mobileNavUpdates = document.getElementById('mobile-nav-updates');
+  if (mobileNavUpdates) {
+    mobileNavUpdates.addEventListener('click', () => {
+      document.querySelectorAll('.mobile-bottom-nav .mobile-nav-tab').forEach(t => t.classList.remove('active'));
+      mobileNavUpdates.classList.add('active');
+      document.body.classList.add('mobile-updates-active');
+      window.scrollTo(0, 0);
+    });
+  }
+
   // --- Bottom nav workspace tabs (aios_buisness.html only) reuse the
   // existing workspace switcher - zero duplicated pane-switch logic.
   document.querySelectorAll('.mobile-nav-tab[data-workspace]').forEach((tab) => {

@@ -483,10 +483,23 @@ function _handleGmUpdate(e) {
     _showGmToast(achievement);
   }
 
-  if (type === 'xp' || type === 'coins' || type === 'streak' || type === 'daily_reward') {
+  if (type === 'xp' || type === 'coins' || type === 'streak' || type === 'daily_reward' || type === 'mission') {
     refreshStatBlock();
+    
+    // Update stats summary in mobile updates hub if present
+    const gm = getState();
+    if (gm) {
+      const lvl = document.getElementById('updates-val-level');
+      const xp = document.getElementById('updates-val-xp');
+      const str = document.getElementById('updates-val-streak');
+      const coins = document.getElementById('updates-val-coins');
+      if (lvl) lvl.textContent = gm.level;
+      if (xp) xp.textContent = gm.xp.toLocaleString();
+      if (str) str.textContent = `${gm.streak}d`;
+      if (coins) coins.textContent = `🪙 ${gm.coins}`;
+    }
+
     if (type === 'streak') {
-      const gm  = getState();
       const sub = document.querySelector('.gm-greeting-sub');
       if (sub && gm) {
         const streakMsg = gm.streak > 1
@@ -495,20 +508,28 @@ function _handleGmUpdate(e) {
         sub.innerHTML = `Your AI learning streak is ${streakMsg}. Keep it going.`;
       }
     }
+
+    // Re-render all daily mission cards
+    const mission = getDailyMission();
+    document.querySelectorAll('.gm-mission-card').forEach(card => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = renderMission(mission);
+      card.replaceWith(tmp.firstElementChild);
+    });
   }
 
   if (type === 'weekly_progress' || type === 'weekly_complete') {
-    const ch   = getWeeklyChallenge();
-    const card = document.querySelector('.gm-challenge-card');
-    if (card) {
+    const ch = getWeeklyChallenge();
+    document.querySelectorAll('.gm-challenge-card').forEach(card => {
       const tmp = document.createElement('div');
       tmp.innerHTML = renderWeeklyChallenge(ch);
       card.replaceWith(tmp.firstElementChild);
-      
-      // Animate the replaced progress ring immediately
+    });
+
+    // Re-animate all matching progress rings
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const ring = document.querySelector('.gm-challenge-ring circle[stroke="var(--accent-color)"]');
+        document.querySelectorAll('.gm-challenge-ring circle[stroke="var(--accent-color)"]').forEach(ring => {
           if (ring) {
             const safePct  = Math.min(Math.round((ch.progress / ch.goal) * 100), 100);
             const radius   = 28;
@@ -518,8 +539,97 @@ function _handleGmUpdate(e) {
           }
         });
       });
-    }
+    });
   }
+}
+
+// ─── Render Mobile Updates Hub ────────────────────────────────────────────────
+
+export function renderMobileUpdates() {
+  const container = document.getElementById('mobile-updates-section');
+  if (!container) return;
+
+  const gm = getState();
+  if (!gm) return;
+
+  const mission = getDailyMission();
+  const challenge = getWeeklyChallenge();
+
+  container.innerHTML = `
+    <div class="updates-page-wrapper">
+      <!-- Title / Brand -->
+      <div class="updates-header">
+        <h2 class="updates-title">AI-OS Updates</h2>
+        <p class="updates-subtitle">Your daily learning dashboard & rewards</p>
+      </div>
+
+      <!-- User Stats Summary -->
+      <div class="updates-stats-summary" id="updates-stats-summary">
+        <div class="updates-stat-item">
+          <span class="updates-stat-val" id="updates-val-level">${gm.level}</span>
+          <span class="updates-stat-lbl">Level</span>
+        </div>
+        <div class="updates-stat-item">
+          <span class="updates-stat-val" id="updates-val-xp">${gm.xp.toLocaleString()}</span>
+          <span class="updates-stat-lbl">XP</span>
+        </div>
+        <div class="updates-stat-item">
+          <span class="updates-stat-val" id="updates-val-streak">${gm.streak}d</span>
+          <span class="updates-stat-lbl">Streak</span>
+        </div>
+        <div class="updates-stat-item">
+          <span class="updates-stat-val" id="updates-val-coins">🪙 ${gm.coins}</span>
+          <span class="updates-stat-lbl">Coins</span>
+        </div>
+      </div>
+
+      <!-- Daily Missions & Weekly Challenge -->
+      <div class="updates-core-gamification">
+        ${renderMission(mission)}
+        ${renderWeeklyChallenge(challenge)}
+      </div>
+
+      <!-- Monthly Tips & Tricks Link Card -->
+      <div class="updates-tips-card" onclick="window.location.href='./monthly-tips-and-tricks.html'">
+        <div class="updates-tips-icon">💡</div>
+        <div class="updates-tips-content">
+          <h4 class="updates-tips-title">Monthly Tips & Tricks</h4>
+          <p class="updates-tips-desc">Unlock advanced strategies, system prompting secrets, and workflow templates.</p>
+        </div>
+        <span class="updates-tips-arrow">→</span>
+      </div>
+
+      <!-- Future Updates Grid -->
+      <h3 class="updates-section-title">Coming Soon</h3>
+      <div class="updates-future-grid">
+        <div class="updates-future-card">
+          <div class="future-card-icon">🧪</div>
+          <h4 class="future-card-title">AI Lab Integration</h4>
+          <p class="future-card-desc">Execute code sandboxes and deploy agents directly from your roadmap nodes.</p>
+          <span class="future-card-badge">Q3 2026</span>
+        </div>
+        <div class="updates-future-card">
+          <div class="future-card-icon">🏆</div>
+          <h4 class="future-card-title">Community Leagues</h4>
+          <p class="future-card-desc">Compete with global AI builders in weekly sprint leaderboards for premium reward tokens.</p>
+          <span class="future-card-badge">Q4 2026</span>
+        </div>
+      </div>
+    </div>`;
+
+  // Animate the weekly challenge progress ring
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const ring = container.querySelector('.gm-challenge-ring circle[stroke="var(--accent-color)"]');
+      if (ring && challenge) {
+        const safePct  = Math.min(Math.round((challenge.progress / challenge.goal) * 100), 100);
+        const radius   = 28;
+        const circ     = 2 * Math.PI * radius;
+        const offset   = circ - (safePct / 100) * circ;
+        ring.style.strokeDashoffset = `${offset.toFixed(2)}`;
+      }
+    });
+  });
 }
 
 // ─── Auto-complete tasks triggered by the visit itself ────────────────────────
@@ -545,17 +655,17 @@ export async function initDailyDashboard() {
   }
 
   renderDashboard();
+  renderMobileUpdates();
 
   document.addEventListener('aios:gm:update', _handleGmUpdate);
 
   requestAnimationFrame(() => {
     _autoCompleteVisitTasks();
-    const mission  = getDailyMission();
-    const existing = document.querySelector('.gm-mission-card');
-    if (existing) {
+    const mission = getDailyMission();
+    document.querySelectorAll('.gm-mission-card').forEach(card => {
       const tmp = document.createElement('div');
       tmp.innerHTML = renderMission(mission);
-      existing.replaceWith(tmp.firstElementChild);
-    }
+      card.replaceWith(tmp.firstElementChild);
+    });
   });
 }
