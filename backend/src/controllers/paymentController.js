@@ -46,12 +46,15 @@ async function createOrder(req, res, next) {
 
     if (!sub) {
       // Auto-recover: provision a Free subscription for this user and continue
+      const now = new Date();
+      const currentPeriodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
       sub = await prisma.subscription.create({
         data: {
           userId: req.user.id,
           plan: 'Free',
           status: 'Active',
-          startDate: new Date()
+          currentPeriodStart: now,
+          currentPeriodEnd
         }
       });
     }
