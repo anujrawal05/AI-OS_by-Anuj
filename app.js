@@ -64,6 +64,9 @@ async function initApp() {
   // Initialize Trial Clock countdowns
   initTrialClock();
   
+  // Register global modal ESC and outside-click controller
+  registerGlobalModalController();
+  
   // Setup background scroll smooth animation traveler loops
   setTimeout(async () => {
     try {
@@ -150,4 +153,55 @@ if ('serviceWorker' in navigator) {
       .then(() => {})
       .catch(err => console.warn('ServiceWorker registration failed:', err));
   });
+}
+
+function registerGlobalModalController() {
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const overlays = document.querySelectorAll('.auth-modal-overlay, .journey-modal-overlay, #legal-overlay, #video-roadmap-choice-modal, #premium-lang-modal-overlay, #reset-password-modal-overlay, #coupon-modal-overlay, #trial-welcome-modal-overlay, #onboarding-modal-overlay, #pricing-modal-overlay, #profile-modal-overlay');
+      overlays.forEach(overlay => {
+        if (overlay.style.display === 'flex' || overlay.style.display === 'block' || overlay.classList.contains('active') || overlay.getAttribute('aria-hidden') === 'false') {
+          if (overlay.id === 'onboarding-modal-overlay') return;
+          if (overlay.id === 'pricing-modal-overlay') {
+            const closeBtn = document.getElementById('pricing-modal-close-btn');
+            if (closeBtn && closeBtn.style.display === 'none') return;
+          }
+          closeModalElement(overlay);
+        }
+      });
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const overlays = document.querySelectorAll('.auth-modal-overlay, .journey-modal-overlay, #legal-overlay, #video-roadmap-choice-modal, #premium-lang-modal-overlay, #reset-password-modal-overlay, #coupon-modal-overlay, #trial-welcome-modal-overlay, #onboarding-modal-overlay, #pricing-modal-overlay, #profile-modal-overlay');
+    overlays.forEach(overlay => {
+      if (overlay.style.display === 'flex' || overlay.style.display === 'block' || overlay.classList.contains('active') || overlay.getAttribute('aria-hidden') === 'false') {
+        const card = overlay.querySelector('.auth-modal-card, .auth-modal, .journey-modal-card, .pricing-hotstar-modal, .legal-modal-card, .profile-modal-scroll-content');
+        if (card && e.target === overlay) {
+          if (overlay.id === 'onboarding-modal-overlay') return;
+          if (overlay.id === 'pricing-modal-overlay') {
+            const closeBtn = document.getElementById('pricing-modal-close-btn');
+            if (closeBtn && closeBtn.style.display === 'none') return;
+          }
+          closeModalElement(overlay);
+        }
+      }
+    });
+  });
+}
+
+function closeModalElement(overlay) {
+  if (overlay.id === 'legal-overlay') {
+    if (window.closeLegalDrawer) window.closeLegalDrawer();
+    else overlay.setAttribute('aria-hidden', 'true');
+  } else if (overlay.id === 'trial-welcome-modal-overlay') {
+    if (window.closeTrialWelcomeModal) window.closeTrialWelcomeModal();
+    else overlay.style.display = 'none';
+  } else {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      overlay.classList.remove('active');
+    }, 200);
+  }
 }
