@@ -91,6 +91,12 @@ async function loadActiveWorkspaceModules(workspace) {
 async function initBusiness() {
   // Initialize theme
   initTheme();
+
+  // Bind theme toggle button click handler
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+  }
   
   // Initialize Auth checks and load sessions
   await initAuthSystem();

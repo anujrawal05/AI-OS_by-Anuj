@@ -3,6 +3,13 @@
 
 <head>
   <meta charset="UTF-8">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('kronos-theme');
+      const theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI-OS | Powered by A.R. Labs</title>
   <meta name="description"
