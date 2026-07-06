@@ -105,7 +105,6 @@ export const ACHIEVEMENTS = [
 
 // Daily mission pool — 3 are picked each day based on day-of-year
 const MISSION_POOL = [
-  { id: 'visit',       label: 'Visit AI-OS today',                        xp: 25,  coins: 5  },
   { id: 'roadmap',     label: 'Compile an AI roadmap',                     xp: 30,  coins: 8  },
   { id: 'explore3',    label: 'Browse 3 tools in the Explore Library',     xp: 20,  coins: 5  },
   { id: 'category',    label: 'Visit the Category Explorer',               xp: 20,  coins: 5  },
@@ -117,7 +116,6 @@ const MISSION_POOL = [
   { id: 'tip',         label: 'Read the AI Tip of the Day',                xp: 10,  coins: 2  },
   { id: 'prompt',      label: 'Read the Prompt of the Day',                xp: 10,  coins: 2  },
   { id: 'challenge',   label: 'Check your Weekly Challenge progress',      xp: 10,  coins: 2  },
-  { id: 'streak',      label: 'Keep your daily streak alive',              xp: 30,  coins: 10 },
   { id: 'compare',     label: 'Compare 2 AI tools side by side',           xp: 20,  coins: 5  },
 ];
 
@@ -318,8 +316,7 @@ export function checkDailyStreak() {
   if (_state.streak >= 7)  unlockAchievement('streak_7');
   if (_state.streak >= 30) unlockAchievement('streak_30');
 
-  // Award daily visit XP
-  awardXP(50, 'daily_visit');
+  // Update streak weekly challenge progress (not automatic XP)
   updateWeeklyChallengeProgress(1, 'days');
 }
 

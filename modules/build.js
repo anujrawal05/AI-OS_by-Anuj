@@ -706,9 +706,9 @@ export function initBuildSection() {
           detailsHtml = `
             <div style="margin-top:20px; padding:16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px;">
               <h4 style="color:var(--bus-primary); font-family:var(--font-title); font-size:0.88rem; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">Step-by-Step Execution Playbook</h4>
-              <ol style="margin:0; padding-left:18px; color:var(--bus-text-secondary); font-size:0.82rem; line-height:1.6;">
+              <ul style="margin:0; padding-left:0; list-style:none; color:var(--bus-text-secondary); font-size:0.82rem; line-height:1.6;">
                 ${profile.checklist.map(d => `<li style="margin-bottom:8px;">${d}</li>`).join('')}
-              </ol>
+              </ul>
             </div>
           `;
         }

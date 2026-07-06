@@ -1152,6 +1152,7 @@ export async function openDrawer(nodeIdx, isEduNode = false, eduNodeData = null)
         navigator.clipboard.writeText(textToCopy).then(() => {
           showToast("Universal Master Prompt copied to clipboard!");
           if (window.gamification) {
+            window.gamification.awardXP(10, 'prompt');
             window.gamification.completeMissionTask('share');
           }
         }).catch(err => {
@@ -1226,6 +1227,10 @@ export function mountPlayground(type, container) {
             wBtn.onclick = () => {
               navigator.clipboard.writeText(docOutput);
               showToast("Copied specifications to clipboard!");
+              if (window.gamification) {
+                window.gamification.awardXP(10, 'prompt');
+                window.gamification.completeMissionTask('share');
+              }
             };
           }
         }, 12);
@@ -3323,6 +3328,7 @@ export function renderRoadmap(optimalWorkflow, steps) {
         navigator.clipboard.writeText(promptToCopy);
         showToast("JSON Prompt copied to clipboard!");
         if (window.gamification) {
+          window.gamification.awardXP(10, 'prompt');
           window.gamification.completeMissionTask('share');
         }
         state.quickStartStep = 3;
@@ -3813,6 +3819,7 @@ export function renderPremiumToolCard(mapping) {
       navigator.clipboard.writeText(promptToCopy).then(() => {
         showToast("Copied JSON prompt to clipboard!");
         if (window.gamification) {
+          window.gamification.awardXP(10, 'prompt');
           window.gamification.completeMissionTask('share');
         }
       }).catch(err => {

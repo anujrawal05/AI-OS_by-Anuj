@@ -857,6 +857,12 @@
   video.addEventListener('ended', () => {
     saveProgress();
     
+    // Award XP and Coins for completing a video tutorial
+    if (window.gamification) {
+      window.gamification.awardXP(50, 'video');
+      window.gamification.awardCoins(15);
+    }
+    
     if (!activeVideoPath) return;
     
     let baseName = '';

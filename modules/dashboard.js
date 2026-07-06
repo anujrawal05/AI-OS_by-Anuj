@@ -744,11 +744,7 @@ export function renderMobileUpdates() {
   });
 }
 
-// ─── Auto-complete tasks triggered by the visit itself ────────────────────────
-
 function _autoCompleteVisitTasks() {
-  window.gamification?.completeMissionTask('visit');
-  window.gamification?.completeMissionTask('streak');
   if (isTipRead()) {
     window.gamification?.completeMissionTask('tip');
   }
@@ -776,7 +772,6 @@ export async function initDailyDashboard() {
 
   requestAnimationFrame(() => {
     if (!state.user) return;
-    _autoCompleteVisitTasks();
     const mission = getDailyMission();
     if (!mission) return;
     document.querySelectorAll('.gm-mission-card').forEach(card => {
