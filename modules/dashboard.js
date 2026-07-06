@@ -348,6 +348,22 @@ function renderDashboard() {
   section.innerHTML = `
     <div class="gm-dashboard-wrap">
 
+      <!-- Mobile-only Monthly Tips Promotional Banner (above greeting) -->
+      <div class="mobile-tips-promo-card" onclick="window.location.href='./monthly-tips-and-tricks.html'">
+        <div class="gm-tips-content" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+          <div class="gm-tips-text-group">
+            <div class="gm-tips-subtitle" style="font-size: 0.75rem; color: var(--accent-color); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
+              <span>📅</span> Monthly Tips & Tricks
+            </div>
+            <h3 class="gm-tips-title" style="font-family: var(--font-title); font-size: 1.05rem; font-weight: 800; color: #fff; margin: 4px 0 2px 0;">Access Claude Sonnet 5 & Claude Fable 5 for FREE</h3>
+            <p class="gm-tips-desc" style="font-family: var(--font-sans); font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin: 0;">using the official Anthropic + AeroLink method.</p>
+          </div>
+          <div class="gm-tips-cta-btn" style="align-self: flex-start; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-color), #a855f7); color: #fff; border-radius: 6px; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.2);">
+            View Guide →
+          </div>
+        </div>
+      </div>
+
       <!-- Top Row: Greeting + Stats Block -->
       <div class="gm-top-row">
         <div class="gm-greeting-block">

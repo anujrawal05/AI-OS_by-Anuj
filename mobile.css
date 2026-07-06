@@ -1396,3 +1396,44 @@
   }
 }
 
+  /* ============================================================
+     MOBILE-ONLY MONTHLY TIPS PROMO CARD (ABOVE GREETING)
+     ============================================================ */
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sparkleGlow {
+    0%, 100% {
+      opacity: 0.65;
+    }
+    50% {
+      opacity: 0.95;
+    }
+  }
+
+  .mobile-tips-promo-card {
+    display: flex !important;
+    animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    margin-bottom: 16px;
+    border-radius: var(--mob-radius-md) !important;
+    padding: 16px !important;
+    position: relative;
+    z-index: 10;
+  }
+
+  .mobile-tips-promo-card::before {
+    animation: sparkleGlow 4s ease-in-out infinite;
+  }
+
+  .daily-dashboard-section {
+    margin-top: 16px !important; /* Reduce large empty space above greeting on mobile */
+  }
+}

@@ -10801,19 +10801,37 @@ body.modal-open {
   }
 }
 
-/* ─── Monthly Tips & Tricks Card (Desktop Only) ─── */
-.gm-monthly-tips-card {
-  grid-column: 1 / -1;
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(46, 197, 255, 0.04)), var(--card-bg);
-  border-color: rgba(168, 85, 247, 0.2);
+/* ─── Monthly Tips & Tricks Card (Desktop & Mobile Promo) ─── */
+.gm-monthly-tips-card,
+.mobile-tips-promo-card {
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.gm-monthly-tips-card::before {
+.gm-monthly-tips-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(46, 197, 255, 0.04)), var(--card-bg);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+.mobile-tips-promo-card {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(46, 197, 255, 0.05)), var(--card-bg);
+  border-color: rgba(168, 85, 247, 0.25);
+  cursor: pointer;
+  display: none !important; /* Hidden on desktop */
+}
+
+.gm-monthly-tips-card::before,
+.mobile-tips-promo-card::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -10826,12 +10844,14 @@ body.modal-open {
   opacity: 0.8;
 }
 
-.gm-monthly-tips-card:hover {
+.gm-monthly-tips-card:hover,
+.mobile-tips-promo-card:hover {
   border-color: rgba(168, 85, 247, 0.4);
   box-shadow: 0 8px 32px rgba(168, 85, 247, 0.12), 0 0 16px rgba(46, 197, 255, 0.08);
 }
 
-.gm-monthly-tips-card:hover::before {
+.gm-monthly-tips-card:hover::before,
+.mobile-tips-promo-card:hover::before {
   opacity: 1;
 }
 
@@ -10903,12 +10923,14 @@ body.modal-open {
 }
 
 /* Light Theme Theme Mapping Overrides */
-[data-theme="light"] .gm-monthly-tips-card {
+[data-theme="light"] .gm-monthly-tips-card,
+[data-theme="light"] .mobile-tips-promo-card {
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.05), rgba(46, 197, 255, 0.03)), var(--card-bg);
   border-color: rgba(168, 85, 247, 0.15);
 }
 
-[data-theme="light"] .gm-monthly-tips-card:hover {
+[data-theme="light"] .gm-monthly-tips-card:hover,
+[data-theme="light"] .mobile-tips-promo-card:hover {
   border-color: rgba(168, 85, 247, 0.3);
   box-shadow: 0 8px 32px rgba(168, 85, 247, 0.08);
 }
