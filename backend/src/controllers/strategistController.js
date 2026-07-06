@@ -47,7 +47,7 @@ async function compileStrategy(req, res, next) {
     });
 
     // Increment user usage counter
-    const quota = await incrementPromptUsage(req.user.id);
+    const quota = await incrementPromptUsage(req.user.id, req);
 
     return res.status(200).json({
       success: true,
@@ -81,7 +81,7 @@ async function chatStrategist(req, res, next) {
       }
     });
 
-    const quota = await incrementPromptUsage(req.user.id);
+    const quota = await incrementPromptUsage(req.user.id, req);
 
     return res.status(200).json({
       success: true,

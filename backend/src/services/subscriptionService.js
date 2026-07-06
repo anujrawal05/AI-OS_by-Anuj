@@ -4,7 +4,26 @@ const { logAuditEvent } = require('./auditService');
 /**
  * Dynamic subscription check: check if the user's plan has expired, and if so, passive downgrade.
  */
-async function getSubscription(userId) {
+async function getSubscription(userId, req = null) {
+  if (req && req.headers) {
+    const couponHeader = req.headers['x-coupon-code'];
+    if (couponHeader) {
+      const code = couponHeader.trim().toUpperCase();
+      const validCoupons = (process.env.COUPON_CODES || 'VIP2026')
+        .split(',')
+        .map(c => c.trim().toUpperCase())
+        .filter(Boolean);
+      if (validCoupons.includes(code)) {
+        return {
+          plan: 'Premium',
+          status: 'Active',
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        };
+      }
+    }
+  }
+
   let sub = await prisma.subscription.findUnique({
     where: { userId }
   });

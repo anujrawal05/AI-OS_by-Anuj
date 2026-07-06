@@ -15,7 +15,7 @@ async function checkPromptQuota(req, res, next) {
     const userId = req.user.id;
 
     // 1. Get user subscription (triggers passive downgrade if expired)
-    const sub = await getSubscription(userId);
+    const sub = await getSubscription(userId, req);
     const plan = sub ? sub.plan : 'Free';
     const limit = PLAN_LIMITS[plan];
 
@@ -81,8 +81,8 @@ async function checkPromptQuota(req, res, next) {
 /**
  * Helper to increment user prompt usage counter and return the updated quota profile.
  */
-async function incrementPromptUsage(userId) {
-  const sub = await getSubscription(userId);
+async function incrementPromptUsage(userId, req = null) {
+  const sub = await getSubscription(userId, req);
   const plan = sub ? sub.plan : 'Free';
   const limit = PLAN_LIMITS[plan];
 

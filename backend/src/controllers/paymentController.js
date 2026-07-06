@@ -227,8 +227,7 @@ async function redeemCoupon(req, res, next) {
       return res.status(400).json({ error: 'Invalid or expired promotional coupon code.' });
     }
 
-    // Set Premium subscription active for 30 days
-    await upgradeSubscription(req.user.id, 'Premium', 30);
+    // Coupon validation only. Premium is verified dynamically via request headers.
 
     await logAuditEvent({
       userId: req.user.id,

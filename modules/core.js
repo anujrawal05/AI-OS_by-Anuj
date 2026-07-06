@@ -44,7 +44,8 @@ export const state = {
     couponRedemptions: 0,
     roadmapUnlockRate: 0
   },
-  translations: null
+  translations: null,
+  activeCoupon: null
 };
 
 // Expose state globally for backward compatibility

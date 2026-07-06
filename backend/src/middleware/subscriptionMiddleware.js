@@ -8,7 +8,7 @@ function requirePlan(...allowedPlans) {
       }
 
       // Check current subscription status (triggers passive downgrade if needed)
-      const sub = await getSubscription(req.user.id);
+      const sub = await getSubscription(req.user.id, req);
       
       if (!sub || !allowedPlans.includes(sub.plan)) {
         return res.status(403).json({

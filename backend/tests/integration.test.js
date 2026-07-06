@@ -71,6 +71,27 @@ async function runTests() {
     throw new Error("Coupon redemption failed to activate Premium subscription");
   }
 
+  // 3.5 Test that profile query returns Premium only with X-Coupon-Code header
+  console.log('[Test] Verifying getMe profile query with coupon header...');
+  const meResWithHeader = await fetch('http://localhost:8080/api/auth/me', {
+    method: 'GET',
+    headers: { 'Cookie': authCookie, 'Content-Type': 'application/json', 'X-Coupon-Code': 'VIP2026' }
+  });
+  const meDataWithHeader = await meResWithHeader.json();
+  if (meDataWithHeader.user.subscription.plan !== 'Premium') {
+    throw new Error("Profile query with coupon header did not return Premium");
+  }
+
+  console.log('[Test] Verifying getMe profile query without coupon header...');
+  const meResWithoutHeader = await fetch('http://localhost:8080/api/auth/me', {
+    method: 'GET',
+    headers: { 'Cookie': authCookie, 'Content-Type': 'application/json' }
+  });
+  const meDataWithoutHeader = await meResWithoutHeader.json();
+  if (meDataWithoutHeader.user.subscription.plan === 'Premium') {
+    throw new Error("Profile query without coupon header returned Premium (failed to expire coupon)");
+  }
+
   // 4. Test Razorpay order creation
   console.log('[Test] Requesting Razorpay checkout order...');
   const orderRes = await fetch('http://localhost:8080/api/payments/checkout', {

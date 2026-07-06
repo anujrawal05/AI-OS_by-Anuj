@@ -452,7 +452,7 @@ async function login(req, res, next) {
 async function getMe(req, res, next) {
   try {
     const { getSubscription } = require('../services/subscriptionService');
-    const subscription = await getSubscription(req.user.id);
+    const subscription = await getSubscription(req.user.id, req);
 
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },

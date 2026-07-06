@@ -83,13 +83,18 @@ export async function apiCall(endpoint, options = {}) {
 
   const url = `${API_BASE_URL}${endpoint}`;
   
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+  if (state.activeCoupon) {
+    headers['X-Coupon-Code'] = state.activeCoupon;
+  }
+
   // Enforce session credentials sharing for cookies
   const defaultOptions = {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    },
+    headers,
     credentials: 'include'
   };
 

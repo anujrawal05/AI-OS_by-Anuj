@@ -425,7 +425,7 @@
   function isUserPremium() {
     // 1. Check coupon session
     const couponSession = sessionStorage.getItem('aios_coupon_session');
-    if (couponSession) return true;
+    if (couponSession || (window.state && window.state.activeCoupon)) return true;
     
     // 2. Check cached profile in localStorage
     const cachedProfile = localStorage.getItem('aios_user_profile');

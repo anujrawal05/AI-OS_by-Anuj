@@ -694,8 +694,12 @@ export async function handleCouponLogin(couponCode) {
     });
 
     if (data.success) {
+      state.activeCoupon = couponCode;
       const context = await apiCall('/api/auth/me');
       state.user = context.user;
+      if (state.user) {
+        state.user.is_coupon = true;
+      }
       localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
 
       hideAuthModals();
@@ -861,6 +865,17 @@ export function hideAuthModals() {
 }
 
 export async function initAuthSystem() {
+  const cachedProfile = localStorage.getItem('aios_user_profile');
+  if (cachedProfile) {
+    try {
+      const u = JSON.parse(cachedProfile);
+      if (u && u.is_coupon) {
+        localStorage.removeItem('aios_user_profile');
+        state.user = null;
+      }
+    } catch (e) {}
+  }
+
   // Restore session context dynamically from backend on startup
   try {
     const data = await apiCall('/api/auth/me');
