@@ -40,22 +40,23 @@ export function updateUserProfileHeader() {
   const heroCtaBtn = document.getElementById('btn-hero-upgrade-cta'); // may not exist on all pages
   
   // Set premium button active status based on the plan type loaded from the DB
-  const isPremium = state.user && (state.user.subscription?.plan === 'Premium' || state.user.subscription?.plan === 'Trial');
+  const isFullPremium = state.user && state.user.subscription?.plan === 'Premium';
+  const isTrial = state.user && state.user.subscription?.plan === 'Trial';
 
   if (ctaBtn) {
-    if (isPremium) {
+    if (isFullPremium) {
       ctaBtn.style.display = 'block';
-      ctaBtn.textContent = state.user.subscription.plan === 'Trial' ? 'Trial Plan Active' : 'Premium Active';
+      ctaBtn.textContent = 'Premium Active';
       ctaBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
       ctaBtn.style.color = '#fff';
       ctaBtn.style.boxShadow = '0 0 10px rgba(46, 204, 113, 0.3)';
       ctaBtn.style.animation = 'none';
       ctaBtn.onclick = () => {
-        showToast("Full access unlocked! Plan: " + state.user.subscription.plan, "info");
+        showToast("Full access unlocked! Plan: Premium", "info");
       };
     } else {
       ctaBtn.style.display = 'block';
-      ctaBtn.textContent = 'Upgrade Premium';
+      ctaBtn.textContent = isTrial ? 'Upgrade Premium (Trial)' : 'Upgrade Premium';
       ctaBtn.style.background = 'var(--accent-color)';
       ctaBtn.style.color = '#000';
       ctaBtn.style.boxShadow = 'none';
@@ -67,7 +68,7 @@ export function updateUserProfileHeader() {
   }
 
   if (heroCtaBtn) {
-    heroCtaBtn.style.display = isPremium ? 'none' : 'block';
+    heroCtaBtn.style.display = isFullPremium ? 'none' : 'block';
   }
   
   if (state.user) {
@@ -254,6 +255,19 @@ export async function handleEmailSignin() {
       const authOverlay = document.getElementById('auth-modal-overlay');
       if (authOverlay) authOverlay.style.display = 'none';
       
+      // Initialize/load gamification progress for the user
+      if (window.gamification && typeof window.gamification.initGamification === 'function') {
+        window.gamification.initGamification();
+      }
+
+      // Re-render dashboard layouts
+      if (typeof window.renderDashboard === 'function') {
+        window.renderDashboard();
+      }
+      if (typeof window.renderMobileUpdates === 'function') {
+        window.renderMobileUpdates();
+      }
+
       updateUserProfileHeader();
       if (window.initTrialClock) window.initTrialClock();
       showToast("Logged in successfully!");
@@ -385,6 +399,19 @@ export async function handleVerifyOtp() {
 
       if (window.syncBookmarksFromBackend) {
         window.syncBookmarksFromBackend();
+      }
+
+      // Initialize/load gamification progress for the user
+      if (window.gamification && typeof window.gamification.initGamification === 'function') {
+        window.gamification.initGamification();
+      }
+
+      // Re-render dashboard layouts
+      if (typeof window.renderDashboard === 'function') {
+        window.renderDashboard();
+      }
+      if (typeof window.renderMobileUpdates === 'function') {
+        window.renderMobileUpdates();
       }
 
       setTimeout(() => {
@@ -549,9 +576,25 @@ export function showProfileModal() {
   if (accessStatusEl) {
     accessStatusEl.innerHTML = planName;
     if (planName === 'Premium' || planName === 'Trial') {
-      accessStatusEl.className = 'badge-access premium-badge';
+      accessStatusEl.className = 'badge-access premium-badge profile-dropdown-status';
     } else {
-      accessStatusEl.className = 'badge-access free-badge';
+      accessStatusEl.className = 'badge-access free-badge profile-dropdown-status';
+    }
+  }
+
+  const pfUpgradeBtn = document.getElementById('btn-pf-upgrade');
+  if (pfUpgradeBtn) {
+    if (planName === 'Premium') {
+      pfUpgradeBtn.style.display = 'none';
+    } else {
+      pfUpgradeBtn.style.display = 'inline-block';
+      pfUpgradeBtn.onclick = (e) => {
+        e.preventDefault();
+        const profileOverlay = document.getElementById('profile-modal-overlay');
+        if (profileOverlay) profileOverlay.style.display = 'none';
+        const pricingOverlay = document.getElementById('pricing-modal-overlay');
+        if (pricingOverlay) pricingOverlay.style.display = 'flex';
+      };
     }
   }
   
@@ -681,23 +724,23 @@ export async function handlePremiumUpgrade(planLabel) {
     return;
   }
 
-  // Lazy-load Razorpay only when the user actually initiates a payment
-  // (prevents the browser Web Payment Handler permission prompt on page load)
-  if (!window.Razorpay) {
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      s.onload = resolve;
-      s.onerror = () => reject(new Error('Payment gateway failed to load'));
-      document.head.appendChild(s);
-    }).catch(err => { throw err; });
-  }
-  if (!window.Razorpay) {
-    showToast("Payment gateway failed to load. Please refresh and try again.", "error");
-    return;
-  }
-
   try {
+    // Lazy-load Razorpay only when the user actually initiates a payment
+    // (prevents the browser Web Payment Handler permission prompt on page load)
+    if (!window.Razorpay) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Payment gateway failed to load. Please verify your connection.'));
+        document.head.appendChild(s);
+      });
+    }
+    if (!window.Razorpay) {
+      showToast("Payment gateway failed to load. Please refresh and try again.", "error");
+      return;
+    }
+
     const keyData = await apiCall('/api/payments/key');
     const razorpayKeyId = keyData && keyData.key;
     if (!razorpayKeyId) {
@@ -739,14 +782,23 @@ export async function handlePremiumUpgrade(planLabel) {
           if (window.AdManager) window.AdManager.updateAdVisibility();
           if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
           if (window.initTrialClock) window.initTrialClock();
-          showToast("Payment successful! Premium access unlocked.");
+
+          // Refresh the daily dashboard and mobile updates instantly!
+          if (typeof window.renderDashboard === 'function') {
+            window.renderDashboard();
+          }
+          if (typeof window.renderMobileUpdates === 'function') {
+            window.renderMobileUpdates();
+          }
+
+          showToast("Payment successful! Premium active.");
         } catch (err) {
           showToast(err.message || "Payment verification failed. Please contact support.", "error");
         }
       },
       modal: {
         ondismiss: () => {
-          showToast("Payment cancelled.", "warning");
+          showToast("Payment cancelled by user.", "warning");
         }
       }
     });
@@ -772,6 +824,19 @@ export async function logoutUser() {
   sessionStorage.removeItem('aios_coupon_session');
   localStorage.removeItem('ai-os-favorites');
   
+  // Reset/clear gamification state
+  if (window.gamification && typeof window.gamification.initGamification === 'function') {
+    window.gamification.initGamification();
+  }
+
+  // Refresh dashboard and mobile updates hub to guest mode
+  if (typeof window.renderDashboard === 'function') {
+    window.renderDashboard();
+  }
+  if (typeof window.renderMobileUpdates === 'function') {
+    window.renderMobileUpdates();
+  }
+
   hideAuthModals();
   updateUserProfileHeader();
   if (window.AdManager) window.AdManager.updateAdVisibility();

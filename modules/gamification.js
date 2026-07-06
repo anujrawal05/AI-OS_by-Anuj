@@ -18,9 +18,38 @@
 //   unlockAchievement(id)
 //   checkDailyStreak()
 
+import { state } from './core.js';
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const NS = 'aios_gm_';
+
+// ─── Storage Helpers ──────────────────────────────────────────────────────────
+
+function getNS() {
+  if (!state.user) return null;
+  const uid = state.user.id || state.user._id;
+  if (!uid) return null;
+  return `aios_gm_${uid}_`;
+}
+
+function load(key, fallback = null) {
+  try {
+    const ns = getNS();
+    if (!ns) return fallback;
+    const raw = localStorage.getItem(ns + key);
+    if (raw === null) return fallback;
+    return JSON.parse(raw);
+  } catch { return fallback; }
+}
+
+function save(key, value) {
+  try {
+    const ns = getNS();
+    if (!ns) return;
+    localStorage.setItem(ns + key, JSON.stringify(value));
+  } catch {}
+}
 
 // XP required to REACH each level (index = level, value = cumulative XP floor)
 const LEVEL_THRESHOLDS = [
@@ -103,19 +132,7 @@ const WEEKLY_CHALLENGES = [
   { id: 'wc_business',   label: 'Spend time in AI-OS Business 3 times',         goal: 3,   unit: 'sessions', xp: 480,  coins: 100 },
 ];
 
-// ─── Storage Helpers ──────────────────────────────────────────────────────────
 
-function load(key, fallback = null) {
-  try {
-    const raw = localStorage.getItem(NS + key);
-    if (raw === null) return fallback;
-    return JSON.parse(raw);
-  } catch { return fallback; }
-}
-
-function save(key, value) {
-  try { localStorage.setItem(NS + key, JSON.stringify(value)); } catch {}
-}
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -207,7 +224,7 @@ function weekNumber() {
  * @param {string} [reason]
  */
 export function awardXP(amount, reason = '') {
-  if (!_state) return;
+  if (!state.user || !_state) return;
   const prev = _state.xp;
   _state.xp += amount;
   const newLevel = xpToLevel(_state.xp);
@@ -249,7 +266,7 @@ export function awardXP(amount, reason = '') {
  * @param {number} amount
  */
 export function awardCoins(amount) {
-  if (!_state) return;
+  if (!state.user || !_state) return;
   _state.coins += amount;
   saveState(_state);
   broadcast({ type: 'coins', amount });
@@ -263,7 +280,7 @@ export function awardCoins(amount) {
  * Returns full gamification state snapshot.
  */
 export function getState() {
-  if (!_state) return null;
+  if (!state.user || !_state) return null;
   const prog = levelProgress(_state.xp);
   return {
     ..._state,
@@ -275,7 +292,7 @@ export function getState() {
 // ─── Daily Streak ─────────────────────────────────────────────────────────────
 
 export function checkDailyStreak() {
-  if (!_state) return;
+  if (!state.user || !_state) return;
   const today = todayStr();
   if (_state.lastVisit === today) return; // already counted today
 
@@ -309,6 +326,7 @@ export function checkDailyStreak() {
 // ─── Daily Mission ────────────────────────────────────────────────────────────
 
 export function getDailyMission() {
+  if (!state.user || !_state) return null;
   const today = todayStr();
   const stored = load('dailyMission', null);
 
@@ -330,7 +348,9 @@ export function getDailyMission() {
 }
 
 export function completeMissionTask(taskId) {
+  if (!state.user || !_state) return false;
   const mission = getDailyMission();
+  if (!mission) return false;
   const task = mission.tasks.find(t => t.id === taskId);
   if (!task || task.done) return false;
   task.done = true;
@@ -362,7 +382,7 @@ export function completeMissionTask(taskId) {
 // ─── Daily Reward ─────────────────────────────────────────────────────────────
 
 export function claimDailyReward() {
-  if (!_state) return false;
+  if (!state.user || !_state) return false;
   const today = todayStr();
   if (_state.lastDailyReward === today) return false;
 
@@ -376,13 +396,14 @@ export function claimDailyReward() {
 }
 
 export function canClaimDailyReward() {
-  if (!_state) return false;
+  if (!state.user || !_state) return false;
   return _state.lastDailyReward !== todayStr();
 }
 
 // ─── Weekly Challenge ─────────────────────────────────────────────────────────
 
 export function getWeeklyChallenge() {
+  if (!state.user || !_state) return null;
   const week = weekNumber();
   const year = new Date().getFullYear();
   const key  = `${year}-W${week}`;
@@ -401,8 +422,9 @@ export function getWeeklyChallenge() {
 }
 
 export function updateWeeklyChallengeProgress(delta, unit) {
+  if (!state.user || !_state) return;
   const ch = getWeeklyChallenge();
-  if (ch.claimed) return;
+  if (!ch || ch.claimed) return;
   if (ch.unit !== unit && !(ch.unit === 'XP' && unit === 'xp')) return;
 
   ch.progress = Math.min(ch.progress + delta, ch.goal);
@@ -422,7 +444,7 @@ export function updateWeeklyChallengeProgress(delta, unit) {
 // ─── Achievements ─────────────────────────────────────────────────────────────
 
 export function unlockAchievement(id) {
-  if (!_state) return;
+  if (!state.user || !_state) return;
   if (_state.achievements.includes(id)) return;
 
   const def = ACHIEVEMENTS.find(a => a.id === id);
@@ -442,21 +464,7 @@ export function unlockAchievement(id) {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 export function initGamification() {
-  _state = loadState();
-
-  // First-ever visit
-  const isFirstVisit = _state.lastVisit === null;
-  checkDailyStreak();
-
-  if (isFirstVisit) {
-    unlockAchievement('first_visit');
-  }
-
-  // Make sure weekly challenge exists
-  getWeeklyChallenge();
-  getDailyMission();
-
-  // Expose on window for cross-module use
+  // Always expose the API globally to prevent crashes in other modules
   window.gamification = {
     awardXP,
     awardCoins,
@@ -469,8 +477,33 @@ export function initGamification() {
     updateWeeklyChallengeProgress,
     unlockAchievement,
     checkDailyStreak,
+    initGamification,
     ACHIEVEMENTS,
   };
+
+  if (!state.user) {
+    _state = null;
+    broadcast({ type: 'init' });
+    return;
+  }
+
+  _state = loadState();
+
+  // First-ever visit
+  const isFirstVisit = _state.lastVisit === null;
+  checkDailyStreak();
+
+  if (isFirstVisit) {
+    unlockAchievement('first_visit');
+  }
+
+  // Make sure weekly challenge + daily mission are initialized
+  getWeeklyChallenge();
+  getDailyMission();
+
+  // Autocomplete visit-based tasks
+  completeMissionTask('visit');
+  completeMissionTask('streak');
 
   broadcast({ type: 'init' });
 }

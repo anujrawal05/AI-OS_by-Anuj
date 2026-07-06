@@ -155,10 +155,14 @@ export async function apiCall(endpoint, options = {}) {
     return await response.json();
 
   } catch (err) {
-    if (err.message !== "Unauthorized" && err.message !== "Forbidden") {
-      console.error(`[API Client Error] Call to ${endpoint} failed:`, err.message);
+    let formattedErr = err;
+    if (err.message === 'Failed to fetch' || err.message === 'Load failed' || err instanceof TypeError) {
+      formattedErr = new Error("Backend unavailable or network error. Please verify the server is running.");
     }
-    throw err;
+    if (formattedErr.message !== "Unauthorized" && formattedErr.message !== "Forbidden") {
+      console.error(`[API Client Error] Call to ${endpoint} failed:`, formattedErr.message);
+    }
+    throw formattedErr;
   }
 }
 
