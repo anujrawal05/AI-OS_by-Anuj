@@ -27,10 +27,16 @@ const lockTranslations = {
 };
 
 export function isTrialActive() {
+  if (state.user && state.user.plan_type === 'Trial') {
+    return true;
+  }
   return state.user && state.user.subscription && state.user.subscription.plan === 'Trial' && new Date(state.user.subscription.currentPeriodEnd) > new Date();
 }
 
 export function getTrialRemainingTime() {
+  if (state.user && state.user.plan_type === 'Trial') {
+    return { isLastDay: false, text: "3 days remaining" };
+  }
   if (!state.user || !state.user.subscription || !state.user.subscription.currentPeriodEnd) return null;
   const now = Date.now();
   const expires = new Date(state.user.subscription.currentPeriodEnd).getTime();

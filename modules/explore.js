@@ -2651,7 +2651,12 @@ export function initDashboardControls() {
         showToast("Please login first to compile your roadmap.", "warning");
         return;
       }
-      const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+      const isPremium = state.user && (
+        state.user.plan_type === 'Premium' || 
+        state.user.plan_type === 'Trial' ||
+        state.user.subscription?.plan === 'Premium' ||
+        state.user.subscription?.plan === 'Trial'
+      );
       if (state.user && !isPremium) {
         showPricingModal(true);
         showToast("Please select a plan to access roadmap features.", "warning");
@@ -2686,7 +2691,12 @@ export function initDashboardControls() {
     btnChoiceVideo.addEventListener('click', () => {
       choiceModal.style.display = 'none';
       
-      const isPremium = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+      const isPremium = isUserAuthenticated() && state.user && (
+        state.user.plan_type === 'Premium' || 
+        state.user.plan_type === 'Trial' ||
+        state.user.subscription?.plan === 'Premium' ||
+        state.user.subscription?.plan === 'Trial'
+      );
       if (!isPremium) {
         showToast("Upgrade to Premium or start trial to watch Video Roadmaps.", "warning");
         showPricingModal(true);
