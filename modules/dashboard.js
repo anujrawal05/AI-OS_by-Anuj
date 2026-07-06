@@ -312,6 +312,21 @@ function renderContentCards() {
         </button>
       </div>
 
+      <!-- Monthly Tips & Tricks (desktop only, spans full width) -->
+      <div class="gm-card gm-content-card gm-monthly-tips-card">
+        <div class="gm-card-kicker">📅 Monthly Tips & Tricks</div>
+        <div class="gm-tips-content">
+          <div class="gm-tips-text-group">
+            <h3 class="gm-tips-title">Access Claude Fable 5 & Claude Sonnet 5 for Free</h3>
+            <p class="gm-tips-subtitle">Official method • Step-by-step guide for everyone</p>
+            <p class="gm-tips-desc">Learn the official workflow to access Claude Sonnet 5 and Claude Fable 5 for free with an easy step-by-step guide designed for beginners and non-technical users.</p>
+          </div>
+          <div class="gm-tips-cta-group">
+            <a href="monthly-tips-and-tricks.html" class="gm-tips-cta-btn">Open Monthly Guide →</a>
+          </div>
+        </div>
+      </div>
+
     </div>`;
 }
 

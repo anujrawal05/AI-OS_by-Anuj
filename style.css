@@ -10800,3 +10800,121 @@ body.modal-open {
     max-width: none;
   }
 }
+
+/* ─── Monthly Tips & Tricks Card (Desktop Only) ─── */
+.gm-monthly-tips-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(46, 197, 255, 0.04)), var(--card-bg);
+  border-color: rgba(168, 85, 247, 0.2);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gm-monthly-tips-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  opacity: 0.8;
+}
+
+.gm-monthly-tips-card:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.12), 0 0 16px rgba(46, 197, 255, 0.08);
+}
+
+.gm-monthly-tips-card:hover::before {
+  opacity: 1;
+}
+
+.gm-tips-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.gm-tips-text-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gm-tips-title {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.gm-tips-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gm-tips-desc {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.gm-tips-cta-group {
+  flex-shrink: 0;
+}
+
+.gm-tips-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--accent-color), #a855f7);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+}
+
+.gm-tips-cta-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.45);
+  color: #fff;
+}
+
+/* Light Theme Theme Mapping Overrides */
+[data-theme="light"] .gm-monthly-tips-card {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.05), rgba(46, 197, 255, 0.03)), var(--card-bg);
+  border-color: rgba(168, 85, 247, 0.15);
+}
+
+[data-theme="light"] .gm-monthly-tips-card:hover {
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.08);
+}
+
+@media (max-width: 767px) {
+  .gm-monthly-tips-card {
+    display: none !important; /* Hide preview card on mobile Home timeline */
+  }
+}

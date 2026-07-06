@@ -43,6 +43,16 @@
     // Initialize current active theme from storage
     const storedTheme = localStorage.getItem('kronos-theme') || 'dark';
     document.documentElement.className = storedTheme;
+    document.documentElement.setAttribute('data-theme', storedTheme);
+
+    // Watch for theme switch event across tabs
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'kronos-theme') {
+        const theme = e.newValue || 'dark';
+        document.documentElement.className = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+    });
   </script>
   <style>
     body {
@@ -52,7 +62,7 @@
     }
     h1, h2, h3, h4, h5, h6 {
       font-family: var(--font-title) !important;
-      color: #fff !important;
+      color: var(--text-primary) !important;
     }
     .step-card, .bg-slate-900 {
       background: var(--card-bg) !important;
@@ -172,13 +182,13 @@
       <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
         <button onclick="selectSystem('windows')" id="sys-win-btn" class="p-4 rounded-2xl border-2 border-slate-800 bg-slate-950 hover:border-brand-500 hover:bg-slate-900/40 transition-all group">
           <span class="text-3xl block mb-2 group-hover:scale-110 transition-transform">💻</span>
-          <span class="font-bold text-sm block text-white">Windows PC</span>
+          <span class="font-bold text-sm block text-slate-100">Windows PC</span>
           <span class="text-[10px] text-slate-500 block">HP, Dell, Lenovo, Asus, Acer</span>
         </button>
         
         <button onclick="selectSystem('mac')" id="sys-mac-btn" class="p-4 rounded-2xl border-2 border-slate-800 bg-slate-950 hover:border-brand-500 hover:bg-slate-900/40 transition-all group">
           <span class="text-3xl block mb-2 group-hover:scale-110 transition-transform">🍎</span>
-          <span class="font-bold text-sm block text-white">Apple Mac</span>
+          <span class="font-bold text-sm block text-slate-100">Apple Mac</span>
           <span class="text-[10px] text-slate-500 block">MacBook, iMac, Mac Mini</span>
         </button>
       </div>
@@ -766,7 +776,7 @@
 
   </main>
 
-  <footer class="text-center py-12 border-t border-slate-900 text-slate-600 text-[10px]">
+  <footer class="text-center py-12 border-t border-slate-800 text-slate-400 text-[10px]">
     <p>Created with care for the subh.tly family. Switch gateways, not vibes.</p>
   </footer>
 
