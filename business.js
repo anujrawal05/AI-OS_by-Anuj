@@ -6,6 +6,7 @@ import { initTheme, toggleTheme } from './modules/core.js';
 import { initAuthSystem } from './modules/auth.js';
 import { initWorkspaceControls, switchBusinessWorkspace } from './modules/businessUI.js';
 import { initMobileUI } from './modules/mobileUI.js';
+import { completeMissionTask } from './modules/gamification.js';
 
 let learnModuleInstance = null;
 async function loadLearnModule() {
@@ -51,12 +52,21 @@ let expandSectionInitialized = false;
 
 async function loadActiveWorkspaceModules(workspace) {
   if (workspace === 'dashboard') {
-    const mod = await loadTutorialsModule();
-    if (!dashboardSectionInitialized && mod && mod.initTutorialsSection) {
-      mod.initTutorialsSection();
+    const tutMod = await loadTutorialsModule();
+    if (!dashboardSectionInitialized && tutMod && tutMod.initTutorialsSection) {
+      tutMod.initTutorialsSection();
       dashboardSectionInitialized = true;
     }
+    // The Academy accordion modules live inside pane-bus-dashboard,
+    // so initLearnSection must also run when the dashboard loads.
+    const learnMod = await loadLearnModule();
+    if (!learnSectionInitialized && learnMod && learnMod.initLearnSection) {
+      learnMod.initLearnSection();
+      learnSectionInitialized = true;
+    }
   } else if (workspace === 'learn') {
+    // 'learn' workspace redirects to dashboard in switchBusinessWorkspace,
+    // but load the module here as a safety net in case the pane ever goes live.
     const mod = await loadLearnModule();
     if (!learnSectionInitialized && mod && mod.initLearnSection) {
       mod.initLearnSection();
@@ -84,6 +94,12 @@ async function initBusiness() {
   
   // Initialize Auth checks and load sessions
   await initAuthSystem();
+
+  // Complete business workspace visit daily mission task
+  completeMissionTask('business');
+
+  // Update the profile header immediately so sign-in state is visible
+  if (window.updateUserProfileHeader) window.updateUserProfileHeader();
   
   // Initialize Workspace selectors and controllers
   initWorkspaceControls();
@@ -104,6 +120,24 @@ async function initBusiness() {
     await loadActiveWorkspaceModules(workspace);
     if (originalSwitcher) originalSwitcher(workspace);
   };
+
+  // Eagerly preload Build and Grow in background so they're instant on first switch
+  if (activeWorkspace !== 'build') {
+    loadBuildModule().then(mod => {
+      if (!buildSectionInitialized && mod && mod.initBuildSection) {
+        mod.initBuildSection();
+        buildSectionInitialized = true;
+      }
+    }).catch(() => {});
+  }
+  if (activeWorkspace !== 'grow') {
+    loadExpandModule().then(mod => {
+      if (!expandSectionInitialized && mod && mod.initExpandSection) {
+        mod.initExpandSection();
+        expandSectionInitialized = true;
+      }
+    }).catch(() => {});
+  }
 }
 
 // Event handler bindings to entry points
@@ -125,12 +159,21 @@ window.downloadTemplate = async function(templateKey, category) {
   if (mod && mod.downloadTemplate) mod.downloadTemplate(templateKey, category);
 };
 
+// selectAndCompileBusiness and handleBusinessVideoPlay now live in build.js
+// (they were moved there from tutorials.js so the build catalog can call them).
 window.selectAndCompileBusiness = async function(key) {
-  const mod = await loadTutorialsModule();
-  if (mod && mod.selectAndCompileBusiness) mod.selectAndCompileBusiness(key);
+  const mod = await loadBuildModule();
+  if (mod && mod.selectAndCompileBusiness) {
+    mod.selectAndCompileBusiness(key);
+  } else if (window._selectAndCompileBusiness) {
+    window._selectAndCompileBusiness(key);
+  }
 };
 
 window.handleBusinessVideoPlay = async function(key, videoBaseName, title) {
-  const mod = await loadTutorialsModule();
-  if (mod && mod.handleBusinessVideoPlay) mod.handleBusinessVideoPlay(key, videoBaseName, title);
+  // Fall through to tutorials module which holds the language selection popup
+  const tutMod = await loadTutorialsModule();
+  if (tutMod && tutMod.handleBusinessVideoPlay) {
+    tutMod.handleBusinessVideoPlay(key, videoBaseName, title);
+  }
 };

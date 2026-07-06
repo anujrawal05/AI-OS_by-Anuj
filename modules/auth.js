@@ -151,6 +151,10 @@ export function updateUserProfileHeader() {
       });
     }
   }
+  // Sync premium/trial lock gates on Build and Grow panes whenever auth state changes
+  if (typeof window.toggleBusinessSectionView === 'function') {
+    window.toggleBusinessSectionView();
+  }
 }
 
 // BUG-011: switchAuthTab() removed — the auth modal uses a single unified form
@@ -1030,6 +1034,22 @@ export async function initAuthSystem() {
       const profileOverlay = document.getElementById('profile-modal-overlay');
       if (profileOverlay) profileOverlay.style.display = 'none';
     });
+  }
+
+  // About & Methodology Modal (AI-OS Business page)
+  const btnAboutTrigger = document.getElementById('btn-about-trigger');
+  const aboutOverlay = document.getElementById('about-bus-modal-overlay');
+  if (btnAboutTrigger && aboutOverlay) {
+    btnAboutTrigger.addEventListener('click', () => {
+      aboutOverlay.style.display = 'flex';
+    });
+  }
+  const btnAboutClose = document.getElementById('btn-about-close');
+  const btnAboutCloseBtn = document.getElementById('about-bus-modal-close-btn');
+  if (aboutOverlay && (btnAboutClose || btnAboutCloseBtn)) {
+    const closeAbout = () => { aboutOverlay.style.display = 'none'; };
+    if (btnAboutClose) btnAboutClose.addEventListener('click', closeAbout);
+    if (btnAboutCloseBtn) btnAboutCloseBtn.addEventListener('click', closeAbout);
   }
 
   // Profile Save submit

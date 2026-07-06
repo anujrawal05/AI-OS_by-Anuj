@@ -4,6 +4,8 @@
 import { state } from './core.js';
 import { showToast } from './utils.js';
 import { apiCall } from './apiClient.js';
+import { isUserAuthenticated } from './auth.js';
+import { showPricingModal } from './ui.js';
 
 export function updateConversionFunnel(modelData, budgetValue) {
   const trafficEl = document.getElementById('funnel-traffic');
@@ -171,69 +173,8 @@ export async function loadLiveDashboardMetrics() {
 }
 
 export async function loadLiveBusinessNews() {
-  const loadingEl = document.getElementById('news-data-loading');
-  const errorEl = document.getElementById('news-data-error');
-  const contentEl = document.getElementById('news-data-content');
-  
-  if (!contentEl) return;
-
-  try {
-    // Generate static high-density AI startup articles
-    const mockArticles = [
-      {
-        title: "Google Cloud Announces $2B AI Accelerator Pool for Seed Startups",
-        link: "https://news.google.com",
-        pubDate: new Date().toISOString(),
-        source: "TechCrunch"
-      },
-      {
-        title: "Llama 3.3 Fine-tuning Benchmarks Reveal 40% Operational Cost Reductions",
-        link: "https://news.google.com",
-        pubDate: new Date().toISOString(),
-        source: "VentureBeat"
-      },
-      {
-        title: "Outbound Agentic Workflows Replace Traditional Call Center Pools",
-        link: "https://news.google.com",
-        pubDate: new Date().toISOString(),
-        source: "Bloomberg"
-      },
-      {
-        title: "Make.com Raises $150M Series C to Expand Enterprise Automation Integrations",
-        link: "https://news.google.com",
-        pubDate: new Date().toISOString(),
-        source: "TechNews"
-      }
-    ];
-    
-    contentEl.innerHTML = '';
-    mockArticles.forEach(art => {
-      const item = document.createElement('a');
-      item.href = art.link;
-      item.target = '_blank';
-      item.rel = 'noopener';
-      item.className = 'news-item';
-      item.style.display = 'block';
-      item.style.textDecoration = 'none';
-      
-      const pubTime = new Date(art.pubDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      
-      item.innerHTML = `
-        <div class="news-item-meta" style="display:flex; justify-content:space-between; margin-bottom: 4px; font-family:var(--font-mono); font-size:0.75rem;">
-          <span class="news-source" style="color:var(--bus-primary); font-weight:700;">${art.source}</span>
-          <span class="news-time" style="color:var(--bus-text-secondary);">${pubTime}</span>
-        </div>
-        <h4 class="news-item-title" style="color:#fff; font-size:0.82rem; line-height:1.4; margin:0; font-weight:600;">${art.title}</h4>
-      `;
-      contentEl.appendChild(item);
-    });
-
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (errorEl) errorEl.style.display = 'none';
-    if (contentEl) contentEl.style.display = 'block';
-
-  } catch (err) {
-    console.error("News load failed:", err.message);
+  if (window.loadLiveBusinessNews && window.loadLiveBusinessNews !== loadLiveBusinessNews) {
+    return window.loadLiveBusinessNews();
   }
 }
 
@@ -268,10 +209,38 @@ export function initExpandSection() {
   };
   let strategistChatHistory = [];
 
+  function classifyIntent(text) {
+    const lowercase = text.toLowerCase();
+    const strategyKeywords = [
+      'strategy', 'roadmap', 'plan', 'scale', 'scaling', 'bottleneck', 'growth',
+      'revenue', 'competitor', 'market', 'business', 'pricing', 'monetize',
+      'monetization', 'marketing', 'sales', 'funnel', 'customer', 'acquisition',
+      'retention', 'churn', 'product', 'launch', 'mvp', 'validate', 'validation'
+    ];
+    const isStrategyRequested = strategyKeywords.some(keyword => lowercase.includes(keyword));
+    if (isStrategyRequested) return 'strategy';
+
+    const greetingKeywords = ['hello', 'hi', 'hey', 'greetings', 'yo', 'sup', 'morning', 'afternoon', 'evening'];
+    const isGreeting = greetingKeywords.some(keyword => {
+      const regex = new RegExp(`\\b${keyword}\\b`, 'i');
+      return regex.test(lowercase);
+    });
+    if (isGreeting) return 'greeting';
+
+    return 'casual';
+  }
+
   if (chatInput && chatSendBtn) {
     const handleChatSend = async () => {
       const text = chatInput.value.trim();
       if (!text) return;
+      
+      if (!isUserAuthenticated()) {
+        showToast("Please sign in to use the AI Strategist chat.", "warning");
+        const authOverlay = document.getElementById('auth-modal-overlay');
+        if (authOverlay) authOverlay.style.display = 'flex';
+        return;
+      }
       
       if (!isAnalysisComputed) {
         showToast("Please compile the Enterprise Matrix first.", "warning");
@@ -291,6 +260,37 @@ export function initExpandSection() {
       typingBubble.innerHTML = `<div class="chat-bubble-text">⏳ Consultant is typing...</div>`;
       chatLogs.appendChild(typingBubble);
       chatLogs.scrollTop = chatLogs.scrollHeight;
+
+      const intent = classifyIntent(text);
+      if (intent === 'greeting') {
+        typingBubble.remove();
+        const reply = "Hello! I am your Elite Business Strategist. Let me know when you're ready to deconstruct your business strategy, roadmap, or scaling plans.";
+        
+        strategistChatHistory.push({ role: 'user', content: text });
+        strategistChatHistory.push({ role: 'assistant', content: reply });
+
+        const replyBubble = document.createElement('div');
+        replyBubble.className = 'chat-bubble assistant';
+        replyBubble.innerHTML = `<div class="chat-bubble-text">${reply}</div>`;
+        chatLogs.appendChild(replyBubble);
+        chatLogs.scrollTop = chatLogs.scrollHeight;
+        return;
+      }
+      
+      if (intent === 'casual') {
+        typingBubble.remove();
+        const reply = "I am a specialized Red-Team Business Strategist. Let's focus on strategy, roadmap, planning, or scaling to get the most value out of our session. What strategy or plan are we audit-testing today?";
+        
+        strategistChatHistory.push({ role: 'user', content: text });
+        strategistChatHistory.push({ role: 'assistant', content: reply });
+
+        const replyBubble = document.createElement('div');
+        replyBubble.className = 'chat-bubble assistant';
+        replyBubble.innerHTML = `<div class="chat-bubble-text">${reply}</div>`;
+        chatLogs.appendChild(replyBubble);
+        chatLogs.scrollTop = chatLogs.scrollHeight;
+        return;
+      }
 
       try {
         const responseData = await apiCall('/api/strategist/chat', {
@@ -349,6 +349,31 @@ export function initExpandSection() {
       btnAnalyze.disabled = true;
       btnAnalyze.textContent = "COMPILING MATRIX DIAGNOSTICS...";
 
+      // Auth guard: must be logged in
+      if (!isUserAuthenticated()) {
+        btnAnalyze.disabled = false;
+        btnAnalyze.textContent = "ANALYZE ENTERPRISE MATRIX";
+        showToast("Please sign in to access the AI Strategist.", "warning");
+        const authOverlay = document.getElementById('auth-modal-overlay');
+        if (authOverlay) authOverlay.style.display = 'flex';
+        return;
+      }
+
+      // Premium guard: check subscription
+      const isPremiumOrTrial = state.user && (
+        state.user.plan_type === 'Premium' ||
+        state.user.plan_type === 'Trial' ||
+        state.user.subscription?.plan === 'Premium' ||
+        state.user.subscription?.plan === 'Trial'
+      );
+      if (!isPremiumOrTrial) {
+        btnAnalyze.disabled = false;
+        btnAnalyze.textContent = "ANALYZE ENTERPRISE MATRIX";
+        showPricingModal(true);
+        showToast("Premium or Trial plan required for AI Strategist.", "warning");
+        return;
+      }
+
       try {
         const data = await apiCall('/api/strategist/compile', {
           method: 'POST',
@@ -395,8 +420,12 @@ export function initExpandSection() {
         }
       } catch (err) {
         btnAnalyze.disabled = false;
-        btnAnalyze.textContent = "Re-Compile Matrix";
+        btnAnalyze.textContent = "ANALYZE ENTERPRISE MATRIX";
         console.error('[Strategist Compile Error]', err);
+        // Show user-visible error unless apiCall already handled it (auth/403)
+        if (err.message !== 'Unauthorized' && err.message !== 'Forbidden' && err.message !== 'No backend') {
+          showToast("Analysis failed. Please check your connection and try again.", "error");
+        }
       }
     });
   }

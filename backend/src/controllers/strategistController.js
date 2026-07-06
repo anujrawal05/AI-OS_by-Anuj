@@ -1,5 +1,6 @@
 const prisma = require('../lib/db');
 const { incrementPromptUsage } = require('../middleware/quotaMiddleware');
+const { chatAssistant } = require('../services/aiService');
 
 // Clean fallback templates representing the elite strategist compilation matrix
 function getFallbackStrategy(name, audience, bottleneck) {
@@ -67,15 +68,8 @@ async function chatStrategist(req, res, next) {
   }
 
   try {
-    // Compile rules-based mock responses
-    let reply = `I received your query: "${userInput}". For your target audience, outbound emails coupled with short-video tutorials represent the fastest feedback loop.`;
-    const lowText = userInput.toLowerCase();
-    
-    if (lowText.includes('price') || lowText.includes('charge') || lowText.includes('cost')) {
-      reply = "Charge setup integrations retainers (e.g. ₹60,000) to filter tire-kickers, and align scaling to flat performance incentives.";
-    } else if (lowText.includes('marketing') || lowText.includes('leads') || lowText.includes('traffic')) {
-      reply = "Acquire lists using directory scrapers, verify deliverability via email checkers, and configure sequencing in Instantly.ai.";
-    }
+    const aiResponse = await chatAssistant(req.user.id, userInput, history || []);
+    const reply = aiResponse.text;
 
     // Save chat query in database history logs
     await prisma.aIHistory.create({

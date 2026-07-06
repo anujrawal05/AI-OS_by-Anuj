@@ -4,9 +4,11 @@
 import { state } from './core.js';
 import { showToast } from './utils.js';
 import { updateUserProfileHeader } from './auth.js';
+import { completeMissionTask } from './gamification.js';
 
 export function switchBusinessWorkspace(workspaceName) {
   if (workspaceName === 'learn') {
+    completeMissionTask('learn');
     switchBusinessWorkspace('dashboard');
     setTimeout(() => {
       const learnSection = document.querySelector('#pane-bus-dashboard .learn-grid-layout');
@@ -15,6 +17,13 @@ export function switchBusinessWorkspace(workspaceName) {
       }
     }, 120);
     return;
+  }
+
+  if (workspaceName === 'build') {
+    completeMissionTask('build');
+  }
+  if (workspaceName === 'grow') {
+    completeMissionTask('learn');
   }
 
   state.activeWorkspace = workspaceName;
@@ -117,26 +126,28 @@ export function initWorkspaceControls() {
     item.addEventListener('click', (e) => {
       e.stopPropagation();
       const workspace = item.getAttribute('data-workspace');
-      switchBusinessWorkspace(workspace);
+      // Use window.switchBusinessWorkspace so the async module-loader
+      // override set up in business.js is invoked on every switch.
+      (window.switchBusinessWorkspace || switchBusinessWorkspace)(workspace);
       if (swBtnWrap) swBtnWrap.classList.remove('active');
     });
   });
 
   const heroLearn = document.getElementById('btn-hero-learn-cta');
   if (heroLearn) {
-    heroLearn.addEventListener('click', () => switchBusinessWorkspace('learn'));
+    heroLearn.addEventListener('click', () => (window.switchBusinessWorkspace || switchBusinessWorkspace)('learn'));
   }
   const heroBuild = document.getElementById('btn-hero-build-cta');
   if (heroBuild) {
-    heroBuild.addEventListener('click', () => switchBusinessWorkspace('build'));
+    heroBuild.addEventListener('click', () => (window.switchBusinessWorkspace || switchBusinessWorkspace)('build'));
   }
   const heroGrow = document.getElementById('btn-hero-grow-cta');
   if (heroGrow) {
-    heroGrow.addEventListener('click', () => switchBusinessWorkspace('grow'));
+    heroGrow.addEventListener('click', () => (window.switchBusinessWorkspace || switchBusinessWorkspace)('grow'));
   }
   const skipBasicsBtn = document.getElementById('btn-skip-basics');
   if (skipBasicsBtn) {
-    skipBasicsBtn.addEventListener('click', () => switchBusinessWorkspace('build'));
+    skipBasicsBtn.addEventListener('click', () => (window.switchBusinessWorkspace || switchBusinessWorkspace)('build'));
   }
 }
 

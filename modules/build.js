@@ -6,6 +6,7 @@ import { showToast } from './utils.js';
 import { isUserAuthenticated } from './auth.js';
 import { showPricingModal } from './ui.js';
 import { updateConversionFunnel } from './expand.js';
+import { awardXP, completeMissionTask } from './gamification.js';
 
 const launchpadIdeas = {
   'agency': {
@@ -614,7 +615,52 @@ const launchpadIdeas = {
   }
 }
 
+export function renderBusinessCardsGrid() {
+  const container = document.getElementById('business-cards-grid');
+  if (!container) return;
+  
+  const models = [
+    { key: 'agency', icon: '🤖', subtitle: 'Automate boring tasks and emails for local businesses.', video: 'AAA' },
+    { key: 'dropservicing', icon: '💼', subtitle: 'Broker premium digital services and outsource to contractors.', video: 'Drop-Servicing_Sprint' },
+    { key: 'micro-saas', icon: '⚡', subtitle: 'Launch simple single-purpose tools with monthly subscriptions.', video: 'SaaS' },
+    { key: 'creator', icon: '📸', subtitle: 'Build an audience and monetize with templates and sponsorships.', video: 'Content_Engine' },
+    { key: 'agency_video_ad', icon: '🎥', subtitle: 'Turn static product photos into high-converting video ads.', video: 'AI_Video_Ad_Pipeline' },
+    { key: 'creator_zackd_shorts', icon: '🎬', subtitle: 'Produce viral 3D shorts and bizarre facts videos using AI.', video: 'Motion_Script_Compiler' },
+    { key: 'agency_voice_ai', icon: '📞', subtitle: 'Deploy smart voice agents to answer phones for local clinics.', video: 'Inbound_Voice_AI_Studio' },
+    { key: 'creator_managed_network', icon: '🤝', subtitle: 'Manage social creators and secure brand sponsorships.', video: 'Managed_Creator_Network' },
+    { key: 'creator_kids_animation', icon: '👶', subtitle: 'Produce automated animated children\'s songs and rhymes.', video: 'AI_Nursery_Rhyme_Engine' }
+  ];
+
+  container.innerHTML = models.map(m => {
+    const idea = launchpadIdeas[m.key];
+    const profitRange = idea.retail.profit;
+    
+    return `
+      <div class="business-catalog-card" data-key="${m.key}">
+        <div class="card-glow-effect"></div>
+        <div class="card-header-row">
+          <div class="card-icon-wrapper">${m.icon}</div>
+          <span class="card-profit-badge">${profitRange.split(' /')[0]}</span>
+        </div>
+        <h4 class="card-business-title">${idea.title}</h4>
+        <p class="card-business-subtitle">${m.subtitle}</p>
+        
+        <div class="card-actions-row">
+          <button class="card-btn-compile" onclick="selectAndCompileBusiness('${m.key}')">
+            <span>Configure</span> ⚙️
+          </button>
+          <button class="card-btn-video" onclick="handleBusinessVideoPlay('${m.key}', '${m.video}', '${idea.title}')">
+            <span>Watch Video</span> ▶
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 export function initBuildSection() {
+  renderBusinessCardsGrid();
+
   const btnCompile = document.getElementById('btn-compile-blueprint');
   const bOutput = document.getElementById('blueprint-output-contents');
   if (btnCompile && bOutput) {
@@ -656,26 +702,39 @@ export function initBuildSection() {
         const isTrial = state.user && (state.user.plan_type === 'Trial' || state.user.subscription?.plan === 'Trial');
 
         let detailsHtml = '';
-        if (profile.details && profile.details.length > 0) {
+        if (profile.checklist && profile.checklist.length > 0) {
           detailsHtml = `
             <div style="margin-top:20px; padding:16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px;">
               <h4 style="color:var(--bus-primary); font-family:var(--font-title); font-size:0.88rem; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">Step-by-Step Execution Playbook</h4>
               <ol style="margin:0; padding-left:18px; color:var(--bus-text-secondary); font-size:0.82rem; line-height:1.6;">
-                ${profile.details.map(d => `<li style="margin-bottom:8px;">${d}</li>`).join('')}
+                ${profile.checklist.map(d => `<li style="margin-bottom:8px;">${d}</li>`).join('')}
               </ol>
             </div>
           `;
         }
 
+        const difficultyMapping = {
+          agency: 'Medium',
+          dropservicing: 'Low',
+          'micro-saas': 'High',
+          creator: 'Medium',
+          agency_video_ad: 'Low',
+          creator_zackd_shorts: 'Medium',
+          agency_voice_ai: 'Medium',
+          creator_managed_network: 'Medium',
+          creator_kids_animation: 'High'
+        };
+        const difficulty = difficultyMapping[model] || 'Medium';
+
         bOutput.innerHTML = `
           <div style="border-left: 3px solid var(--bus-primary); padding-left: 16px;">
-            <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:700; color:#fff; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.02em;">${profile.title}</h3>
-            <p style="font-size:0.82rem; color:var(--bus-text-secondary); margin-bottom:16px;">${profile.description}</p>
+            <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:700; color:#fff; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.02em;">${modelData.title}</h3>
+            <p style="font-size:0.82rem; color:var(--bus-text-secondary); margin-bottom:16px;">${modelData.desc}</p>
             
             <div class="blueprint-meta-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:20px;">
               <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);">
                 <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">Complexity Index</span>
-                <strong style="color:var(--bus-primary); font-size:0.9rem;">${profile.difficulty}</strong>
+                <strong style="color:var(--bus-primary); font-size:0.9rem;">${difficulty}</strong>
               </div>
               <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);">
                 <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">Operational Budget</span>
@@ -695,6 +754,10 @@ export function initBuildSection() {
           ${detailsHtml}
         `;
         updateConversionFunnel(modelData, budget);
+        
+        // Complete daily mission task & award XP for compiling roadmap/blueprint
+        awardXP(30, 'roadmap');
+        completeMissionTask('roadmap');
       }, 1000);
     });
   }
@@ -703,3 +766,19 @@ export function initBuildSection() {
 // Global exposure for backwards compatibility
 window.initBuildSection = initBuildSection;
 window.launchpadIdeas = launchpadIdeas;
+window.renderBusinessCardsGrid = renderBusinessCardsGrid;
+
+export function selectAndCompileBusiness(key) {
+  const select = document.getElementById('blueprint-model-select');
+  if (select) {
+    select.value = key;
+    const configPanel = document.querySelector('.blueprint-workspace');
+    if (configPanel) {
+      configPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    const compileBtn = document.getElementById('btn-compile-blueprint');
+    if (compileBtn) compileBtn.click();
+  }
+}
+
+window.selectAndCompileBusiness = selectAndCompileBusiness;

@@ -70,7 +70,28 @@ async function callOpenRouter(messages, model, options = {}) {
   // Mock fallback logic for dummy keys or local verification runs
   if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes('dummy') || OPENROUTER_API_KEY === 'sk-or-v1-dummy-key') {
     logger.warn('[AI Core] Using mock completion fallback (dummy or missing OpenRouter key).');
-    const mockText = `AI-OS Mock response for prompt query: "${messages[messages.length - 1]?.content || ''}"`;
+    
+    let mockText = `AI-OS Mock response for prompt query: "${messages[messages.length - 1]?.content || ''}"`;
+    
+    if (modelName === 'nvidia/nemotron-3-ultra:free') {
+      mockText = 
+        `<p style="margin-top:0;"><strong>1. THE SHADOW COMPLETED MOVE:</strong>` +
+        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+        `<li>Build a fully white-labeled agency factory and offer zero-upfront integration setup to steal your clients.</li>` +
+        `<li>Scrape target list using automatic scrapers and run personalized Loom outreach video campaigns at 100x your speed.</li>` +
+        `</ul></p>` +
+        `<p><strong>2. THE ASYMMETRIC ATTACK:</strong>` +
+        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+        `<li>Deploy open-source Docker containers offering voice agents and webhooks to bypass agency setups entirely.</li>` +
+        `<li>Package pre-configured Voiceflow templates for free, charging only for custom API connector updates.</li>` +
+        `</ul></p>` +
+        `<p style="margin-bottom:0;"><strong>3. THE UNDERGROUND DRIFT:</strong>` +
+        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+        `<li>OpenAI/Google natively bundle custom integrations inside base subscriptions, eliminating standalone bot setups.</li>` +
+        `<li>Clients experience developer burnout due to fragile webhooks and shift back to monolithic CRM-packaged workflows.</li>` +
+        `</ul></p>`;
+    }
+
     return {
       text: mockText,
       modelUsed: `${modelName}-Mock`,
@@ -207,13 +228,37 @@ async function compileStrategy(userId, businessName, targetAudience, bottleneck)
 }
 
 async function chatAssistant(userId, userInput, history = []) {
-  const systemPrompt = "You are a helpful AI automation consultant.";
+  const systemPrompt = 
+    "You are an Elite Red-Teaming Business Strategist built on NVIDIA Nemotron Ultra compute. " +
+    "Your sole purpose is to ruthlessly deconstruct standard business advice and offer highly " +
+    "unorthodox, contrarian, and radically different strategic angles.\n\n" +
+    "When presented with a business plan or query, do NOT validate it. Do NOT give standard optimistic praise. " +
+    "Instead, provide 3 distinct alternative perspectives. Under each perspective, provide exactly 2-3 short, " +
+    "one-sentence actionable steps in a clean bulleted format (using <ul> and <li>). Do not write long paragraphs. " +
+    "Use HTML tags. Format it exactly as follows:\n\n" +
+    "<p style=\"margin-top:0;\"><strong>1. THE SHADOW COMPLETED MOVE:</strong>" +
+    "<ul>" +
+    "<li>Step 1: [Short, punchy action]</li>" +
+    "<li>Step 2: [Short, punchy action]</li>" +
+    "</ul></p>" +
+    "<p><strong>2. THE ASYMMETRIC ATTACK:</strong>" +
+    "<ul>" +
+    "<li>Step 1: [Short, punchy action]</li>" +
+    "<li>Step 2: [Short, punchy action]</li>" +
+    "</ul></p>" +
+    "<p style=\"margin-bottom:0;\"><strong>3. THE UNDERGROUND DRIFT:</strong>" +
+    "<ul>" +
+    "<li>Step 1: [Short, punchy action]</li>" +
+    "<li>Step 2: [Short, punchy action]</li>" +
+    "</ul></p>\n\n" +
+    "Be brutally realistic, data-focused, and direct. Skip standard introductions or conclusions. Do not output title banners.";
+
   const messages = [
     { role: "system", content: systemPrompt },
     ...history,
     { role: "user", content: userInput }
   ];
-  return requestAICompletion(messages, null, { temperature: 0.7 });
+  return requestAICompletion(messages, 'nvidia/nemotron-3-ultra:free', { temperature: 0.85, maxTokens: 2048 });
 }
 
 async function generateRoadmap(userId, niche, timePeriodDays) {

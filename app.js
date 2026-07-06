@@ -8,6 +8,8 @@ import { initNavigation, setupCardInteractions, openLegalDrawer, closeLegalDrawe
 import { initAuthSystem, handleEmailSignin, handleEmailSignup, handleVerifyOtp, handleForgotPassword } from './modules/auth.js';
 import { initTrialClock, closeTrialWelcomeModal } from './modules/premium.js';
 import { initMobileUI } from './modules/mobileUI.js';
+import { initGamification } from './modules/gamification.js';
+import { initDailyDashboard } from './modules/dashboard.js';
 
 let exploreModuleInstance = null;
 
@@ -51,7 +53,14 @@ async function initApp() {
   
   // Initialize Auth System
   await initAuthSystem();
-  
+
+  // Initialize Gamification Engine (XP / Levels / Streaks / Coins / Achievements)
+  // Must run after auth so the greeting can use the signed-in user's name.
+  initGamification();
+
+  // Initialize Daily Dashboard section
+  initDailyDashboard();
+
   // Initialize Trial Clock countdowns
   initTrialClock();
   

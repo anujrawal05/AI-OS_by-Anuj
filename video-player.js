@@ -854,6 +854,100 @@
     }
   });
 
+  video.addEventListener('ended', () => {
+    saveProgress();
+    
+    if (!activeVideoPath) return;
+    
+    let baseName = '';
+    let lang = 'eng';
+    
+    if (activeVideoPath.endsWith('_eng.mp4')) {
+      baseName = activeVideoPath.replace('_eng.mp4', '');
+      lang = 'eng';
+    } else if (activeVideoPath.endsWith('_hindi.mp4')) {
+      baseName = activeVideoPath.replace('_hindi.mp4', '');
+      lang = 'hindi';
+    } else {
+      return;
+    }
+    
+    const buildVideos = [
+      "AAA",
+      "AI_Nursery_Rhyme_Engine",
+      "AI_Video_Ad_Pipeline",
+      "Content_Engine",
+      "Drop-Servicing_Sprint",
+      "Inbound_Voice_AI_Studio",
+      "Managed_Creator_Network",
+      "Motion_Script_Compiler",
+      "SaaS"
+    ];
+    
+    const buildTitles = {
+      "AAA": "AI Business Automation",
+      "AI_Nursery_Rhyme_Engine": "AI Kids Animation",
+      "AI_Video_Ad_Pipeline": "AI Video Ad Agency",
+      "Content_Engine": "AI Content Engine",
+      "Drop-Servicing_Sprint": "Drop-Servicing Agency Sprint",
+      "Inbound_Voice_AI_Studio": "Inbound Voice AI Studio",
+      "Managed_Creator_Network": "Managed Creator Network",
+      "Motion_Script_Compiler": "AI Shorts Production",
+      "SaaS": "Micro-SaaS Software Suite"
+    };
+    
+    const exploreVideos = [
+      "part1",
+      "part2",
+      "part3",
+      "part4",
+      "part5"
+    ];
+    
+    const exploreTitles = {
+      "part1": "Exploring AI - Part 1",
+      "part2": "Exploring AI - Part 2",
+      "part3": "Exploring AI - Part 3",
+      "part4": "Exploring AI - Part 4",
+      "part5": "Exploring AI - Part 5"
+    };
+    
+    let nextVideo = null;
+    let nextTitle = '';
+    
+    const buildIdx = buildVideos.indexOf(baseName);
+    if (buildIdx !== -1 && buildIdx + 1 < buildVideos.length) {
+      const nextBase = buildVideos[buildIdx + 1];
+      nextVideo = `${nextBase}_${lang}.mp4`;
+      nextTitle = `${buildTitles[nextBase] || nextBase} (${lang === 'eng' ? 'English' : 'Hindi'})`;
+    } else {
+      const exploreIdx = exploreVideos.indexOf(baseName);
+      if (exploreIdx !== -1 && exploreIdx + 1 < exploreVideos.length) {
+        const nextBase = exploreVideos[exploreIdx + 1];
+        nextVideo = `${nextBase}_${lang}.mp4`;
+        nextTitle = `${exploreTitles[nextBase] || nextBase} (${lang === 'eng' ? 'English' : 'Hindi'})`;
+      }
+    }
+    
+    if (nextVideo) {
+      if (window.showToast) {
+        window.showToast(`Autoplaying next lesson: ${nextTitle}`);
+      } else {
+        console.log(`Autoplaying next lesson: ${nextTitle}`);
+      }
+      
+      const nextPath = `https://media.ai-os.in/build/${nextVideo}`;
+      window.playPremiumVideo(nextPath, nextTitle);
+      
+      // Auto-play the video
+      video.play().catch(err => console.log("Playback start blocked by browser:", err));
+    } else {
+      if (window.showToast) {
+        window.showToast("You have completed the entire course! 🎉");
+      }
+    }
+  });
+
   // Progress Bar click seek
   function seekVideo(e) {
     const rect = scrubberWrap.getBoundingClientRect();
@@ -1093,6 +1187,12 @@
             progressSeconds: video.currentTime,
             isCompleted
           })
+        }).then(res => {
+          if (res.status === 401) {
+            // Session expired — stop polling to avoid 401 spam
+            clearInterval(saveInterval);
+            saveInterval = null;
+          }
         }).catch(err => console.warn('Failed to sync video progress to backend:', err));
       }
     }

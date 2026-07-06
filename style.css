@@ -2255,7 +2255,7 @@ textarea {
    DASHBOARD CONTROLS SECTION (moved from inline styles)
    ========================================================================== */
 .dashboard-controls {
-  margin-top: 110px;
+  margin-top: 24px;
   /* compact — banner already handles header clearance */
   padding: 20px 0;
   z-index: 10;
@@ -7500,6 +7500,12 @@ body.modal-open {
   z-index: 99999;
   opacity: 0;
   animation: authFadeIn 0.3s forwards;
+  /* BUG-059/060: without a scrollable overlay, cards taller than the viewport
+     (e.g. the Profile/Settings form) get centered past the top of the screen,
+     making the close button unreachable. overflow-y:auto lets the whole card
+     scroll into view while staying centered when it fits. */
+  overflow-y: auto;
+  padding: 40px 0;
 }
 
 .auth-modal-card {
@@ -7516,6 +7522,7 @@ body.modal-open {
   position: relative;
   transform: scale(0.95);
   animation: authScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  margin: auto;
 }
 
 .auth-modal-close-btn {
@@ -10057,5 +10064,739 @@ body.modal-open {
   
   .saas-table-container {
     max-height: 200px !important;
+  }
+}
+
+
+/* ==========================================================================
+   DAILY DASHBOARD — Gamification & Daily Content
+   Powered by A.R. Labs Gamification Engine
+   Uses existing design tokens exclusively — no new color values.
+   ========================================================================== */
+
+.daily-dashboard-section {
+  margin-top: 88px; /* Clears fixed desktop header (72px) with extra padding */
+  padding: 0 0 32px;
+}
+
+.gm-dashboard-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ─── Top Row: Greeting + Stats Block ─── */
+
+.gm-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.gm-greeting-block {
+  flex: 1;
+  min-width: 220px;
+}
+
+.gm-greeting {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.gm-greeting-sub {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Stats Block wrapper (atomic partial re-render target) ─── */
+/* Contains BOTH the chip row AND the XP bar so replaceWith() swaps
+   both elements atomically without orphaning the progress bar. */
+
+.gm-stats-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  max-width: 460px;
+}
+
+/* ─── Stat Chips ─── */
+
+.gm-stats-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.gm-stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  cursor: default;
+}
+
+.gm-stat-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--card-shadow);
+  border-color: var(--accent-color);
+}
+
+.gm-stat-chip-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.gm-stat-chip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.gm-stat-chip-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gm-stat-chip-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.gm-stat-level .gm-stat-chip-value { color: #f59e0b; }
+.gm-stat-xp    .gm-stat-chip-value { color: var(--accent-color); }
+.gm-stat-streak .gm-stat-chip-value { color: #f97316; }
+.gm-stat-coins .gm-stat-chip-value { color: #eab308; }
+
+/* ─── XP Progress Bar ─── */
+
+.gm-xp-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  /* margin-top handled by .gm-stats-block gap — no extra margin needed */
+}
+
+.gm-xp-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.gm-xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
+  border-radius: 99px;
+  width: 0%;
+  box-shadow: 0 0 8px var(--glow-color);
+}
+
+.gm-xp-bar-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Main Layout Grid ─── */
+
+.gm-main-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .gm-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gm-left-col,
+.gm-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Base Card ─── */
+
+.gm-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.gm-card:hover {
+  box-shadow: 0 8px 32px var(--card-shadow);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="light"] .gm-card:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.gm-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.gm-card-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent-color);
+  text-transform: uppercase;
+}
+
+/* ─── Daily Mission Card ─── */
+
+.gm-mission-card {
+  border-left: 2px solid var(--accent-color);
+}
+
+.gm-mission-progress-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.gm-mission-progress-bar {
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.gm-mission-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
+  border-radius: 99px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gm-mission-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.gm-mission-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast);
+  user-select: none;
+  outline: none; /* Focus handled below */
+}
+
+.gm-mission-task:hover:not(.done) {
+  border-color: var(--accent-color);
+  background: var(--hover-bg);
+}
+
+.gm-mission-task:focus-visible:not(.done) {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(46, 197, 255, 0.25);
+}
+
+.gm-mission-task.done {
+  opacity: 0.6;
+  cursor: default;
+  pointer-events: none;
+}
+
+.gm-task-check {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-color);
+  transition: all var(--transition-fast);
+}
+
+.gm-mission-task.done .gm-task-check {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--accent-bg-invert);
+}
+
+.gm-task-label {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.gm-mission-task.done .gm-task-label {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+.gm-task-xp {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  background: var(--badge-bg);
+  padding: 2px 7px;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+.gm-claim-btn {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+  color: #0a0a0c;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.gm-claim-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.gm-claim-btn:active {
+  transform: translateY(0);
+}
+
+.gm-claimed-badge {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-secondary);
+  background: rgba(0, 208, 132, 0.08);
+  border: 1px solid rgba(0, 208, 132, 0.2);
+  border-radius: 10px;
+  letter-spacing: 0.06em;
+}
+
+.gm-claimed-badge-sm {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent-secondary);
+  letter-spacing: 0.06em;
+}
+
+/* ─── Weekly Challenge Card ─── */
+
+.gm-challenge-card {
+  border-left: 2px solid var(--accent-secondary);
+}
+
+.gm-challenge-body {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.gm-challenge-ring-wrap {
+  flex-shrink: 0;
+}
+
+.gm-challenge-ring {
+  display: block;
+}
+
+.gm-challenge-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gm-challenge-label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.gm-challenge-progress-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.gm-challenge-reward {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+/* ─── Content Cards Grid ─── */
+
+.gm-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 700px) {
+  .gm-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gm-content-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Prompt Card */
+.gm-prompt-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--card-bg), var(--hover-bg));
+  border-color: rgba(46, 197, 255, 0.18);
+}
+
+.gm-prompt-text {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+}
+
+.gm-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--badge-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: flex-start;
+}
+
+.gm-copy-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+/* Tool Card */
+.gm-tool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.gm-tool-name {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.gm-tool-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 99px;
+  letter-spacing: 0.08em;
+}
+
+.gm-tag-free {
+  background: rgba(0, 208, 132, 0.12);
+  color: var(--accent-secondary);
+  border: 1px solid rgba(0, 208, 132, 0.25);
+}
+
+.gm-tag-paid {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.gm-tool-desc {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.gm-tool-link {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  text-decoration: none;
+  /* gap is not animatable — use padding-left on the arrow pseudo-element instead */
+  transition: opacity var(--transition-fast);
+  align-self: flex-start;
+}
+
+.gm-tool-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Tip Card */
+.gm-tip-text {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.gm-small-btn {
+  padding: 7px 14px;
+  background: var(--badge-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+  align-self: flex-start;
+}
+
+.gm-small-btn:hover:not(:disabled) {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.gm-small-btn:disabled,
+.gm-small-btn-done {
+  color: var(--accent-secondary) !important;
+  border-color: rgba(0, 208, 132, 0.3) !important;
+  background: rgba(0, 208, 132, 0.08) !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+/* News Card */
+.gm-news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gm-news-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.gm-news-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.gm-news-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.gm-news-headline {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* ─── Achievement Toast ─── */
+
+.gm-achievement-toast {
+  position: fixed;
+  bottom: 32px;
+  right: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--accent-color);
+  border-radius: 16px;
+  box-shadow: 0 16px 48px var(--card-shadow), 0 0 0 1px rgba(46, 197, 255, 0.15);
+  backdrop-filter: blur(20px);
+  z-index: 10000;
+  max-width: 340px;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  pointer-events: auto;
+}
+
+.gm-achievement-toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.gm-toast-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.gm-toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.gm-toast-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.gm-toast-label {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.gm-toast-desc {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.gm-toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.gm-toast-close:hover {
+  color: var(--text-primary);
+}
+
+/* ─── Responsive Tweaks (≤1024px & ≤768px — desktop range) ─── */
+
+@media (max-width: 1100px) {
+  .gm-top-row {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .gm-stats-block {
+    max-width: 100%;
+    width: 100%;
+  }
+  .gm-stats-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .gm-stats-row::-webkit-scrollbar { display: none; }
+  .gm-stat-chip { flex-shrink: 0; }
+}
+
+@media (max-width: 768px) {
+  .gm-greeting {
+    font-size: 1.3rem;
+  }
+  .gm-main-grid {
+    grid-template-columns: 1fr;
+  }
+  .gm-achievement-toast {
+    left: 16px;
+    right: 16px;
+    bottom: 80px;
+    max-width: none;
   }
 }

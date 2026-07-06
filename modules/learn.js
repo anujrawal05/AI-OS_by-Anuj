@@ -215,13 +215,10 @@ export function initLearnSection() {
           c.classList.remove('active');
           const b = c.querySelector('.learn-module-body');
           if (b) b.style.display = 'none';
-          const a = c.querySelector('.learn-module-toggle-btn');
-          if (a) a.textContent = '▲';
         });
         if (!isActive) {
           card.classList.add('active');
           body.style.display = 'block';
-          arrow.textContent = '▼';
         }
       });
     }

@@ -186,10 +186,203 @@ const optionToMatrixKey = {
   "Voice Over Generation": "Generate Professional Voice Over",
   "Brand Building": "Build a Brand Using AI",
   "Personal AI Building": "Build a Personal AI Assistant",
-  "Hardware Building": "Design and Prototype Hardware"
+  "Hardware Building": "Design and Prototype Hardware",
+  "Study Using AI": "Study Smarter Using AI",
+  "Crack Interview Using AI": "Crack Interviews Using AI"
 }
 
+const stepsTranslation = {
+  English: {
+    "Google Docs": "Google Docs", "ChatGPT": "ChatGPT", "Image Generator": "Image Generator",
+    "Video Generator": "Video Generator", "Voice Generator": "Voice Generator", "Video Editor": "Video Editor",
+    "Publishing Tool": "Publishing Tool", "Upscaler": "Upscaler", "Editor": "Editor",
+    "Cursor": "Cursor", "GitHub Copilot": "GitHub Copilot", "Testing Tool": "Testing Tool",
+    "Deployment Tool": "Deployment Tool", "Lovable": "Lovable", "Bolt": "Bolt.new",
+    "Deployment Platform": "Deployment Platform", "Suno": "Suno AI", "Audio Enhancement Tool": "Audio Enhancement Tool",
+    "Distribution Tool": "Distribution Tool", "Design Tool": "Design Tool", "Monetization Tool": "Monetization Tool",
+    "Marketing Tool": "Marketing Tool", "Collaboration Tool": "Collaboration Tool", "Automation Tool": "Automation Tool",
+    "Earning Platform": "Earning Platform", "Agent Creator": "Agent Creator", "Browser Agent": "Browser Agent",
+    "Integration Platform": "Integration Platform", "Logo Generator": "Logo Generator",
+    "Color Palette Designer": "Color Palette Designer", "Layout Designer": "Layout Designer",
+    "Branding Assistant": "Branding Assistant", "Text Reader": "Text Reader", "Voice Cloning": "Voice Cloning",
+    "EHR System": "EHR System", "IoT Platform": "IoT Platform", "IoT Design": "IoT Design",
+    "Predictive Maintenance": "Predictive Maintenance"
+  },
+  Hindi: {
+    "Google Docs": "गूगल डॉक्स (Google Docs)", "ChatGPT": "चैटजीपीटी (ChatGPT)",
+    "Image Generator": "इमेज जनरेटर (Image Generator)", "Video Generator": "वीडियो जनरेटर (Video Generator)",
+    "Voice Generator": "वॉयस जनरेटर (Voice Generator)", "Video Editor": "वीडियो एडिटर (Video Editor)",
+    "Publishing Tool": "पब्लिशिंग टूल (Publishing Tool)", "Upscaler": "इमेज अपस्केलर (Upscaler)",
+    "Editor": "डिजाइन एडिटर (Editor)", "Cursor": "कर्सर कोड एडिटर (Cursor)",
+    "GitHub Copilot": "गिटहब कोपायलट (GitHub Copilot)", "Testing Tool": "टेस्टिंग टूल (Testing Tool)",
+    "Deployment Tool": "डिप्लॉयमेंट टूल (Deployment Tool)", "Lovable": "लवेबल ऐप बिल्डर (Lovable)",
+    "Bolt": "बोल्ट ऐप निर्माता (Bolt.new)", "Deployment Platform": "क्लाउड डिप्लॉयमेंट (Deployment Platform)",
+    "Suno": "सुनो म्यूजिक एआई (Suno AI)", "Audio Enhancement Tool": "ऑडियो एनहांसर (Audio Enhancement Tool)",
+    "Distribution Tool": "म्यूजिक डिस्ट्रीब्यूशन (Distribution Tool)", "Design Tool": "डिजाइन टूल (Design Tool)",
+    "Monetization Tool": "कमाई का माध्यम (Monetization)", "Marketing Tool": "मार्केटिंग टूल (Marketing Tool)",
+    "Collaboration Tool": "टीम कोलैबोरेशन (Collaboration)", "Automation Tool": "ऑटोमेशन टूल (Automation Tool)",
+    "Earning Platform": "कमाई का प्लेटफार्म (Earning Platform)", "Agent Creator": "एआई एजेंट निर्माता (Agent Creator)",
+    "Browser Agent": "ब्राउज़र एजेंट (Browser Agent)", "Integration Platform": "सिस्टम एकीकरण (Integration Platform)",
+    "Logo Generator": "लोगो जनरेटर (Logo Generator)", "Color Palette Designer": "कलर पैलेट डिजाइनर (Color Palette Designer)",
+    "Layout Designer": "लेआउट डिजाइनर (Layout Designer)", "Branding Assistant": "ब्रांडिंग असिस्टेंट (Branding Assistant)",
+    "Text Reader": "टेक्स्ट रीडर (Text Reader)", "Voice Cloning": "वॉयस क्लोनिंग (Voice Cloning)",
+    "EHR System": "मेडिकल रिकॉर्ड सिस्टम (EHR System)", "IoT Platform": "आईओटी प्लेटफार्म (IoT Platform)",
+    "IoT Design": "आईओटी डिजाइन (IoT Design)", "Predictive Maintenance": "पूर्वानुमानित रखरखाव (Predictive Maintenance)"
+  },
+  Hinglish: {
+    "Google Docs": "Google Docs (प्लानिंग)", "ChatGPT": "ChatGPT (प्रॉम्प्ट मेकर)",
+    "Image Generator": "Image Generator (इमेज जनरेटर)", "Video Generator": "Video Generator (वीडियो जनरेटर)",
+    "Voice Generator": "Voice Generator (वॉयस जनरेटर)", "Video Editor": "Video Editor (वीडियो एडिटर)",
+    "Publishing Tool": "Publishing Tool (पब्लिशिंग टूल)", "Upscaler": "Upscaler (क्वालिटी बढ़ाएं)",
+    "Editor": "Editor (फाइनल चेंजेस)", "Cursor": "Cursor IDE (कोडिंग एडिटर)",
+    "GitHub Copilot": "GitHub Copilot (ऑटो-कम्पलीट)", "Testing Tool": "Testing Tool (एरर चेकर)",
+    "Deployment Tool": "Deployment Tool (लाइव करें)", "Lovable": "Lovable (फुल-स्टैक बिल्डर)",
+    "Bolt": "Bolt.new (रैपिड प्रोटोटाइप)", "Deployment Platform": "Deployment Platform (होस्टिंग)",
+    "Suno": "Suno AI (म्यूजिक मेकर)", "Audio Enhancement Tool": "Audio Enhancement Tool (आवाज़ साफ़ करें)",
+    "Distribution Tool": "Distribution Tool (मार्केट में भेजें)", "Design Tool": "Design Tool (डिजाइन मेकर)",
+    "Monetization Tool": "Monetization Tool (कमाई का टूल)", "Marketing Tool": "Marketing Tool (मार्केटिंग टूल)",
+    "Collaboration Tool": "Collaboration Tool (टीम कोऑर्डिनेशन)", "Automation Tool": "Automation Tool (ऑटोमेशन टूल)",
+    "Earning Platform": "Earning Platform (कमाई का तरीका)", "Agent Creator": "Agent Creator (एजेंट मेकर)",
+    "Browser Agent": "Browser Agent (वेब एजेंट)", "Integration Platform": "Integration Platform (सिस्टम सिंक)",
+    "Logo Generator": "Logo Generator (लोगो मेकर)", "Color Palette Designer": "Color Palette Designer (कलर थीम्स)",
+    "Layout Designer": "Layout Designer (लेआउट मेकर)", "Branding Assistant": "Branding Assistant (ब्रांड मैनेजर)",
+    "Text Reader": "Text Reader (टेक्स्ट टू स्पीच)", "Voice Cloning": "Voice Cloning (आवाज़ क्लोन करना)",
+    "EHR System": "EHR System (मेडिकल फाइल्स)", "IoT Platform": "IoT Platform (सेंसर सिंक)",
+    "IoT Design": "IoT Design (हार्डवेयर डिजाइन)", "Predictive Maintenance": "Predictive Maintenance (मशीन चेक)"
+  }
+};
 
+const taskToolMatrix = {
+  "Exploring AI": ["ChatGPT", "Gemini", "Claude", "Perplexity", "NotebookLM"],
+  "Generate a Complete AI Video": ["Flow AI"],
+  "Generate Professional AI Images": ["Flow AI"],
+  "Create Digital Designs Using AI": ["Canva AI"],
+  "Build Software Using AI": ["Antigravity 2.0"],
+  "Build Android Application": ["Android Studio"],
+  "Monetize AI Skills": ["Fiverr"],
+  "Create Music Using AI": ["Suno AI"],
+  "Generate Professional Voice Over": ["ElevenLabs"],
+  "Build a Brand Using AI": ["Pomello by Google"],
+  "Build a Personal AI Assistant": ["Antigravity 2.0"],
+  "Design and Prototype Hardware": ["Flux AI"],
+  "Study Smarter Using AI": ["NotebookLM"],
+  "Crack Interviews Using AI": ["ChatGPT"]
+};
+
+const officialTasksMappings = {
+  "Design and Prototype Hardware": {
+    recommended_tool: "Flux AI",
+    reason: "Excellent for industrial design concepts, PCB visualization, product ideation and hardware renders.",
+    official_link: "https://flux.ai",
+    quick_guide: "Describe your hardware idea in ChatGPT to generate a JSON prompt, then use that prompt in Flux AI to visualize your concept."
+  },
+  "Generate a Complete AI Video": {
+    recommended_tool: "Flow AI",
+    reason: "Best for cinematic AI video generation with prompt-based workflows.",
+    official_link: "https://labs.google/fx/tools/flow",
+    quick_guide: "Generate a JSON prompt using ChatGPT and paste it into Flow AI for professional video generation."
+  },
+  "Generate Professional AI Images": {
+    recommended_tool: "Flow AI",
+    reason: "Supports high-quality image generation with structured prompts.",
+    official_link: "https://labs.google/fx/tools/flow",
+    quick_guide: "Use ChatGPT to create a JSON prompt and generate images directly in Flow AI."
+  },
+  "Create Digital Designs Using AI": {
+    recommended_tool: "Canva AI",
+    reason: "Best for presentations, social media posts, banners, posters and marketing creatives.",
+    official_link: "https://www.canva.com/ai-image-generator/",
+    quick_guide: "Generate a design prompt and create editable graphics inside Canva AI."
+  },
+  "Build Software Using AI": {
+    recommended_tool: "Antigravity 2.0",
+    reason: "Agentic coding environment capable of building complete applications.",
+    official_link: "https://antigravity.dev",
+    quick_guide: [
+      "Visit the official website.",
+      "Download the desktop version for Windows/macOS/Linux.",
+      "Install the application.",
+      "Open Antigravity.",
+      "Paste the generated master prompt.",
+      "Allow the agent to generate and edit the project."
+    ]
+  },
+  "Build Android Application": {
+    recommended_tool: "Android Studio",
+    reason: "Official Android development environment from Google.",
+    official_link: "https://developer.android.com/studio",
+    quick_guide: [
+      "Download Android Studio from the official website.",
+      "Install using the default setup.",
+      "Launch Android Studio.",
+      "Open or create a new project.",
+      "Use the generated prompt with your preferred AI coding assistant."
+    ]
+  },
+  "Monetize AI Skills": {
+    recommended_tool: "Fiverr",
+    reason: "One of the largest marketplaces for selling AI services and digital work.",
+    official_link: "https://www.fiverr.com",
+    alternative_tools: [
+      { name: "Upwork", link: "https://www.upwork.com" },
+      { name: "Contra", link: "https://contra.com" }
+    ],
+    quick_guide: "Create a professional portfolio, publish AI service listings and start acquiring clients."
+  },
+  "Create Music Using AI": {
+    recommended_tool: "Suno AI",
+    reason: "Industry-leading AI music generation platform.",
+    official_link: "https://suno.com",
+    quick_guide: "Generate a structured music prompt and create complete songs with lyrics and vocals."
+  },
+  "Generate Professional Voice Over": {
+    recommended_tool: "ElevenLabs",
+    reason: "High-quality multilingual AI voice synthesis.",
+    official_link: "https://elevenlabs.io",
+    quick_guide: "Generate a voice-over script and paste it into ElevenLabs for natural speech generation."
+  },
+  "Build a Brand Using AI": {
+    recommended_tool: "Pomello by Google",
+    reason: "AI-assisted branding, ideation and creative workflow generation.",
+    official_link: "https://labs.google",
+    quick_guide: "Generate brand strategy, naming ideas and visual identity prompts before creating assets."
+  },
+  "Build a Personal AI Assistant": {
+    recommended_tool: "Antigravity 2.0",
+    reason: "Supports autonomous multi-agent development and local execution.",
+    official_link: "https://antigravity.dev",
+    quick_guide: [
+      "Download Antigravity desktop from the official website.",
+      "Install and launch the application.",
+      "Paste the generated AI assistant prompt.",
+      "Allow the agent to create, test and refine the assistant automatically."
+    ]
+  },
+  "Study Smarter Using AI": {
+    recommended_tool: "NotebookLM",
+    reason: "Google's AI-powered research assistant — upload any document, PDF or YouTube video and get instant summaries, Q&A and audio overviews.",
+    official_link: "https://notebooklm.google.com",
+    quick_guide: [
+      "Go to notebooklm.google.com and sign in with your Google account.",
+      "Create a new notebook and upload your study material (PDFs, notes, slides, or paste a YouTube link).",
+      "Use the chat panel to ask questions, generate summaries, and clarify concepts.",
+      "Generate an Audio Overview to listen to your study material as a podcast-style discussion.",
+      "Use the Study Guide feature to create practice quizzes and key-term flashcards."
+    ]
+  },
+  "Crack Interviews Using AI": {
+    recommended_tool: "ChatGPT",
+    reason: "Best for simulating mock interviews, generating tailored answers, and practicing behavioral and technical questions for any role.",
+    official_link: "https://chat.openai.com",
+    quick_guide: [
+      "Go to chat.openai.com and sign in.",
+      "Paste the generated interview prep prompt (includes your target role, company, and experience level).",
+      "Ask ChatGPT to simulate a mock interview — it will play the interviewer and evaluate your answers.",
+      "Practice STAR-method answers for behavioral questions and whiteboard problems for technical rounds.",
+      "Ask for feedback after each answer to improve clarity, confidence, and relevance."
+    ]
+  }
+};
 
 let toolsData = [];
 let exploringAIRoadmap = [];
@@ -791,6 +984,23 @@ export async function openDrawer(nodeIdx, isEduNode = false, eduNodeData = null)
   const data = isEduNode ? eduNodeData : toolsData[nodeIdx];
   if (!data) return;
 
+  // Complete tool_open and explore3 daily mission tasks based on real user action
+  if (window.gamification) {
+    window.gamification.awardXP(15, 'tool_open');
+    window.gamification.completeMissionTask('tool_open');
+  }
+  if (!isEduNode && data.id) {
+    let opened = [];
+    try { opened = JSON.parse(sessionStorage.getItem('aios_opened_tools_today') || '[]'); } catch (e) {}
+    if (!opened.includes(data.id)) {
+      opened.push(data.id);
+      sessionStorage.setItem('aios_opened_tools_today', JSON.stringify(opened));
+    }
+    if (opened.length >= 3 && window.gamification) {
+      window.gamification.completeMissionTask('explore3');
+    }
+  }
+
   // Clean previous playground hooks
   if (state.activePlaygroundReset) {
     state.activePlaygroundReset();
@@ -931,6 +1141,24 @@ export async function openDrawer(nodeIdx, isEduNode = false, eduNodeData = null)
         alternativesContainer.appendChild(altCard);
       });
     }
+  }
+
+  // Attach copy event listener to the dynamic copy buttons inside the drawer (universal master prompt)
+  const drawerCopyBtn = detailDrawer.querySelector('.prompt-copy-btn');
+  if (drawerCopyBtn) {
+    drawerCopyBtn.addEventListener('click', (e) => {
+      const textToCopy = e.currentTarget.getAttribute('data-text');
+      if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast("Universal Master Prompt copied to clipboard!");
+          if (window.gamification) {
+            window.gamification.completeMissionTask('share');
+          }
+        }).catch(err => {
+          console.error("Failed to copy master prompt: ", err);
+        });
+      }
+    });
   }
 
   // Open Drawer UI
@@ -2338,13 +2566,17 @@ export function initDashboardControls() {
       if (budgetSelect.parentElement) {
         budgetSelect.parentElement.removeAttribute('title');
       }
-      
+      // Reset to default if Exploring AI had locked it to "0"
+      if (budgetSelect.value === "0") budgetSelect.value = "1000";
+
       // Re-enable Experience selector
       workflowSelect.disabled = false;
       if (workflowSelect.parentElement) {
         workflowSelect.parentElement.removeAttribute('title');
       }
-      
+      // Reset to default if Exploring AI had locked it to "Beginner"
+      if (workflowSelect.value === "Beginner") workflowSelect.value = "Intermediate";
+
       // Update state with selected values
       state.goalText = taskSelect.value;
       state.budgetLimit = parseInt(budgetSelect.value);
@@ -2382,6 +2614,12 @@ export function initDashboardControls() {
     state.compiledQuickStartPrompt = '';
     
     regenerateActiveRoadmap();
+    
+    // Complete daily mission and award XP for compiling roadmap
+    if (window.gamification) {
+      window.gamification.awardXP(30, 'roadmap');
+      window.gamification.completeMissionTask('roadmap');
+    }
     
     const targetSection = document.getElementById('roadmap-builder-section');
     if (targetSection) {
@@ -3084,6 +3322,9 @@ export function renderRoadmap(optimalWorkflow, steps) {
         const promptToCopy = state.generatedJSONPrompt || state.compiledQuickStartPrompt || getMasterPromptTemplate(state.goalText);
         navigator.clipboard.writeText(promptToCopy);
         showToast("JSON Prompt copied to clipboard!");
+        if (window.gamification) {
+          window.gamification.completeMissionTask('share');
+        }
         state.quickStartStep = 3;
         renderRoadmap(optimalWorkflow, steps);
       });
@@ -3571,6 +3812,9 @@ export function renderPremiumToolCard(mapping) {
       const promptToCopy = state.generatedJSONPrompt || generateLocalJSONPrompt(state.goalText, state.userIdeaDescription || '');
       navigator.clipboard.writeText(promptToCopy).then(() => {
         showToast("Copied JSON prompt to clipboard!");
+        if (window.gamification) {
+          window.gamification.completeMissionTask('share');
+        }
       }).catch(err => {
         console.error("Failed to copy JSON: ", err);
       });
@@ -3837,6 +4081,11 @@ export function openComparisonOverlay() {
   if (comparisonOverlay) {
     comparisonOverlay.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+  }
+
+  // Complete compare daily mission task if comparing at least 2 tools
+  if (state.comparisonList.length >= 2 && window.gamification) {
+    window.gamification.completeMissionTask('compare');
   }
 }
 
@@ -4561,6 +4810,11 @@ export function renderLibraryGrid() {
 export async function initCategoryExplorerSection() {
   await ensureDataLoaded();
   if (!categoryExplorerList) return;
+
+  // Complete Category Explorer mission task
+  if (window.gamification) {
+    window.gamification.completeMissionTask('category');
+  }
 
   if (!activeCategoryName) {
     activeCategoryName = industriesList[0];

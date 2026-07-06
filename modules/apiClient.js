@@ -8,7 +8,13 @@ function resolveApiBase() {
   if (metaTag && metaTag.content && metaTag.content.trim() !== '') {
     return metaTag.content.trim().replace(/\/$/, '');
   }
-  // 2. Default fallback → same-origin relative paths (ideal for Vercel Serverless monorepos & localhost)
+  // 2. Local development fallback when frontend and backend are on different ports (port 3000 vs 8080)
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (window.location.port === '3000') {
+      return 'http://localhost:8080';
+    }
+  }
+  // 3. Default fallback → same-origin relative paths (ideal for Vercel Serverless monorepos)
   return '';
 }
 

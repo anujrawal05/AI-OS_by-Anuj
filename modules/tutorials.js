@@ -6,6 +6,7 @@ import { showToast } from './utils.js';
 import { isUserAuthenticated } from './auth.js';
 import { showPricingModal } from './ui.js';
 import { playVideoWithPlayer } from './video.js';
+import { completeMissionTask } from './gamification.js';
 
 export async function loadDiscoveredVideos() {
   state.discoveredVideos.build = [
@@ -28,48 +29,6 @@ export async function loadDiscoveredVideos() {
   ];
 }
 
-export function renderBusinessCardsGrid() {
-  const container = document.getElementById('business-cards-grid');
-  if (!container) return;
-  
-  const models = [
-    { key: 'agency', icon: '🤖', subtitle: 'Automate boring tasks and emails for local businesses.', video: 'AAA' },
-    { key: 'dropservicing', icon: '💼', subtitle: 'Broker premium digital services and outsource to contractors.', video: 'Drop-Servicing_Sprint' },
-    { key: 'micro-saas', icon: '⚡', subtitle: 'Launch simple single-purpose tools with monthly subscriptions.', video: 'SaaS' },
-    { key: 'creator', icon: '📸', subtitle: 'Build an audience and monetize with templates and sponsorships.', video: 'Content_Engine' },
-    { key: 'agency_video_ad', icon: '🎥', subtitle: 'Turn static product photos into high-converting video ads.', video: 'AI_Video_Ad_Pipeline' },
-    { key: 'creator_zackd_shorts', icon: '🎬', subtitle: 'Produce viral 3D shorts and bizarre facts videos using AI.', video: 'Motion_Script_Compiler' },
-    { key: 'agency_voice_ai', icon: '📞', subtitle: 'Deploy smart voice agents to answer phones for local clinics.', video: 'Inbound_Voice_AI_Studio' },
-    { key: 'creator_managed_network', icon: '🤝', subtitle: 'Manage social creators and secure brand sponsorships.', video: 'Managed_Creator_Network' },
-    { key: 'creator_kids_animation', icon: '👶', subtitle: 'Produce automated animated children\'s songs and rhymes.', video: 'AI_Nursery_Rhyme_Engine' }
-  ];
-
-  container.innerHTML = models.map(m => {
-    const idea = launchpadIdeas[m.key];
-    const profitRange = idea.retail.profit;
-    
-    return `
-      <div class="business-catalog-card" data-key="${m.key}">
-        <div class="card-glow-effect"></div>
-        <div class="card-header-row">
-          <div class="card-icon-wrapper">${m.icon}</div>
-          <span class="card-profit-badge">${profitRange.split(' /')[0]}</span>
-        </div>
-        <h4 class="card-business-title">${idea.title}</h4>
-        <p class="card-business-subtitle">${m.subtitle}</p>
-        
-        <div class="card-actions-row">
-          <button class="card-btn-compile" onclick="selectAndCompileBusiness('${m.key}')">
-            <span>Configure</span> ⚙️
-          </button>
-          <button class="card-btn-video" onclick="handleBusinessVideoPlay('${m.key}', '${m.video}', '${idea.title}')">
-            <span>Watch Video</span> ▶
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
 
 export function showLanguageSelectionPopup(videoBaseName, title) {
   let modal = document.getElementById('premium-lang-modal-overlay');
@@ -134,12 +93,68 @@ export function showLanguageSelectionPopup(videoBaseName, title) {
       if (matched) filename = matched;
     }
     const videoPath = `https://media.ai-os.in/build/${filename}`;
-    window.playPremiumVideo(videoPath, `${title} (${lang === 'eng' ? 'English' : 'Hindi'})`);
+    playVideoWithPlayer(videoPath, `${title} (${lang === 'eng' ? 'English' : 'Hindi'})`);
+    
+    // Complete daily mission task for watching/playing lessons
+    completeMissionTask('learn');
+  }
+}
+
+export async function loadLiveBusinessNews() {
+  const loadingEl = document.getElementById('news-data-loading');
+  const errorEl = document.getElementById('news-data-error');
+  const contentEl = document.getElementById('news-data-content');
+  
+  if (!contentEl) return;
+
+  try {
+    const mockArticles = [
+      { title: "OpenAI releases o3-mini — outperforms o1 at half the cost", source: "OpenAI", link: "https://news.google.com" },
+      { title: "Google DeepMind's Gemini 2.5 Pro scores #1 on coding benchmarks", source: "Google", link: "https://news.google.com" },
+      { title: "Anthropic raises $4B, targets AI safety research acceleration", source: "Anthropic", link: "https://news.google.com" },
+      { title: "AI agents now autonomously completing browser tasks at 80% success", source: "Research", link: "https://news.google.com" },
+      { title: "Google Cloud Announces $2B AI Accelerator Pool for Seed Startups", source: "TechCrunch", link: "https://news.google.com" },
+      { title: "Llama 3.3 Fine-tuning Benchmarks Reveal 40% Operational Cost Reductions", source: "VentureBeat", link: "https://news.google.com" },
+      { title: "Outbound Agentic Workflows Replace Traditional Call Center Pools", source: "Bloomberg", link: "https://news.google.com" },
+      { title: "Make.com Raises $150M Series C to Expand Enterprise Automation Integrations", source: "TechNews", link: "https://news.google.com" }
+    ];
+    
+    contentEl.innerHTML = '';
+    mockArticles.forEach(art => {
+      const item = document.createElement('a');
+      item.href = art.link;
+      item.target = '_blank';
+      item.rel = 'noopener';
+      item.className = 'news-item';
+      item.style.display = 'block';
+      item.style.textDecoration = 'none';
+      
+      const pubTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      item.innerHTML = `
+        <div class="news-item-meta" style="display:flex; justify-content:space-between; margin-bottom: 4px; font-family:var(--font-mono); font-size:0.75rem;">
+          <span class="news-source" style="color:var(--bus-primary); font-weight:700;">${art.source}</span>
+          <span class="news-time" style="color:var(--bus-text-secondary);">${pubTime}</span>
+        </div>
+        <h4 class="news-item-title" style="color:#fff; font-size:0.82rem; line-height:1.4; margin:0; font-weight:600;">${art.title}</h4>
+      `;
+      contentEl.appendChild(item);
+    });
+
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (errorEl) errorEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
+
+  } catch (err) {
+    console.error("News load failed:", err.message);
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (errorEl) errorEl.style.display = 'block';
   }
 }
 
 export function initTutorialsSection() {
   loadDiscoveredVideos();
+  loadLiveBusinessNews();
 }
 
 // Expose functions to global namespace for dynamic buttons
@@ -174,6 +189,6 @@ window.handleBusinessVideoPlay = function(key, videoBaseName, title) {
 };
 
 window.loadDiscoveredVideos = loadDiscoveredVideos;
-window.renderBusinessCardsGrid = renderBusinessCardsGrid;
 window.showLanguageSelectionPopup = showLanguageSelectionPopup;
 window.initTutorialsSection = initTutorialsSection;
+window.loadLiveBusinessNews = loadLiveBusinessNews;

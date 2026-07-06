@@ -76,6 +76,7 @@
      bit of content isn't hidden behind the fixed bottom nav. */
   body {
     padding-bottom: var(--mob-bottomnav-height);
+    -webkit-overflow-scrolling: touch;
   }
 
   /* ============================================================
@@ -223,6 +224,12 @@
     z-index: 50 !important;
     box-shadow: var(--mob-shadow-md);
     box-sizing: border-box;
+    /* BUG-063: iOS Safari can visually detach position:fixed elements
+       from the viewport during momentum-scroll of a scrollable body
+       unless they're promoted to their own compositing layer. */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
   }
 
   .mobile-nav-tab {
@@ -1016,4 +1023,145 @@
     align-items: center;
     justify-content: center;
   }
+
+  /* ============================================================
+     DAILY DASHBOARD (MOBILE)
+     Single-column stack, horizontal-scroll stat chips,
+     achievement toast above the bottom nav.
+     All business logic / rendering unchanged — layout only.
+     ============================================================ */
+
+  .daily-dashboard-section {
+    margin-top: var(--mob-space-md) !important;
+    padding: 0 0 var(--mob-space-lg);
+  }
+
+  .gm-dashboard-wrap {
+    gap: var(--mob-space-lg);
+  }
+
+  .gm-top-row {
+    flex-direction: column;
+    gap: var(--mob-space-md);
+  }
+
+  .gm-greeting {
+    font-size: var(--mob-font-title);
+    margin: 0 0 4px;
+  }
+
+  .gm-greeting-sub {
+    font-size: var(--mob-font-helper);
+  }
+
+  /* Horizontally scrollable chip row — native-app pattern */
+  .gm-stats-block {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .gm-stats-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    gap: var(--mob-space-sm);
+    scrollbar-width: none;
+  }
+  .gm-stats-row::-webkit-scrollbar { display: none; }
+
+  .gm-stat-chip {
+    flex-shrink: 0;
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    border-radius: var(--mob-radius-md);
+  }
+
+  .gm-stat-chip-icon { font-size: 1.1rem; }
+  .gm-stat-chip-value { font-size: 0.9rem; }
+
+  .gm-xp-bar-label { font-size: 0.65rem; }
+
+  .gm-main-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mob-space-md);
+  }
+
+  .gm-left-col,
+  .gm-right-col {
+    gap: var(--mob-space-md);
+  }
+
+  .gm-card {
+    padding: var(--mob-space-md);
+    border-radius: var(--mob-radius-md);
+  }
+
+  .gm-card-header {
+    margin-bottom: var(--mob-space-md);
+  }
+
+  /* Mission tasks: larger touch targets */
+  .gm-mission-task {
+    min-height: var(--mob-touch-target-sm);
+    padding: var(--mob-space-sm) var(--mob-space-md);
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .gm-task-check {
+    width: 22px;
+    height: 22px;
+  }
+
+  .gm-task-label { font-size: var(--mob-font-helper); }
+  .gm-task-xp   { font-size: 0.6rem; }
+
+  .gm-claim-btn {
+    min-height: var(--mob-touch-target-sm);
+    border-radius: var(--mob-radius-sm);
+    font-size: var(--mob-font-helper);
+  }
+
+  /* Challenge ring: slightly smaller on mobile */
+  .gm-challenge-ring-wrap svg {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .gm-challenge-label { font-size: var(--mob-font-helper); }
+  .gm-challenge-progress-text { font-size: 0.7rem; }
+  .gm-challenge-reward { font-size: 0.6rem; }
+
+  /* Content grid: single column */
+  .gm-content-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mob-space-md);
+  }
+
+  .gm-prompt-text { font-size: var(--mob-font-helper); }
+  .gm-tip-text    { font-size: var(--mob-font-helper); }
+  .gm-news-headline { font-size: var(--mob-font-helper); }
+  .gm-tool-name   { font-size: 1rem; }
+  .gm-tool-desc   { font-size: var(--mob-font-helper); }
+
+  .gm-copy-btn,
+  .gm-small-btn {
+    min-height: var(--mob-touch-target-sm);
+    border-radius: var(--mob-radius-sm);
+  }
+
+  /* Achievement toast: above bottom nav */
+  .gm-achievement-toast {
+    left: var(--mob-space-md);
+    right: var(--mob-space-md);
+    bottom: calc(var(--mob-bottomnav-height) + var(--mob-space-lg) + env(safe-area-inset-bottom, 0px));
+    max-width: none;
+    border-radius: var(--mob-radius-md);
+    padding: var(--mob-space-md);
+    gap: var(--mob-space-sm);
+  }
+
+  .gm-toast-icon { font-size: 1.6rem; }
+  .gm-toast-label { font-size: var(--mob-font-body); }
+  .gm-toast-desc  { font-size: 0.7rem; }
 }
+
