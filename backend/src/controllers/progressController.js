@@ -1,5 +1,20 @@
 const prisma = require('../lib/db');
 
+// Helper to escape HTML characters (prevent stored XSS)
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>"']/g, (m) => {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#x27;';
+      default: return m;
+    }
+  });
+}
+
 // --- 1. VIDEO PROGRESS ---
 async function saveVideoProgress(req, res, next) {
   const { videoFilename, progressSeconds, isCompleted } = req.body;
@@ -187,8 +202,8 @@ async function createSupportTicket(req, res, next) {
     const ticket = await prisma.supportTicket.create({
       data: {
         userId: req.user.id,
-        subject,
-        message,
+        subject: escapeHTML(subject),
+        message: escapeHTML(message),
         status: 'Open',
         priority: 'Medium'
       }

@@ -37,31 +37,31 @@ const legalData = {
     ]
   },
   privacy: {
-    title: "PRIVACY AND DATA PROTECTION POLICY",
+    title: "PRIVACY AND DATA PROTECTION POLICY (Version 2.0)",
     sections: [
       {
         heading: "1. PRIVACY COMMITMENT & DATA ARCHITECTURE",
         text: "A.R. Labs is committed to protecting the privacy of its users and maintaining absolute transparency regarding data handling. Our data architecture is designed under the principle of \"data minimization\" and \"privacy by design\". This policy outlines what information we collect, how it is processed, and the robust security protocols deployed to safeguard your personal space."
       },
       {
-        heading: "2. LOCAL SPEECH PROCESSING & MICROPHONE PRIVACY",
-        text: "A.R. Labs implements a strict local speech-to-text processing protocol for its Voice Input feature. When you engage the microphone button, all audio capture is processed locally on your client device using your browser's native Web Speech API (SpeechRecognition). **NO AUDIO RECORDINGS, VOICE BIOMETRICS, OR SPEECH FEEDS ARE TRANSMITTED, STORED, OR PROCESSED ON A.R. LABS SERVERS.** The microphone access is triggered exclusively upon your explicit interaction (clicking the mic button) and is shut down immediately when you cancel, retry, or stop speaking. The translated text transcript is inserted directly into your browser's input field for your review and editing before any external submission."
+        heading: "2. ACCOUNT CREDENTIALS & SENSITIVE DATA",
+        text: "We collect your email address and profile choices (Full Name, Date of Birth, Gender, and Profession). Passwords are cryptographically hashed using industry-standard bcrypt algorithms on the server before storage. One-Time Passwords (OTPs) generated during signup or verify checks are temporarily recorded in our DB and immediately invalidated upon correct entry to prevent replay/reuse."
       },
       {
-        heading: "3. DATA TRANSMISSION & THIRD-PARTY INTEGRATIONS",
-        text: "When you request the generation of an intelligent JSON prompt, the text description in the input box is securely transmitted via TLS encryption to our server-side API, which communicates with the OpenRouter API to execute the Llama model prompt expansion. No personally identifiable information (PII) is attached to these prompts. For billing, subscription verification, and transaction processing, payment details are collected directly by secure third-party processors (PayPal, Razorpay) under their respective security policies. A.R. Labs does not store credit card or bank account information."
+        heading: "3. AI PROMPT PROCESSING DISCLAIMER",
+        text: "When you interact with the AI strategist or prompt tools, prompt instructions are transmitted securely to server-side APIs, which communicate with third-party generative models (including OpenRouter APIs). Please note that third-party AI providers process prompts to generate responses according to their API services. Prompt texts are processed in-memory, are not stored permanently on our database servers, and are never logged to console outputs."
       },
       {
-        heading: "4. COOKIE POLICY & LOCAL STORAGE USAGE",
-        text: "AI-OS uses essential cookies and local browser storage (localStorage/sessionStorage) to maintain active user sessions, store your UI preferences (such as dark/light theme setting), track favorite tools, and manage the comparison checklist dashboard. These technologies are crucial for performance and local state restoration. We do not use tracking or advertising cookies to profile your behavior across third-party websites."
+        heading: "4. PAYMENT PROCESSING VIA RAZORPAY",
+        text: "All subscription upgrade transactions and billing details are processed securely and privately by Razorpay. A.R. Labs does not collect, access, or store raw credit/debit card numbers, CVVs, or cardholder credentials on our servers."
       },
       {
-        heading: "5. DATA RETENTION & ACCOUNT SEGREGATION",
-        text: "User profile records (including nicknames, token balances, and transaction references) are stored securely in Supabase database infrastructure. Profile metadata is retained as long as your account remains active. Users may request the deletion of their profile metadata, transaction references, or token ledger records at any time by contacting our data protection representative. Deleted records are purged from active operational tables within 30 days."
+        heading: "5. LOCAL STORAGE, COOKIES & SESSION MANAGEMENT",
+        text: "We use essential cookies and local browser storage (localStorage/sessionStorage) to maintain active user sessions, store your UI preferences (dark/light theme, language), and cache local dashboard checklist states. Sessions are secured via HttpOnly, SameSite, and Secure flags where applicable. We do not integrate third-party analytical pixels, behavioral marketing tracking, or target advertising scripts, nor do we host files on Cloudinary."
       },
       {
-        heading: "6. DATA SECURITY PRACTICES",
-        text: "We implement industry-standard administrative, technical, and physical security measures to protect your database profiles from unauthorized access, modification, disclosure, or destruction. Access to user records is strictly restricted to authorized system daemons. While we strive to deploy maximum grade security practices, no method of transmission or electronic storage is 100% secure, and we cannot guarantee absolute database security."
+        heading: "6. DATA RETENTION & ACCOUNT DELETION",
+        text: "User profile and account information is retained for as long as the user account remains active. Operational logs and security audit trails are retained for up to 90 days. You have full ownership of your data. You may request account closure and data deletion at any time by sending an email from your registered address to arproduction050@gmail.com, and we will purge all account records within 5 business days."
       },
       {
         heading: "7. GOVERNING LAW & EXCLUSIVE JURISDICTION REFERENCE",

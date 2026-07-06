@@ -8,7 +8,9 @@ function getPaginationArgs(req) {
   const limit = Math.max(1, Math.min(100, parseInt(req.query.limit) || 10));
   const skip = (page - 1) * limit;
   
-  const sortBy = req.query.sortBy || 'createdAt';
+  // Whitelist sort fields to prevent schema probing or runtime Prisma errors
+  const allowedSortFields = ['createdAt', 'email', 'role', 'id', 'status', 'amount'];
+  const sortBy = allowedSortFields.includes(req.query.sortBy) ? req.query.sortBy : 'createdAt';
   const sortOrder = req.query.sortOrder === 'asc' ? 'asc' : 'desc';
 
   return { page, limit, skip, orderBy: { [sortBy]: sortOrder } };

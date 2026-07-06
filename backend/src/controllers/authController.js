@@ -19,6 +19,21 @@ if (!process.env.JWT_SECRET) {
 }
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// Helper to escape HTML to prevent stored XSS attacks
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>"']/g, (m) => {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#x27;';
+      default: return m;
+    }
+  });
+}
+
 // Helper to set HttpOnly Session Cookie.
 // In production the frontend and backend are on different domains (Vercel vs Railway/Render),
 // so the cookie must be SameSite=None + Secure to be sent with cross-origin fetch requests.
@@ -62,7 +77,7 @@ function clearSessionCookie(res) {
 async function provisionUserDefaults(tx, userId, email, checkExisting = false, displayName = null) {
   const durationMs = 3 * 24 * 60 * 60 * 1000; // 3 days
   const trialEnd = new Date(Date.now() + durationMs);
-  const profileName = displayName || email.split('@')[0]; // BUG-022: use provided name if given
+  const profileName = escapeHTML(displayName) || email.split('@')[0]; // BUG-022: use provided name if given
 
   if (!checkExisting) {
     await tx.profile.create({
@@ -470,7 +485,7 @@ async function logout(req, res, next) {
   const userAgent = req.headers['user-agent'];
 
   try {
-    await prisma.session.delete({ where: { sessionToken: token } });
+    await prisma.session.deleteMany({ where: { sessionToken: token } });
 
     clearSessionCookie(res);
 
@@ -641,20 +656,20 @@ async function updateProfile(req, res, next) {
     }
 
     const updateData = {};
-    if (name !== undefined) updateData.name = name;
+    if (name !== undefined) updateData.name = escapeHTML(name);
     if (dob !== undefined) updateData.dateOfBirth = dob;
     if (validGender !== undefined) updateData.gender = validGender;
-    if (profession !== undefined) updateData.profession = profession;
+    if (profession !== undefined) updateData.profession = escapeHTML(profession);
 
     const updatedProfile = await prisma.profile.upsert({
       where: { userId: req.user.id },
       update: updateData,
       create: {
         userId: req.user.id,
-        name: name || 'AI-OS User',
+        name: name ? escapeHTML(name) : 'AI-OS User',
         dateOfBirth: dob || new Date('1995-01-01'),
         gender: validGender || 'Prefer_Not_To_Say',
-        profession: profession || 'User'
+        profession: profession ? escapeHTML(profession) : 'User'
       }
     });
 
