@@ -1,4 +1,4 @@
-import { createRequire } from "module";
+throw new Error("HELLO_FROM_API_INDEX");
 
 const require = createRequire(import.meta.url);
 
@@ -21,15 +21,15 @@ try {
 
     app = express();
 
-    app.get("*",(req,res)=>{
+    app.get("*", (req, res) => {
 
         res.status(500).json({
 
-            success:false,
+            success: false,
 
-            message:err.message,
+            message: err.message,
 
-            stack:err.stack
+            stack: err.stack
 
         });
 
