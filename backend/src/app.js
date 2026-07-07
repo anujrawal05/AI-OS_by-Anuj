@@ -15,8 +15,12 @@ const { securityHeaders } = require('./middleware/securityHeadersMiddleware');
 const { csrfProtection } = require('./middleware/csrfMiddleware');
 const prisma = require('./lib/db');
 const logger = require('./utils/logger');
+const { setupSwagger } = require('./config/swagger');
 
 const app = express();
+
+// Register Swagger API documentation explorer
+setupSwagger(app);
 
 // Apply production-grade security headers globally
 app.use(securityHeaders);

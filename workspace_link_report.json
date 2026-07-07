@@ -1,0 +1,649 @@
+{
+  "generatedAt": "2026-07-07T13:23:00.558Z",
+  "report": [
+    {
+      "file": "aios_buisness.html",
+      "assets": [
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "manifest.json",
+          "resolved": "manifest.json",
+          "exists": true
+        },
+        {
+          "ref": "business.css?v=3.7",
+          "resolved": "business.css",
+          "exists": true
+        },
+        {
+          "ref": "mobile.css?v=1.1",
+          "resolved": "mobile.css",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "intro.html",
+          "resolved": "intro.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "business_hero.png",
+          "resolved": "business_hero.png",
+          "exists": true
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "mailto:arproduction050@gmail.com",
+          "resolved": "mailto:arproduction050@gmail.com",
+          "exists": false
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        },
+        {
+          "ref": "ad-manager.js?v=3.6",
+          "resolved": "ad-manager.js",
+          "exists": true
+        },
+        {
+          "ref": "business.js?v=3.6",
+          "resolved": "business.js",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "file": "ar-labs\\index.html",
+      "assets": [
+        {
+          "ref": "../style.css?v=3.2",
+          "resolved": "style.css",
+          "exists": true
+        },
+        {
+          "ref": "../#dashboard-controls",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "../#roadmap-builder-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "../#explore-library-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "../#category-explorer-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "../#about-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "./",
+          "resolved": "ar-labs",
+          "exists": true
+        },
+        {
+          "ref": "mailto:arproduction050@gmail.com",
+          "resolved": "ar-labs\\mailto:arproduction050@gmail.com",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "index.html",
+      "assets": [
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "manifest.json",
+          "resolved": "manifest.json",
+          "exists": true
+        },
+        {
+          "ref": "style.css?v=3.5",
+          "resolved": "style.css",
+          "exists": true
+        },
+        {
+          "ref": "mobile.css?v=1.1",
+          "resolved": "mobile.css",
+          "exists": true
+        },
+        {
+          "ref": "#dashboard-controls",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#roadmap-builder-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#explore-library-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#category-explorer-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "./aios_buisness.html",
+          "resolved": "aios_buisness.html",
+          "exists": true
+        },
+        {
+          "ref": "./intro.html",
+          "resolved": "intro.html",
+          "exists": true
+        },
+        {
+          "ref": "#about-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "./ar-labs/",
+          "resolved": "ar-labs",
+          "exists": true
+        },
+        {
+          "ref": "./aios_buisness.html",
+          "resolved": "aios_buisness.html",
+          "exists": true
+        },
+        {
+          "ref": "mailto:arproduction050@gmail.com",
+          "resolved": "mailto:arproduction050@gmail.com",
+          "exists": false
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "#",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        },
+        {
+          "ref": "#",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        },
+        {
+          "ref": "#dashboard-controls",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#roadmap-builder-section",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "./aios_buisness.html",
+          "resolved": "aios_buisness.html",
+          "exists": true
+        },
+        {
+          "ref": "app.js?v=3.7",
+          "resolved": "app.js",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "file": "intro.html",
+      "assets": [
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "aios_buisness.html",
+          "resolved": "aios_buisness.html",
+          "exists": true
+        },
+        {
+          "ref": "#sec-intro",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#sec-vision",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#sec-identity",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#sec-features",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#sec-simulator",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#sec-case-studies",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#sec-faq",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "#sec-roadmap",
+          "resolved": "",
+          "exists": true
+        },
+        {
+          "ref": "mailto:arproduction050@gmail.com",
+          "resolved": "mailto:arproduction050@gmail.com",
+          "exists": false
+        },
+        {
+          "ref": "index.html#about-section",
+          "resolved": "index.html",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "file": "monthly-tips-and-tricks.html",
+      "assets": [
+        {
+          "ref": "style.css",
+          "resolved": "style.css",
+          "exists": true
+        },
+        {
+          "ref": "mobile.css",
+          "resolved": "mobile.css",
+          "exists": true
+        },
+        {
+          "ref": "./index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./index.html#roadmap-builder-section",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./index.html#explore-library-section",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./aios_buisness.html",
+          "resolved": "aios_buisness.html",
+          "exists": true
+        },
+        {
+          "ref": "./index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./index.html",
+          "resolved": "index.html",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "file": "policy.html",
+      "assets": [
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "style.css?v=3.5",
+          "resolved": "style.css",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./aios_buisness.html",
+          "resolved": "aios_buisness.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\forgotPassword.html",
+      "assets": [
+        {
+          "ref": "{{RESET_LINK}}",
+          "resolved": "temp-backend\\server\\emails\\{{RESET_LINK}}",
+          "exists": false
+        },
+        {
+          "ref": "{{RESET_LINK}}",
+          "resolved": "temp-backend\\server\\emails\\{{RESET_LINK}}",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\passwordChanged.html",
+      "assets": []
+    },
+    {
+      "file": "temp-backend\\server\\emails\\paymentSuccess.html",
+      "assets": [
+        {
+          "ref": "{{BASE_URL}}",
+          "resolved": "temp-backend\\server\\emails\\{{BASE_URL}}",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\premiumActivated.html",
+      "assets": [
+        {
+          "ref": "{{BASE_URL}}",
+          "resolved": "temp-backend\\server\\emails\\{{BASE_URL}}",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\subscriptionEnding.html",
+      "assets": [
+        {
+          "ref": "{{BASE_URL}}/index.html?action=pricing",
+          "resolved": "temp-backend\\server\\emails\\{{BASE_URL}}\\index.html",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\trialEnding.html",
+      "assets": [
+        {
+          "ref": "{{BASE_URL}}/index.html?action=pricing",
+          "resolved": "temp-backend\\server\\emails\\{{BASE_URL}}\\index.html",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\trialStarted.html",
+      "assets": [
+        {
+          "ref": "{{BASE_URL}}",
+          "resolved": "temp-backend\\server\\emails\\{{BASE_URL}}",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\verifyEmail.html",
+      "assets": [
+        {
+          "ref": "{{VERIFY_LINK}}",
+          "resolved": "temp-backend\\server\\emails\\{{VERIFY_LINK}}",
+          "exists": false
+        },
+        {
+          "ref": "{{VERIFY_LINK}}",
+          "resolved": "temp-backend\\server\\emails\\{{VERIFY_LINK}}",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "temp-backend\\server\\emails\\welcome.html",
+      "assets": [
+        {
+          "ref": "{{BASE_URL}}",
+          "resolved": "temp-backend\\server\\emails\\{{BASE_URL}}",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "file": "terms.html",
+      "assets": [
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "aios_logo.png",
+          "resolved": "aios_logo.png",
+          "exists": true
+        },
+        {
+          "ref": "style.css?v=3.5",
+          "resolved": "style.css",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./aios_buisness.html",
+          "resolved": "aios_buisness.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "index.html",
+          "resolved": "index.html",
+          "exists": true
+        },
+        {
+          "ref": "./terms.html",
+          "resolved": "terms.html",
+          "exists": true
+        },
+        {
+          "ref": "./policy.html",
+          "resolved": "policy.html",
+          "exists": true
+        }
+      ]
+    }
+  ]
+}

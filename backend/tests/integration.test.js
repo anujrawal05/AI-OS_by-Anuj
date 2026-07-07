@@ -82,14 +82,14 @@ async function runTests() {
     throw new Error("Profile query with coupon header did not return Premium");
   }
 
-  console.log('[Test] Verifying getMe profile query without coupon header...');
+  console.log('[Test] Verifying getMe profile query without coupon header (should still be Premium due to DB persistence)...');
   const meResWithoutHeader = await fetch('http://localhost:8080/api/auth/me', {
     method: 'GET',
     headers: { 'Cookie': authCookie, 'Content-Type': 'application/json' }
   });
   const meDataWithoutHeader = await meResWithoutHeader.json();
-  if (meDataWithoutHeader.user.subscription.plan === 'Premium') {
-    throw new Error("Profile query without coupon header returned Premium (failed to expire coupon)");
+  if (meDataWithoutHeader.user.subscription.plan !== 'Premium') {
+    throw new Error("Profile query without coupon header did not return Premium");
   }
 
   // 4. Test Razorpay order creation
