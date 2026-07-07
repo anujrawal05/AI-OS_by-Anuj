@@ -1,26 +1,30 @@
 import { state } from './core.js';
 import { showToast } from './utils.js';
 
-// Detect backend URL — meta tag takes top priority, then same-origin localhost, then no-backend
+// Detect backend URL — meta tag takes top priority, then same-origin localhost, then same-origin relative default.
 function resolveApiBase() {
-  // 1. Explicit override via <meta name="api-base-url"> (if configured for cross-origin hosting)
+  // 1. Explicit override via <meta name="api-base-url"> (if configured for cross-origin hosting).
   const metaTag = document.querySelector('meta[name="api-base-url"]');
   if (metaTag && metaTag.content && metaTag.content.trim() !== '') {
     return metaTag.content.trim().replace(/\/$/, '');
   }
-  // 2. Local development fallback when frontend and backend are on different ports (port 3000 vs 8080)
+
+  // 2. Local development fallback when frontend and backend are on different ports.
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     if (window.location.port === '3000') {
-      return 'http://localhost:8080';
+      return 'http://localhost:3001';
     }
+    return '';
   }
-  // 3. Default fallback → same-origin relative paths (ideal for Vercel Serverless monorepos)
+
+  // 3. Default fallback: same-origin relative path. This supports deployments where API and frontend share a hostname.
   return '';
 }
 
 const API_BASE_URL = resolveApiBase();
+const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-// Log resolved base for debugging production connectivity issues
+// Log resolved base for debugging production connectivity issues.
 if (API_BASE_URL === '__NO_BACKEND__') {
   console.warn(
     '[AI-OS] Backend not configured.\n' +
@@ -28,8 +32,11 @@ if (API_BASE_URL === '__NO_BACKEND__') {
     '  <meta name="api-base-url" content="https://YOUR_BACKEND_URL">\n' +
     'in index.html and aios_buisness.html.'
   );
+} else if (API_BASE_URL === '' && !isLocalHost) {
+  console.warn('[AI-OS] No api-base-url configured for non-localhost deployment. Backend requests will use same-origin relative paths.');
+  console.info('[AI-OS] Backend: same-origin relative path mode');
 } else if (API_BASE_URL === '') {
-  console.info('[AI-OS] Backend: same-origin (localhost development mode)');
+  console.info('[AI-OS] Backend: same-origin relative path mode');
 } else {
   console.info(`[AI-OS] Backend: ${API_BASE_URL}`);
 }
@@ -103,24 +110,27 @@ export async function apiCall(endpoint, options = {}) {
     
     // 1. Handling HTTP 401 Unauthorized
     if (response.status === 401) {
-      // Clear local session cache
+      const errorData = await response.json().catch(() => ({}));
+      const errMsg = errorData.error || "Unauthorized";
+
+      // Clear local session cache for all auth/authenticated flows
       localStorage.removeItem('aios_user_profile');
       sessionStorage.removeItem('aios_coupon_session');
       state.user = null;
-      
       if (window.updateUserProfileHeader) {
         window.updateUserProfileHeader();
       }
 
-      // Don't show toast or open modal for background session checks
-      const isBackgroundCheck = endpoint.includes('/api/auth/me') || endpoint.includes('/api/auth/login');
-      if (!isBackgroundCheck) {
+      const isSessionCheck = endpoint.includes('/api/auth/me');
+      const isSilentAuthEndpoint = endpoint.includes('/api/auth/login') || endpoint.includes('/api/auth/verify-otp') || endpoint.includes('/api/auth/reset-password');
+
+      if (!isSessionCheck && !isSilentAuthEndpoint) {
         const authOverlay = document.getElementById('auth-modal-overlay');
         if (authOverlay) authOverlay.style.display = 'flex';
         showToast("Your session has expired. Please sign in again.", "warning");
       }
-      
-      throw new Error("Unauthorized");
+
+      throw new Error(errMsg);
     }
 
     // 2. Handling HTTP 403 Forbidden

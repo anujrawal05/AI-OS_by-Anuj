@@ -62,7 +62,10 @@ export function updateUserProfileHeader() {
       ctaBtn.style.boxShadow = 'none';
       ctaBtn.onclick = () => {
         const pricingOverlay = document.getElementById('pricing-modal-overlay');
-        if (pricingOverlay) pricingOverlay.style.display = 'flex';
+        if (pricingOverlay) {
+          pricingOverlay.style.display = 'flex';
+          pricingOverlay.style.opacity = '1';
+        }
       };
     }
   }
@@ -148,7 +151,10 @@ export function updateUserProfileHeader() {
         authMode = 'signin';
         updateAuthModalUI();
         const authOverlay = document.getElementById('auth-modal-overlay');
-        if (authOverlay) authOverlay.style.display = 'flex';
+        if (authOverlay) {
+          authOverlay.style.display = 'flex';
+          authOverlay.style.opacity = '1';
+        }
       });
     }
   }
@@ -301,8 +307,15 @@ export async function handleEmailSignup() {
     return;
   }
   
-  if (password.length < 6) {
-    if (errorEl) { errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.style.display = 'block'; }
+  if (password.length < 8) {
+    if (errorEl) { errorEl.textContent = 'Password must be at least 8 characters.'; errorEl.style.display = 'block'; }
+    return;
+  }
+  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+    if (errorEl) {
+      errorEl.textContent = 'Password must contain at least one uppercase letter, one lowercase letter, and one number.';
+      errorEl.style.display = 'block';
+    }
     return;
   }
   
@@ -593,7 +606,10 @@ export function showProfileModal() {
         const profileOverlay = document.getElementById('profile-modal-overlay');
         if (profileOverlay) profileOverlay.style.display = 'none';
         const pricingOverlay = document.getElementById('pricing-modal-overlay');
-        if (pricingOverlay) pricingOverlay.style.display = 'flex';
+        if (pricingOverlay) {
+          pricingOverlay.style.display = 'flex';
+          pricingOverlay.style.opacity = '1';
+        }
       };
     }
   }
@@ -606,7 +622,10 @@ export function showProfileModal() {
   }
 
   const overlay = document.getElementById('profile-modal-overlay');
-  if (overlay) overlay.style.display = 'flex';
+  if (overlay) {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+  }
 }
 
 export async function handleProfileSave(e) {
@@ -682,7 +701,10 @@ export async function handleCouponLogin(couponCode) {
       const couponOverlay = document.getElementById('coupon-modal-overlay');
       if (couponOverlay) couponOverlay.style.display = 'none';
       const authOverlay = document.getElementById('auth-modal-overlay');
-      if (authOverlay) authOverlay.style.display = 'flex';
+      if (authOverlay) {
+        authOverlay.style.display = 'flex';
+        authOverlay.style.opacity = '1';
+      }
     }, 1800);
     return;
   }
@@ -723,7 +745,10 @@ export async function handlePremiumUpgrade(planLabel) {
     const pricingOverlay = document.getElementById('pricing-modal-overlay');
     if (pricingOverlay) pricingOverlay.style.display = 'none';
     const authOverlay = document.getElementById('auth-modal-overlay');
-    if (authOverlay) authOverlay.style.display = 'flex';
+    if (authOverlay) {
+      authOverlay.style.display = 'flex';
+      authOverlay.style.opacity = '1';
+    }
     showToast("Please sign in to upgrade to Premium.", "warning");
     return;
   }
@@ -1050,7 +1075,10 @@ export async function initAuthSystem() {
     couponTrigger.addEventListener('click', () => {
       hideAuthModals();
       const couponOverlay = document.getElementById('coupon-modal-overlay');
-      if (couponOverlay) couponOverlay.style.display = 'flex';
+      if (couponOverlay) {
+        couponOverlay.style.display = 'flex';
+        couponOverlay.style.opacity = '1';
+      }
     });
   }
 
@@ -1087,7 +1115,10 @@ export async function initAuthSystem() {
     pricingCouponBtn.addEventListener('click', () => {
       hideAuthModals();
       const couponOverlay = document.getElementById('coupon-modal-overlay');
-      if (couponOverlay) couponOverlay.style.display = 'flex';
+      if (couponOverlay) {
+        couponOverlay.style.display = 'flex';
+        couponOverlay.style.opacity = '1';
+      }
     });
   }
 
@@ -1110,8 +1141,15 @@ export async function initAuthSystem() {
       const token = new URLSearchParams(window.location.search).get('token');
       
       const newPassword = newPasswordEl ? newPasswordEl.value : '';
-      if (!newPassword || newPassword.length < 6) {
-        if (errorEl) { errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.style.display = 'block'; }
+      if (!newPassword || newPassword.length < 8) {
+        if (errorEl) { errorEl.textContent = 'Password must be at least 8 characters.'; errorEl.style.display = 'block'; }
+        return;
+      }
+      if (!/[a-z]/.test(newPassword) || !/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+        if (errorEl) {
+          errorEl.textContent = 'Password must contain at least one uppercase letter, one lowercase letter, and one number.';
+          errorEl.style.display = 'block';
+        }
         return;
       }
       

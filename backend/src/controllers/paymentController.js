@@ -253,7 +253,7 @@ async function getPaymentKey(req, res, next) {
   try {
     return res.status(200).json({
       success: true,
-      key: process.env.RAZORPAY_KEY_ID || 'rzp_test_T4Mr1D3RBNpiEi'
+      key: RAZORPAY_KEY_ID
     });
   } catch (err) {
     next(err);

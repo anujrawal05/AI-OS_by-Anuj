@@ -133,13 +133,19 @@ export function applyRoadmapLock() {
     
     document.getElementById('btn-lock-signin').addEventListener('click', () => {
       const authOverlay = document.getElementById('auth-modal-overlay');
-      if (authOverlay) authOverlay.style.display = 'flex';
+      if (authOverlay) {
+        authOverlay.style.display = 'flex';
+        authOverlay.style.opacity = '1';
+      }
     });
     document.getElementById('btn-lock-coupon').addEventListener('click', () => {
       const authOverlay = document.getElementById('auth-modal-overlay');
       if (authOverlay) authOverlay.style.display = 'none';
       const couponOverlay = document.getElementById('coupon-modal-overlay');
-      if (couponOverlay) couponOverlay.style.display = 'flex';
+      if (couponOverlay) {
+        couponOverlay.style.display = 'flex';
+        couponOverlay.style.opacity = '1';
+      }
     });
   }
 }

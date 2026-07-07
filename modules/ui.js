@@ -305,6 +305,7 @@ export function showPricingModal(isMandatory = false) {
   const overlay = document.getElementById('pricing-modal-overlay');
   if (!overlay) return;
   overlay.style.display = 'flex';
+  overlay.style.opacity = '1';
   const closeBtn = document.getElementById('pricing-modal-close-btn');
   if (closeBtn) closeBtn.style.display = isMandatory ? 'none' : '';
 }

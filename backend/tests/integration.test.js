@@ -108,9 +108,12 @@ async function runTests() {
   // 5. Test payment signature verification
   const orderId = orderData.orderId;
   const paymentId = `pay_${crypto.randomBytes(8).toString('hex')}`;
+  if (!process.env.RAZORPAY_SECRET_KEY) {
+    throw new Error('RAZORPAY_SECRET_KEY must be set to run integration tests.');
+  }
   const text = `${orderId}|${paymentId}`;
   const mockSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_SECRET_KEY || 'S27ABLaRbJzgBUJSrnlhx2DC')
+    .createHmac('sha256', process.env.RAZORPAY_SECRET_KEY)
     .update(text)
     .digest('hex');
 

@@ -18,6 +18,15 @@ function validateEnv() {
     }
   }
 
+  if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
+    missing.push('JWT_SECRET (must be at least 32 characters)');
+  }
+
+  if (process.env.BACKEND_URL && !/^https?:\/\//i.test(process.env.BACKEND_URL)) {
+    logger.error('[Env Validation Failure] BACKEND_URL must be an absolute URL starting with http:// or https://');
+    process.exit(1);
+  }
+
   // Allow test running to skip full env restrictions for localized tests if database is mockable,
   // but fail for standard environments
   if (missing.length > 0 && process.env.NODE_ENV !== 'test') {

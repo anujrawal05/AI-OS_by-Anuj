@@ -173,7 +173,11 @@ window.selectAndCompileBusiness = function(key) {
 
 window.handleBusinessVideoPlay = function(key, videoBaseName, title) {
   if (!isUserAuthenticated()) {
-    document.getElementById('auth-modal-overlay').style.display = 'flex';
+    const authOverlay = document.getElementById('auth-modal-overlay');
+    if (authOverlay) {
+      authOverlay.style.display = 'flex';
+      authOverlay.style.opacity = '1';
+    }
     showToast("Please login first to watch business tutorials.", "warning");
     return;
   }

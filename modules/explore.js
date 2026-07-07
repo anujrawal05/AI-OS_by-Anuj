@@ -2647,7 +2647,10 @@ export function initDashboardControls() {
     compileBtn.addEventListener('click', () => {
       if (!isUserAuthenticated()) {
         const authOverlay = document.getElementById('auth-modal-overlay');
-        if (authOverlay) authOverlay.style.display = 'flex';
+        if (authOverlay) {
+          authOverlay.style.display = 'flex';
+          authOverlay.style.opacity = '1';
+        }
         showToast("Please login first to compile your roadmap.", "warning");
         return;
       }
@@ -2669,6 +2672,7 @@ export function initDashboardControls() {
         const choiceModal = document.getElementById('video-roadmap-choice-modal');
         if (choiceModal) {
           choiceModal.style.display = 'flex';
+          choiceModal.style.opacity = '1';
         }
       } else {
         compileRoadmapDirectly(goal, 'text');

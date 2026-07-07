@@ -29,6 +29,7 @@ app.use(compression());
 const BASE_ALLOWED_ORIGINS = [
   'http://localhost:8080',
   'http://localhost:3000',
+  'http://127.0.0.1:3000',
   'http://127.0.0.1:8080',
   'https://ai-os-powerd-by-ar-labs.vercel.app',
   'https://anujrawal05.github.io'

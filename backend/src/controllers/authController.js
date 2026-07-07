@@ -206,7 +206,7 @@ async function verifyOtp(req, res, next) {
 
     const latestVerification = user.emailVerifications[0];
     const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
-    const isBypass = (process.env.NODE_ENV !== 'production' || isLocal) && otp === '123456';
+    const isBypass = process.env.NODE_ENV !== 'production' && isLocal && otp === '123456';
     
     if (!isBypass) {
       if (!latestVerification || latestVerification.code !== otp || latestVerification.isUsed) {
