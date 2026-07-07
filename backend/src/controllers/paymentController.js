@@ -5,16 +5,22 @@ const { upgradeSubscription } = require('../services/subscriptionService');
 const { logAuditEvent } = require('../services/auditService');
 
 // Initialize Razorpay Client instance
-if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_SECRET_KEY) {
-  throw new Error('[paymentController] RAZORPAY_KEY_ID and RAZORPAY_SECRET_KEY environment variables must be set.');
-}
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
-const RAZORPAY_SECRET_KEY = process.env.RAZORPAY_SECRET_KEY;
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || '';
+const RAZORPAY_SECRET_KEY = process.env.RAZORPAY_SECRET_KEY || '';
 
-const razorpay = new Razorpay({
-  key_id: RAZORPAY_KEY_ID,
-  key_secret: RAZORPAY_SECRET_KEY
-});
+let razorpay = null;
+if (RAZORPAY_KEY_ID && RAZORPAY_SECRET_KEY) {
+  try {
+    razorpay = new Razorpay({
+      key_id: RAZORPAY_KEY_ID,
+      key_secret: RAZORPAY_SECRET_KEY
+    });
+  } catch (err) {
+    console.error('[paymentController] Failed to initialize Razorpay Client:', err.message);
+  }
+} else {
+  console.warn('[paymentController] WARNING: RAZORPAY_KEY_ID and/or RAZORPAY_SECRET_KEY environment variables are not set. Payments will fail.');
+}
 
 // 1. CREATE GATEWAY CHECKOUT ORDER
 async function createOrder(req, res, next) {
@@ -22,6 +28,10 @@ async function createOrder(req, res, next) {
 
   if (planType !== 'Premium') {
     return res.status(400).json({ error: 'Invalid plan choice. Only Premium upgrades are active.' });
+  }
+
+  if (!razorpay) {
+    return res.status(500).json({ error: 'Razorpay payment gateway is not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_SECRET_KEY.' });
   }
 
   try {
@@ -227,7 +237,27 @@ async function redeemCoupon(req, res, next) {
       return res.status(400).json({ error: 'Invalid or expired promotional coupon code.' });
     }
 
-    // Coupon validation only. Premium is verified dynamically via request headers.
+    // Coupon validation only. If valid, persist a temporary Premium subscription
+    // so the user retains access across reloads until the coupon period expires.
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    await prisma.subscription.upsert({
+      where: { userId: req.user.id },
+      update: {
+        plan: 'Premium',
+        status: 'Active',
+        currentPeriodStart: now,
+        currentPeriodEnd: expiresAt
+      },
+      create: {
+        userId: req.user.id,
+        plan: 'Premium',
+        status: 'Active',
+        currentPeriodStart: now,
+        currentPeriodEnd: expiresAt
+      }
+    });
 
     await logAuditEvent({
       userId: req.user.id,
