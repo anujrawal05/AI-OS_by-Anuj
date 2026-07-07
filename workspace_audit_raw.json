@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-07T13:02:51.728Z",
+    "generatedAt": "2026-07-07T13:22:55.495Z",
     "scanned": 16
   },
   "pages": [
@@ -64,8 +64,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -76,12 +80,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
         },
         {
-          "type": "info",
-          "text": "[AI-OS] Backend: http://localhost:3001"
+          "type": "warning",
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         }
       ],
       "errors": [],
@@ -96,11 +100,15 @@
         },
         {
           "type": "error",
-          "text": "[API Client Error] Call to /api/auth/me failed: Backend unavailable or network error. Please verify the server is running."
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
         },
         {
           "type": "warning",
-          "text": "[auth] Session restore failed: Backend unavailable or network error. Please verify the server is running."
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -108,11 +116,7 @@
         },
         {
           "type": "error",
-          "text": "[API Client Error] Call to /api/auth/me failed: Backend unavailable or network error. Please verify the server is running."
-        },
-        {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Backend unavailable or network error. Please verify the server is running."
+          "text": "Error loading translations: TypeError: Failed to fetch\n    at loadTranslations (http://127.0.0.1:3000/modules/utils.js:150:28)\n    at initApp (http://127.0.0.1:3000/app.js?v=3.7:46:11)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:3000/app.js?v=3.7:85:3)"
         },
         {
           "type": "info",
@@ -123,8 +127,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -132,15 +140,15 @@
         },
         {
           "type": "error",
-          "text": "Error loading translations: TypeError: Failed to fetch\n    at loadTranslations (http://127.0.0.1:3000/modules/utils.js:150:28)\n    at initApp (http://127.0.0.1:3000/app.js?v=3.7:46:11)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:3000/app.js?v=3.7:85:3)"
-        },
-        {
-          "type": "info",
-          "text": "[AI-OS] Backend: http://localhost:3001"
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
           "type": "error",
-          "text": "Error loading translations: TypeError: Failed to fetch\n    at loadTranslations (http://127.0.0.1:3000/modules/utils.js:150:28)\n    at initApp (http://127.0.0.1:3000/app.js?v=3.7:46:11)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:3000/app.js?v=3.7:85:3)"
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
+          "type": "warning",
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         }
       ],
       "errors": [],
@@ -158,8 +166,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -170,8 +182,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -182,8 +198,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -194,8 +214,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -206,12 +230,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
         },
         {
-          "type": "info",
-          "text": "[AI-OS] Backend: http://localhost:3001"
+          "type": "warning",
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         }
       ],
       "errors": [],
@@ -219,44 +243,7 @@
     },
     {
       "url": "http://127.0.0.1:3000/intro.html",
-      "console": [
-        {
-          "type": "info",
-          "text": "[AI-OS] Backend: http://localhost:3001"
-        },
-        {
-          "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
-        },
-        {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
-        },
-        {
-          "type": "info",
-          "text": "[AI-OS] Backend: http://localhost:3001"
-        },
-        {
-          "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
-        },
-        {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
-        },
-        {
-          "type": "info",
-          "text": "[AI-OS] Backend: http://localhost:3001"
-        },
-        {
-          "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
-        },
-        {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
-        }
-      ],
+      "console": [],
       "errors": [],
       "responses": []
     },
@@ -272,12 +259,20 @@
           "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
         },
         {
+          "type": "warning",
+          "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+        },
+        {
           "type": "info",
           "text": "[AI-OS] Backend: http://localhost:3001"
         },
         {
           "type": "error",
-          "text": "Error loading translations: TypeError: Failed to fetch\n    at loadTranslations (http://127.0.0.1:3000/modules/utils.js:150:28)\n    at initApp (http://127.0.0.1:3000/app.js?v=3.7:46:11)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:3000/app.js?v=3.7:85:3)"
+          "text": "[API Client Error] Call to /api/auth/me failed: Backend unavailable or network error. Please verify the server is running."
+        },
+        {
+          "type": "warning",
+          "text": "[auth] Session restore failed: Backend unavailable or network error. Please verify the server is running."
         },
         {
           "type": "warning",
@@ -292,20 +287,16 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
-        },
-        {
-          "type": "info",
-          "text": "[AI-OS] Backend: http://localhost:3001"
-        },
-        {
           "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
         },
         {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
+        },
+        {
+          "type": "warning",
+          "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
         }
       ],
       "errors": [],
@@ -320,11 +311,7 @@
         },
         {
           "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
-        },
-        {
-          "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "Error loading translations: TypeError: Failed to fetch\n    at loadTranslations (http://127.0.0.1:3000/modules/utils.js:150:28)\n    at initApp (http://127.0.0.1:3000/app.js?v=3.7:46:11)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:3000/app.js?v=3.7:85:3)"
         },
         {
           "type": "info",
@@ -335,8 +322,12 @@
           "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
         },
         {
+          "type": "error",
+          "text": "[API Client Error] Call to /api/auth/me failed: Authentication required. Please sign in."
+        },
+        {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Authentication required. Please sign in."
         },
         {
           "type": "info",
@@ -344,11 +335,11 @@
         },
         {
           "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+          "text": "[API Client Error] Call to /api/auth/me failed: Backend unavailable or network error. Please verify the server is running."
         },
         {
           "type": "warning",
-          "text": "[auth] Session restore failed: Unauthorized"
+          "text": "[auth] Session restore failed: Backend unavailable or network error. Please verify the server is running."
         }
       ],
       "errors": [],
@@ -506,7 +497,16 @@
     },
     {
       "url": "http://127.0.0.1:3000/terms.html",
-      "console": [],
+      "console": [
+        {
+          "type": "info",
+          "text": "[AI-OS] Backend: https://YOUR_BACKEND_URL"
+        },
+        {
+          "type": "error",
+          "text": "Error loading translations: TypeError: Failed to fetch\n    at loadTranslations (http://127.0.0.1:3000/modules/utils.js:150:28)\n    at initApp (http://127.0.0.1:3000/app.js?v=3.7:46:11)\n    at HTMLDocument.<anonymous> (http://127.0.0.1:3000/app.js?v=3.7:85:3)"
+        }
+      ],
       "errors": [],
       "responses": []
     }

@@ -173,6 +173,7 @@ export function switchAuthTab(tab) {
 }
 
 export function updateAuthModalUI() {
+  resetAuthModalState();
   const otpSection = document.getElementById('otp-verification-section');
   if (otpSection) otpSection.style.display = 'none';
 
@@ -248,11 +249,14 @@ export async function handleEmailSignin() {
       body: JSON.stringify({ email, password })
     });
 
-    if (data.success) {
-      // Re-fetch context to populate subscriptions & profile properties
-      const context = await apiCall('/api/auth/me');
-      state.user = context.user;
-      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+    if (!data.success) {
+      throw new Error(data.error || 'Login failed. Please check your credentials and try again.');
+    }
+
+    // Re-fetch context to populate subscriptions & profile properties
+    const context = await apiCall('/api/auth/me');
+    state.user = context.user;
+    localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
       
       if (window.syncBookmarksFromBackend) {
         window.syncBookmarksFromBackend();
@@ -283,9 +287,9 @@ export async function handleEmailSignin() {
     if (err.message && err.message.toLowerCase().includes('verification required')) {
       showOtpScreen();
       showToast("Please verify the OTP code sent during registration.", "warning");
-    } else if (err.message && err.message !== 'Unauthorized') {
+    } else {
       if (errorEl) {
-        errorEl.textContent = err.message;
+        errorEl.textContent = err.message || 'Invalid email or password.';
         errorEl.style.display = 'block';
       }
     }
@@ -328,10 +332,12 @@ export async function handleEmailSignup() {
       body: JSON.stringify(payload)
     });
 
-    if (data.success) {
-      showOtpScreen();
-      showToast("Verification OTP code has been sent to your email!");
+    if (!data.success) {
+      throw new Error(data.error || 'Signup failed. Please try again.');
     }
+
+    showOtpScreen();
+    showToast("Verification OTP code has been sent to your email!");
   } catch (err) {
     if (err.message === 'No backend') return; // Banner already shown
     if (errorEl) {
@@ -341,7 +347,27 @@ export async function handleEmailSignup() {
   }
 }
 
+function resetAuthModalState() {
+  const errorEl = document.getElementById('auth-modal-error');
+  const successEl = document.getElementById('auth-modal-success');
+  const otpErrorEl = document.getElementById('otp-error-msg');
+  const otpSuccessEl = document.getElementById('otp-success-msg');
+  const otpCodeEl = document.getElementById('auth-otp-code');
+  const btnResendOtp = document.getElementById('btn-resend-otp');
+
+  if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+  if (successEl) { successEl.style.display = 'none'; successEl.textContent = ''; }
+  if (otpErrorEl) { otpErrorEl.style.display = 'none'; otpErrorEl.textContent = ''; }
+  if (otpSuccessEl) { otpSuccessEl.style.display = 'none'; otpSuccessEl.textContent = ''; }
+  if (otpCodeEl) otpCodeEl.value = '';
+  if (btnResendOtp) {
+    btnResendOtp.disabled = false;
+    btnResendOtp.textContent = 'Resend OTP';
+  }
+}
+
 export function showOtpScreen() {
+  resetAuthModalState();
   const title = document.getElementById('auth-modal-title');
   const desc = document.getElementById('auth-modal-desc');
   if (title) title.textContent = 'Verify OTP';
@@ -372,6 +398,7 @@ export function hideOtpScreen() {
   if (actionButtons) actionButtons.style.display = 'flex';
   if (couponSection) couponSection.style.display = 'block';
   
+  resetAuthModalState();
   updateAuthModalUI();
 }
 
@@ -467,7 +494,7 @@ export async function handleForgotPassword() {
 
     if (data.success) {
       if (successEl) {
-        successEl.textContent = 'Recovery instructions sent to your email!';
+        successEl.textContent = 'Recovery instructions sent to your email! Check your inbox to continue.';
         successEl.style.display = 'block';
       }
     }
@@ -697,6 +724,8 @@ export async function handleCouponLogin(couponCode) {
       errorEl.textContent = 'Please sign in or create a free account first, then redeem your code.';
       errorEl.style.display = 'block';
     }
+    authMode = 'signin';
+    updateAuthModalUI();
     setTimeout(() => {
       const couponOverlay = document.getElementById('coupon-modal-overlay');
       if (couponOverlay) couponOverlay.style.display = 'none';
@@ -742,6 +771,8 @@ export async function handleCouponLogin(couponCode) {
 
 export async function handlePremiumUpgrade(planLabel) {
   if (!state.user) {
+    authMode = 'signin';
+    updateAuthModalUI();
     const pricingOverlay = document.getElementById('pricing-modal-overlay');
     if (pricingOverlay) pricingOverlay.style.display = 'none';
     const authOverlay = document.getElementById('auth-modal-overlay');
@@ -914,15 +945,24 @@ export async function handleDeleteAccount() {
 }
 
 export function hideAuthModals() {
+  authMode = 'signin';
+  hideOtpScreen();
+
   const authOverlay = document.getElementById('auth-modal-overlay');
   if (authOverlay) authOverlay.style.display = 'none';
+  const resetOverlay = document.getElementById('reset-password-modal-overlay');
+  if (resetOverlay) resetOverlay.style.display = 'none';
   const couponOverlay = document.getElementById('coupon-modal-overlay');
   if (couponOverlay) couponOverlay.style.display = 'none';
   const pricingOverlay = document.getElementById('pricing-modal-overlay');
   if (pricingOverlay) pricingOverlay.style.display = 'none';
   const profileOverlay = document.getElementById('profile-modal-overlay');
   if (profileOverlay) profileOverlay.style.display = 'none';
-  
+  const onboardingOverlay = document.getElementById('onboarding-modal-overlay');
+  if (onboardingOverlay) onboardingOverlay.style.display = 'none';
+  const trialOverlay = document.getElementById('trial-welcome-modal-overlay');
+  if (trialOverlay) trialOverlay.style.display = 'none';
+
   const couponInput = document.getElementById('coupon-input');
   if (couponInput) couponInput.value = '';
   const errorEl = document.getElementById('coupon-error-msg');
@@ -930,17 +970,6 @@ export function hideAuthModals() {
 }
 
 export async function initAuthSystem() {
-  const cachedProfile = localStorage.getItem('aios_user_profile');
-  if (cachedProfile) {
-    try {
-      const u = JSON.parse(cachedProfile);
-      if (u && u.is_coupon) {
-        localStorage.removeItem('aios_user_profile');
-        state.user = null;
-      }
-    } catch (e) {}
-  }
-
   // Restore session context dynamically from backend on startup
   try {
     const data = await apiCall('/api/auth/me');
@@ -1065,6 +1094,7 @@ export async function initAuthSystem() {
   if (closeBtn) {
     closeBtn.addEventListener('click', () => {
       authMode = 'signin';
+      hideOtpScreen();
       hideAuthModals();
     });
   }
@@ -1073,6 +1103,8 @@ export async function initAuthSystem() {
   const couponTrigger = document.getElementById('btn-auth-coupon-trigger');
   if (couponTrigger) {
     couponTrigger.addEventListener('click', () => {
+      authMode = 'signin';
+      hideOtpScreen();
       hideAuthModals();
       const couponOverlay = document.getElementById('coupon-modal-overlay');
       if (couponOverlay) {

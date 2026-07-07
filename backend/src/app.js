@@ -41,7 +41,9 @@ const envOrigins = process.env.CORS_ALLOWED_ORIGINS
   ? process.env.CORS_ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
   : [];
 
-const ALLOWED_ORIGINS = [...new Set([...BASE_ALLOWED_ORIGINS, ...envOrigins])];
+const frontendOrigin = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL.trim()] : [];
+
+const ALLOWED_ORIGINS = [...new Set([...BASE_ALLOWED_ORIGINS, ...envOrigins, ...frontendOrigin])];
 
 logger.info(`[CORS] Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
 

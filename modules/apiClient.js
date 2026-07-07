@@ -14,7 +14,7 @@ function resolveApiBase() {
     if (window.location.port === '3000') {
       return 'http://localhost:3001';
     }
-    return '';
+    return window.location.origin;
   }
 
   // 3. Default fallback: same-origin relative path. This supports deployments where API and frontend share a hostname.
@@ -130,7 +130,9 @@ export async function apiCall(endpoint, options = {}) {
         showToast("Your session has expired. Please sign in again.", "warning");
       }
 
-      throw new Error(errMsg);
+      const authError = new Error(errMsg);
+      authError.status = 401;
+      throw authError;
     }
 
     // 2. Handling HTTP 403 Forbidden
@@ -139,7 +141,9 @@ export async function apiCall(endpoint, options = {}) {
       
       // Email verification required — pass through so auth.js can show the OTP screen
       if (errorData.emailVerificationRequired) {
-        throw new Error("Email verification required");
+        const authError = new Error("Email verification required");
+        authError.status = 403;
+        throw authError;
       }
       
       // Premium subscription gate
@@ -150,7 +154,9 @@ export async function apiCall(endpoint, options = {}) {
       } else {
         showToast(errorData.error || "Access Denied.", "error");
       }
-      throw new Error(errorData.error || "Forbidden");
+      const authError = new Error(errorData.error || "Forbidden");
+      authError.status = 403;
+      throw authError;
     }
 
     // 3. Handling HTTP 429 Too Many Requests (quota limits)
