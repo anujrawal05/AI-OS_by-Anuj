@@ -21,6 +21,22 @@
   ],
   "rewrites": [
     {
+      "source": "/backend/:path*",
+      "destination": "/404"
+    },
+    {
+      "source": "/package.json",
+      "destination": "/404"
+    },
+    {
+      "source": "/package-lock.json",
+      "destination": "/404"
+    },
+    {
+      "source": "/vercel.json",
+      "destination": "/404"
+    },
+    {
       "source": "/api/:path*",
       "destination": "/api/index.js"
     }
