@@ -281,7 +281,6 @@ export async function handleEmailSignin() {
       updateUserProfileHeader();
       if (window.initTrialClock) window.initTrialClock();
       showToast("Logged in successfully!");
-    }
   } catch (err) {
     if (err.message === 'No backend') return; // Banner already shown
     if (err.message && err.message.toLowerCase().includes('verification required')) {
