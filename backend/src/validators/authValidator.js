@@ -2,7 +2,11 @@ const { z } = require('zod');
 
 const signupSchema = z.object({
   email: z.string({ required_error: "Email is required" }).email("Invalid email format"),
-  password: z.string({ required_error: "Password is required" }).min(6, "Password must be at least 6 characters")
+  password: z.string({ required_error: "Password is required" })
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-z]/, "Password must include a lowercase letter")
+    .regex(/[A-Z]/, "Password must include an uppercase letter")
+    .regex(/[0-9]/, "Password must include a number")
 });
 
 const loginSchema = z.object({
@@ -25,7 +29,11 @@ const forgotPasswordSchema = z.object({
 
 const resetPasswordSchema = z.object({
   token: z.string({ required_error: "Reset token is required" }),
-  password: z.string({ required_error: "Password is required" }).min(6, "Password must be at least 6 characters")
+  password: z.string({ required_error: "Password is required" })
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-z]/, "Password must include a lowercase letter")
+    .regex(/[A-Z]/, "Password must include an uppercase letter")
+    .regex(/[0-9]/, "Password must include a number")
 });
 
 // Middleware factory to validate requests against schemas
