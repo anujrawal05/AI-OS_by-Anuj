@@ -1,4 +1,4 @@
-throw new Error("HELLO_FROM_API_INDEX");
+import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
 
