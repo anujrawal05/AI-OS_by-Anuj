@@ -3,7 +3,9 @@
  * Shows user-friendly error messages when backend is unavailable
  */
 
-export const showBackendOfflineMessage = () => {
+window.BackendErrorUI = window.BackendErrorUI || {};
+
+window.BackendErrorUI.showBackendOfflineMessage = function() {
   const offlineDiv = document.createElement('div');
   offlineDiv.id = 'backend-offline-banner';
   offlineDiv.innerHTML = `
@@ -32,7 +34,7 @@ export const showBackendOfflineMessage = () => {
   return offlineDiv;
 };
 
-export const showCORSErrorMessage = () => {
+window.BackendErrorUI.showCORSErrorMessage = function() {
   const corsDiv = document.createElement('div');
   corsDiv.id = 'cors-error-banner';
   corsDiv.innerHTML = `
@@ -56,15 +58,15 @@ export const showCORSErrorMessage = () => {
   return corsDiv;
 };
 
-export const displayBackendError = (errorInfo, containerId = 'app') {
+window.BackendErrorUI.displayBackendError = function(errorInfo, containerId = 'app') {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   let errorElement;
   if (errorInfo.status === 'offline') {
-    errorElement = showBackendOfflineMessage();
+    errorElement = window.BackendErrorUI.showBackendOfflineMessage();
   } else if (errorInfo.status === 'cors_error') {
-    errorElement = showCORSErrorMessage();
+    errorElement = window.BackendErrorUI.showCORSErrorMessage();
   }
 
   if (errorElement) {

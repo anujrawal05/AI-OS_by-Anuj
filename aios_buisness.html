@@ -19,10 +19,6 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2EC5FF">
 
-  <!-- PRODUCTION SETUP — Backend API URL (keep in sync with index.html)
-       Set this to your deployed backend URL, e.g. https://ai-os-backend.up.railway.app
-       The backend must be configured to allow this frontend origin in CORS. -->
-  <meta name="api-base-url" content="https://api-ai-os.vercel.app">
   <!-- Razorpay public key — replace rzp_test_* with rzp_live_* when going live -->
   <meta name="razorpay-key-id" content="rzp_test_T4Mr1D3RBNpiEi">
 
@@ -37,7 +33,21 @@
 
   <!-- Razorpay is loaded lazily only when payment is initiated (see auth.js)
        to prevent the browser Web Payment Handler API permission prompt -->
-    <meta name="backend-url" content="BACKEND_URL_PLACEHOLDER">
+  
+  <!-- Backend URL Configuration (set via environment variables or meta tag) -->
+  <meta name="backend-url" content="">
+  
+  <!-- Dynamic Backend Configuration - Load FIRST before any API calls -->
+  <script src="modules/backendConfig.js"></script>
+  <script src="modules/backendErrorUI.js"></script>
+  <script src="modules/apiClient.js"></script>
+  <script>
+    // Initialize backend configuration (supports localhost:8080 for dev, env vars for prod)
+    if (typeof window.BackendConfig !== 'undefined') {
+      window.BackendConfig.initialize();
+      console.log('✓ Backend Config initialized:', window.BackendConfig.getBackendURL());
+    }
+  </script>
 </head>
 
 <body>

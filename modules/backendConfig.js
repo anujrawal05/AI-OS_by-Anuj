@@ -3,7 +3,9 @@
  * Supports development (localhost:8080), environment variables, and graceful fallback
  */
 
-export const getBackendURL = () => {
+window.BackendConfig = window.BackendConfig || {};
+
+window.BackendConfig.getBackendURL = function() {
   // 1. Check if backend URL is in meta tag (can be injected at build time)
   const metaTag = document.querySelector('meta[name="backend-url"]');
   if (metaTag && metaTag.content && metaTag.content !== 'BACKEND_URL_PLACEHOLDER') {
@@ -17,25 +19,19 @@ export const getBackendURL = () => {
     return window.BACKEND_URL;
   }
 
-  // 3. Check environment variable (for Vercel deployment)
-  if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_BACKEND_URL) {
-    console.log('✓ Backend URL from env:', process.env.REACT_APP_BACKEND_URL);
-    return process.env.REACT_APP_BACKEND_URL;
-  }
-
-  // 4. Development fallback
+  // 3. Development fallback - try localhost
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     console.log('✓ Development mode: Using localhost:8080');
     return 'http://localhost:8080';
   }
 
-  // 5. Production without backend - graceful degradation
+  // 4. Production without backend - graceful degradation
   console.warn('⚠️ Backend URL not configured. Running in offline mode.');
   return null;
 };
 
-export const isBackendAvailable = async () => {
-  const backendURL = getBackendURL();
+window.BackendConfig.isBackendAvailable = async function() {
+  const backendURL = window.BackendConfig.getBackendURL();
   if (!backendURL) {
     return false;
   }
@@ -53,8 +49,8 @@ export const isBackendAvailable = async () => {
   }
 };
 
-export const handleBackendError = (error) => {
-  if (!getBackendURL()) {
+window.BackendConfig.handleBackendError = function(error) {
+  if (!window.BackendConfig.getBackendURL()) {
     return {
       status: 'offline',
       message: 'Backend not connected. Ensure backend is running and BACKEND_URL is configured.',
@@ -75,4 +71,8 @@ export const handleBackendError = (error) => {
     message: error.message,
     action: 'Check if backend is running and accessible.'
   };
+};
+
+window.BackendConfig.initialize = function() {
+  console.log('Backend Config initialized. URL:', window.BackendConfig.getBackendURL());
 };

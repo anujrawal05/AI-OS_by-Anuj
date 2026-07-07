@@ -1,40 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/(.+)",
-      "status": 200,
-      "dest": "index.html"
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": ".",
   "env": {
-    "NODE_ENV": "production"
+    "REACT_APP_BACKEND_URL": "@backend_url"
   },
-  "envPrefix": "REACT_APP_",
   "headers": [
-    {
-      "source": "/static/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
     {
       "source": "/(.*)",
       "headers": [
@@ -43,12 +13,8 @@
           "value": "public, max-age=3600, must-revalidate"
         },
         {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         }
       ]
     }
