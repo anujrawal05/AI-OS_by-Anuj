@@ -22,11 +22,9 @@
     }
   ],
   "env": {
-    "BACKEND_URL": "@backend_url",
-    "NODE_ENV": "production",
-    "JWT_SECRET": "@jwt_secret",
-    "DATABASE_URL": "@database_url"
+    "NODE_ENV": "production"
   },
+  "envPrefix": "REACT_APP_",
   "headers": [
     {
       "source": "/static/(.*)",

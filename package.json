@@ -7,20 +7,13 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "echo 'Frontend built' && npm run minify:css && npm run minify:js",
-    "minify:css": "echo 'CSS minification would happen here'",
-    "minify:js": "echo 'JS minification would happen here'",
-    "test": "echo 'Tests would run here'"
+    "dev:frontend": "open http://localhost:3000",
+    "build": "echo 'Frontend built with dynamic backend config'",
+    "test": "echo 'Tests would run here'",
+    "setup:dev": "echo 'Make sure backend is running at http://localhost:8080'"
   },
-  "keywords": ["ai", "os", "intelligence"],
+  "keywords": ["ai", "os", "intelligence", "dynamic-backend"],
   "author": "Anuj Rawal",
   "license": "MIT",
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.0",
-    "axios": "^1.3.4"
-  }
+  "dependencies": {}
 }
