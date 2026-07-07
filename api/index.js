@@ -1,58 +1,49 @@
-import express from 'express';
-import cors from 'cors';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
-const app = express();
-
-// Middleware
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'https://ai-os-powerd-by-ar-labs.vercel.app',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-app.use(express.json());
-
-// Cache control middleware
-app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
-  if (req.path.includes('/static/') || req.path.match(/\.(js|css|png|jpg|gif|svg|woff|woff2)$/)) {
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+if (!process.env.VERCEL) {
+  try {
+    require('dotenv').config();
+  } catch (err) {
+    console.warn('[API] dotenv configuration file load failed or was skipped:', err.message);
   }
-  next();
-});
+}
 
-// Security headers
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  next();
-});
+let app;
+let initError = null;
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+try {
+  // Load backend Express app for Vercel Serverless Functions
+  app = require('../backend/src/app');
+} catch (err) {
+  // Capture initialization error and return it in error responses
+  initError = {
+    message: err.message,
+    stack: err.stack,
+    env: {
+      DATABASE_URL: process.env.DATABASE_URL ? '***set***' : 'MISSING',
+      JWT_SECRET: process.env.JWT_SECRET ? '***set***' : 'MISSING',
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      VERCEL: process.env.VERCEL ? 'yes' : 'no'
+    }
+  };
+  
+  console.error('[API Init Error] Failed to load Express app:', err.message);
+  console.error(err.stack);
+  
+  // Create a minimal error handler
+  const express = require('express');
+  app = express();
+  
+  app.use((req, res) => {
+    res.status(500).json({
+      error: 'Backend initialization failed',
+      message: initError.message,
+      hint: 'Check that all required environment variables are set: DATABASE_URL, JWT_SECRET, BREVO_API_KEY, RAZORPAY_KEY_ID, RAZORPAY_SECRET_KEY, FRONTEND_URL',
+      details: process.env.VERCEL ? 'See Vercel Deployment Logs for full stack trace' : initError.stack
+    });
+  });
+}
 
-// Auth routes placeholder
-app.post('/api/auth/register', (req, res) => {
-  res.status(200).json({ message: 'Registration endpoint', environment: process.env.NODE_ENV });
-});
-
-app.post('/api/auth/login', (req, res) => {
-  res.status(200).json({ message: 'Login endpoint', environment: process.env.NODE_ENV });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint not found' });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
+// Export Express app for Vercel Serverless Functions
 export default app;

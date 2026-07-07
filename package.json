@@ -1,14 +1,15 @@
 {
-  "name": "ai-os",
+  "name": "ai-os-platform",
   "version": "2.0.0",
-  "description": "AI-OS by AR Labs - Intelligent Operating System",
+  "description": "AI-OS Execution Platform - Unified Frontend and Vercel Serverless Backend",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "dev:frontend": "open http://localhost:3000",
-    "build": "echo 'Frontend built with dynamic backend config'",
+    "build": "npm run vercel-build",
+    "vercel-build": "prisma generate --schema=backend/prisma/schema.prisma",
+    "dev:backend": "cd backend && set PORT=3001 && npm run dev",
+    "dev:frontend": "npx http-server -p 3000 -c-1",
+    "dev": "npx concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
     "test": "echo 'Tests would run here'",
     "setup:dev": "echo 'Make sure backend is running at http://localhost:8080'"
   },
