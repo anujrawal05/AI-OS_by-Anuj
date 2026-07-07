@@ -165,6 +165,27 @@ async function runTests() {
   console.log('[Test] Bookmark response:', bookmarkData);
   if (!bookmarkRes.ok) throw new Error("Toggling bookmark failed");
 
+  // 9. Account Deletion
+  console.log('[Test] Deleting user account...');
+  const deleteRes = await fetch('http://localhost:8080/api/auth/delete-account', {
+    method: 'POST',
+    headers: { 'Cookie': authCookie, 'Content-Type': 'application/json' }
+  });
+  const deleteData = await deleteRes.json();
+  console.log('[Test] Delete Account response:', deleteData);
+  if (!deleteRes.ok || !deleteData.success) throw new Error("Deleting account failed");
+
+  // Verify user is deleted by attempting to query /me
+  console.log('[Test] Verifying user session is cleared and profile deleted...');
+  const meAfterDeleteRes = await fetch('http://localhost:8080/api/auth/me', {
+    method: 'GET',
+    headers: { 'Cookie': authCookie, 'Content-Type': 'application/json' }
+  });
+  console.log('[Test] /me status after deletion:', meAfterDeleteRes.status);
+  if (meAfterDeleteRes.status !== 401) {
+    throw new Error("Session cookie or user record was not properly cleared upon deletion");
+  }
+
   console.log('\n🌟 [Test] AI-OS V2 FEATURES LIFECYCLE TESTS COMPLETED SUCCESSFULLY! 🌟');
   process.exit(0);
 }

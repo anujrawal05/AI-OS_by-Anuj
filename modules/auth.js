@@ -848,6 +848,46 @@ export async function logoutUser() {
   showToast("Logged out successfully.");
 }
 
+export async function handleDeleteAccount() {
+  const confirmDelete = confirm("Are you sure you want to permanently delete your account? This action is irreversible and all your data (blueprints, subscriptions, bookmarks) will be permanently lost.");
+  if (!confirmDelete) return;
+
+  try {
+    const data = await apiCall('/api/auth/delete-account', { method: 'POST' });
+    if (data.success) {
+      showToast("Your account has been deleted successfully.", "success");
+      
+      // Reset local state cache
+      state.user = null;
+      localStorage.removeItem('aios_user_profile');
+      sessionStorage.removeItem('aios_coupon_session');
+      localStorage.removeItem('ai-os-favorites');
+      
+      // Reset/clear gamification state
+      if (window.gamification && typeof window.gamification.initGamification === 'function') {
+        window.gamification.initGamification();
+      }
+
+      // Hide active modals
+      hideAuthModals();
+
+      // Refresh dashboard and mobile updates hub to guest mode
+      if (typeof window.renderDashboard === 'function') {
+        window.renderDashboard();
+      }
+      if (typeof window.renderMobileUpdates === 'function') {
+        window.renderMobileUpdates();
+      }
+      
+      updateUserProfileHeader();
+      if (window.AdManager) window.AdManager.updateAdVisibility();
+      if (window.regenerateActiveRoadmap) window.regenerateActiveRoadmap();
+    }
+  } catch (err) {
+    showToast("Failed to delete account: " + err.message, "error");
+  }
+}
+
 export function hideAuthModals() {
   const authOverlay = document.getElementById('auth-modal-overlay');
   if (authOverlay) authOverlay.style.display = 'none';
@@ -1442,3 +1482,4 @@ window.initAuthSystem = initAuthSystem;
 window.showAdminModal = showAdminModal;
 window.updateUserTier = updateUserTier;
 window.toggleUserSuspension = toggleUserSuspension;
+window.handleDeleteAccount = handleDeleteAccount;

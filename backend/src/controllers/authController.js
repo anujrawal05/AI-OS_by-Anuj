@@ -205,7 +205,8 @@ async function verifyOtp(req, res, next) {
     }
 
     const latestVerification = user.emailVerifications[0];
-    const isBypass = otp === '123456';
+    const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+    const isBypass = (process.env.NODE_ENV !== 'production' || isLocal) && otp === '123456';
     
     if (!isBypass) {
       if (!latestVerification || latestVerification.code !== otp || latestVerification.isUsed) {
@@ -387,17 +388,10 @@ async function login(req, res, next) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Auto-verify existing users whose password matched — OTP is only required during initial signup flow
     if (!user.isVerified) {
-      await prisma.withTransaction(async (tx) => {
-        await tx.user.update({
-          where: { id: user.id },
-          data: { isVerified: true }
-        });
-        // Users verified via this path skipped verifyOtp, so their default
-        // records (profile, subscription, trial, quota) may be missing —
-        // check before creating since some legacy users may be partially provisioned.
-        await provisionUserDefaults(tx, user.id, user.email, true);
+      return res.status(403).json({
+        error: 'Email verification required. Please verify your email first.',
+        emailVerificationRequired: true
       });
     }
 
@@ -683,6 +677,38 @@ async function updateProfile(req, res, next) {
   }
 }
 
+// 11. DELETE USER ACCOUNT
+async function deleteAccount(req, res, next) {
+  const ipAddress = req.ip;
+  const userAgent = req.headers['user-agent'];
+
+  try {
+    const userId = req.user.id;
+    
+    // Revoke all sessions, subscriptions, payments etc are Cascade-Deleted by foreign key constraints
+    await prisma.user.delete({
+      where: { id: userId }
+    });
+
+    clearSessionCookie(res);
+
+    await logAuditEvent({
+      userId: null,
+      action: 'ACCOUNT_DELETE',
+      ipAddress,
+      userAgent,
+      details: { message: `Account for user ID ${userId} purged.` }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Account deleted successfully.'
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   signup,
   verifyOtp,
@@ -693,5 +719,6 @@ module.exports = {
   logoutAllDevices,
   forgotPassword,
   resetPassword,
-  updateProfile
+  updateProfile,
+  deleteAccount
 };

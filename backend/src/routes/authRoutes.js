@@ -45,5 +45,6 @@ router.get('/me', authenticateUser, authController.getMe);
 router.post('/logout', authenticateUser, authController.logout);
 router.post('/logout-all', authenticateUser, authController.logoutAllDevices);
 router.post('/update-profile', authenticateUser, authController.updateProfile);
+router.post('/delete-account', authenticateUser, authController.deleteAccount);
 
 module.exports = router;
