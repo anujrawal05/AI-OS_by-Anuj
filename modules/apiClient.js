@@ -29,7 +29,7 @@ if (API_BASE_URL === '__NO_BACKEND__') {
   console.warn(
     '[AI-OS] Backend not configured.\n' +
     'To connect: deploy the backend (Railway / Render / etc.) then set:\n' +
-    '  <meta name="api-base-url" content="https://YOUR_BACKEND_URL">\n' +
+    '  <meta name="api-base-url" content="https://https://api-ai-os.vercel.app">\n' +
     'in index.html and aios_buisness.html.'
   );
 } else if (API_BASE_URL === '' && !isLocalHost) {
