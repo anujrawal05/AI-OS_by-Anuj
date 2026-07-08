@@ -1,9 +1,6 @@
 {
   "buildCommand": "npm run vercel-build",
   "outputDirectory": ".",
-  "env": {
-    "REACT_APP_BACKEND_URL": "@backend_url"
-  },
   "headers": [
     {
       "source": "/(.*)",
