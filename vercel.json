@@ -1,6 +1,11 @@
 {
   "buildCommand": "npm run vercel-build",
   "outputDirectory": ".",
+  "functions": {
+    "api/index.js": {
+      "runtime": "@vercel/node"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
