@@ -25,9 +25,9 @@ window.BackendConfig.getBackendURL = function() {
     return 'http://localhost:8080';
   }
 
-  // 4. Production without backend - graceful degradation
-  console.warn('⚠️ Backend URL not configured. Running in offline mode.');
-  return null;
+  // 4. Production same-origin serverless fallback (Vercel)
+  console.log('✓ Production same-origin mode: Using current host origin');
+  return window.location.origin;
 };
 
 window.BackendConfig.isBackendAvailable = async function() {

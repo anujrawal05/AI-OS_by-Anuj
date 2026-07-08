@@ -75,7 +75,7 @@
   <!-- Dynamic Backend Configuration - Load FIRST before any API calls -->
   <script src="modules/backendConfig.js"></script>
   <script src="modules/backendErrorUI.js"></script>
-  <script src="modules/apiClient.js"></script>
+  <script type="module" src="modules/apiClient.js"></script>
   <script>
     // Initialize backend configuration (supports localhost:8080 for dev, env vars for prod)
     if (typeof window.BackendConfig !== 'undefined') {
