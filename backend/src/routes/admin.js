@@ -12,9 +12,11 @@ const {
 
 const router = express.Router();
 
+const isTestOrDev = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
+
 const adminLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Max 100 admin operations per 15 minutes per IP
+  max: isTestOrDev ? 10000 : 100, // Max 100 admin operations per 15 minutes per IP
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many admin operations. Please try again later.' }

@@ -16,9 +16,11 @@ const {
 const router = express.Router();
 
 // Local rate limiters for authentication vectors
+const isTestOrDev = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
+
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,
+  max: isTestOrDev ? 10000 : 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many authentication attempts. Please retry in 15 minutes.' }
@@ -26,7 +28,7 @@ const authLimiter = rateLimit({
 
 const otpLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 10,
+  max: isTestOrDev ? 10000 : 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests. Please wait 10 minutes.' }

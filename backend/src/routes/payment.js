@@ -11,9 +11,11 @@ const {
 
 const router = express.Router();
 
+const isTestOrDev = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
+
 const paymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: isTestOrDev ? 10000 : 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many payment actions. Please try again in 15 minutes.' }
@@ -21,7 +23,7 @@ const paymentLimiter = rateLimit({
 
 const couponLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  max: isTestOrDev ? 10000 : 5,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many coupon redeem attempts. Please try again in 15 minutes.' }
@@ -29,7 +31,7 @@ const couponLimiter = rateLimit({
 
 const webhookLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 50,
+  max: isTestOrDev ? 10000 : 50,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Webhook callback limit exceeded.' }
