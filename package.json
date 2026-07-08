@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run vercel-build",
-    "vercel-build": "echo 'Frontend build success'",
+    "vercel-build": "npx prisma generate --schema=./backend/prisma/schema.prisma && echo 'Build and Prisma client generation success'",
     "dev:backend": "cd backend && set PORT=3001 && npm run dev",
     "dev:frontend": "npx http-server -p 3000 -c-1",
     "dev": "npx concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
