@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aios-v5.15'; // Bumped — force-clears stale caches with broken script loads
+const CACHE_NAME = 'aios-v5.16'; // Bumped cache version to force clear old service worker memory
 const ASSETS = [
   '/',
   '/index.html',
@@ -39,6 +39,11 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // CRITICAL PROTECTION FIX: Ignore any requests that are not standard web pages (chrome-extension://, data://, etc.)
+  if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) {
+    return;
+  }
+
   // Exclude API requests, POST/PUT/DELETE operations from offline caching
   if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
     return;
