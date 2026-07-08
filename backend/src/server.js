@@ -5,10 +5,27 @@ const logger = require('./utils/logger');
 
 const PORT = env.PORT || 8080;
 
-const server = app.listen(PORT, () => {
-  logger.info(`🚀 AI-OS Backend Server running on port ${PORT} in [${env.NODE_ENV}] mode`);
-  logger.info(`📖 Dynamic Swagger docs available at http://localhost:${PORT}/api-docs`);
-});
+let server;
+
+async function startServer() {
+  try {
+    // Connect database explicitly in local server start
+    if (prisma && typeof prisma.$connect === 'function') {
+      await prisma.$connect();
+      logger.info('[Database] Prisma connected');
+    }
+
+    server = app.listen(PORT, () => {
+      logger.info(`🚀 AI-OS Backend Server running on port ${PORT} in [${env.NODE_ENV}] mode`);
+      logger.info(`📖 Dynamic Swagger docs available at http://localhost:${PORT}/api-docs`);
+    });
+  } catch (err) {
+    logger.error('[Startup] Failed to start server:', { metadata: { error: err.message, stack: err.stack } });
+    process.exit(1);
+  }
+}
+
+startServer();
 
 // Catch process-level exceptions to prevent orphan ports
 process.on('uncaughtException', (err) => {

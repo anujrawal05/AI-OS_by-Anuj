@@ -5,7 +5,6 @@ const compression = require('compression');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
-const env = require('./config/env');
 const { corsMiddleware, helmetMiddleware, globalRateLimiter } = require('./middleware/security');
 const requestLogger = require('./middleware/logger');
 const { errorHandler } = require('./middleware/errorHandler');
@@ -51,14 +50,11 @@ const swaggerOptions = {
       version: '2.0.0',
       description: 'Documentation for AI-OS modular engine services',
     },
+    // Use a generic server entry to avoid importing environment during app construction
     servers: [
       {
-        url: `http://localhost:${env.PORT}`,
-        description: 'Development Server',
-      },
-      {
-        url: env.FRONTEND_URL,
-        description: 'Production Server',
+        url: '/',
+        description: 'Server (use absolute URL when deployed)'
       }
     ],
   },
@@ -80,7 +76,7 @@ app.use('/api/admin', adminRouter);
 
 // Wildcard 404 Route Handler
 app.use((req, res, next) => {
-  res.status(404).json({ error: `Endpoint not found: ${req.method} ${req.originalUrl}` });
+  res.status(404).json({ success: false, error: `Endpoint not found: ${req.method} ${req.originalUrl}` });
 });
 
 // Centralized error interceptor

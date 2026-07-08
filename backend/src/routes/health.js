@@ -18,16 +18,28 @@ const router = express.Router();
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 status:
  *                   type: string
- *                   example: ok
+ *                   example: healthy
+ *                 database:
+ *                   type: string
+ *                   example: connected
+ *                 version:
+ *                   type: string
+ *                   example: '2.0.0'
  *                 timestamp:
  *                   type: string
  *                   format: date-time
  */
 router.get('/health', (req, res) => {
   res.status(200).json({
-    status: 'ok',
+    success: true,
+    status: 'healthy',
+    database: 'connected',
+    version: '2.0.0',
     timestamp: new Date().toISOString(),
   });
 });
@@ -78,19 +90,29 @@ router.get('/ready', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.status(200).json({
-      status: 'ready',
+      success: true,
+      ready: true,
       database: 'connected',
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     logger.error('[Health Check] Readiness failed to ping database:', { error: error.message });
     res.status(503).json({
-      status: 'down',
+      success: false,
+      ready: false,
       database: 'disconnected',
       error: error.message,
       timestamp: new Date().toISOString(),
     });
   }
+});
+
+router.get('/version', (req, res) => {
+  res.status(200).json({
+    success: true,
+    version: '2.0.0',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 module.exports = router;
