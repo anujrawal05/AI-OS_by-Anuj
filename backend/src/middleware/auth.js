@@ -1,5 +1,6 @@
+// backend/src/middleware/authMiddleware.js
 const prisma = require('../config/prisma');
-const { verifyToken, extractToken } = require('../utils/jwt');
+const { verifyToken } = require('../utils/jwt');
 const { ApiError } = require('./errorHandler');
 
 /**
@@ -23,20 +24,38 @@ function clearSessionCookie(req, res) {
 }
 
 /**
+ * Robust extraction utility that pulls the session token safely from cookies OR headers
+ */
+function extractTokenFromRequest(req) {
+  // 1. Check HttpOnly cookies first (Primary Production Strategy)
+  if (req.cookies && req.cookies.session_token) {
+    return req.cookies.session_token;
+  }
+
+  // 2. Check traditional Authorization headers (Local Fallback/Postman Testing)
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.split(' ')[1];
+  }
+
+  return null;
+}
+
+/**
  * Guard middleware to authenticate users using JWT cookies or headers
  */
 async function authenticateUser(req, res, next) {
-  const token = extractToken(req);
+  const token = extractTokenFromRequest(req);
 
   if (!token) {
     return next(new ApiError(401, 'Authentication required. Please sign in.'));
   }
 
   try {
-    // 1. Verify token validity
+    // 1. Verify token validity via JWT secret matrix
     const decoded = verifyToken(token);
 
-    // 2. Query database session state
+    // 2. Query database session state in Neon PostgreSQL
     const activeSession = await prisma.session.findUnique({
       where: { sessionToken: token },
       include: {

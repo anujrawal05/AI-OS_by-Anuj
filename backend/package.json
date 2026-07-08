@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "test": "node tests/auth.test.js && node tests/payment.test.js && node tests/ai.test.js && node tests/news.test.js && node tests/finance.test.js && node tests/admin.test.js",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "vercel-build": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

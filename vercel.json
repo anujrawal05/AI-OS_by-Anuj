@@ -1,33 +1,38 @@
 {
-  "buildCommand": "npm run vercel-build",
-  "outputDirectory": ".",
-  "headers": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, must-revalidate"
-        }
-      ]
+      "src": "backend/src/app.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "app.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "modules/**",
+      "use": "@vercel/static"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/backend/:path*",
-      "destination": "/404"
+      "src": "/api/(.*)",
+      "dest": "backend/src/app.js"
     },
     {
-      "source": "/package.json",
-      "destination": "/404"
+      "handle": "filesystem"
     },
     {
-      "source": "/package-lock.json",
-      "destination": "/404"
-    },
-    {
-      "source": "/vercel.json",
-      "destination": "/404"
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }

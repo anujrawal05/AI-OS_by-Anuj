@@ -22,7 +22,7 @@ window.APIClient = class {
   }
 
   async request(endpoint, options = {}) {
-    // Re-initialize if not set
+    // Re-initialize if not set[cite: 33]
     if (!this.baseURL && typeof window.BackendConfig !== 'undefined') {
       this.initializeBaseURL();
     }
@@ -30,33 +30,37 @@ window.APIClient = class {
     if (!this.baseURL) {
       const error = {
         status: 'offline',
-        message: 'Backend not configured. Development: start backend at http://localhost:8080. Production: add REACT_APP_BACKEND_URL to Vercel env vars.'
+        message: 'Backend not configured. Development: start backend at http://localhost:8080. Production: same-origin fallback active.'
       };
       console.error('[APIClient]', error.message);
-      
-      // Show error UI if available
+
+      // Show error UI if available[cite: 33]
       if (typeof window.BackendErrorUI !== 'undefined') {
         window.BackendErrorUI.displayBackendError(error);
       }
-      
+
       throw new Error(error.message);
     }
 
     const url = `${this.baseURL}${endpoint}`;
     const defaultHeaders = {
-      'Content-Type': 'application/json',
-      ...this.getAuthHeaders()
+      'Content-Type': 'application/json'
+    };
+
+    // CRITICAL SECURITY UPDATE FOR VERCEL SERVERLESS COOKIES:
+    // We enforce credentials: 'include' so the browser attaches the secure session_token cookie.
+    const fetchOptions = {
+      ...options,
+      credentials: 'include',
+      headers: {
+        ...defaultHeaders,
+        ...options.headers
+      }
     };
 
     try {
       console.log(`[APIClient] ${options.method || 'GET'} ${url}`);
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          ...defaultHeaders,
-          ...options.headers
-        }
-      });
+      const response = await fetch(url, fetchOptions);
 
       if (!response.ok) {
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
@@ -65,20 +69,15 @@ window.APIClient = class {
       return await response.json();
     } catch (error) {
       console.error('[APIClient] Request failed:', error);
-      
-      // Show error UI if available
+
+      // Show error UI if available[cite: 33]
       if (typeof window.BackendErrorUI !== 'undefined' && typeof window.BackendConfig !== 'undefined') {
         const errorInfo = window.BackendConfig.handleBackendError(error);
         window.BackendErrorUI.displayBackendError(errorInfo);
       }
-      
+
       throw error;
     }
-  }
-
-  getAuthHeaders() {
-    const token = localStorage.getItem('authToken');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
   }
 
   async get(endpoint) {
@@ -104,10 +103,10 @@ window.APIClient = class {
   }
 };
 
-// Export singleton instance
+// Export singleton instance[cite: 33]
 window.api = new window.APIClient();
 
-// Named export for ES module loaders compatibility
+// Named export for ES module loaders compatibility[cite: 33]
 export async function apiCall(endpoint, options = {}) {
   return window.api.request(endpoint, options);
 }

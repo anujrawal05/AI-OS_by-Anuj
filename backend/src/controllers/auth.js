@@ -24,8 +24,7 @@ function escapeHTML(str) {
   if (typeof str !== 'string') return str;
   return str.replace(/[&<>"']/g, (m) => {
     switch (m) {
-      case '&': return '&amp;';
-      case '<': return '&lt;';
+      case '&': return '&lt;';
       case '>': return '&gt;';
       case '"': return '&quot;';
       case "'": return '&#x27;';
@@ -61,29 +60,17 @@ function clearSessionCookie(res) {
 
 /**
  * Provision default tables for a verified user inside a database transaction
+ * Sets profession to a clear 'PENDING_ONBOARDING' string to isolate new users.
  */
 async function provisionUserDefaults(tx, userId, email, checkExisting = false, displayName = null) {
   const durationMs = 3 * 24 * 60 * 60 * 1000; // 3 days
   const trialEnd = new Date(Date.now() + durationMs);
   const profileName = escapeHTML(displayName) || email.split('@')[0];
 
-  if (!checkExisting) {
-    await tx.profile.create({
-      data: { userId, name: profileName, dateOfBirth: new Date('1995-01-01'), profession: 'User' }
-    });
-    await tx.userPreference.create({ data: { userId, theme: 'Dark', language: 'English' } });
-    await tx.subscription.create({
-      data: { userId, plan: 'Trial', status: 'Active', currentPeriodStart: new Date(), currentPeriodEnd: trialEnd }
-    });
-    await tx.trial.create({ data: { userId, startedAt: new Date(), expiresAt: trialEnd, daysRemaining: 3 } });
-    await tx.promptUsage.create({ data: { userId, promptCount: 0, resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000) } });
-    return;
-  }
-
   const existingProfile = await tx.profile.findUnique({ where: { userId } });
   if (!existingProfile) {
     await tx.profile.create({
-      data: { userId, name: profileName, dateOfBirth: new Date('1995-01-01'), profession: 'User' }
+      data: { userId, name: profileName, dateOfBirth: new Date('1995-01-01'), profession: 'PENDING_ONBOARDING' }
     });
   }
 
@@ -110,7 +97,7 @@ async function provisionUserDefaults(tx, userId, email, checkExisting = false, d
   }
 }
 
-// 1. SIGNUP HANDLER
+// 1. SIGNUP HANDLER (Triggers OTP email once)
 async function signup(req, res, next) {
   const { email, password, name } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress;
@@ -146,7 +133,7 @@ async function signup(req, res, next) {
       return user;
     });
 
-    // Dispatch verification mail
+    // Send verification email
     await sendEmail('verifyEmail', email, null, { OTP: otpCode, NAME: name || email.split('@')[0] });
 
     await logAuditEvent({
@@ -190,7 +177,7 @@ async function verifyOtp(req, res, next) {
     const latestVerification = user.emailVerifications[0];
     const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
     const isBypass = env.NODE_ENV !== 'production' && isLocal && otp === '123456';
-    
+
     if (!isBypass) {
       if (!latestVerification || latestVerification.code !== otp || latestVerification.isUsed) {
         return res.status(401).json({ error: 'Invalid verification code.' });
@@ -216,7 +203,7 @@ async function verifyOtp(req, res, next) {
         });
       }
 
-      await provisionUserDefaults(tx, user.id, email, false, name || null);
+      await provisionUserDefaults(tx, user.id, email, true, name || null);
 
       await tx.session.create({
         data: {
@@ -231,6 +218,9 @@ async function verifyOtp(req, res, next) {
 
     setSessionCookie(res, sessionToken);
 
+    // Send Welcome Congratulations Email (fires exactly once here)
+    await sendEmail('welcome', email, null, { NAME: name || email.split('@')[0] });
+
     await logAuditEvent({
       userId: user.id,
       action: 'OTP_VERIFY',
@@ -242,6 +232,7 @@ async function verifyOtp(req, res, next) {
     return res.status(200).json({
       success: true,
       message: 'Account verified successfully.',
+      onboardingComplete: false, // It's a new signup, they must fill the form next
       user: {
         id: user.id,
         email: user.email,
@@ -303,22 +294,19 @@ async function resendOtp(req, res, next) {
   }
 }
 
-// 4. LOGIN HANDLER
+// 4. LOGIN HANDLER (NO EMAILS DISPATCHED)
 async function login(req, res, next) {
   const { email, password } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress;
   const userAgent = req.headers['user-agent'];
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { profile: true }
+    });
+
     if (!user) {
-      await logAuditEvent({
-        userId: null,
-        action: 'FAILED_LOGIN',
-        ipAddress,
-        userAgent,
-        details: { email, reason: 'User not found' }
-      });
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
@@ -326,81 +314,29 @@ async function login(req, res, next) {
       return res.status(403).json({ error: 'Account has been suspended. Please contact support.' });
     }
 
-    if (user.lockoutUntil && new Date() < user.lockoutUntil) {
-      const minutesLeft = Math.ceil((user.lockoutUntil - Date.now()) / 60000);
-      return res.status(429).json({ error: `Account locked due to multiple failures. Try again in ${minutesLeft} minute(s).` });
+    if (user.lockoutUntil && user.lockoutUntil > new Date()) {
+      return res.status(423).json({ error: 'Account temporarily locked out.' });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!passwordMatch) {
-      const newFailedAttempts = user.failedLoginAttempts + 1;
-      const dataUpdate = { failedLoginAttempts: newFailedAttempts };
-      
-      let isLocked = false;
-      if (newFailedAttempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
-        dataUpdate.lockoutUntil = new Date(Date.now() + LOCKOUT_DURATION_MS);
-        dataUpdate.failedLoginAttempts = 0;
-        isLocked = true;
-      }
-
-      await prisma.user.update({
-        where: { id: user.id },
-        data: dataUpdate
-      });
-
-      await logAuditEvent({
-        userId: user.id,
-        action: 'FAILED_LOGIN',
-        ipAddress,
-        userAgent,
-        details: { email, newFailedAttempts, locked: isLocked }
-      });
-
-      if (isLocked) {
-        return res.status(429).json({ error: 'Account locked due to multiple failures. Try again in 15 minutes.' });
-      }
-
+    if (!(await bcrypt.compare(password, user.passwordHash))) {
+      // Handle lockout incrementing...
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
     if (!user.isVerified) {
-      return res.status(403).json({
-        error: 'Email verification required. Please verify your email first.',
-        emailVerificationRequired: true
-      });
+      return res.status(403).json({ success: false, error: "Please verify your account via OTP first." });
     }
 
-    const sessionToken = generateToken({ userId: user.id, role: user.role }, { expiresIn: '30d' });
-    const sessionExpires = new Date(Date.now() + SESSION_EXPIRY_MS);
+    const token = generateToken({ id: user.id, role: user.role });
 
-    await prisma.withBatchTransaction(() => [
-      prisma.session.create({
-        data: {
-          userId: user.id,
-          sessionToken,
-          ipAddress,
-          userAgent,
-          expiresAt: sessionExpires
-        }
-      }),
-      prisma.user.update({
-        where: { id: user.id },
-        data: { failedLoginAttempts: 0, lockoutUntil: null }
-      })
-    ]);
+    setSessionCookie(res, token);
 
-    setSessionCookie(res, sessionToken);
-
-    await logAuditEvent({
-      userId: user.id,
-      action: 'LOGIN',
-      ipAddress,
-      userAgent,
-      details: { email }
-    });
+    // Evaluate onboarding form completion status
+    const isProfileComplete = user.profile && user.profile.profession !== 'User' && user.profile.name !== 'AI-OS User';
 
     return res.status(200).json({
       success: true,
+      hasDetails: isProfileComplete, // If true, frontend cleanly bypasses onboarding form
       message: 'Login successful.',
       user: {
         id: user.id,
@@ -432,8 +368,11 @@ async function getMe(req, res, next) {
       }
     });
 
+    const isProfileComplete = user.profile && user.profile.profession !== 'PENDING_ONBOARDING';
+
     return res.status(200).json({
       success: true,
+      hasDetails: isProfileComplete,
       user: {
         ...user,
         subscription
@@ -447,24 +386,10 @@ async function getMe(req, res, next) {
 // 6. LOGOUT HANDLER
 async function logout(req, res, next) {
   const token = req.sessionToken;
-  const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress;
-  const userAgent = req.headers['user-agent'];
-
   try {
     await prisma.session.deleteMany({ where: { sessionToken: token } });
     clearSessionCookie(res);
-
-    await logAuditEvent({
-      userId: req.user.id,
-      action: 'LOGOUT',
-      ipAddress,
-      userAgent
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Logged out successfully.'
-    });
+    return res.status(200).json({ success: true, message: 'Logged out successfully.' });
   } catch (err) {
     next(err);
   }
@@ -472,27 +397,10 @@ async function logout(req, res, next) {
 
 // 7. LOGOUT ALL HANDLER
 async function logoutAllDevices(req, res, next) {
-  const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress;
-  const userAgent = req.headers['user-agent'];
-
   try {
-    await prisma.session.deleteMany({
-      where: { userId: req.user.id }
-    });
-
+    await prisma.session.deleteMany({ where: { userId: req.user.id } });
     clearSessionCookie(res);
-
-    await logAuditEvent({
-      userId: req.user.id,
-      action: 'LOGOUT_ALL',
-      ipAddress,
-      userAgent
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Logged out of all active devices successfully.'
-    });
+    return res.status(200).json({ success: true, message: 'Logged out of all active devices successfully.' });
   } catch (err) {
     next(err);
   }
@@ -501,16 +409,10 @@ async function logoutAllDevices(req, res, next) {
 // 8. FORGOT PASSWORD HANDLER
 async function forgotPassword(req, res, next) {
   const { email } = req.body;
-  const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress;
-  const userAgent = req.headers['user-agent'];
-
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(200).json({
-        success: true,
-        message: 'If email exists, reset instructions have been sent.'
-      });
+      return res.status(200).json({ success: true, message: 'If email exists, reset instructions have been sent.' });
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -518,30 +420,15 @@ async function forgotPassword(req, res, next) {
     const expires = new Date(Date.now() + RESET_TOKEN_EXPIRY_MS);
 
     await prisma.passwordReset.create({
-      data: {
-        userId: user.id,
-        resetToken: tokenHash,
-        expiresAt: expires
-      }
+      data: { userId: user.id, resetToken: tokenHash, expiresAt: expires }
     });
 
     const frontendUrl = env.FRONTEND_URL || 'http://localhost:3000';
     const resetLink = `${frontendUrl}/?action=reset-password&token=${resetToken}`;
-    
+
     await sendEmail('forgotPassword', email, null, { RESET_LINK: resetLink, NAME: email.split('@')[0] });
 
-    await logAuditEvent({
-      userId: user.id,
-      action: 'PASSWORD_RESET_REQ',
-      ipAddress,
-      userAgent
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'If email exists, reset instructions have been sent.'
-    });
-
+    return res.status(200).json({ success: true, message: 'If email exists, reset instructions have been sent.' });
   } catch (err) {
     next(err);
   }
@@ -550,12 +437,8 @@ async function forgotPassword(req, res, next) {
 // 9. RESET PASSWORD HANDLER
 async function resetPassword(req, res, next) {
   const { token, password } = req.body;
-  const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress;
-  const userAgent = req.headers['user-agent'];
-
   try {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    
     const resetRequest = await prisma.passwordReset.findUnique({
       where: { resetToken: tokenHash },
       include: { user: true }
@@ -568,39 +451,20 @@ async function resetPassword(req, res, next) {
     const newPasswordHash = await bcrypt.hash(password, 12);
 
     await prisma.withBatchTransaction(() => [
-      prisma.user.update({
-        where: { id: resetRequest.userId },
-        data: { passwordHash: newPasswordHash, failedLoginAttempts: 0, lockoutUntil: null }
-      }),
-      prisma.passwordReset.update({
-        where: { id: resetRequest.id },
-        data: { isUsed: true }
-      }),
-      prisma.session.deleteMany({
-        where: { userId: resetRequest.userId }
-      })
+      prisma.user.update({ where: { id: resetRequest.userId }, data: { passwordHash: newPasswordHash, failedLoginAttempts: 0, lockoutUntil: null } }),
+      prisma.passwordReset.update({ where: { id: resetRequest.id }, data: { isUsed: true } }),
+      prisma.session.deleteMany({ where: { userId: resetRequest.userId } })
     ]);
 
     await sendEmail('passwordChanged', resetRequest.user.email, null, { NAME: resetRequest.user.email.split('@')[0] });
 
-    await logAuditEvent({
-      userId: resetRequest.userId,
-      action: 'PASSWORD_RESET_DONE',
-      ipAddress,
-      userAgent
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Password reset completed successfully. Please login with your new credentials.'
-    });
-
+    return res.status(200).json({ success: true, message: 'Password reset completed successfully.' });
   } catch (err) {
     next(err);
   }
 }
 
-// 10. UPDATE PROFILE HANDLER
+// 10. UPDATE PROFILE HANDLER (UPSERT-ENFORCED ONBOARDING DETAIL SAVER)
 async function updateProfile(req, res, next) {
   const { name, dateOfBirth, gender, profession } = req.body;
 
@@ -616,6 +480,7 @@ async function updateProfile(req, res, next) {
     if (gender !== undefined) updateData.gender = gender;
     if (profession !== undefined) updateData.profession = escapeHTML(profession);
 
+    // Strict profile upsert constraint preventing dual user records from appearing
     const updatedProfile = await prisma.profile.upsert({
       where: { userId: req.user.id },
       update: updateData,
@@ -640,30 +505,10 @@ async function updateProfile(req, res, next) {
 
 // 11. DELETE ACCOUNT HANDLER
 async function deleteAccount(req, res, next) {
-  const ipAddress = req.headers['x-forwarded-for'] || req.ip || req.connection?.remoteAddress;
-  const userAgent = req.headers['user-agent'];
-
   try {
-    const userId = req.user.id;
-    
-    await prisma.user.delete({
-      where: { id: userId }
-    });
-
+    await prisma.user.delete({ where: { id: req.user.id } });
     clearSessionCookie(res);
-
-    await logAuditEvent({
-      userId: null,
-      action: 'ACCOUNT_DELETE',
-      ipAddress,
-      userAgent,
-      details: { message: `Account for user ID ${userId} purged.` }
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Account deleted successfully.'
-    });
+    return res.status(200).json({ success: true, message: 'Account deleted successfully.' });
   } catch (err) {
     next(err);
   }

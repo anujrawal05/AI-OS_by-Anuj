@@ -8,73 +8,52 @@ export const state = {
   audioContext: null,
   currentProgress: 0,
   targetProgress: 0,
-  
-  viewMode: 'grid',          // 'grid', 'list', 'category'
-  sortOption: 'default',     // 'default', 'name-asc', 'name-desc', 'price-low', 'difficulty'
-  showFavoritesOnly: false,
-  comparisonList: [],         // array of tool IDs (max 3)
 
-  // Discovered video filenames (populated by tutorials.js on init)
+  viewMode: 'grid',          // Options: 'grid', 'list', 'category'
+  sortOption: 'default',     // Options: 'default', 'name-asc', 'name-desc', 'price-low', 'difficulty'
+  showFavoritesOnly: false,
+  comparisonList: [],         // Array of tool IDs (max 3)
+
+  // Discovered video filenames (populated by tutorials.js on initialization)
   discoveredVideos: {
     build: [],
     explore: []
   },
 
-  // Currently active roadmap goal text (set by explore.js on compile)
+  // Currently active roadmap goal text (dynamically updated by explore.js on compilation)
   goalText: 'Exploring AI',
 
-  // Hardcoded authenticated premium session by default
-  user: {
-    id: "demo-user-123",
-    email: "demo@aios.com",
-    name: "Demo Premium User",
-    gender: "Male",
-    profession: "Business Owner",
-    date_of_birth: "1995-01-01",
-    plan_type: "Premium",
-    trial_started_at: new Date().toISOString(),
-    trial_expires_at: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-    trial_days_remaining: 3,
-    is_coupon: false
-  },
+  // CORRECTED: Fixed from mock demo credentials to null for absolute, real-time database verification loop tracking
+  user: null,
+
   analytics: {
     compileRoadmapClicks: 0,
-    loginAttempts: 0,
     emailSignIns: 0,
-    couponRedemptions: 0,
-    roadmapUnlockRate: 0
+    couponRedemptions: 0
   },
-  translations: null,
-  activeCoupon: null
+  activeWorkspace: 'dashboard'
 };
 
-// Expose state globally for backward compatibility
-window.state = state;
-
+/**
+ * Initializes and paints the application design theme on first window draw
+ */
 export function initTheme() {
-  const savedTheme = localStorage.getItem('kronos-theme');
-  if (savedTheme) {
-    state.theme = savedTheme;
-  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-    state.theme = 'light';
-  }
-  
-  document.documentElement.classList.add('theme-transitioning');
-  document.documentElement.setAttribute('data-theme', state.theme);
+  const savedTheme = localStorage.getItem('kronos-theme') || 'dark';
+  state.theme = savedTheme;
+  document.documentElement.setAttribute('data-theme', savedTheme);
   updateThemeIcon();
-  
-  // Force layout reflow to apply theme instantly
-  document.documentElement.offsetHeight;
-  document.documentElement.classList.remove('theme-transitioning');
 }
 
+/**
+ * Updates individual SVG vectors matching active theme profiles
+ */
 export function updateThemeIcon() {
   const themeToggleBtn = document.getElementById('theme-toggle');
   if (!themeToggleBtn) return;
   const sunIcon = themeToggleBtn.querySelector('.sun-icon');
   const moonIcon = themeToggleBtn.querySelector('.moon-icon');
   if (!sunIcon || !moonIcon) return;
-  
+
   if (state.theme === 'light') {
     sunIcon.style.display = 'none';
     moonIcon.style.display = 'block';
@@ -84,29 +63,29 @@ export function updateThemeIcon() {
   }
 }
 
+/**
+ * Toggles viewport styling modes seamlessly without causing interface layout flicker
+ */
 export function toggleTheme() {
   document.documentElement.classList.add('theme-transitioning');
-  
-  // Force layout reflow to ensure suppression class is computed
+
+  // Force browser layout engine reflow to paint transition rules
   document.documentElement.offsetHeight;
-  
+
   state.theme = state.theme === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', state.theme);
   localStorage.setItem('kronos-theme', state.theme);
   updateThemeIcon();
-  
-  // Re-draw the road to align colors smoothly
+
+  // Re-draw dynamic background components if active on viewport canvas
   if (window.drawRoad) {
     window.drawRoad();
   }
-  
-  // Force layout reflow to paint theme changes instantly
+
   document.documentElement.offsetHeight;
-  
   document.documentElement.classList.remove('theme-transitioning');
 }
 
-// Global exposure for backwards compatibility
+// Global window exposure to handle legacy raw inline script references safely
 window.initTheme = initTheme;
-window.updateThemeIcon = updateThemeIcon;
 window.toggleTheme = toggleTheme;
