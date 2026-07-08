@@ -100,7 +100,7 @@ export async function handleEmailSignup(event) {
     if (response.success) {
       showToast("Verification OTP code sent to your email!", "success");
       pendingEmail = payload.email;
-      switchAuthTab('otp'); // Transition immediately to OTP view gate
+      switchAuthTab('otp');
     }
   } catch (error) {
     showToast(error.message || "Failed to complete account registration.", "error");
@@ -108,7 +108,7 @@ export async function handleEmailSignup(event) {
 }
 
 /**
- * Handles OTP Checkpoint Verification Verification
+ * Handles OTP Checkpoint Verification
  */
 export async function handleVerifyOtp(event) {
   if (event) event.preventDefault();
@@ -130,11 +130,9 @@ export async function handleVerifyOtp(event) {
     if (response.success) {
       showToast("Account verified successfully!", "success");
 
-      // Save authenticated user object reference locally
       state.user = response.user;
       updateUserProfileHeader();
 
-      // Because it is a brand-new registration, route them directly to onboarding details modal
       hideAuthModals();
       showOnboardingModal();
     }
@@ -172,12 +170,9 @@ export async function handleEmailSignin(event) {
       updateUserProfileHeader();
       hideAuthModals();
 
-      // Read the custom database check flag sent from our authController
       if (response.hasDetails) {
-        // Veteran user -> Launch workspace instantly
         if (window.renderDashboard) window.renderDashboard();
       } else {
-        // Missing profile details -> Show onboarding form modal
         showOnboardingModal();
       }
     }
@@ -205,7 +200,6 @@ export async function handleOnboardingSubmit(event) {
       gender: genderSelect ? genderSelect.value : 'Prefer_Not_To_Say'
     };
 
-    // Submits tracking data cleanly to our Prisma Upsert profile query handler
     const response = await apiCall('/api/auth/update-profile', {
       method: 'POST',
       body: JSON.stringify(payload)
@@ -217,7 +211,6 @@ export async function handleOnboardingSubmit(event) {
         state.user.profile = response.profile;
       }
 
-      // Close onboarding view gate and render metrics cleanly
       hideOnboardingModal();
       if (window.renderDashboard) window.renderDashboard();
     }
@@ -227,11 +220,36 @@ export async function handleOnboardingSubmit(event) {
 }
 
 /**
+ * Handles Forgot Password Email Link Request Submission
+ */
+export async function handleForgotPassword(event) {
+  if (event) event.preventDefault();
+
+  const emailInput = document.getElementById('forgot-password-email-field');
+  if (!emailInput) return;
+
+  try {
+    const payload = { email: emailInput.value.trim() };
+
+    const response = await apiCall('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    if (response.success) {
+      showToast("Reset password instructions sent to your email!", "success");
+      hideAuthModals();
+    }
+  } catch (error) {
+    showToast(error.message || "Failed to submit password reset request.", "error");
+  }
+}
+
+/**
  * Checks session cookie mapping state automatically on window system boot initialization
  */
 export async function initAuthSystem() {
   try {
-    // Queries our backend /me endpoint to check if valid browser session tokens exist
     const response = await apiCall('/api/auth/me', { method: 'GET' });
 
     if (response.success && response.user) {
@@ -241,7 +259,6 @@ export async function initAuthSystem() {
       if (window.renderDashboard) window.renderDashboard();
     }
   } catch (error) {
-    // Token missing or expired natively -> Keep state null cleanly without throwing disruptive banner errors
     state.user = null;
     updateUserProfileHeader();
   }
@@ -256,7 +273,7 @@ export async function logoutUser() {
   } finally {
     state.user = null;
     updateUserProfileHeader();
-    window.location.reload(); // Hard reload clears state context cleanly
+    window.location.reload();
   }
 }
 
@@ -281,5 +298,6 @@ window.handleEmailSignup = handleEmailSignup;
 window.handleVerifyOtp = handleVerifyOtp;
 window.handleEmailSignin = handleEmailSignin;
 window.handleOnboardingSubmit = handleOnboardingSubmit;
+window.handleForgotPassword = handleForgotPassword;
 window.logoutUser = logoutUser;
 window.initAuthSystem = initAuthSystem;
