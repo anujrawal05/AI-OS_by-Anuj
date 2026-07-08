@@ -1,29 +1,20 @@
 {
   "name": "ai-os-backend",
-  "version": "2.0.0",
-  "description": "AI-OS v2 Backend Foundation - Clean Rebuild",
-  "main": "src/server.js",
+  "version": "2.1.0",
+  "main": "src/app.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node tests/auth.test.js && node tests/payment.test.js && node tests/ai.test.js && node tests/news.test.js && node tests/finance.test.js && node tests/admin.test.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "vercel-build": "prisma generate"
+    "vercel-build": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "compression": "^1.8.1",
-    "cookie-parser": "^1.4.7",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "express-rate-limit": "^8.5.2",
-    "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.3",
-    "swagger-jsdoc": "^6.3.0",
-    "swagger-ui-express": "^5.0.1",
-    "winston": "^3.13.0",
+    "jsonwebtoken": "^9.0.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
