@@ -6,10 +6,17 @@ if (!process.env.VERCEL && process.env.NODE_ENV !== 'production') {
 }
 
 export default function handler(req, res) {
-  // Vercel may strip the /api prefix before forwarding to the function.
-  // Normalize both local and serverless request paths so Express sees /api/*.
-  if (!req.url.startsWith('/api')) {
-    req.url = `/api${req.url}`;
+  // Normalize incoming Vercel request paths so Express sees /api/*.
+  let normalizedUrl = req.url || '';
+  if (!normalizedUrl.startsWith('/')) {
+    normalizedUrl = `/${normalizedUrl}`;
   }
+
+  if (!normalizedUrl.startsWith('/api/')) {
+    normalizedUrl = `/api${normalizedUrl}`;
+  }
+
+  req.url = normalizedUrl;
+  res.setHeader('x-ai-os-normalized-url', normalizedUrl);
   return app(req, res);
 }
