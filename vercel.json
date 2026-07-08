@@ -6,6 +6,14 @@
       "use": "@vercel/node"
     },
     {
+      "src": "**/locales/*.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
       "src": "*.html",
       "use": "@vercel/static"
     },
@@ -14,11 +22,11 @@
       "use": "@vercel/static"
     },
     {
-      "src": "app.js",
+      "src": "modules/**",
       "use": "@vercel/static"
     },
     {
-      "src": "modules/**",
+      "src": "public/**",
       "use": "@vercel/static"
     }
   ],

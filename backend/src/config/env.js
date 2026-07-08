@@ -8,7 +8,7 @@ if (!process.env.VERCEL && !process.env.RAILWAY_STATIC_URL) {
   dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 }
 
-// Setup Neon / Vercel PostgreSQL connection URL fallback logic[cite: 44]
+// Setup Neon / Vercel PostgreSQL connection URL fallback logic
 if (!process.env.DATABASE_URL) {
   const fallback = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL;
   if (fallback) {
@@ -16,17 +16,17 @@ if (!process.env.DATABASE_URL) {
   }
 }
 
-// Support both RAZORPAY_KEY_SECRET and RAZORPAY_SECRET_KEY[cite: 44]
+// Support both RAZORPAY_KEY_SECRET and RAZORPAY_SECRET_KEY
 if (!process.env.RAZORPAY_KEY_SECRET && process.env.RAZORPAY_SECRET_KEY) {
   process.env.RAZORPAY_KEY_SECRET = process.env.RAZORPAY_SECRET_KEY;
 }
 
-// Zod validation schema[cite: 44]
+// Zod validation schema
 const envSchema = z.object({
   PORT: z.coerce.number().default(8080),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid connection URL'),
-  JWT_SECRET: z.string().min(16, 'JWT_SECRET must be configured safely'), // Adjusted threshold for standard keys
+  JWT_SECRET: z.string().min(16, 'JWT_SECRET must be configured safely'),
   FRONTEND_URL: z.string().url('FRONTEND_URL must be a valid URL'),
   RAZORPAY_KEY_ID: z.string().optional().or(z.literal('')),
   RAZORPAY_KEY_SECRET: z.string().optional().or(z.literal('')),
@@ -53,18 +53,18 @@ try {
     } else {
       console.error(error);
     }
-    
-    console.error('\n⚠️  DEPLOYMENT FIX: Set these in Vercel → Project Settings → Environment Variables.\n');[cite: 44]
+
+    console.error('\n⚠️  DEPLOYMENT FIX: Set these in Vercel → Project Settings → Environment Variables.\n');
 
     if (!process.env.VERCEL) {
       process.exit(1);
     }
   }
-  
+
   // Safe default object fallback logic using system primitives if validation passes structurally
   parsedEnv = {
     PORT: Number(process.env.PORT) || 8080,
-    NODE_ENV: process.env.NODE_ENV || 'production', // Default to production on cloud failover
+    NODE_ENV: process.env.NODE_ENV || 'production',
     DATABASE_URL: process.env.DATABASE_URL || '',
     JWT_SECRET: process.env.JWT_SECRET || '58198327e33d8ce0bc30d675062c6964',
     FRONTEND_URL: process.env.FRONTEND_URL || 'https://ai-os-powerd-by-ar-labs.vercel.app',
