@@ -32,10 +32,6 @@
     {
       "source": "/vercel.json",
       "destination": "/404"
-    },
-    {
-      "source": "/api/:path*",
-      "destination": "/api/index.js"
     }
   ]
 }
