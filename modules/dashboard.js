@@ -18,6 +18,7 @@ import {
   canClaimDailyReward, getWeeklyChallenge,
 } from './gamification.js';
 import { state } from './core.js';
+import { escapeHTML } from './utils.js';
 
 // ─── Guards ───────────────────────────────────────────────────────────────────
 let _initialized = false;
@@ -122,7 +123,7 @@ function getGreeting() {
   const isGuest  = !rawName || rawName === 'Demo Premium User';
   const firstName = isGuest ? null : rawName.split(' ')[0];
   const timeWord  = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
-  return firstName ? `Good ${timeWord}, ${firstName} 👋` : `Good ${timeWord} 👋`;
+  return firstName ? `Good ${timeWord}, ${escapeHTML(firstName)} 👋` : `Good ${timeWord} 👋`;
 }
 
 // ─── Persistent tip-read state ────────────────────────────────────────────────

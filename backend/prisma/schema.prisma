@@ -142,6 +142,7 @@ model Session {
   expiresAt    DateTime @map("expires_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
+  @@index([userId])
   @@map("sessions")
 }
 
@@ -201,6 +202,8 @@ model Payment {
   updatedAt          DateTime        @updatedAt @map("updated_at")
   transactions       Transaction[]
 
+  @@index([userId])
+  @@index([status])
   @@map("payments")
 }
 
@@ -215,6 +218,7 @@ model Transaction {
   description String
   createdAt   DateTime        @default(now()) @map("created_at")
 
+  @@index([userId])
   @@map("transactions")
 }
 
@@ -251,6 +255,8 @@ model AIHistory {
   outputData Json         @map("output_data")
   createdAt  DateTime     @default(now()) @map("created_at")
 
+  @@index([userId])
+  @@index([createdAt])
   @@map("ai_history")
 }
 
@@ -264,6 +270,8 @@ model Notification {
   isRead    Boolean          @default(false) @map("is_read")
   createdAt DateTime         @default(now()) @map("created_at")
 
+  @@index([userId])
+  @@index([isRead])
   @@map("notifications")
 }
 
@@ -278,6 +286,8 @@ model SupportTicket {
   createdAt DateTime       @default(now()) @map("created_at")
   updatedAt DateTime       @updatedAt @map("updated_at")
 
+  @@index([userId])
+  @@index([status])
   @@map("support_tickets")
 }
 
@@ -354,5 +364,7 @@ model AuditLog {
   details    Json?
   createdAt  DateTime @default(now()) @map("created_at")
 
+  @@index([userId])
+  @@index([createdAt])
   @@map("audit_logs")
 }

@@ -106,3 +106,8 @@ window.APIClient = class {
 
 // Export singleton instance
 window.api = new window.APIClient();
+
+// Named export for ES module loaders compatibility
+export async function apiCall(endpoint, options = {}) {
+  return window.api.request(endpoint, options);
+}

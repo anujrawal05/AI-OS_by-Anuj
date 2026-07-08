@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monthly Tips & Tricks — AI-OS</title>
+  <link rel="canonical" href="https://ai-os-powerd-by-ar-labs.vercel.app/monthly-tips-and-tricks.html" />
   <!-- Link AI-OS Core Design Styles -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="mobile.css" media="(max-width: 767px)">
@@ -1013,6 +1014,19 @@
     }
 
     function copyRawText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast();
+        }).catch(err => {
+          console.error("Copy action failed:", err);
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
       const tempTextArea = document.createElement("textarea");
       tempTextArea.value = text;
       document.body.appendChild(tempTextArea);
@@ -1024,7 +1038,7 @@
           showToast();
         }
       } catch (err) {
-        console.error("Copy action failed:", err);
+        console.error("Fallback copy action failed:", err);
       }
       document.body.removeChild(tempTextArea);
     }

@@ -1,58 +1,63 @@
-require('dotenv').config(); // MUST load env vars before imports to seed prisma client
-const { validateEnv } = require('./config/env');
+const env = require('./config/env');
 const app = require('./app');
-const prisma = require('./lib/db');
+const prisma = require('./config/prisma');
 const logger = require('./utils/logger');
 
-// 1. Run Env Checks
-validateEnv();
-
-const PORT = process.env.PORT || 8080;
+const PORT = env.PORT || 8080;
 
 const server = app.listen(PORT, () => {
-  logger.info(`AI-OS v2 Backend Production Engine listening on port ${PORT}`);
+  logger.info(`🚀 AI-OS Backend Server running on port ${PORT} in [${env.NODE_ENV}] mode`);
+  logger.info(`📖 Dynamic Swagger docs available at http://localhost:${PORT}/api-docs`);
 });
 
-// 2. Unhandled Exception Logging
+// Catch process-level exceptions to prevent orphan ports
 process.on('uncaughtException', (err) => {
-  logger.error('[Boot Critical] Caught unhandled exception:', {}, err.stack);
+  logger.error('[Critical Exception] Uncaught error detected:', { metadata: { error: err.message, stack: err.stack } });
   gracefulShutdown('uncaughtException');
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('[Boot Critical] Intercepted unhandled rejection:', { promise }, reason?.stack || reason);
+process.on('unhandledRejection', (reason) => {
+  logger.error('[Critical Rejection] Unhandled promise rejection detected:', { 
+    metadata: { 
+      reason: reason instanceof Error ? reason.message : String(reason), 
+      stack: reason instanceof Error ? reason.stack : undefined 
+    } 
+  });
   gracefulShutdown('unhandledRejection');
 });
 
-// 3. Graceful Shutdown Handlers
+// Close socket listeners on process termination
 process.on('SIGTERM', () => {
-  logger.info('[Shutdown] SIGTERM signal received. Commencing exit sequence.');
+  logger.info('[Shutdown Signal] SIGTERM received. Cleaning connections.');
   gracefulShutdown('SIGTERM');
 });
 
 process.on('SIGINT', () => {
-  logger.info('[Shutdown] SIGINT user cancel received. Commencing exit sequence.');
+  logger.info('[Shutdown Signal] SIGINT received. Cleaning connections.');
   gracefulShutdown('SIGINT');
 });
 
 function gracefulShutdown(signal) {
-  logger.info(`[Shutdown] Resolving pending sockets under ${signal}...`);
-  
-  // Set safety exit timeout
+  logger.info(`[Shutdown Process] Invoked by signal: ${signal}`);
+
+  // Fallback timer to force close the process if it hangs
   const forceExitTimeout = setTimeout(() => {
-    logger.warn('[Shutdown] Force terminating process after timeout.');
+    logger.warn('[Shutdown Process] Graceful shutdown timeout reached. Terminating process.');
     process.exit(1);
   }, 10000);
 
   server.close(async () => {
-    logger.info('[Shutdown] Express HTTP sockets closed.');
+    logger.info('[Shutdown Process] Express server ports closed.');
     try {
-      await prisma.$disconnect();
-      logger.info('[Shutdown] Database connection pool disconnected successfully.');
+      if (prisma && typeof prisma.$disconnect === 'function') {
+        await prisma.$disconnect();
+        logger.info('[Shutdown Process] Prisma database pool disconnected.');
+      }
       clearTimeout(forceExitTimeout);
+      logger.info('[Shutdown Process] All resources cleaned. Safe exit.');
       process.exit(0);
     } catch (err) {
-      logger.error('[Shutdown Error] Failed to disconnect Prisma client pool:', {}, err.stack);
+      logger.error('[Shutdown Exception] Failed to disconnect database pool:', { metadata: { error: err.message, stack: err.stack } });
       clearTimeout(forceExitTimeout);
       process.exit(1);
     }

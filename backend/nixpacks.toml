@@ -1,8 +1,0 @@
-[phases.build]
-cmds = ["npm install", "npx prisma generate"]
-
-[phases.deploy]
-cmds = ["node src/server.js"]
-
-[start]
-cmd = "node src/server.js"

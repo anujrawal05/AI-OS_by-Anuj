@@ -2,7 +2,7 @@
 // Powered by A.R. Labs
 
 import { state } from './core.js';
-import { showToast } from './utils.js';
+import { showToast, escapeHTML } from './utils.js';
 import { apiCall } from './apiClient.js';
 
 let authMode = 'signin';
@@ -82,12 +82,12 @@ export function updateUserProfileHeader() {
     container.innerHTML = `
       <div class="profile-dropdown-wrapper">
         <button id="btn-header-profile" class="profile-btn" style="background: linear-gradient(135deg, #2EC5FF 0%, #00D084 100%); color: #000; font-weight: 700; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.88rem; cursor: pointer; border: none; outline: none; transition: transform 0.2s;">
-          ${initials}
+          ${escapeHTML(initials)}
         </button>
         <div id="header-profile-dropdown" class="profile-dropdown">
           <div class="profile-dropdown-header">
-            <strong>${state.user.profile?.name || 'AI-OS User'}</strong>
-            <span>${state.user.email}</span>
+            <strong>${escapeHTML(state.user.profile?.name || 'AI-OS User')}</strong>
+            <span>${escapeHTML(state.user.email)}</span>
           </div>
           <a href="#" id="btn-dropdown-profile" class="profile-dropdown-item">
             👤 &nbsp; Settings / Profile
@@ -613,7 +613,7 @@ export function showProfileModal() {
   if (accountTypeEl) accountTypeEl.textContent = state.user.role === 'Admin' ? 'Administrator' : 'Standard User';
   
   if (accessStatusEl) {
-    accessStatusEl.innerHTML = planName;
+    accessStatusEl.textContent = planName;
     if (planName === 'Premium' || planName === 'Trial') {
       accessStatusEl.className = 'badge-access premium-badge profile-dropdown-status';
     } else {

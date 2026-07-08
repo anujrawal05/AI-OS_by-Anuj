@@ -3,8 +3,16 @@
 
 <head>
   <meta charset="UTF-8">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('kronos-theme');
+      const theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>System Manual & Developer Documentation | AI-OS</title>
+  <link rel="canonical" href="https://ai-os-powerd-by-ar-labs.vercel.app/intro.html" />
   <meta name="description" content="Ultimate guide, developer documentation, visual specs, and interactive simulation console for AI-OS (Artificial Intelligence Overall Solutions).">
 
   <link rel="icon" type="image/png" href="aios_logo.png">
@@ -1663,6 +1671,7 @@
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', targetTheme);
+      localStorage.setItem('kronos-theme', targetTheme);
       
       // Toggle SVG Icon in Button
       if (targetTheme === 'light') {
@@ -1687,6 +1696,23 @@
         `;
       }
     });
+
+    // Initialize Theme Icon on Load
+    if (document.documentElement.getAttribute('data-theme') === 'light') {
+      themeBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      `;
+    }
 
     // Sidebar navigation active state scroll spy
     window.addEventListener('scroll', () => {

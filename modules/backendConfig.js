@@ -36,14 +36,19 @@ window.BackendConfig.isBackendAvailable = async function() {
     return false;
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
   try {
     const response = await fetch(`${backendURL}/health`, {
       method: 'GET',
       mode: 'cors',
-      timeout: 5000
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     return response.ok;
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error('Backend health check failed:', error.message);
     return false;
   }
