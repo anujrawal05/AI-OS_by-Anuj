@@ -16,26 +16,29 @@
       ]
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/backend/:path*",
-      "destination": "/404"
+      "src": "/backend/(.*)",
+      "dest": "/404"
     },
     {
-      "source": "/package.json",
-      "destination": "/404"
+      "src": "/package.json",
+      "dest": "/404"
     },
     {
-      "source": "/package-lock.json",
-      "destination": "/404"
+      "src": "/package-lock.json",
+      "dest": "/404"
     },
     {
-      "source": "/vercel.json",
-      "destination": "/404"
+      "src": "/vercel.json",
+      "dest": "/404"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "src": "/api/(.*)",
+      "dest": "api/index.js"
+    },
+    {
+      "handle": "filesystem"
     }
   ]
 }
