@@ -34,7 +34,7 @@
       "destination": "/404"
     },
     {
-      "source": "/api/:path*",
+      "source": "/api/(.*)",
       "destination": "/api"
     }
   ]
