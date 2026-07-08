@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aios-v5.16'; // Bumped cache version to force clear old service worker memory
+const CACHE_NAME = 'aios-v5.16'; // वर्ज़न चेंज ताकि पुराना कैशे क्लियर हो जाए
 const ASSETS = [
   '/',
   '/index.html',
@@ -19,7 +19,7 @@ self.addEventListener('install', event => {
       return cache.addAll(ASSETS);
     })
   );
-  self.skipWaiting(); // Take over immediately, evicting old SW
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -35,21 +35,19 @@ self.addEventListener('activate', event => {
       );
     })
   );
-  self.clients.claim(); // Claim all open tabs immediately
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
-  // CRITICAL PROTECTION FIX: Ignore any requests that are not standard web pages (chrome-extension://, data://, etc.)
+  // क्रिटिकल फिक्स: अगर रिक्वेस्ट http या https से शुरू नहीं होती (जैसे chrome-extension://), तो उसे इग्नोर करें
   if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) {
     return;
   }
 
-  // Exclude API requests, POST/PUT/DELETE operations from offline caching
   if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
     return;
   }
 
-  // Exclude module files from caching — they must always be fresh when online, but fallback to cache offline.
   const url = new URL(event.request.url);
   if (url.pathname.startsWith('/modules/') || url.pathname.endsWith('.js')) {
     event.respondWith(
@@ -70,8 +68,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Network-first: always prefer the freshest HTML/CSS from the server.
-  // Cache is only a fallback for offline access, never a source of truth while network is up.
   event.respondWith(
     fetch(event.request).then(networkResponse => {
       if (!networkResponse || networkResponse.status !== 200) {
