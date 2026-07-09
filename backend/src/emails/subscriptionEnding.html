@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Your AI-OS Subscription is Expiring Soon</title>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .header {
+      background: linear-gradient(135deg, #f59e0b, #e11d48);
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .content {
+      padding: 40px 30px;
+      line-height: 1.6;
+    }
+    .content p {
+      font-size: 16px;
+      color: #9ca3af;
+      margin-bottom: 24px;
+    }
+    .content strong {
+      color: #f3f4f6;
+    }
+    .btn-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .btn {
+      background: #f59e0b;
+      color: #0b0f19 !important;
+      text-decoration: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .footer {
+      background: #0b0f19;
+      padding: 20px;
+      text-align: center;
+      border-top: 1px solid #1f2937;
+    }
+    .footer p {
+      font-size: 12px;
+      color: #4b5563;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Subscription Expiry Alert</h1>
+    </div>
+    <div class="content">
+      <p>Hi {{NAME}},</p>
+      <p>This is a notification that your <strong>AI-OS Premium Subscription</strong> will expire in <strong>2 days</strong>.</p>
+      <p>To ensure uninterrupted access to unlimited AI generations, strategy roadmaps, and build tutorials, please renew your plan now.</p>
+      <div class="btn-container">
+        <a href="{{BASE_URL}}/index.html?action=pricing" class="btn">Renew Premium Plan</a>
+      </div>
+      <p>Best regards,<br>The AI-OS Production Team</p>
+    </div>
+    <div class="footer">
+      <p>&copy; {{YEAR}} AI-OS. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify Your AI-OS Email Address</title>
+  <title>Your AI-OS Premium Trial Has Started!</title>
   <style>
     body {
       background-color: #0A0A0C;
@@ -54,6 +54,17 @@
       color: #CCCCCC;
       margin-bottom: 24px;
     }
+    .badge {
+      display: inline-block;
+      background: rgba(46, 197, 255, 0.1);
+      border: 1px solid #2EC5FF;
+      color: #2EC5FF;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
     .btn-container {
       text-align: center;
       margin: 35px 0;
@@ -69,14 +80,6 @@
       border-radius: 8px;
       box-shadow: 0 4px 15px rgba(46, 197, 255, 0.4);
     }
-    .link-fallback {
-      font-size: 12px;
-      color: #666666;
-      margin-top: 30px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 20px;
-      word-break: break-all;
-    }
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -91,21 +94,15 @@
       <div class="logo">
         <span class="logo-text">AI-OS</span>
       </div>
-      <h1>Verify Your Email Address</h1>
+      <div style="text-align: center;">
+        <div class="badge">3-Day Trial Active</div>
+      </div>
+      <h1>Premium Trial Started!</h1>
       <p>Hello {{NAME}},</p>
-      <p>Thank you for registering at AI-OS. Please verify your email address to unlock your workspaces and get complete access to the timelines.</p>
-      
-      <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; color: #2EC5FF; letter-spacing: 4px; margin: 25px 0; font-family: monospace;">
-        {{OTP}}
-      </div>
-
+      <p>Your 3-day Premium Trial is now active. Enjoy complete access to all AI-OS tools, premium workflows, and advanced roadmap timelines for the next 3 days.</p>
+      <p>No credit card is required. At the end of the trial period, your workspace will automatically return to the Basic tier unless you choose to upgrade.</p>
       <div class="btn-container">
-        <a href="{{VERIFY_LINK}}" class="btn">Verify Email Address</a>
-      </div>
-      <p>This verification link will expire in 24 hours. If you did not sign up for an AI-OS account, you can safely ignore this email.</p>
-      <div class="link-fallback">
-        If the button above does not work, copy and paste this URL into your browser:<br>
-        <a href="{{VERIFY_LINK}}" style="color: #2EC5FF;">{{VERIFY_LINK}}</a>
+        <a href="{{BASE_URL}}" class="btn">Start Your Trial Workspace</a>
       </div>
     </div>
     <div class="footer">

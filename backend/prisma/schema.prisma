@@ -1,13 +1,10 @@
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  // uncomment next line if you use Prisma <5.10
-  // directUrl = env("DATABASE_URL_UNPOOLED")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 enum UserRole {
@@ -145,7 +142,6 @@ model Session {
   expiresAt    DateTime @map("expires_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  @@index([userId])
   @@map("sessions")
 }
 
@@ -205,8 +201,6 @@ model Payment {
   updatedAt          DateTime        @updatedAt @map("updated_at")
   transactions       Transaction[]
 
-  @@index([userId])
-  @@index([status])
   @@map("payments")
 }
 
@@ -221,7 +215,6 @@ model Transaction {
   description String
   createdAt   DateTime        @default(now()) @map("created_at")
 
-  @@index([userId])
   @@map("transactions")
 }
 
@@ -258,8 +251,6 @@ model AIHistory {
   outputData Json         @map("output_data")
   createdAt  DateTime     @default(now()) @map("created_at")
 
-  @@index([userId])
-  @@index([createdAt])
   @@map("ai_history")
 }
 
@@ -273,8 +264,6 @@ model Notification {
   isRead    Boolean          @default(false) @map("is_read")
   createdAt DateTime         @default(now()) @map("created_at")
 
-  @@index([userId])
-  @@index([isRead])
   @@map("notifications")
 }
 
@@ -289,8 +278,6 @@ model SupportTicket {
   createdAt DateTime       @default(now()) @map("created_at")
   updatedAt DateTime       @updatedAt @map("updated_at")
 
-  @@index([userId])
-  @@index([status])
   @@map("support_tickets")
 }
 
@@ -311,7 +298,7 @@ model VideoProgress {
   userId         String   @map("user_id") @db.Uuid
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   videoFilename  String   @map("video_filename")
-  progressSeconds Decimal  @default("0.00") @map("progress_seconds") @db.Decimal(10, 2)
+  progressSeconds Decimal  @default(0.00) @map("progress_seconds") @db.Decimal(10, 2)
   isCompleted    Boolean  @default(false) @map("is_completed")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
@@ -367,7 +354,5 @@ model AuditLog {
   details    Json?
   createdAt  DateTime @default(now()) @map("created_at")
 
-  @@index([userId])
-  @@index([createdAt])
   @@map("audit_logs")
 }

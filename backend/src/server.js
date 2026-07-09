@@ -1,80 +1,58 @@
-const env = require('./config/env');
+require('dotenv').config(); // MUST load env vars before imports to seed prisma client
+const { validateEnv } = require('./config/env');
 const app = require('./app');
-const prisma = require('./config/prisma');
+const prisma = require('./lib/db');
 const logger = require('./utils/logger');
 
-const PORT = env.PORT || 8080;
+// 1. Run Env Checks
+validateEnv();
 
-let server;
+const PORT = process.env.PORT || 8080;
 
-async function startServer() {
-  try {
-    // Connect database explicitly in local server start
-    if (prisma && typeof prisma.$connect === 'function') {
-      await prisma.$connect();
-      logger.info('[Database] Prisma connected');
-    }
+const server = app.listen(PORT, () => {
+  logger.info(`AI-OS v2 Backend Production Engine listening on port ${PORT}`);
+});
 
-    server = app.listen(PORT, () => {
-      logger.info(`🚀 AI-OS Backend Server running on port ${PORT} in [${env.NODE_ENV}] mode`);
-      logger.info(`📖 Dynamic Swagger docs available at http://localhost:${PORT}/api-docs`);
-    });
-  } catch (err) {
-    logger.error('[Startup] Failed to start server:', { metadata: { error: err.message, stack: err.stack } });
-    process.exit(1);
-  }
-}
-
-startServer();
-
-// Catch process-level exceptions to prevent orphan ports
+// 2. Unhandled Exception Logging
 process.on('uncaughtException', (err) => {
-  logger.error('[Critical Exception] Uncaught error detected:', { metadata: { error: err.message, stack: err.stack } });
+  logger.error('[Boot Critical] Caught unhandled exception:', {}, err.stack);
   gracefulShutdown('uncaughtException');
 });
 
-process.on('unhandledRejection', (reason) => {
-  logger.error('[Critical Rejection] Unhandled promise rejection detected:', { 
-    metadata: { 
-      reason: reason instanceof Error ? reason.message : String(reason), 
-      stack: reason instanceof Error ? reason.stack : undefined 
-    } 
-  });
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('[Boot Critical] Intercepted unhandled rejection:', { promise }, reason?.stack || reason);
   gracefulShutdown('unhandledRejection');
 });
 
-// Close socket listeners on process termination
+// 3. Graceful Shutdown Handlers
 process.on('SIGTERM', () => {
-  logger.info('[Shutdown Signal] SIGTERM received. Cleaning connections.');
+  logger.info('[Shutdown] SIGTERM signal received. Commencing exit sequence.');
   gracefulShutdown('SIGTERM');
 });
 
 process.on('SIGINT', () => {
-  logger.info('[Shutdown Signal] SIGINT received. Cleaning connections.');
+  logger.info('[Shutdown] SIGINT user cancel received. Commencing exit sequence.');
   gracefulShutdown('SIGINT');
 });
 
 function gracefulShutdown(signal) {
-  logger.info(`[Shutdown Process] Invoked by signal: ${signal}`);
-
-  // Fallback timer to force close the process if it hangs
+  logger.info(`[Shutdown] Resolving pending sockets under ${signal}...`);
+  
+  // Set safety exit timeout
   const forceExitTimeout = setTimeout(() => {
-    logger.warn('[Shutdown Process] Graceful shutdown timeout reached. Terminating process.');
+    logger.warn('[Shutdown] Force terminating process after timeout.');
     process.exit(1);
   }, 10000);
 
   server.close(async () => {
-    logger.info('[Shutdown Process] Express server ports closed.');
+    logger.info('[Shutdown] Express HTTP sockets closed.');
     try {
-      if (prisma && typeof prisma.$disconnect === 'function') {
-        await prisma.$disconnect();
-        logger.info('[Shutdown Process] Prisma database pool disconnected.');
-      }
+      await prisma.$disconnect();
+      logger.info('[Shutdown] Database connection pool disconnected successfully.');
       clearTimeout(forceExitTimeout);
-      logger.info('[Shutdown Process] All resources cleaned. Safe exit.');
       process.exit(0);
     } catch (err) {
-      logger.error('[Shutdown Exception] Failed to disconnect database pool:', { metadata: { error: err.message, stack: err.stack } });
+      logger.error('[Shutdown Error] Failed to disconnect Prisma client pool:', {}, err.stack);
       clearTimeout(forceExitTimeout);
       process.exit(1);
     }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify Your AI-OS Email Address</title>
+  <title>Payment Successful - AI-OS</title>
   <style>
     body {
       background-color: #0A0A0C;
@@ -54,6 +54,32 @@
       color: #CCCCCC;
       margin-bottom: 24px;
     }
+    .receipt-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .receipt-row:last-child {
+      margin-bottom: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+      font-weight: bold;
+    }
+    .label {
+      color: #88888A;
+    }
+    .value {
+      color: #FFFFFF;
+      text-align: right;
+    }
     .btn-container {
       text-align: center;
       margin: 35px 0;
@@ -69,14 +95,6 @@
       border-radius: 8px;
       box-shadow: 0 4px 15px rgba(46, 197, 255, 0.4);
     }
-    .link-fallback {
-      font-size: 12px;
-      color: #666666;
-      margin-top: 30px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 20px;
-      word-break: break-all;
-    }
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -91,22 +109,27 @@
       <div class="logo">
         <span class="logo-text">AI-OS</span>
       </div>
-      <h1>Verify Your Email Address</h1>
+      <h1>Payment Successful!</h1>
       <p>Hello {{NAME}},</p>
-      <p>Thank you for registering at AI-OS. Please verify your email address to unlock your workspaces and get complete access to the timelines.</p>
-      
-      <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; color: #2EC5FF; letter-spacing: 4px; margin: 25px 0; font-family: monospace;">
-        {{OTP}}
+      <p>Thank you for your purchase. We have received your payment successfully and upgraded your account.</p>
+      <div class="receipt-box">
+        <div class="receipt-row">
+          <span class="label">Payment ID:</span>
+          <span class="value">{{PAYMENT_ID}}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="label">Plan:</span>
+          <span class="value">{{PLAN_NAME}}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="label">Amount:</span>
+          <span class="value">₹2,500.00</span>
+        </div>
       </div>
-
       <div class="btn-container">
-        <a href="{{VERIFY_LINK}}" class="btn">Verify Email Address</a>
+        <a href="{{BASE_URL}}" class="btn">Go to Workspace</a>
       </div>
-      <p>This verification link will expire in 24 hours. If you did not sign up for an AI-OS account, you can safely ignore this email.</p>
-      <div class="link-fallback">
-        If the button above does not work, copy and paste this URL into your browser:<br>
-        <a href="{{VERIFY_LINK}}" style="color: #2EC5FF;">{{VERIFY_LINK}}</a>
-      </div>
+      <p>A billing receipt has also been generated for your record. If you have any billing inquiries, please contact our support team.</p>
     </div>
     <div class="footer">
       <p>&copy; {{YEAR}} AI-OS. All rights reserved.</p>
