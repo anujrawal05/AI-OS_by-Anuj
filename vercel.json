@@ -25,5 +25,11 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret",
+    "NODE_ENV": "production",
+    "FRONTEND_URL": "@frontend_url"
+  }
 }

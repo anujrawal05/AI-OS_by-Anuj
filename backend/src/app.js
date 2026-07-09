@@ -16,6 +16,18 @@ const newsRouter = require('./routes/news');
 const financeRouter = require('./routes/finance');
 const adminRouter = require('./routes/admin');
 
+// Runtime validation for critical environment variables
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'NODE_ENV'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+if (missingEnvVars.length > 0) {
+  const errorMsg = `Missing required environment variables: ${missingEnvVars.join(', ')}`;
+  console.error(`[FATAL] ${errorMsg}`);
+  // In production, we throw to prevent startup with invalid config
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(errorMsg);
+  }
+}
+
 const app = express();
 
 // Trust reverse proxies (Vercel, Render, Railway, etc.)

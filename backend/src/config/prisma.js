@@ -3,10 +3,16 @@ const { PrismaClient } = require('@prisma/client');
 let prisma;
 
 if (process.env.NODE_ENV === 'production') {
-  // In production, use global to cache instance across serverless invocations
+  // In production (Vercel), use global to cache instance across serverless invocations
   if (!global.prisma) {
     global.prisma = new PrismaClient({
-      log: ['error'],
+      log: ['error', 'warn'],
+      // Serverless optimizations
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
     });
   }
   prisma = global.prisma;
@@ -18,6 +24,13 @@ if (process.env.NODE_ENV === 'production') {
     });
   }
   prisma = global.prisma;
+}
+
+// Graceful disconnect for development (not needed in serverless)
+if (process.env.NODE_ENV !== 'production') {
+  process.on('beforeExit', async () => {
+    await prisma.$disconnect();
+  });
 }
 
 module.exports = prisma;
