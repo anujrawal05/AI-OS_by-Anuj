@@ -54,6 +54,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', globalRateLimiter);
 
 // Configure dynamic Swagger API Documentation
+// Use __dirname resolution that works in Vercel's bundled output
+const routesPath = path.join(__dirname, 'routes');
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -70,7 +72,16 @@ const swaggerOptions = {
       }
     ],
   },
-  apis: [path.join(__dirname, './routes/*.js')], // Scan route files for JSDoc documentation
+  // In Vercel, files are bundled - use explicit route files array
+  apis: [
+    path.join(routesPath, 'health.js'),
+    path.join(routesPath, 'auth.js'),
+    path.join(routesPath, 'payment.js'),
+    path.join(routesPath, 'strategist.js'),
+    path.join(routesPath, 'news.js'),
+    path.join(routesPath, 'finance.js'),
+    path.join(routesPath, 'admin.js'),
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

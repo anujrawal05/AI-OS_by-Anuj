@@ -31,5 +31,10 @@
     "JWT_SECRET": "@jwt_secret",
     "NODE_ENV": "production",
     "FRONTEND_URL": "@frontend_url"
+  },
+  "functions": {
+    "backend/src/app.js": {
+      "maxDuration": 30
+    }
   }
 }

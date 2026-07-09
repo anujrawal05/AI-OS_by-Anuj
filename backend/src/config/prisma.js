@@ -7,10 +7,10 @@ if (process.env.NODE_ENV === 'production') {
   if (!global.prisma) {
     global.prisma = new PrismaClient({
       log: ['error', 'warn'],
-      // Serverless optimizations
+      // Serverless optimizations: limit connections to prevent pool exhaustion
       datasources: {
         db: {
-          url: process.env.DATABASE_URL,
+          url: process.env.DATABASE_URL + (process.env.DATABASE_URL?.includes('?') ? '&' : '?') + 'connection_limit=1&pool_timeout=10',
         },
       },
     });
