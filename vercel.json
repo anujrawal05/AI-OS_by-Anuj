@@ -6,12 +6,7 @@
   "builds": [
     {
       "src": "backend/src/app.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "backend/src/generated/client/**"
-        ]
-      }
+      "use": "@vercel/node"
     },
     {
       "src": "**/*",
