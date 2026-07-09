@@ -173,21 +173,12 @@ window.selectAndCompileBusiness = function(key) {
 
 window.handleBusinessVideoPlay = function(key, videoBaseName, title) {
   if (!isUserAuthenticated()) {
-    const authOverlay = document.getElementById('auth-modal-overlay');
-    if (authOverlay) {
-      authOverlay.style.display = 'flex';
-      authOverlay.style.opacity = '1';
-    }
+    document.getElementById('auth-modal-overlay').style.display = 'flex';
     showToast("Please login first to watch business tutorials.", "warning");
     return;
   }
   
-  const isPremium = state.user && (
-    state.user.plan_type === 'Premium' || 
-    state.user.plan_type === 'Trial' ||
-    state.user.subscription?.plan === 'Premium' ||
-    state.user.subscription?.plan === 'Trial'
-  );
+  const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
   if (!isPremium) {
     showToast("Upgrade to Premium or start trial to watch tutorials.", "warning");
     showPricingModal(true);

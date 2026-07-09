@@ -3,16 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <script>
-    (function() {
-      const savedTheme = localStorage.getItem('kronos-theme');
-      const theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-      document.documentElement.setAttribute('data-theme', theme);
-    })();
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy | AI-OS</title>
-  <link rel="canonical" href="https://ai-os-powerd-by-ar-labs.vercel.app/policy.html" />
   <meta name="description" content="Privacy Policy for AI-OS by A.R. Labs. Data storage on Supabase, cookie usage, and account deletion options.">
 
   <link rel="icon" type="image/png" href="aios_logo.png">
@@ -164,7 +156,6 @@
       }
     }
   </style>
-    <meta name="backend-url" content="BACKEND_URL_PLACEHOLDER">
 </head>
 
 <body>
@@ -211,7 +202,6 @@
       <ul>
         <li><strong>Email Address:</strong> To establish your identity, associate your billing status (Basic or Premium), and manage account security.</li>
         <li><strong>User Profile Metadata:</strong> Full Name, Date of Birth, Gender, and Profession to customize operational timeline outputs and personalize your user dashboard.</li>
-        <li><strong>Authentication Data:</strong> Passwords are cryptographically hashed using industry-standard bcrypt algorithms on the server before storage. One-Time Passwords (OTPs) generated during the verification process are stored temporarily and marked as used immediately upon validation to prevent reuse.</li>
       </ul>
     </div>
 
@@ -228,62 +218,46 @@
 
     <div class="legal-section">
       <h2>4. Data Storage, Hosting & Security</h2>
-      <p>Your account records and profile configurations are stored in secure PostgreSQL database tables. We apply industry-standard access tokens and TLS encryption to secure communication channels. Authentication sessions are stored locally in the browser via standard localStorage/sessionStorage blocks and managed via secure HttpOnly, SameSite cookies to keep you logged in across page reloads.</p>
+      <p>Your account records and profile configurations are stored in secure cloud database tables hosted by **Supabase**. We apply industry-standard access tokens and TLS encryption to secure communication channels. Authentication sessions are stored locally in the browser via standard localStorage/sessionStorage blocks to keep you logged in across page reloads.</p>
     </div>
 
     <div class="legal-section">
-      <h2>5. AI Prompt Processing</h2>
-      <p>When you interact with the AI strategist or prompt tools, prompt instructions are transmitted securely to server-side APIs, which communicate with third-party generative models (including OpenRouter APIs). Please note that AI providers process prompts to generate responses according to their API services. We do not store your prompts permanently on our servers or log them to console outputs.</p>
+      <h2>5. Zero Data-Sharing with Third Parties</h2>
+      <p>A.R. Labs maintains a strict zero data-sharing standard. We do not sell, rent, trade, or distribute your email address, name, or profile metadata to third-party advertising companies, analytical networks, or data brokers. All transaction logs and billing details are processed securely and privately by Razorpay, and we do not store raw credit/debit card numbers on our servers.</p>
     </div>
 
     <div class="legal-section">
-      <h2>6. Payment Processing through Razorpay</h2>
-      <p>All subscription upgrade transactions and billing details are processed securely and privately by Razorpay. A.R. Labs does not collect, access, or store raw credit/debit card numbers, CVVs, or cardholder credentials on our servers.</p>
-    </div>
-
-    <div class="legal-section">
-      <h2>7. Media Processing & Cloudinary</h2>
-      <p>We do not utilize Cloudinary or other external media hosting providers for user uploads. All profile layouts and components are styled locally.</p>
-    </div>
-
-    <div class="legal-section">
-      <h2>8. Analytics & Tracking</h2>
-      <p>To ensure maximum user privacy, the Platform does not integrate third-party analytical pixels, behavioral marketing tracking, or target advertising scripts.</p>
-    </div>
-
-    <div class="legal-section">
-      <h2>9. Zero Data-Sharing with Third Parties</h2>
-      <p>A.R. Labs maintains a strict zero data-sharing standard. We do not sell, rent, trade, or distribute your email address, name, or profile metadata to third-party advertising companies, analytical networks, or data brokers.</p>
-    </div>
-
-    <div class="legal-section">
-      <h2>10. Data Retention</h2>
-      <p>User profile and account information is retained for as long as the user account remains active. Operational logs and security audit trails are retained for up to 90 days to help detect and prevent abusive access or system errors.</p>
-    </div>
-
-    <div class="legal-section">
-      <h2>11. Account Deletion, Opt-Out & User Rights</h2>
+      <h2>6. Account Deletion, Opt-Out & User Rights</h2>
       <p>You have full ownership of your data. You may request account closure and data deletion at any time:</p>
       <div class="highlight-box">
         <h3>How to Request Account & Data Deletion</h3>
         <p style="margin: 0 0 12px 0; color: var(--text-secondary);">If you wish to delete your profile, email, billing flags, and simulator history, please send an explicit deletion request from your registered email address to:</p>
         <p style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); margin: 0;">arproduction050@gmail.com</p>
-        <p style="margin: 12px 0 0 0; color: var(--text-secondary);">We will confirm your request and completely purge all account rows from our database tables within five (5) business days.</p>
+        <p style="margin: 12px 0 0 0; color: var(--text-secondary);">We will confirm your request and completely purge all account rows from our Supabase tables within five (5) business days.</p>
       </div>
     </div>
 
     <div class="legal-section">
-      <h2>12. Cookie Usage</h2>
+      <h2>7. Cookie Usage</h2>
       <p>We use cookies and browser storage nodes solely to cache your dark/light theme preference, language settings, and current session parameters to enable continuous access. We do not use persistent tracking cookies for behavioral target marketing.</p>
     </div>
 
     <div class="legal-section">
-      <h2>13. Policy Modifications</h2>
+      <h2>8. Policy Modifications</h2>
       <p>We may update this Privacy Policy periodically. If we update our data management procedures, we will post the revised policy on this page with the updated "Effective Date" timeline.</p>
     </div>
 
     <div class="legal-section">
-      <h2>14. Contact Us</h2>
+      <h2>10. AI-OS Business Hub Data Management</h2>
+      <p>When you interact with the AI-OS Business Hub tools (Launchpad, Strategist, Academy):</p>
+      <ul>
+        <li><strong>Simulated Inputs:</strong> The business models and budget ranges you select are processed client-side or sent to server-side APIs to compile custom outputs. We do not sell or monetize your business parameters.</li>
+        <li><strong>Chat Logs & Custom Prompts:</strong> Conversations with the A.R. Business Strategist are stored locally in your browser session or processed via secure server connection layers.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>11. Contact Us</h2>
       <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your personal information, please write to:</p>
       <p style="font-family: var(--font-mono); color: var(--text-primary);">Email: arproduction050@gmail.com</p>
     </div>

@@ -18,7 +18,6 @@ import {
   canClaimDailyReward, getWeeklyChallenge,
 } from './gamification.js';
 import { state } from './core.js';
-import { escapeHTML } from './utils.js';
 
 // ─── Guards ───────────────────────────────────────────────────────────────────
 let _initialized = false;
@@ -123,24 +122,17 @@ function getGreeting() {
   const isGuest  = !rawName || rawName === 'Demo Premium User';
   const firstName = isGuest ? null : rawName.split(' ')[0];
   const timeWord  = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
-  return firstName ? `Good ${timeWord}, ${escapeHTML(firstName)} 👋` : `Good ${timeWord} 👋`;
+  return firstName ? `Good ${timeWord}, ${firstName} 👋` : `Good ${timeWord} 👋`;
 }
 
 // ─── Persistent tip-read state ────────────────────────────────────────────────
 
-function getNSKey(base) {
-  if (!state.user) return base;
-  const uid = state.user.id || state.user._id;
-  if (!uid) return base;
-  return `${base}_${uid}`;
-}
-
 function isTipRead() {
-  const key = getNSKey('aios_gm_tip_read_' + _todayStr());
+  const key   = 'aios_gm_tip_read_' + _todayStr();
   return localStorage.getItem(key) === '1';
 }
 function markTipReadPersist() {
-  const key = getNSKey('aios_gm_tip_read_' + _todayStr());
+  const key = 'aios_gm_tip_read_' + _todayStr();
   localStorage.setItem(key, '1');
 }
 function _todayStr() {
@@ -338,80 +330,14 @@ function renderContentCards() {
     </div>`;
 }
 
-function renderGuestDashboard(container) {
-  container.innerHTML = `
-    <div class="gm-guest-card">
-      <div class="gm-guest-content">
-        <div class="gm-guest-icon">🚀</div>
-        <h2 class="gm-guest-title">Sign in to start your AI journey</h2>
-        <p class="gm-guest-subtitle">Track your progress, earn rewards, and compile roadmaps to level up your AI skills.</p>
-        
-        <div class="gm-guest-benefits-grid">
-          <div class="gm-benefit-item">
-            <span class="gm-benefit-emoji">⚡</span>
-            <div>
-              <h4 class="gm-benefit-title">XP & Levels</h4>
-              <p class="gm-benefit-desc">Earn experience points for completing roadmap nodes and challenges.</p>
-            </div>
-          </div>
-          <div class="gm-benefit-item">
-            <span class="gm-benefit-emoji">🪙</span>
-            <div>
-              <h4 class="gm-benefit-title">Coins & Rewards</h4>
-              <p class="gm-benefit-desc">Accumulate coins to spend on exclusive premium features.</p>
-            </div>
-          </div>
-          <div class="gm-benefit-item">
-            <span class="gm-benefit-emoji">🔥</span>
-            <div>
-              <h4 class="gm-benefit-title">Daily Streaks</h4>
-              <p class="gm-benefit-desc">Build a consistent learning habit and keep your streak alive.</p>
-            </div>
-          </div>
-          <div class="gm-benefit-item">
-            <span class="gm-benefit-emoji">🏆</span>
-            <div>
-              <h4 class="gm-benefit-title">Achievements</h4>
-              <p class="gm-benefit-desc">Unlock badges as you master advanced AI-OS skills.</p>
-            </div>
-          </div>
-        </div>
-        
-        <button class="gm-guest-signin-btn" onclick="window.gmTriggerSignIn()">
-          🔑 Sign In
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-// Global click handler helper
-window.gmTriggerSignIn = () => {
-  const btn = document.getElementById('btn-header-signin');
-  if (btn) {
-    btn.click();
-  } else {
-    const authOverlay = document.getElementById('auth-modal-overlay');
-    if (authOverlay) authOverlay.style.display = 'flex';
-  }
-};
-
 // ─── Full Render ──────────────────────────────────────────────────────────────
 
-export function renderDashboard() {
+function renderDashboard() {
   const section = document.getElementById('daily-dashboard-section');
   if (!section) return;
 
-  if (!state.user) {
-    renderGuestDashboard(section);
-    return;
-  }
-
-  const gm = getState();
-  if (!gm) {
-    renderGuestDashboard(section);
-    return;
-  }
+  const gm        = getState();
+  if (!gm) return;
 
   const mission   = getDailyMission();
   const challenge = getWeeklyChallenge();
@@ -654,16 +580,8 @@ export function renderMobileUpdates() {
   const container = document.getElementById('mobile-updates-section');
   if (!container) return;
 
-  if (!state.user) {
-    renderGuestDashboard(container);
-    return;
-  }
-
   const gm = getState();
-  if (!gm) {
-    renderGuestDashboard(container);
-    return;
-  }
+  if (!gm) return;
 
   const mission = getDailyMission();
   const challenge = getWeeklyChallenge();
@@ -745,7 +663,11 @@ export function renderMobileUpdates() {
   });
 }
 
+// ─── Auto-complete tasks triggered by the visit itself ────────────────────────
+
 function _autoCompleteVisitTasks() {
+  window.gamification?.completeMissionTask('visit');
+  window.gamification?.completeMissionTask('streak');
   if (isTipRead()) {
     window.gamification?.completeMissionTask('tip');
   }
@@ -756,9 +678,6 @@ function _autoCompleteVisitTasks() {
 export async function initDailyDashboard() {
   if (_initialized) return; // Guard against double-init
   _initialized = true;
-
-  window.renderDashboard = renderDashboard;
-  window.renderMobileUpdates = renderMobileUpdates;
 
   try {
     _activePrompt = await fetchPromptOfTheDay();
@@ -772,9 +691,8 @@ export async function initDailyDashboard() {
   document.addEventListener('aios:gm:update', _handleGmUpdate);
 
   requestAnimationFrame(() => {
-    if (!state.user) return;
+    _autoCompleteVisitTasks();
     const mission = getDailyMission();
-    if (!mission) return;
     document.querySelectorAll('.gm-mission-card').forEach(card => {
       const tmp = document.createElement('div');
       tmp.innerHTML = renderMission(mission);

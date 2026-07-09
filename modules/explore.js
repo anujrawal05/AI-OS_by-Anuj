@@ -1152,7 +1152,6 @@ export async function openDrawer(nodeIdx, isEduNode = false, eduNodeData = null)
         navigator.clipboard.writeText(textToCopy).then(() => {
           showToast("Universal Master Prompt copied to clipboard!");
           if (window.gamification) {
-            window.gamification.awardXP(10, 'prompt');
             window.gamification.completeMissionTask('share');
           }
         }).catch(err => {
@@ -1227,10 +1226,6 @@ export function mountPlayground(type, container) {
             wBtn.onclick = () => {
               navigator.clipboard.writeText(docOutput);
               showToast("Copied specifications to clipboard!");
-              if (window.gamification) {
-                window.gamification.awardXP(10, 'prompt');
-                window.gamification.completeMissionTask('share');
-              }
             };
           }
         }, 12);
@@ -2647,19 +2642,11 @@ export function initDashboardControls() {
     compileBtn.addEventListener('click', () => {
       if (!isUserAuthenticated()) {
         const authOverlay = document.getElementById('auth-modal-overlay');
-        if (authOverlay) {
-          authOverlay.style.display = 'flex';
-          authOverlay.style.opacity = '1';
-        }
+        if (authOverlay) authOverlay.style.display = 'flex';
         showToast("Please login first to compile your roadmap.", "warning");
         return;
       }
-      const isPremium = state.user && (
-        state.user.plan_type === 'Premium' || 
-        state.user.plan_type === 'Trial' ||
-        state.user.subscription?.plan === 'Premium' ||
-        state.user.subscription?.plan === 'Trial'
-      );
+      const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
       if (state.user && !isPremium) {
         showPricingModal(true);
         showToast("Please select a plan to access roadmap features.", "warning");
@@ -2672,7 +2659,6 @@ export function initDashboardControls() {
         const choiceModal = document.getElementById('video-roadmap-choice-modal');
         if (choiceModal) {
           choiceModal.style.display = 'flex';
-          choiceModal.style.opacity = '1';
         }
       } else {
         compileRoadmapDirectly(goal, 'text');
@@ -2695,12 +2681,7 @@ export function initDashboardControls() {
     btnChoiceVideo.addEventListener('click', () => {
       choiceModal.style.display = 'none';
       
-      const isPremium = isUserAuthenticated() && state.user && (
-        state.user.plan_type === 'Premium' || 
-        state.user.plan_type === 'Trial' ||
-        state.user.subscription?.plan === 'Premium' ||
-        state.user.subscription?.plan === 'Trial'
-      );
+      const isPremium = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
       if (!isPremium) {
         showToast("Upgrade to Premium or start trial to watch Video Roadmaps.", "warning");
         showPricingModal(true);
@@ -3342,7 +3323,6 @@ export function renderRoadmap(optimalWorkflow, steps) {
         navigator.clipboard.writeText(promptToCopy);
         showToast("JSON Prompt copied to clipboard!");
         if (window.gamification) {
-          window.gamification.awardXP(10, 'prompt');
           window.gamification.completeMissionTask('share');
         }
         state.quickStartStep = 3;
@@ -3833,7 +3813,6 @@ export function renderPremiumToolCard(mapping) {
       navigator.clipboard.writeText(promptToCopy).then(() => {
         showToast("Copied JSON prompt to clipboard!");
         if (window.gamification) {
-          window.gamification.awardXP(10, 'prompt');
           window.gamification.completeMissionTask('share');
         }
       }).catch(err => {

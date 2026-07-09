@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://ai-os-powerd-by-ar-labs.vercel.app/sitemap.xml

@@ -3,33 +3,26 @@
 
 <head>
   <meta charset="UTF-8">
-  <script>
-    (function () {
-      const savedTheme = localStorage.getItem('kronos-theme');
-      const theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-      document.documentElement.setAttribute('data-theme', theme);
-    })();
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI-OS Business Hub | Powered by A.R. Labs</title>
-  <meta name="description"
-    content="Redefining Enterprise Scaling. Build, Grow & Scale Businesses Using AI. A standalone SaaS platform dedicated to wealth creation.">
-  <link rel="canonical" href="https://ai-os-powerd-by-ar-labs.vercel.app/aios_buisness.html" />
+  <meta name="description" content="Redefining Enterprise Scaling. Build, Grow & Scale Businesses Using AI. A standalone SaaS platform dedicated to wealth creation.">
 
   <link rel="icon" type="image/png" href="aios_logo.png">
   <link rel="apple-touch-icon" href="aios_logo.png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2EC5FF">
 
+  <!-- PRODUCTION SETUP — Backend API URL (keep in sync with index.html)
+       Set to your deployed backend HTTPS URL, e.g. https://ai-os-backend.up.railway.app
+       Leave blank for localhost development or "Backend not connected" banner. -->
+  <meta name="api-base-url" content="">
   <!-- Razorpay public key — replace rzp_test_* with rzp_live_* when going live -->
   <meta name="razorpay-key-id" content="rzp_test_T4Mr1D3RBNpiEi">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap"
-    rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  
   <!-- Dedicated Premium Business Layout Stylesheet -->
   <link rel="stylesheet" href="business.css?v=3.7">
   <!-- Dedicated Mobile UI (native-app-style, <=767px only) -->
@@ -37,21 +30,6 @@
 
   <!-- Razorpay is loaded lazily only when payment is initiated (see auth.js)
        to prevent the browser Web Payment Handler API permission prompt -->
-
-  <!-- Backend URL Configuration (set via environment variables or meta tag) -->
-  <meta name="backend-url" content="">
-
-  <!-- Dynamic Backend Configuration - Load FIRST before any API calls -->
-  <script src="modules/backendConfig.js"></script>
-  <script src="modules/backendErrorUI.js"></script>
-  <script type="module" src="modules/apiClient.js"></script>
-  <script>
-    // Initialize backend configuration (supports localhost:8080 for dev, env vars for prod)
-    if (typeof window.BackendConfig !== 'undefined') {
-      window.BackendConfig.initialize();
-      console.log('✓ Backend Config initialized:', window.BackendConfig.getBackendURL());
-    }
-  </script>
 </head>
 
 <body>
@@ -63,12 +41,9 @@
   <!-- Apple-Style fixed Navigation Header -->
   <header class="app-header">
     <div class="header-container">
-      <div class="logo" onclick="window.location.href='index.html'" role="link" tabindex="0"
-        aria-label="Go to AI-OS homepage"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+      <div class="logo" onclick="window.location.href='index.html'" role="link" tabindex="0" aria-label="Go to AI-OS homepage" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
         <!-- Growth Circuit SVG Icon -->
-        <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round">
+        <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="20" x2="18" y2="10"></line>
           <line x1="12" y1="20" x2="12" y2="4"></line>
           <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -86,7 +61,7 @@
         <a href="index.html" class="btn-back-home">
           <span>← Back to AI-OS</span>
         </a>
-
+        
         <!-- Workspace Swapper Dropdown -->
         <div class="workspace-dropdown-wrap" id="workspace-dropdown-wrap">
           <button class="workspace-dropdown-trigger" id="workspace-dropdown-btn">
@@ -100,34 +75,14 @@
             <button class="workspace-dropdown-item" data-workspace="grow">📈 Strategist (Grow)</button>
           </div>
         </div>
-
+        
         <button class="btn-about-bus" id="btn-about-trigger">About & Methodology</button>
-        <a href="intro.html" class="btn-about-bus"
-          style="text-decoration: none; color: #2ec5ff; display: inline-flex; align-items: center; justify-content: center;">System
-          Guide ✦</a>
+        <a href="intro.html" class="btn-about-bus" style="text-decoration: none; color: #2ec5ff; display: inline-flex; align-items: center; justify-content: center;">System Guide ✦</a>
       </nav>
 
       <!-- Right Header Action buttons -->
       <div class="header-actions" style="display: flex; align-items: center; gap: 14px;">
-        <button id="btn-upgrade-premium-cta" class="btn-upgrade-premium-bus" style="display: none;">Upgrade To
-          Premium</button>
-        <button id="theme-toggle" aria-label="Toggle monochrome theme">
-          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            style="display: none;">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button>
+        <button id="btn-upgrade-premium-cta" class="btn-upgrade-premium-bus" style="display: none;">Upgrade To Premium</button>
         <!-- Subscription tier badge — populated dynamically by auth.js -->
         <div id="header-subscription-badge" class="header-sub-badge" style="display:none;"></div>
         <!-- User Profile Header Dropdown -->
@@ -142,9 +97,7 @@
        The desktop header above (.app-header) is completely untouched.
        ============================================================ -->
   <header class="mobile-app-header" id="mobile-app-header">
-    <div class="mobile-header-brand" onclick="window.location.href='index.html'" role="link" tabindex="0"
-      aria-label="Go to AI-OS homepage"
-      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+    <div class="mobile-header-brand" onclick="window.location.href='index.html'" role="link" tabindex="0" aria-label="Go to AI-OS homepage" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
       <span class="mobile-header-logo-dot">●</span>
       <span class="mobile-header-title">AI-OS Business</span>
     </div>
@@ -159,38 +112,28 @@
   <!-- Main Corporate App Layout -->
   <div class="app-layout-wrapper">
 
-
+    
     <!-- Left layout panel -->
     <aside class="aside-panel aside-panel-left" aria-hidden="true"></aside>
 
     <!-- Main Workspace Hub -->
     <main class="app-main-content">
-
+      
       <!-- Bloomberg-style live financial data ticker strip -->
       <div class="financial-ticker-bar">
         <div class="ticker-label">MARKET INDICATORS</div>
         <div class="ticker-scroll">
-          <div class="ticker-item"><span class="name">AI-OS NET</span><span class="val">₹9,450</span><span
-              class="change up">▲ +145%</span></div>
-          <div class="ticker-item"><span class="name">ARR TARGET</span><span class="val">₹4.2M</span><span
-              class="change up">▲ +18.2%</span></div>
-          <div class="ticker-item"><span class="name">OUTREACH CR</span><span class="val">2.8%</span><span
-              class="change up">▲ +5.2%</span></div>
-          <div class="ticker-item"><span class="name">AUTOMATION RATE</span><span class="val">92%</span><span
-              class="change up">▲ +25.0%</span></div>
-          <div class="ticker-item"><span class="name">VALUATION INDEX</span><span class="val">₹12.4M</span><span
-              class="change up">▲ +12.4%</span></div>
+          <div class="ticker-item"><span class="name">AI-OS NET</span><span class="val">₹9,450</span><span class="change up">▲ +145%</span></div>
+          <div class="ticker-item"><span class="name">ARR TARGET</span><span class="val">₹4.2M</span><span class="change up">▲ +18.2%</span></div>
+          <div class="ticker-item"><span class="name">OUTREACH CR</span><span class="val">2.8%</span><span class="change up">▲ +5.2%</span></div>
+          <div class="ticker-item"><span class="name">AUTOMATION RATE</span><span class="val">92%</span><span class="change up">▲ +25.0%</span></div>
+          <div class="ticker-item"><span class="name">VALUATION INDEX</span><span class="val">₹12.4M</span><span class="change up">▲ +12.4%</span></div>
           <!-- Loop content for continuous animation -->
-          <div class="ticker-item"><span class="name">AI-OS NET</span><span class="val">₹9,450</span><span
-              class="change up">▲ +145%</span></div>
-          <div class="ticker-item"><span class="name">ARR TARGET</span><span class="val">₹4.2M</span><span
-              class="change up">▲ +18.2%</span></div>
-          <div class="ticker-item"><span class="name">OUTREACH CR</span><span class="val">2.8%</span><span
-              class="change up">▲ +5.2%</span></div>
-          <div class="ticker-item"><span class="name">AUTOMATION RATE</span><span class="val">92%</span><span
-              class="change up">▲ +25.0%</span></div>
-          <div class="ticker-item"><span class="name">VALUATION INDEX</span><span class="val">₹12.4M</span><span
-              class="change up">▲ +12.4%</span></div>
+          <div class="ticker-item"><span class="name">AI-OS NET</span><span class="val">₹9,450</span><span class="change up">▲ +145%</span></div>
+          <div class="ticker-item"><span class="name">ARR TARGET</span><span class="val">₹4.2M</span><span class="change up">▲ +18.2%</span></div>
+          <div class="ticker-item"><span class="name">OUTREACH CR</span><span class="val">2.8%</span><span class="change up">▲ +5.2%</span></div>
+          <div class="ticker-item"><span class="name">AUTOMATION RATE</span><span class="val">92%</span><span class="change up">▲ +25.0%</span></div>
+          <div class="ticker-item"><span class="name">VALUATION INDEX</span><span class="val">₹12.4M</span><span class="change up">▲ +12.4%</span></div>
         </div>
       </div>
 
@@ -201,10 +144,7 @@
         <!-- Onboarding Tutorial Guidance Box -->
         <div class="business-tutorial-box">
           <div class="business-tutorial-text">
-            🎯 <strong>THE SIDE-INCOME BUSINESS HUB:</strong> This environment is fully engineered for creative minds to
-            build scalable side-income systems using automated AI blueprints. 1. Access the Academy below to master unit
-            economics. 2. Compile custom Launch blueprints under the Build tab. 3. Query the live Strategist Chat to map
-            your direct 90-day client acquisition and sales funnels.
+            🎯 <strong>THE SIDE-INCOME BUSINESS HUB:</strong> This environment is fully engineered for creative minds to build scalable side-income systems using automated AI blueprints. 1. Access the Academy below to master unit economics. 2. Compile custom Launch blueprints under the Build tab. 3. Query the live Strategist Chat to map your direct 90-day client acquisition and sales funnels.
           </div>
         </div>
 
@@ -213,19 +153,12 @@
           <div class="business-hero-left">
             <div class="hero-floating-badge">✦ ENTERPRISE OPERATING SYSTEM</div>
             <h1 class="business-hero-title">Build, Launch & Scale <br><span>AI-Powered Businesses</span></h1>
-            <p class="business-hero-subtitle">Everything you need to build profitable businesses using Artificial
-              Intelligence—from your first customer to your first scalable company.</p>
-
+            <p class="business-hero-subtitle">Everything you need to build profitable businesses using Artificial Intelligence—from your first customer to your first scalable company.</p>
+            
             <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-              <button class="btn-upgrade-premium-bus" id="btn-hero-learn-cta"
-                style="padding: 12px 24px !important; font-size: 0.85rem !important; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%);">Enter
-                Academy</button>
-              <button class="btn-back-home" id="btn-hero-build-cta"
-                style="padding: 10px 20px; font-size: 0.85rem; border-radius: 6px; border-color: var(--bus-primary); color: #fff;">Start
-                Building</button>
-              <button class="btn-back-home" id="btn-hero-grow-cta"
-                style="padding: 10px 20px; font-size: 0.85rem; border-radius: 6px; border-color: var(--bus-accent); color: #fff;">Grow
-                My Business</button>
+              <button class="btn-upgrade-premium-bus" id="btn-hero-learn-cta" style="padding: 12px 24px !important; font-size: 0.85rem !important; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%);">Enter Academy</button>
+              <button class="btn-back-home" id="btn-hero-build-cta" style="padding: 10px 20px; font-size: 0.85rem; border-radius: 6px; border-color: var(--bus-primary); color: #fff;">Start Building</button>
+              <button class="btn-back-home" id="btn-hero-grow-cta" style="padding: 10px 20px; font-size: 0.85rem; border-radius: 6px; border-color: var(--bus-accent); color: #fff;">Grow My Business</button>
             </div>
           </div>
 
@@ -233,10 +166,9 @@
             <div class="hero-art-wrapper">
               <!-- Custom illustration generated by agent -->
               <img src="business_hero.png" alt="Corporate Growth Graph" class="hero-art-image">
-              <div class="hero-floating-badge"
-                style="top: auto; bottom: 20px; left: 20px; background: rgba(0, 0, 0, 0.6);">AI GRAPH ENGINE V1.0</div>
+              <div class="hero-floating-badge" style="top: auto; bottom: 20px; left: 20px; background: rgba(0, 0, 0, 0.6);">AI GRAPH ENGINE V1.0</div>
             </div>
-
+            
             <!-- Glassmorphic Stats Overlay widget -->
             <div class="hero-graphs-widget">
               <div class="widget-title">Projected Yield Index</div>
@@ -257,7 +189,7 @@
 
         <!-- Premium SaaS Dashboard Widgets Grid -->
         <div class="dashboard-widgets-grid" style="margin-bottom: 40px;">
-
+          
           <!-- Widget 1: Live Financial Overview -->
           <div class="dashboard-card widget-markets">
             <div class="widget-header">
@@ -267,8 +199,7 @@
             <div id="market-data-loading" class="widget-loader">
               <span class="spinner-icon">⏳</span> Connecting to financial indices...
             </div>
-            <div id="market-data-error" class="widget-error"
-              style="display: none; color: var(--bus-text-muted); font-size: 0.85rem; font-family: var(--font-mono); padding: 20px 0;">
+            <div id="market-data-error" class="widget-error" style="display: none; color: var(--bus-text-muted); font-size: 0.85rem; font-family: var(--font-mono); padding: 20px 0;">
               Live market data temporarily unavailable
             </div>
             <div id="market-data-content" style="display: none; width: 100%;">
@@ -291,14 +222,12 @@
           <div class="dashboard-card widget-news">
             <div class="widget-header">
               <h4 class="widget-card-title">📰 AI & Business Intelligence</h4>
-              <div class="live-pulse-indicator" style="background: rgba(46, 197, 255, 0.1); color: var(--bus-accent);">●
-                REAL-TIME</div>
+              <div class="live-pulse-indicator" style="background: rgba(46, 197, 255, 0.1); color: var(--bus-accent);">● REAL-TIME</div>
             </div>
             <div id="news-data-loading" class="widget-loader">
               <span class="spinner-icon">⏳</span> Querying intelligence feeds...
             </div>
-            <div id="news-data-error" class="widget-error"
-              style="display: none; color: var(--bus-text-muted); font-size: 0.85rem; font-family: var(--font-mono); padding: 20px 0;">
+            <div id="news-data-error" class="widget-error" style="display: none; color: var(--bus-text-muted); font-size: 0.85rem; font-family: var(--font-mono); padding: 20px 0;">
               Live news feed temporarily unavailable
             </div>
             <div id="news-data-content" class="news-list" style="display: none;">
@@ -424,37 +353,32 @@
                 </div>
                 <p class="trend-desc">AI-generated regional catalog sites driving zero-cost incoming lead lists.</p>
               </div>
-              <div class="trend-item"
-                style="border-top: 1px solid var(--bus-border); padding-top: 12px; margin-top: 12px;">
+              <div class="trend-item" style="border-top: 1px solid var(--bus-border); padding-top: 12px; margin-top: 12px;">
                 <div class="trend-meta">
                   <strong>Generative Support Orchestration</strong>
                   <span class="trend-growth">+65% CAGR</span>
                 </div>
-                <p class="trend-desc">Replacing traditional support staff pools with LLM agent ticket resolution
-                  pipelines.</p>
+                <p class="trend-desc">Replacing traditional support staff pools with LLM agent ticket resolution pipelines.</p>
               </div>
             </div>
           </div>
-
+          
         </div>
 
         <!-- Academy Course Modules Grid (repositioned inside pane-bus-dashboard) -->
         <div class="learn-grid-layout">
-
+          
           <div class="learn-header-banner">
             <div class="learn-banner-info">
               <h3>Structured Academy Curriculum</h3>
-              <p>Learn core unit economics, customer pipelines, and leverage options. Designed to be accessible for MBA
-                graduates and beginners alike to understand business from first principles.</p>
+              <p>Learn core unit economics, customer pipelines, and leverage options. Designed to be accessible for MBA graduates and beginners alike to understand business from first principles.</p>
             </div>
-            <button class="btn-upgrade-premium-bus" id="btn-skip-basics"
-              style="flex-shrink: 0; background: var(--bus-surface); border-color: var(--bus-primary); color: var(--bus-primary) !important; box-shadow: none;">Skip
-              Basics & Jump to AI</button>
+            <button class="btn-upgrade-premium-bus" id="btn-skip-basics" style="flex-shrink: 0; background: var(--bus-surface); border-color: var(--bus-primary); color: var(--bus-primary) !important; box-shadow: none;">Skip Basics & Jump to AI</button>
           </div>
 
           <!-- Academy Course Modules Grid (15 Modules) -->
           <div class="learn-modules-grid">
-
+            
             <!-- Module 1 -->
             <div class="learn-module-card active" id="mod-1">
               <div class="learn-module-header">
@@ -467,30 +391,24 @@
               <div class="learn-module-body" style="display: block;">
                 <h5 class="learn-module-section-title">Core Principle</h5>
                 <ul class="learn-checklist-list">
-                  <li>A business is a <strong>structured system</strong> that creates, delivers, and captures value.
-                  </li>
+                  <li>A business is a <strong>structured system</strong> that creates, delivers, and captures value.</li>
                   <li>At its core, it is a machine that <strong>solves a customer's problem</strong>.</li>
                   <li>It charges a fee greater than the total cost of delivery to yield profit.</li>
                 </ul>
-
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <ul class="learn-checklist-list"
-                    style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
-                    <li><strong>Canvas Bag Merchant</strong>: Buys canvas for ₹100, pays tailor ₹150, sells bag for
-                      ₹500. COGS is ₹250, capturing ₹250 in gross returns for creating a beautiful, functional
-                      accessory.</li>
+                  <ul class="learn-checklist-list" style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
+                    <li><strong>Canvas Bag Merchant</strong>: Buys canvas for ₹100, pays tailor ₹150, sells bag for ₹500. COGS is ₹250, capturing ₹250 in gross returns for creating a beautiful, functional accessory.</li>
                   </ul>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
                 <ul class="learn-checklist-list">
-                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Assuming revenue is
-                      profit</strong>: Spending money before accounting for overhead costs.</li>
-                  <li style="color: var(--bus-secondary); font-weight: 500;">Neglecting expenses like <strong>payment
-                      fees, hosting, and marketing</strong>.</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Assuming revenue is profit</strong>: Spending money before accounting for overhead costs.</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;">Neglecting expenses like <strong>payment fees, hosting, and marketing</strong>.</li>
                 </ul>
-
+                
                 <h5 class="learn-module-section-title">AI Implementation Opportunity</h5>
                 <ul class="learn-checklist-list">
                   <li>Use <strong>AI spreadsheets</strong> (Claude/ChatGPT + Sheets) to forecast cash flows.</li>
@@ -499,8 +417,7 @@
 
                 <h5 class="learn-module-section-title">Practical Task</h5>
                 <ul class="learn-checklist-list">
-                  <li>List 3 products or services you purchased this month and write down their estimated cost to build
-                    versus the price you paid.</li>
+                  <li>List 3 products or services you purchased this month and write down their estimated cost to build versus the price you paid.</li>
                 </ul>
               </div>
             </div>
@@ -516,9 +433,8 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">A business model describes how your company makes money. Common models
-                  include Software-as-a-Service (SaaS), Services Agencies, E-Commerce, and Marketplaces.</p>
-
+                <p class="learn-module-text">A business model describes how your company makes money. Common models include Software-as-a-Service (SaaS), Services Agencies, E-Commerce, and Marketplaces.</p>
+                
                 <h5 class="learn-module-section-title">Model Comparison Matrix</h5>
                 <div style="overflow-x:auto; margin: 12px 0;">
                   <table class="pricing-table" style="font-size:0.8rem; width:100%;">
@@ -555,20 +471,16 @@
 
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Stripe</strong>: Instead
-                    of selling software, Stripe takes a 2-3% cut of every transaction. They succeed because they scale
-                    in proportion to their customer's revenue growth.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Stripe</strong>: Instead of selling software, Stripe takes a 2-3% cut of every transaction. They succeed because they scale in proportion to their customer's revenue growth.</p>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
-                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Building a SaaS from
-                  scratch when a simple service agency could start bringing in cash in 48 hours.</p>
+                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Building a SaaS from scratch when a simple service agency could start bringing in cash in 48 hours.</p>
 
                 <h5 class="learn-module-section-title">Downloadable Resource</h5>
                 <div class="learn-download-box">
                   <span>Business Model Canvas Template</span>
-                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('business_model_canvas')"
-                    style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
+                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('business_model_canvas')" style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
                 </div>
               </div>
             </div>
@@ -584,44 +496,30 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">Profitable problems are painful, frequent, and expensive. If customers are
-                  already spending time or money to solve it manually, they will pay you to solve it cleanly.</p>
-
+                <p class="learn-module-text">Profitable problems are painful, frequent, and expensive. If customers are already spending time or money to solve it manually, they will pay you to solve it cleanly.</p>
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Programmatic SEO for
-                      Clinics</strong>: Local clinics spend ₹30,000/month hiring writers to write blogs manually. An
-                    agency that generates 50 localized SEO landing pages using structured AI data saves the clinic time
-                    and money.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Programmatic SEO for Clinics</strong>: Local clinics spend ₹30,000/month hiring writers to write blogs manually. An agency that generates 50 localized SEO landing pages using structured AI data saves the clinic time and money.</p>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
-                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Building a product
-                  first and trying to find a market later. Always find a starving crowd first.</p>
-
+                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Building a product first and trying to find a market later. Always find a starving crowd first.</p>
+                
                 <h5 class="learn-module-section-title">AI Implementation Opportunity</h5>
-                <p class="learn-module-text">Use AI web scrapers to parse Reddit and community directories for common
-                  administrative bottlenecks.</p>
+                <p class="learn-module-text">Use AI web scrapers to parse Reddit and community directories for common administrative bottlenecks.</p>
 
                 <h5 class="learn-quiz-box">
                   <div style="font-weight:700; color: var(--bus-accent); margin-bottom:8px;">📝 Concept Check-Quiz</div>
-                  <p style="margin-bottom:10px;">Before writing any code or buying inventory, what is the best way to
-                    validate a problem?</p>
+                  <p style="margin-bottom:10px;">Before writing any code or buying inventory, what is the best way to validate a problem?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="a">
-                      <span>Build a complete MVP and post it in directory lists.</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="b">
-                      <span>Interview 5 target users and verify if they currently spend time or money solving it.
-                        (Recommended)</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="c">
-                      <span>Run expensive marketing campaigns with a fake logo.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="a"> <span>Build a complete MVP and post it in directory lists.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="b"> <span>Interview 5 target users and verify if they currently spend time or money solving it. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="c"> <span>Run expensive marketing campaigns with a fake logo.</span></label>
                   </div>
-                  <button class="btn-submit-quiz"
-                    onclick="verifyQuizAnswer(this, 'quiz3', 'b', 'Correct! If users are not currently spending time or money solving a problem, it is not a painful or validated problem.')"
-                    style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
-                  <div class="quiz-feedback-box"
-                    style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
-                </h5>
+                  <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz3', 'b', 'Correct! If users are not currently spending time or money solving a problem, it is not a painful or validated problem.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
+                  <div class="quiz-feedback-box" style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
+                </h5 >
               </div>
             </div>
 
@@ -638,33 +536,26 @@
                 <h5 class="learn-module-section-title">Core Principle</h5>
                 <ul class="learn-checklist-list">
                   <li>People do not buy features; they buy <strong>transformative outcomes</strong>.</li>
-                  <li>They purchase products to move from a state of <strong>pain to ease, status, or
-                      efficiency</strong>.</li>
-                  <li>Always align your marketing and offer headlines with their <strong>underlying desires</strong>.
-                  </li>
+                  <li>They purchase products to move from a state of <strong>pain to ease, status, or efficiency</strong>.</li>
+                  <li>Always align your marketing and offer headlines with their <strong>underlying desires</strong>.</li>
                 </ul>
-
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <ul class="learn-checklist-list"
-                    style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
-                    <li><strong>Apple iCloud</strong>: Apple does not sell "secure digital servers" (features). They
-                      sell "never losing your family photos" (peace of mind, emotional benefit).</li>
+                  <ul class="learn-checklist-list" style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
+                    <li><strong>Apple iCloud</strong>: Apple does not sell "secure digital servers" (features). They sell "never losing your family photos" (peace of mind, emotional benefit).</li>
                   </ul>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
                 <ul class="learn-checklist-list">
-                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Listing technical jargon</strong>
-                    (e.g., 'Node.js, MongoDB') instead of the outcome.</li>
-                  <li style="color: var(--bus-secondary); font-weight: 500;">Forgetting to explain the outcome (e.g.,
-                    'Saves 4 hours of work daily').</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Listing technical jargon</strong> (e.g., 'Node.js, MongoDB') instead of the outcome.</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;">Forgetting to explain the outcome (e.g., 'Saves 4 hours of work daily').</li>
                 </ul>
 
                 <h5 class="learn-module-section-title">Practical Task</h5>
                 <ul class="learn-checklist-list">
-                  <li>Take any product you use and rewrite its headline: 1 version focusing on features, and 1 version
-                    focusing on emotional outcome.</li>
+                  <li>Take any product you use and rewrite its headline: 1 version focusing on features, and 1 version focusing on emotional outcome.</li>
                 </ul>
               </div>
             </div>
@@ -680,10 +571,8 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">Pricing dictates your positioning. Cost-plus pricing covers costs, but
-                  value-based pricing charges based on the exact financial outcome or savings you deliver to the buyer.
-                </p>
-
+                <p class="learn-module-text">Pricing dictates your positioning. Cost-plus pricing covers costs, but value-based pricing charges based on the exact financial outcome or savings you deliver to the buyer.</p>
+                
                 <h5 class="learn-module-section-title">Pricing Models Comparison</h5>
                 <div style="overflow-x:auto; margin: 12px 0;">
                   <table class="pricing-table" style="font-size:0.8rem; width:100%;">
@@ -711,29 +600,19 @@
 
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Consulting
-                      Agency</strong>: An AI developer builds a chatbot that replaces a ₹1,20,000/month support agent.
-                    Instead of charging ₹5,000 (hourly rate), they charge ₹40,000 flat setup. The customer gladly pays
-                    because they save ₹80,000 in month one.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Consulting Agency</strong>: An AI developer builds a chatbot that replaces a ₹1,20,000/month support agent. Instead of charging ₹5,000 (hourly rate), they charge ₹40,000 flat setup. The customer gladly pays because they save ₹80,000 in month one.</p>
                 </div>
-
+                
                 <h5 class="learn-quiz-box">
                   <div style="font-weight:700; color: var(--bus-accent); margin-bottom:8px;">📝 Concept Check-Quiz</div>
-                  <p style="margin-bottom:10px;">Which pricing strategy allows a business to charge high margins aligned
-                    with client outcomes?</p>
+                  <p style="margin-bottom:10px;">Which pricing strategy allows a business to charge high margins aligned with client outcomes?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="a">
-                      <span>Cost-plus pricing</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="b">
-                      <span>Hourly consulting rate</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="c">
-                      <span>Value-based pricing (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="a"> <span>Cost-plus pricing</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="b"> <span>Hourly consulting rate</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="c"> <span>Value-based pricing (Recommended)</span></label>
                   </div>
-                  <button class="btn-submit-quiz"
-                    onclick="verifyQuizAnswer(this, 'quiz5', 'c', 'Correct! Charging based on value created allows you to break away from hourly rates and capture high margins.')"
-                    style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
-                  <div class="quiz-feedback-box"
-                    style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
+                  <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz5', 'c', 'Correct! Charging based on value created allows you to break away from hourly rates and capture high margins.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
+                  <div class="quiz-feedback-box" style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
                 </h5>
               </div>
             </div>
@@ -749,26 +628,20 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">Marketing is building attention. Inbound marketing pulls customers using
-                  helpful resources and templates; outbound marketing directly reaches out to prospective users via
-                  emails or calls.</p>
-
+                <p class="learn-module-text">Marketing is building attention. Inbound marketing pulls customers using helpful resources and templates; outbound marketing directly reaches out to prospective users via emails or calls.</p>
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Notion Templates</strong>:
-                    Notion built a massive organic pipeline by letting creators build and share templates. Users
-                    distribute templates organically, bringing millions of free signups to Notion.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Notion Templates</strong>: Notion built a massive organic pipeline by letting creators build and share templates. Users distribute templates organically, bringing millions of free signups to Notion.</p>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
-                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Spending money on
-                  Facebook or Google ads to promote an unvalidated product. Organize organic content loops first.</p>
+                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Spending money on Facebook or Google ads to promote an unvalidated product. Organize organic content loops first.</p>
 
                 <h5 class="learn-module-section-title">Downloadable Resource</h5>
                 <div class="learn-download-box">
                   <span>Marketing Distribution Sheet</span>
-                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('marketing_distribution')"
-                    style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
+                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('marketing_distribution')" style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
                 </div>
               </div>
             </div>
@@ -784,39 +657,26 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">Sales is collaborative problem-solving, not high-pressure pitching. The
-                  goal is to ask strategic questions, outline the financial impact of their current issues, and
-                  introduce your offer as the direct fix.</p>
-
+                <p class="learn-module-text">Sales is collaborative problem-solving, not high-pressure pitching. The goal is to ask strategic questions, outline the financial impact of their current issues, and introduce your offer as the direct fix.</p>
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Consultative
-                      Discovery</strong>: An automation consultant starts a call asking: 'What administrative task is
-                    costing you the most hours this week?' Once identified, they draft a visual roadmap showing how AI
-                    handles it automatically.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Consultative Discovery</strong>: An automation consultant starts a call asking: 'What administrative task is costing you the most hours this week?' Once identified, they draft a visual roadmap showing how AI handles it automatically.</p>
                 </div>
 
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
-                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Talking 90% of the
-                  time during a call. Always let the prospect explain their operational pain first.</p>
-
+                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Talking 90% of the time during a call. Always let the prospect explain their operational pain first.</p>
+                
                 <h5 class="learn-quiz-box">
                   <div style="font-weight:700; color: var(--bus-accent); margin-bottom:8px;">📝 Concept Check-Quiz</div>
                   <p style="margin-bottom:10px;">What is the primary objective of a consultative sales call?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="a">
-                      <span>Pitch your product catalog immediately in the first 2 minutes.</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="b">
-                      <span>Identify the client's biggest operational bottleneck and show how you fix it.
-                        (Recommended)</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="c">
-                      <span>Convince them to pay with a massive discount before they ask details.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="a"> <span>Pitch your product catalog immediately in the first 2 minutes.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="b"> <span>Identify the client's biggest operational bottleneck and show how you fix it. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="c"> <span>Convince them to pay with a massive discount before they ask details.</span></label>
                   </div>
-                  <button class="btn-submit-quiz"
-                    onclick="verifyQuizAnswer(this, 'quiz7', 'b', 'Correct! Diagnosing pain points first builds authority and makes closing deals natural.')"
-                    style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
-                  <div class="quiz-feedback-box"
-                    style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
+                  <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz7', 'b', 'Correct! Diagnosing pain points first builds authority and makes closing deals natural.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
+                  <div class="quiz-feedback-box" style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
                 </h5>
               </div>
             </div>
@@ -832,24 +692,19 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">A brand is a promise of quality. It is built through design consistency,
-                  clear marketing copy, high-fidelity visual assets, and delivering on your promises.</p>
-
+                <p class="learn-module-text">A brand is a promise of quality. It is built through design consistency, clear marketing copy, high-fidelity visual assets, and delivering on your promises.</p>
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Linear App</strong>:
-                    Linear maintains a premium, dark-themed, ultra-fast website layout. Because their product aesthetics
-                    look and feel premium, they charge higher rates than competitor ticketing apps.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Linear App</strong>: Linear maintains a premium, dark-themed, ultra-fast website layout. Because their product aesthetics look and feel premium, they charge higher rates than competitor ticketing apps.</p>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
-                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Using random colors,
-                  low-resolution images, and messy font sizes that make your platform look unprofessional.</p>
+                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Using random colors, low-resolution images, and messy font sizes that make your platform look unprofessional.</p>
 
                 <h5 class="learn-module-section-title">Practical Task</h5>
                 <ul class="learn-checklist-list">
-                  <li>Pick a consistent 2-font typography system and a 3-color palette for your landing page assets.
-                  </li>
+                  <li>Pick a consistent 2-font typography system and a 3-color palette for your landing page assets.</li>
                 </ul>
               </div>
             </div>
@@ -866,35 +721,28 @@
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
                 <ul class="learn-checklist-list">
-                  <li>Automation connects separate applications using <strong>webhooks and database triggers</strong>.
-                  </li>
-                  <li>It executes repetitive operations automatically to eliminate <strong>manual oversight</strong>.
-                  </li>
+                  <li>Automation connects separate applications using <strong>webhooks and database triggers</strong>.</li>
+                  <li>It executes repetitive operations automatically to eliminate <strong>manual oversight</strong>.</li>
                   <li>Integrations like Make and Zapier save hours of administration tasks.</li>
                 </ul>
-
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <ul class="learn-checklist-list"
-                    style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
-                    <li><strong>Automated Onboarding</strong>: Client checkout triggers automation that automatically
-                      creates folder structures, drafts a contract PDF, and emails custom onboarding steps.</li>
+                  <ul class="learn-checklist-list" style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
+                    <li><strong>Automated Onboarding</strong>: Client checkout triggers automation that automatically creates folder structures, drafts a contract PDF, and emails custom onboarding steps.</li>
                   </ul>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
                 <ul class="learn-checklist-list">
-                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Automating a broken
-                      process</strong>: Always verify a process works manually first.</li>
-                  <li style="color: var(--bus-secondary); font-weight: 500;">Adding scripts before securing initial
-                    customers.</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Automating a broken process</strong>: Always verify a process works manually first.</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;">Adding scripts before securing initial customers.</li>
                 </ul>
 
                 <h5 class="learn-module-section-title">Downloadable Resource</h5>
                 <div class="learn-download-box">
                   <span>Client Onboarding Automation Flowchart</span>
-                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('onboarding_automation')"
-                    style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
+                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('onboarding_automation')" style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
                 </div>
               </div>
             </div>
@@ -913,36 +761,26 @@
                 <ul class="learn-checklist-list">
                   <li>Artificial Intelligence acts as the ultimate <strong>leverage multiplier</strong>.</li>
                   <li>Single-operator startups can run copywriting, code generation, and voice synthesis.</li>
-                  <li>Enables a solo builder to execute tasks that historically required a <strong>full operations
-                      team</strong>.</li>
+                  <li>Enables a solo builder to execute tasks that historically required a <strong>full operations team</strong>.</li>
                 </ul>
-
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <ul class="learn-checklist-list"
-                    style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
-                    <li><strong>Midjourney</strong>: A design studio with a team of under 15 people serves millions of
-                      active paying subscribers by utilizing AI image generators.</li>
+                  <ul class="learn-checklist-list" style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
+                    <li><strong>Midjourney</strong>: A design studio with a team of under 15 people serves millions of active paying subscribers by utilizing AI image generators.</li>
                   </ul>
                 </div>
-
+                
                 <h5 class="learn-quiz-box">
                   <div style="font-weight:700; color: var(--bus-accent); margin-bottom:8px;">📝 Concept Check-Quiz</div>
                   <p style="margin-bottom:10px;">What is the most effective way for a solo creator to leverage AI?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="a">
-                      <span>Hire an expensive consulting team to direct the models.</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="b">
-                      <span>Use AI coding and prompt agents to handle technical tasks in seconds.
-                        (Recommended)</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="c">
-                      <span>Manually write all content and code from scratch to ensure quality.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="a"> <span>Hire an expensive consulting team to direct the models.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="b"> <span>Use AI coding and prompt agents to handle technical tasks in seconds. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="c"> <span>Manually write all content and code from scratch to ensure quality.</span></label>
                   </div>
-                  <button class="btn-submit-quiz"
-                    onclick="verifyQuizAnswer(this, 'quiz10', 'b', 'Correct! AI lets a solo developer act as a full product team.')"
-                    style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
-                  <div class="quiz-feedback-box"
-                    style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
+                  <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz10', 'b', 'Correct! AI lets a solo developer act as a full product team.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
+                  <div class="quiz-feedback-box" style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
                 </h5>
               </div>
             </div>
@@ -958,21 +796,15 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">Scaling is shifting focus from delivery to distribution. Once your unit
-                  economics are positive and operations are automated, focus on scaling marketing spend and hiring
-                  leadership to run daily execution.</p>
-
+                <p class="learn-module-text">Scaling is shifting focus from delivery to distribution. Once your unit economics are positive and operations are automated, focus on scaling marketing spend and hiring leadership to run daily execution.</p>
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Drop-Servicing
-                      Agency</strong>: A company contracts out raw software delivery to vetted freelancers. The founder
-                    focuses 100% of their time on marketing, closing ₹20,00,000 in monthly sales while taking a 40%
-                    clean cut.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Drop-Servicing Agency</strong>: A company contracts out raw software delivery to vetted freelancers. The founder focuses 100% of their time on marketing, closing ₹20,00,000 in monthly sales while taking a 40% clean cut.</p>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
-                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Trying to scale a
-                  business that has negative margins. Fix unit economics before expanding traffic.</p>
+                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Trying to scale a business that has negative margins. Fix unit economics before expanding traffic.</p>
               </div>
             </div>
 
@@ -987,20 +819,15 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">Hiring frees up your time to focus on growth. Start by outsourcing
-                  low-leverage tasks (like administrative entries) to specialized contractors before hiring full-time
-                  staff.</p>
-
+                <p class="learn-module-text">Hiring frees up your time to focus on growth. Start by outsourcing low-leverage tasks (like administrative entries) to specialized contractors before hiring full-time staff.</p>
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Boutique Studio</strong>:
-                    A design studio founder hires 2 skilled freelance visual designers on Upwork at ₹1,500/hour while
-                    charging clients a project rate equivalent to ₹4,000/hour, building an arbitrage margin.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Boutique Studio</strong>: A design studio founder hires 2 skilled freelance visual designers on Upwork at ₹1,500/hour while charging clients a project rate equivalent to ₹4,000/hour, building an arbitrage margin.</p>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
-                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Hiring full-time
-                  employees with monthly salary overheads before securing consistent monthly incoming cash flow.</p>
+                <p class="learn-module-text" style="color: var(--bus-secondary); font-weight: 500;">Hiring full-time employees with monthly salary overheads before securing consistent monthly incoming cash flow.</p>
               </div>
             </div>
 
@@ -1015,22 +842,17 @@
               </div>
               <div class="learn-module-body">
                 <h5 class="learn-module-section-title">Core Principle</h5>
-                <p class="learn-module-text">Every business must track its Income Statement. The most important metrics
-                  are Revenue, Burn Rate (monthly costs), and net cash flow (cash entering minus cash leaving).</p>
-
+                <p class="learn-module-text">Every business must track its Income Statement. The most important metrics are Revenue, Burn Rate (monthly costs), and net cash flow (cash entering minus cash leaving).</p>
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Unit
-                      Profitability</strong>: A consultant tracks their monthly software overhead (₹4,000) and hosting
-                    (₹1,000). By generating ₹1,50,000/month from a single client retainership, they operate with a 96%
-                    net margin.</p>
+                  <p class="learn-module-text" style="font-style: italic; margin: 0;"><strong>Unit Profitability</strong>: A consultant tracks their monthly software overhead (₹4,000) and hosting (₹1,000). By generating ₹1,50,000/month from a single client retainership, they operate with a 96% net margin.</p>
                 </div>
 
                 <h5 class="learn-module-section-title">Downloadable Resource</h5>
                 <div class="learn-download-box">
                   <span>P&L Ledger Sheet Template</span>
-                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('pl_ledger')"
-                    style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
+                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('pl_ledger')" style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
                 </div>
               </div>
             </div>
@@ -1048,11 +870,10 @@
                 <h5 class="learn-module-section-title">Core Principle</h5>
                 <ul class="learn-checklist-list">
                   <li>Contracts protect your work quality and <strong>guarantee transaction payments</strong>.</li>
-                  <li>Setup a formal entity (LLC or Pvt Ltd) as you scale to <strong>limit legal liability</strong>.
-                  </li>
+                  <li>Setup a formal entity (LLC or Pvt Ltd) as you scale to <strong>limit legal liability</strong>.</li>
                   <li>Keep business and personal assets strictly separated to shield your savings.</li>
                 </ul>
-
+                
                 <h5 class="learn-module-section-title">Entity Comparison</h5>
                 <div style="overflow-x:auto; margin: 12px 0;">
                   <table class="pricing-table" style="font-size:0.8rem; width:100%;">
@@ -1077,32 +898,23 @@
                     </tbody>
                   </table>
                 </div>
-
+                
                 <h5 class="learn-quiz-box">
                   <div style="font-weight:700; color: var(--bus-accent); margin-bottom:8px;">📝 Concept Check-Quiz</div>
-                  <p style="margin-bottom:10px;">Why should a scaling agency register as an LLC / Private Limited
-                    company?</p>
+                  <p style="margin-bottom:10px;">Why should a scaling agency register as an LLC / Private Limited company?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="a">
-                      <span>To legally protect personal savings from business debts or claims.
-                        (Recommended)</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="b">
-                      <span>To guarantee that customers never request refunds.</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="c">
-                      <span>To completely eliminate the need to pay tax.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="a"> <span>To legally protect personal savings from business debts or claims. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="b"> <span>To guarantee that customers never request refunds.</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="c"> <span>To completely eliminate the need to pay tax.</span></label>
                   </div>
-                  <button class="btn-submit-quiz"
-                    onclick="verifyQuizAnswer(this, 'quiz14', 'a', 'Correct! LLCs build a corporate shield, isolating personal savings from business liabilities.')"
-                    style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
-                  <div class="quiz-feedback-box"
-                    style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
+                  <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz14', 'a', 'Correct! LLCs build a corporate shield, isolating personal savings from business liabilities.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
+                  <div class="quiz-feedback-box" style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
                 </h5>
 
                 <h5 class="learn-module-section-title">Downloadable Resource</h5>
                 <div class="learn-download-box">
                   <span>General Freelancer Agreement Contract</span>
-                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('freelance_contract')"
-                    style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
+                  <button class="workspace-dropdown-trigger" onclick="downloadTemplate('freelance_contract')" style="padding:4px 10px; font-size:0.7rem; border-color:var(--bus-primary);">Download TXT</button>
                 </div>
               </div>
             </div>
@@ -1123,22 +935,18 @@
                   <li>Ship a Minimum Viable Product (MVP) in <strong>under 24 hours</strong>.</li>
                   <li>Put your offer in front of real customers and iterate based on their usage behavior.</li>
                 </ul>
-
+                
                 <div class="learn-case-study">
                   <h5>Real business example</h5>
-                  <ul class="learn-checklist-list"
-                    style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
-                    <li><strong>Dropbox MVP</strong>: Dropbox launched with a simple 3-minute video showing the product
-                      working, capturing 75,000 signups overnight before writing a single line of backend code.</li>
+                  <ul class="learn-checklist-list" style="font-style: italic; margin: 0; list-style-type: none; padding-left: 0;">
+                    <li><strong>Dropbox MVP</strong>: Dropbox launched with a simple 3-minute video showing the product working, capturing 75,000 signups overnight before writing a single line of backend code.</li>
                   </ul>
                 </div>
-
+                
                 <h5 class="learn-module-section-title">Common Beginner Mistake</h5>
                 <ul class="learn-checklist-list">
-                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Delaying your launch for
-                      months</strong> to refine a product that nobody has validated they want.</li>
-                  <li style="color: var(--bus-secondary); font-weight: 500;">Launch fast and adapt based on actual
-                    usage.</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;"><strong>Delaying your launch for months</strong> to refine a product that nobody has validated they want.</li>
+                  <li style="color: var(--bus-secondary); font-weight: 500;">Launch fast and adapt based on actual usage.</li>
                 </ul>
 
                 <h5 class="learn-module-section-title">Launch Day Checklist</h5>
@@ -1152,23 +960,6 @@
 
           </div>
 
-          <!-- Connected Workspace Navigation Footer -->
-          <div class="quick-nav-banner"
-            style="margin-top: 30px; padding: 20px; background: rgba(0, 208, 132, 0.04); border: 1px solid rgba(0, 208, 132, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span style="font-size: 1.5rem;">📚</span>
-              <div>
-                <h4 style="margin: 0 0 2px 0; color: #fff; font-size: 0.9rem; font-family: var(--font-title);">Academy
-                  Modules Completed?</h4>
-                <p style="margin: 0; color: var(--bus-text-secondary); font-size: 0.78rem;">Take the next step in your
-                  business pipeline by setting up your launch matrix.</p>
-              </div>
-            </div>
-            <button class="workspace-dropdown-trigger" onclick="window.switchBusinessWorkspace('build')"
-              style="padding: 10px 18px; font-size: 0.8rem; background: var(--bus-primary); color: #000; border: none; font-weight: 700; border-radius: 6px; cursor: pointer; transition: transform 0.2s;">
-              Proceed to Build ➔
-            </button>
-          </div>
         </div>
       </div>
 
@@ -1183,13 +974,9 @@
          ═══════════════════════════════════════════════════════ -->
       <div class="workspace-wrapper" id="pane-bus-build">
         <!-- Vetted AI Business Catalog Grid -->
-        <div class="business-catalog-section"
-          style="margin-bottom: 40px; border-bottom: 1px solid var(--bus-border); padding-bottom: 40px;">
-          <h3
-            style="color:#fff; margin-bottom: 24px; font-family: var(--font-mono); font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-            🚀 Vetted AI Business Catalog <span
-              style="font-size: 0.72rem; color: var(--bus-accent); border: 1px solid var(--bus-accent); padding: 2px 8px; border-radius: 12px; font-family: sans-serif; font-weight: 500;">9
-              ACTIVE MODELS</span>
+        <div class="business-catalog-section" style="margin-bottom: 40px; border-bottom: 1px solid var(--bus-border); padding-bottom: 40px;">
+          <h3 style="color:#fff; margin-bottom: 24px; font-family: var(--font-mono); font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+            🚀 Vetted AI Business Catalog <span style="font-size: 0.72rem; color: var(--bus-accent); border: 1px solid var(--bus-accent); padding: 2px 8px; border-radius: 12px; font-family: sans-serif; font-weight: 500;">9 ACTIVE MODELS</span>
           </h3>
           <div class="business-cards-grid" id="business-cards-grid">
             <!-- Dynamically populated in business.js -->
@@ -1197,12 +984,11 @@
         </div>
 
         <div class="blueprint-workspace">
-
+          
           <!-- Configurator inputs panel -->
           <div class="blueprint-form-card">
-            <h4 style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem;">Launch
-              Matrix Config</h4>
-
+            <h4 style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem;">Launch Matrix Config</h4>
+            
             <div class="blueprint-form-group">
               <label for="blueprint-model-select">Business Model Target</label>
               <select class="blueprint-form-select" id="blueprint-model-select">
@@ -1227,13 +1013,12 @@
 
           <!-- Output metrics screen -->
           <div class="blueprint-output-panel">
-
+            
             <!-- Premium Lock Gate -->
             <div id="build-premium-lock" class="business-lock-overlay-premium" style="display: none;">
               <div class="lock-gold-icon">👑</div>
               <h3 class="lock-premium-title">Premium Access Required</h3>
-              <p class="lock-premium-desc">Unlock custom AI business execution blueprints, interactive financial
-                projection dashboards, copy-paste prompt structures, and launch checklists by upgrading.</p>
+              <p class="lock-premium-desc">Unlock custom AI business execution blueprints, interactive financial projection dashboards, copy-paste prompt structures, and launch checklists by upgrading.</p>
               <button class="btn-lock-upgrade" onclick="showPricingModal(true)">Upgrade Workspace</button>
             </div>
 
@@ -1241,30 +1026,12 @@
             <div class="blueprint-result-body" id="blueprint-output-contents">
               <div style="text-align: center; padding-top: 100px; color: var(--bus-text-secondary);">
                 <span style="font-size: 3rem; display: block; margin-bottom: 20px;">⚙️</span>
-                <p style="font-family: var(--font-mono); font-size: 0.9rem;">Select launch configurations and click
-                  "Compile Business Blueprint" to build your custom guide.</p>
+                <p style="font-family: var(--font-mono); font-size: 0.9rem;">Select launch configurations and click "Compile Business Blueprint" to build your custom guide.</p>
               </div>
             </div>
 
           </div>
 
-          <!-- Connected Workspace Navigation Footer -->
-          <div class="quick-nav-banner"
-            style="margin-top: 30px; padding: 20px; background: rgba(46, 197, 255, 0.04); border: 1px solid rgba(46, 197, 255, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span style="font-size: 1.5rem;">🚀</span>
-              <div>
-                <h4 style="margin: 0 0 2px 0; color: #fff; font-size: 0.9rem; font-family: var(--font-title);">Business
-                  Blueprint Compiled?</h4>
-                <p style="margin: 0; color: var(--bus-text-secondary); font-size: 0.78rem;">Consult the AI Business
-                  Strategist to optimize your customer acquisition and revenue models.</p>
-              </div>
-            </div>
-            <button class="workspace-dropdown-trigger" onclick="window.switchBusinessWorkspace('grow')"
-              style="padding: 10px 18px; font-size: 0.8rem; background: var(--bus-accent); color: #000; border: none; font-weight: 700; border-radius: 6px; cursor: pointer; transition: transform 0.2s;">
-              Proceed to Grow ➔
-            </button>
-          </div>
         </div>
       </div>
 
@@ -1273,70 +1040,50 @@
          ═══════════════════════════════════════════════════════ -->
       <div class="workspace-wrapper" id="pane-bus-grow">
         <div class="strategist-workspace">
-
+          
           <!-- Funnel metrics analytics mock -->
-          <div class="strategist-sidebar-panel"
-            style="display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
-            <h4 style="color:#fff; margin-bottom: 5px; font-family: var(--font-mono); font-size: 1rem;">📊 Enterprise
-              Matrix</h4>
-
+          <div class="strategist-sidebar-panel" style="display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
+            <h4 style="color:#fff; margin-bottom: 5px; font-family: var(--font-mono); font-size: 1rem;">📊 Enterprise Matrix</h4>
+            
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label for="strategist-business-name"
-                style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">1. What is your business name,
-                domain niche, or core service offer?</label>
-              <textarea class="blueprint-form-select" id="strategist-business-name" rows="3"
-                style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);"
-                placeholder="e.g., Apex AI Solutions, custom LLM fine-tuning..."></textarea>
+              <label for="strategist-business-name" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">1. What is your business name, domain niche, or core service offer?</label>
+              <textarea class="blueprint-form-select" id="strategist-business-name" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Apex AI Solutions, custom LLM fine-tuning..."></textarea>
             </div>
 
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label for="strategist-target-audience"
-                style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">2. Describe your primary target
-                audience or ideal client avatar</label>
-              <textarea class="blueprint-form-select" id="strategist-target-audience" rows="3"
-                style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);"
-                placeholder="e.g., Mid-sized healthcare clinics, operations managers..."></textarea>
+              <label for="strategist-target-audience" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">2. Describe your primary target audience or ideal client avatar</label>
+              <textarea class="blueprint-form-select" id="strategist-target-audience" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Mid-sized healthcare clinics, operations managers..."></textarea>
             </div>
 
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label for="strategist-bottleneck"
-                style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">3. What is your biggest current
-                business bottleneck? (e.g., Traffic, Sales Conversions, Retention)</label>
-              <textarea class="blueprint-form-select" id="strategist-bottleneck" rows="3"
-                style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);"
-                placeholder="e.g., Getting qualified leads, sales closing rates..."></textarea>
+              <label for="strategist-bottleneck" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">3. What is your biggest current business bottleneck? (e.g., Traffic, Sales Conversions, Retention)</label>
+              <textarea class="blueprint-form-select" id="strategist-bottleneck" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Getting qualified leads, sales closing rates..."></textarea>
             </div>
 
-            <button class="btn-blueprint-compile" id="btn-strategist-analyze"
-              style="margin-top: 5px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; padding: 12px; background: var(--bus-primary); color: #000; border: none; border-radius: 8px; cursor: pointer; transition: all var(--transition-fast);">ANALYZE
-              ENTERPRISE MATRIX</button>
+            <button class="btn-blueprint-compile" id="btn-strategist-analyze" style="margin-top: 5px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; padding: 12px; background: var(--bus-primary); color: #000; border: none; border-radius: 8px; cursor: pointer; transition: all var(--transition-fast);">ANALYZE ENTERPRISE MATRIX</button>
           </div>
 
           <!-- Chat Strategist Console -->
           <div class="strategist-chat-container">
-
+            
             <!-- Premium Lock Gate -->
             <div id="expand-premium-lock" class="business-lock-overlay-premium" style="display: none;">
               <div class="lock-gold-icon">👑</div>
               <h3 class="lock-premium-title">A.R. Business Strategist</h3>
-              <p class="lock-premium-desc">Consult our custom executive business intelligence system for custom scaling
-                strategies, marketing funnels, and revenue optimization plans.</p>
+              <p class="lock-premium-desc">Consult our custom executive business intelligence system for custom scaling strategies, marketing funnels, and revenue optimization plans.</p>
               <button class="btn-lock-upgrade" onclick="showPricingModal(true)">Unlock Workspace</button>
             </div>
 
             <!-- Messages Logs -->
             <div class="strategist-chat-messages" id="chat-strategist-logs">
               <div class="chat-bubble bot">
-                Hello, I am the <strong>A.R. Business Strategist</strong>. I can analyze your acquisition channels,
-                marketing funnels, and operational systems. How can I help you optimize or scale your business today?
+                Hello, I am the <strong>A.R. Business Strategist</strong>. I can analyze your acquisition channels, marketing funnels, and operational systems. How can I help you optimize or scale your business today?
               </div>
             </div>
 
             <!-- Input bar -->
             <div class="strategist-chat-input-bar">
-              <input type="text" id="chat-strategist-input" class="strategist-chat-input"
-                aria-label="Ask the AI Strategist a question"
-                placeholder="Ask about customer acquisition, conversion rates, or scaling...">
+              <input type="text" id="chat-strategist-input" class="strategist-chat-input" aria-label="Ask the AI Strategist a question" placeholder="Ask about customer acquisition, conversion rates, or scaling...">
               <button class="btn-chat-send" id="btn-chat-strategist-send">Send</button>
             </div>
 
@@ -1354,85 +1101,46 @@
             <button class="strategist-tab-btn" data-output-tab="revenue">Revenue Growth</button>
             <button class="strategist-tab-btn" data-output-tab="plan">90-Day Plan</button>
           </div>
-
+          
           <div class="strategist-tab-contents" style="margin-top: 20px; position: relative;">
             <div id="strategist-blur-gate">
               <div class="blur-content-wrapper">
                 <div class="strategist-tab-pane active" id="tab-out-analysis">
-                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Executive
-                    Summary & System Gaps</h4>
-                  <p id="out-text-analysis"
-                    style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis
-                    data compilation...</p>
+                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Executive Summary & System Gaps</h4>
+                  <p id="out-text-analysis" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis data compilation...</p>
                 </div>
                 <div class="strategist-tab-pane" id="tab-out-opportunities">
-                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">High-Yield
-                    Growth Opportunities</h4>
-                  <p id="out-text-opportunities"
-                    style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis
-                    data compilation...</p>
+                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">High-Yield Growth Opportunities</h4>
+                  <p id="out-text-opportunities" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis data compilation...</p>
                 </div>
                 <div class="strategist-tab-pane" id="tab-out-automation">
-                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Operational
-                    AI Automation Pipelines</h4>
-                  <p id="out-text-automation"
-                    style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis
-                    data compilation...</p>
+                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Operational AI Automation Pipelines</h4>
+                  <p id="out-text-automation" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis data compilation...</p>
                 </div>
                 <div class="strategist-tab-pane" id="tab-out-marketing">
-                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Client
-                    Distribution & Branding Strategy</h4>
-                  <p id="out-text-marketing"
-                    style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis
-                    data compilation...</p>
+                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Client Distribution & Branding Strategy</h4>
+                  <p id="out-text-marketing" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis data compilation...</p>
                 </div>
                 <div class="strategist-tab-pane" id="tab-out-leads">
-                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Acquisition
-                    & Lead Generation Matrix</h4>
-                  <p id="out-text-leads"
-                    style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis
-                    data compilation...</p>
+                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Acquisition & Lead Generation Matrix</h4>
+                  <p id="out-text-leads" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis data compilation...</p>
                 </div>
                 <div class="strategist-tab-pane" id="tab-out-revenue">
-                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">LTV
-                    Enhancement & Pricing Adjustments</h4>
-                  <p id="out-text-revenue"
-                    style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis
-                    data compilation...</p>
+                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">LTV Enhancement & Pricing Adjustments</h4>
+                  <p id="out-text-revenue" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis data compilation...</p>
                 </div>
                 <div class="strategist-tab-pane" id="tab-out-plan">
-                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Sequential
-                    90-Day Execution Roadmap</h4>
-                  <p id="out-text-plan" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">
-                    Awaiting analysis data compilation...</p>
+                  <h4 style="color: var(--bus-primary); margin-bottom: 12px; font-family: var(--font-sans);">Sequential 90-Day Execution Roadmap</h4>
+                  <p id="out-text-plan" style="color: var(--bus-text-secondary); line-height: 1.7; font-size: 0.92rem;">Awaiting analysis data compilation...</p>
                 </div>
               </div>
               <div class="premium-gate-overlay" id="strategist-gate-overlay" style="display: none;">
                 <div class="gate-icon">🔒</div>
                 <h4>Free Trial Preview</h4>
-                <p>Upgrade to Premium for ₹99/mo to unlock full strategist recommendations, marketing funnels, and
-                  90-day execution roadmaps.</p>
+                <p>Upgrade to Premium for ₹99/mo to unlock full strategist recommendations, marketing funnels, and 90-day execution roadmaps.</p>
                 <button class="btn-gate-upgrade" onclick="showPricingModal(true)">Upgrade to Premium</button>
               </div>
             </div>
-          </div>
-
-          <!-- Connected Workspace Navigation Footer -->
-          <div class="quick-nav-banner"
-            style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span style="font-size: 1.5rem;">📊</span>
-              <div>
-                <h4 style="margin: 0 0 2px 0; color: #fff; font-size: 0.9rem; font-family: var(--font-title);">Scaling
-                  Plans Set?</h4>
-                <p style="margin: 0; color: var(--bus-text-secondary); font-size: 0.78rem;">Return to your main command
-                  dashboard to inspect active indicators.</p>
-              </div>
-            </div>
-            <button class="workspace-dropdown-trigger" onclick="window.switchBusinessWorkspace('dashboard')"
-              style="padding: 10px 18px; font-size: 0.8rem; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); font-weight: 700; border-radius: 6px; cursor: pointer; transition: transform 0.2s;">
-              Back to Dashboard ➔
-            </button>
           </div>
         </div>
 
@@ -1452,185 +1160,121 @@
   <div id="journey-modal-overlay" class="journey-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="journey-modal-card">
       <h3 class="journey-modal-title">Welcome to AI-OS Business</h3>
-      <p class="journey-modal-subtitle" style="margin-bottom: 24px;">Choose the journey that best matches your current
-        goal.</p>
-
+      <p class="journey-modal-subtitle" style="margin-bottom: 24px;">Choose the journey that best matches your current goal.</p>
+      
       <div class="journey-options-list">
         <div class="journey-option-card" data-journey="learn" style="margin-bottom: 12px;">
           <div class="journey-option-icon">📚</div>
           <div class="journey-option-info">
             <h4 class="journey-option-title">Learn Business Using AI</h4>
-            <p class="journey-option-desc">Start from absolute zero and learn how businesses work, how they make money,
-              and how AI is transforming entrepreneurship.</p>
+            <p class="journey-option-desc">Start from absolute zero and learn how businesses work, how they make money, and how AI is transforming entrepreneurship.</p>
           </div>
         </div>
         <div class="journey-option-card" data-journey="build" style="margin-bottom: 12px;">
           <div class="journey-option-icon">🚀</div>
           <div class="journey-option-info">
             <h4 class="journey-option-title">Build a Business Using AI</h4>
-            <p class="journey-option-desc">Receive practical, step-by-step implementation guides to launch your own
-              AI-powered business.</p>
+            <p class="journey-option-desc">Receive practical, step-by-step implementation guides to launch your own AI-powered business.</p>
           </div>
         </div>
         <div class="journey-option-card" data-journey="grow" style="margin-bottom: 12px;">
           <div class="journey-option-icon">📈</div>
           <div class="journey-option-info">
             <h4 class="journey-option-title">Grow Existing Business Using AI</h4>
-            <p class="journey-option-desc">Get advanced AI-powered consulting, automation ideas and growth strategies
-              for your existing business.</p>
+            <p class="journey-option-desc">Get advanced AI-powered consulting, automation ideas and growth strategies for your existing business.</p>
           </div>
         </div>
       </div>
-      <button class="btn-upgrade-premium-bus" id="btn-journey-continue"
-        style="width: 100%; justify-content: center; margin-top: 16px; padding: 12px !important; font-weight: 700;">Continue</button>
+      <button class="btn-upgrade-premium-bus" id="btn-journey-continue" style="width: 100%; justify-content: center; margin-top: 16px; padding: 12px !important; font-weight: 700;">Continue</button>
     </div>
   </div>
 
   <!-- Auth Overlay / Modal -->
-  <div id="auth-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true"
-    aria-labelledby="auth-modal-title">
+  <div id="auth-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
     <div class="auth-modal-card" style="max-width: 400px; text-align: center; padding: 30px;">
       <button id="auth-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">🔑</div>
-      <h3 id="auth-modal-title"
-        style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px; color: #fff;">Access AI-OS
-        Business</h3>
-      <p id="auth-modal-desc"
-        style="color: var(--bus-text-secondary); font-size: 0.88rem; margin-bottom: 24px; line-height: 1.5;">
+      <h3 id="auth-modal-title" style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px; color: #fff;">Access AI-OS Business</h3>
+      <p id="auth-modal-desc" style="color: var(--bus-text-secondary); font-size: 0.88rem; margin-bottom: 24px; line-height: 1.5;">
         Securely sign in or register to access all platform features, timelines, and digital business modules.
       </p>
 
       <!-- Input fields inside the card -->
-      <div id="auth-form-fields"
-        style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
+      <div id="auth-form-fields" style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
         <div>
-          <label for="auth-email"
-            style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Email
-            Address</label>
-          <input type="email" id="auth-email" placeholder="Enter your email"
-            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;"
-            required>
+          <label for="auth-email" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Email Address</label>
+          <input type="email" id="auth-email" placeholder="Enter your email" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
         </div>
         <!-- BUG-022: Name field shown only in signup mode (hidden in signin/forgot) -->
         <div id="auth-name-container" style="display: none;">
-          <label for="auth-name"
-            style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Full
-            Name</label>
-          <input type="text" id="auth-name" placeholder="Enter your full name"
-            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;"
-            autocomplete="name">
+          <label for="auth-name" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Full Name</label>
+          <input type="text" id="auth-name" placeholder="Enter your full name" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" autocomplete="name">
         </div>
         <div id="auth-password-container">
-          <label for="auth-password"
-            style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Password</label>
-          <input type="password" id="auth-password" placeholder="Enter your password"
-            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;"
-            required>
+          <label for="auth-password" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Password</label>
+          <input type="password" id="auth-password" placeholder="Enter your password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
         </div>
-        <div id="auth-modal-error"
-          style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);">
-        </div>
-        <div id="auth-modal-success"
-          style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);">
-        </div>
+        <div id="auth-modal-error" style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <div id="auth-modal-success" style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-          <button id="btn-forgot-password" type="button"
-            style="background: none; border: none; color: var(--bus-primary); font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: var(--font-mono);">Forgot
-            Password?</button>
-          <button id="btn-toggle-auth-mode" type="button"
-            style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: var(--font-mono);">Create
-            Account instead</button>
+          <button id="btn-forgot-password" type="button" style="background: none; border: none; color: var(--bus-primary); font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: var(--font-mono);">Forgot Password?</button>
+          <button id="btn-toggle-auth-mode" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: var(--font-mono);">Create Account instead</button>
         </div>
       </div>
 
       <!-- OTP fields wrapper -->
-      <div id="otp-verification-section"
-        style="display: none; flex-direction: column; gap: 12px; width: 100%; text-align: left; margin-bottom: 16px;">
+      <div id="otp-verification-section" style="display: none; flex-direction: column; gap: 12px; width: 100%; text-align: left; margin-bottom: 16px;">
         <div>
-          <label for="auth-otp-code"
-            style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Verification
-            Code (OTP)</label>
-          <input type="text" id="auth-otp-code" placeholder="Enter 6-digit code"
-            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;"
-            autocomplete="one-time-code">
+          <label for="auth-otp-code" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Verification Code (OTP)</label>
+          <input type="text" id="auth-otp-code" placeholder="Enter 6-digit code" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" autocomplete="one-time-code">
         </div>
-        <div id="otp-error-msg"
-          style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);">
-        </div>
-        <div id="otp-success-msg"
-          style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);">
-        </div>
-        <button id="btn-verify-otp" class="btn btn-primary"
-          style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, var(--bus-primary) 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s; margin-top: 8px;">
+        <div id="otp-error-msg" style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <div id="otp-success-msg" style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <button id="btn-verify-otp" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, var(--bus-primary) 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s; margin-top: 8px;">
           Verify OTP
         </button>
-        <button id="btn-resend-otp" type="button"
-          style="background: none; border: none; color: var(--bus-primary); font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Resend
-          OTP</button>
-        <button id="btn-back-to-auth" type="button"
-          style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Back
-          to Login</button>
+        <button id="btn-resend-otp" type="button" style="background: none; border: none; color: var(--bus-primary); font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Resend OTP</button>
+        <button id="btn-back-to-auth" type="button" style="background: none; border: none; color: #aaa; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 6px; width: 100%; text-align: center; font-family: var(--font-mono);">Back to Login</button>
       </div>
 
       <div id="auth-action-buttons" style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
-        <button id="btn-email-signin" class="btn btn-primary"
-          style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, var(--bus-primary) 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s;">
+        <button id="btn-email-signin" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, var(--bus-primary) 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s;">
           Sign In
         </button>
-        <button id="btn-email-signup" class="btn"
-          style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--bus-border); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; transition: all 0.2s; display: none;"
-          onmouseover="this.style.background='rgba(255,255,255,0.07)'"
-          onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+        <button id="btn-email-signup" class="btn" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--bus-border); background: rgba(255,255,255,0.03); color: #fff; cursor: pointer; transition: all 0.2s; display: none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
           Sign Up
         </button>
       </div>
 
-      <div id="auth-coupon-section"
-        style="text-align: center; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
-        <button id="btn-auth-coupon-trigger"
-          style="background: none; border: none; color: var(--bus-text-secondary); font-size: 0.82rem; cursor: pointer; text-decoration: underline; font-family: var(--font-mono);">
+      <div id="auth-coupon-section" style="text-align: center; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+        <button id="btn-auth-coupon-trigger" style="background: none; border: none; color: var(--bus-text-secondary); font-size: 0.82rem; cursor: pointer; text-decoration: underline; font-family: var(--font-mono);">
           🎫 Use Coupon Code instead
         </button>
       </div>
-      <p
-        style="font-size: 0.72rem; color: var(--bus-text-muted); text-align: center; margin-top: 16px; line-height: 1.4;">
-        By continuing you agree to our <a href="./terms.html" target="_blank"
-          style="color: var(--bus-primary);">Terms</a> and <a href="./policy.html" target="_blank"
-          style="color: var(--bus-primary);">Privacy Policy</a>.
+      <p style="font-size: 0.72rem; color: var(--bus-text-muted); text-align: center; margin-top: 16px; line-height: 1.4;">
+        By continuing you agree to our <a href="./terms.html" target="_blank" style="color: var(--bus-primary);">Terms</a> and <a href="./policy.html" target="_blank" style="color: var(--bus-primary);">Privacy Policy</a>.
       </p>
     </div>
   </div>
 
   <!-- Reset Password Modal -->
-  <div id="reset-password-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog"
-    aria-modal="true">
+  <div id="reset-password-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card" style="max-width: 400px; text-align: center; padding: 30px;">
       <button id="reset-password-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">🔒</div>
-      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px; color: #fff;">Reset Password
-      </h3>
+      <h3 style="font-family: var(--font-title); font-size: 1.6rem; margin-bottom: 8px; color: #fff;">Reset Password</h3>
       <p style="color: var(--bus-text-secondary); font-size: 0.88rem; margin-bottom: 20px; line-height: 1.5;">
         Enter your new secure account password below.
       </p>
-      <div
-        style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
+      <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 16px; text-align: left;">
         <div>
-          <label for="reset-new-password"
-            style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">New
-            Password</label>
-          <input type="password" id="reset-new-password" placeholder="Min 6 characters"
-            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;"
-            required>
+          <label for="reset-new-password" style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">New Password</label>
+          <input type="password" id="reset-new-password" placeholder="Min 6 characters" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;" required>
         </div>
-        <div id="reset-modal-error"
-          style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);">
-        </div>
-        <div id="reset-modal-success"
-          style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);">
-        </div>
+        <div id="reset-modal-error" style="color: #ff5a5a; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
+        <div id="reset-modal-success" style="color: #2EC5FF; font-size: 0.8rem; font-weight: bold; display: none; text-align: center; margin-top: 4px; font-family: var(--font-mono);"></div>
       </div>
-      <button id="btn-submit-reset-password" class="btn btn-primary"
-        style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, var(--bus-primary) 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s;">
+      <button id="btn-submit-reset-password" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; border-radius: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, var(--bus-primary) 0%, #0072FF 100%); border: none; color: #fff; cursor: pointer; transition: all 0.2s;">
         Save Password
       </button>
     </div>
@@ -1643,15 +1287,11 @@
       <div class="auth-modal-icon">🎫</div>
       <h3>Redeem Access Coupon</h3>
       <p>Enter your institutional or promotional coupon code below to unlock premium access.</p>
-
+      
       <div style="text-align: left;">
-        <input type="text" id="coupon-input" class="coupon-input" aria-label="Coupon code"
-          placeholder="e.g. AIOS-VIP-PASS" autocomplete="off" />
-        <div id="coupon-error-msg"
-          style="display: none; color: #ff4a4a; font-size: 0.85rem; margin-top: 8px; font-family: var(--font-mono);">
-        </div>
-        <button id="btn-coupon-submit" class="btn-upgrade-premium-bus"
-          style="margin-top: 20px; width: 100%; padding: 12px !important; justify-content: center;">
+        <input type="text" id="coupon-input" class="coupon-input" aria-label="Coupon code" placeholder="e.g. AIOS-VIP-PASS" autocomplete="off" />
+        <div id="coupon-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; margin-top: 8px; font-family: var(--font-mono);"></div>
+        <button id="btn-coupon-submit" class="btn-upgrade-premium-bus" style="margin-top: 20px; width: 100%; padding: 12px !important; justify-content: center;">
           Activate Access Code
         </button>
       </div>
@@ -1659,22 +1299,15 @@
   </div>
 
   <!-- Trial Welcome Modal -->
-  <div id="trial-welcome-modal-overlay" class="auth-modal-overlay" style="display: none; z-index: 1000;" role="dialog"
-    aria-modal="true">
-    <div class="auth-modal-card"
-      style="max-width: 480px; text-align: center; padding: 36px; border: 1px solid rgba(46, 197, 255, 0.25); box-shadow: 0 0 40px rgba(46, 197, 255, 0.2); background: #0c0c0e; border-radius: 20px;">
+  <div id="trial-welcome-modal-overlay" class="auth-modal-overlay" style="display: none; z-index: 1000;" role="dialog" aria-modal="true">
+    <div class="auth-modal-card" style="max-width: 480px; text-align: center; padding: 36px; border: 1px solid rgba(46, 197, 255, 0.25); box-shadow: 0 0 40px rgba(46, 197, 255, 0.2); background: #0c0c0e; border-radius: 20px;">
       <div style="font-size: 3.5rem; margin-bottom: 16px;">🎉</div>
-      <h3 style="font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 8px; color: #fff; font-weight: 800;">
-        Welcome to AI-OS!</h3>
-      <p style="color: #2EC5FF; font-weight: 700; font-size: 1.05rem; margin-bottom: 16px;">You've unlocked a FREE 3-Day
-        Premium Trial.</p>
+      <h3 style="font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 8px; color: #fff; font-weight: 800;">Welcome to AI-OS!</h3>
+      <p style="color: #2EC5FF; font-weight: 700; font-size: 1.05rem; margin-bottom: 16px;">You've unlocked a FREE 3-Day Premium Trial.</p>
       <p style="color: var(--text-secondary); margin-bottom: 28px; font-size: 0.9rem; line-height: 1.6;">
-        Explore every Premium feature with no payment required. Your trial starts now and expires automatically after 3
-        days.
+        Explore every Premium feature with no payment required. Your trial starts now and expires automatically after 3 days.
       </p>
-      <button onclick="closeTrialWelcomeModal()"
-        style="width: 100%; padding: 16px; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%); border: none; border-radius: 10px; color: #000; font-family: monospace; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 20px rgba(46, 197, 255, 0.25);"
-        onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+      <button onclick="closeTrialWelcomeModal()" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%); border: none; border-radius: 10px; color: #000; font-family: monospace; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 20px rgba(46, 197, 255, 0.25);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
         Start Exploring
       </button>
     </div>
@@ -1683,33 +1316,24 @@
   <!-- Onboarding Modal -->
   <div id="onboarding-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
     <div class="auth-modal-card" style="max-width: 550px;">
-      <button type="button" class="auth-modal-close-btn"
-        onclick="document.getElementById('onboarding-modal-overlay').style.display='none'"
-        aria-label="Close modal">&times;</button>
+      <button type="button" class="auth-modal-close-btn" onclick="document.getElementById('onboarding-modal-overlay').style.display='none'" aria-label="Close modal">&times;</button>
       <h3 style="font-size: 1.6rem; margin-bottom: 8px;">Complete Profile Onboarding</h3>
       <p>Configure your workspace details to proceed with business calculations.</p>
-
+      
       <form id="onboarding-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
         <div>
-          <label for="ob-fullname"
-            style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full
-            Name *</label>
-          <input type="text" id="ob-fullname" required class="coupon-input" placeholder="e.g. Jane Doe"
-            style="margin-top:0;">
+          <label for="ob-fullname" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full Name *</label>
+          <input type="text" id="ob-fullname" required class="coupon-input" placeholder="e.g. Jane Doe" style="margin-top:0;">
         </div>
-
+        
         <div style="display: flex; gap: 12px;">
           <div style="flex: 1;">
-            <label for="ob-dob"
-              style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date
-              of Birth *</label>
+            <label for="ob-dob" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date of Birth *</label>
             <input type="date" id="ob-dob" required class="coupon-input" style="margin-top:0; color-scheme: dark;">
           </div>
-
+          
           <div style="flex: 1;">
-            <label for="ob-gender"
-              style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender
-              *</label>
+            <label for="ob-gender" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender *</label>
             <select id="ob-gender" required class="coupon-input" style="margin-top:0; background: #111;">
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
@@ -1719,11 +1343,9 @@
             </select>
           </div>
         </div>
-
+        
         <div>
-          <label for="ob-profession"
-            style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession
-            *</label>
+          <label for="ob-profession" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession *</label>
           <select id="ob-profession" required class="coupon-input" style="margin-top:0; background: #111;">
             <option value="">Select Profession</option>
             <option value="Student">Student</option>
@@ -1736,34 +1358,25 @@
             <option value="Prefer Not To Say">Prefer Not To Say</option>
           </select>
         </div>
-
+        
         <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 0.82rem;">
-          <label
-            style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--bus-text-secondary);">
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--bus-text-secondary);">
             <input type="checkbox" id="ob-cb-terms" required style="margin-top: 3px;">
-            <span>I agree to the <a href="./terms.html" target="_blank"
-                style="color: var(--bus-primary); text-decoration: underline;">Terms and Conditions</a>. *</span>
+            <span>I agree to the <a href="./terms.html" target="_blank" style="color: var(--bus-primary); text-decoration: underline;">Terms and Conditions</a>. *</span>
           </label>
-          <label
-            style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--bus-text-secondary);">
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--bus-text-secondary);">
             <input type="checkbox" id="ob-cb-privacy" required style="margin-top: 3px;">
-            <span>I acknowledge the <a href="./policy.html" target="_blank"
-                style="color: var(--bus-primary); text-decoration: underline;">Privacy Policy</a>. *</span>
+            <span>I acknowledge the <a href="./policy.html" target="_blank" style="color: var(--bus-primary); text-decoration: underline;">Privacy Policy</a>. *</span>
           </label>
-          <label
-            style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--bus-text-secondary);">
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--bus-text-secondary);">
             <input type="checkbox" id="ob-cb-survey" required style="margin-top: 3px;">
             <span>I agree A.R. Labs may process my profile data for product optimizations. *</span>
           </label>
         </div>
-
-        <div id="onboarding-error-msg"
-          style="display: none; color: #ff4a4a; font-size: 0.85rem; font-family: var(--font-mono); margin-top: 8px;">
-        </div>
-
-        <button type="submit" class="btn-upgrade-premium-bus"
-          style="width: 100%; padding: 12px !important; justify-content: center; margin-top: 10px;">Complete
-          Registration</button>
+        
+        <div id="onboarding-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; font-family: var(--font-mono); margin-top: 8px;"></div>
+        
+        <button type="submit" class="btn-upgrade-premium-bus" style="width: 100%; padding: 12px !important; justify-content: center; margin-top: 10px;">Complete Registration</button>
       </form>
     </div>
   </div>
@@ -1773,23 +1386,19 @@
     <div class="pricing-hotstar-modal premium-saas-layout">
       <!-- Close button mapped to original ID so existing JS hides modal -->
       <button id="pricing-modal-close-btn" class="hotstar-close-btn" aria-label="Close modal">&times;</button>
-
+      
       <!-- Left Column: Value Proposition & Premium Summary -->
       <div class="pricing-modal-left saas-left-panel">
         <div class="pricing-left-content">
           <div style="font-size: 2.2rem; margin-bottom: 8px; animation: authIconPulse 2s infinite alternate;">💎</div>
-          <h2
-            style="font-family: var(--font-title); font-weight: 800; color: #fff; margin-bottom: 8px; font-size: 1.6rem; letter-spacing: -0.02em;">
-            AI-OS Premium</h2>
-          <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.4;">Execute
-            business blueprints, prompt libraries, and interactive roadmaps at a world-class level.</p>
-
-          <div
-            style="background: rgba(46, 197, 255, 0.1); border: 1px solid rgba(46, 197, 255, 0.2); border-radius: 10px; padding: 10px 12px; margin-bottom: 20px; font-size: 0.78rem; color: #2EC5FF; display: flex; align-items: center; gap: 8px; font-family: sans-serif; font-weight: 600;">
+          <h2 style="font-family: var(--font-title); font-weight: 800; color: #fff; margin-bottom: 8px; font-size: 1.6rem; letter-spacing: -0.02em;">AI-OS Premium</h2>
+          <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.4;">Execute business blueprints, prompt libraries, and interactive roadmaps at a world-class level.</p>
+          
+          <div style="background: rgba(46, 197, 255, 0.1); border: 1px solid rgba(46, 197, 255, 0.2); border-radius: 10px; padding: 10px 12px; margin-bottom: 20px; font-size: 0.78rem; color: #2EC5FF; display: flex; align-items: center; gap: 8px; font-family: sans-serif; font-weight: 600;">
             <span style="font-size: 1rem;">🎁</span>
             <span>New users receive a FREE 3-Day Premium Trial (One Time Only).</span>
           </div>
-
+          
           <!-- Premium Includes List -->
           <div class="saas-summary-section">
             <h4 class="saas-section-title">Premium Includes</h4>
@@ -1806,7 +1415,7 @@
               <li><span>Priority Support & Updates</span></li>
             </ul>
           </div>
-
+          
           <!-- Premium Value Box -->
           <div class="saas-value-box">
             <div class="saas-value-box-title">🏆 Premium Value</div>
@@ -1822,14 +1431,14 @@
           </div>
         </div>
       </div>
-
+      
       <!-- Right Column: Comparison Table & Plans -->
       <div class="pricing-modal-right saas-right-panel">
         <div class="saas-right-header">
           <h3 class="saas-main-title">Everything Included in AI-OS Premium</h3>
           <p class="saas-main-subtitle">Compare what you get with Free vs Premium.</p>
         </div>
-
+        
         <!-- Scrollable Comparison Table -->
         <div class="saas-table-container">
           <table class="hotstar-table saas-comparison-table">
@@ -1844,8 +1453,7 @@
               <tr>
                 <td class="feature-name">3-Day Premium Trial</td>
                 <td class="value-col">✅ Once</td>
-                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✨</span> Not Required
-                </td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✨</span> Not Required</td>
               </tr>
               <tr>
                 <td class="feature-name">AI Roadmaps</td>
@@ -1855,20 +1463,17 @@
               <tr>
                 <td class="feature-name">Business Blueprints</td>
                 <td class="value-col">Preview Only</td>
-                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✨</span> Full Access
-                </td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✨</span> Full Access</td>
               </tr>
               <tr>
                 <td class="feature-name">Video Roadmaps</td>
                 <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
-                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎥</span> Hindi +
-                  English</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎥</span> Hindi + English</td>
               </tr>
               <tr>
                 <td class="feature-name">Business Video Tutorials</td>
                 <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
-                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎥</span> Hindi +
-                  English</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎥</span> Hindi + English</td>
               </tr>
               <tr>
                 <td class="feature-name">JSON Prompt Generation</td>
@@ -1878,20 +1483,17 @@
               <tr>
                 <td class="feature-name">AI Business Academy</td>
                 <td class="value-col">Basic Lessons</td>
-                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎓</span> Complete
-                  Academy</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">🎓</span> Complete Academy</td>
               </tr>
               <tr>
                 <td class="feature-name">A.R. Strategist AI</td>
                 <td class="value-col">Limited</td>
-                <td class="value-col highlight premium-gold-col"><span class="feature-icon-gold">🤖</span> Unlimited
-                </td>
+                <td class="value-col highlight premium-gold-col"><span class="feature-icon-gold">🤖</span> Unlimited</td>
               </tr>
               <tr>
                 <td class="feature-name">Business Templates</td>
                 <td class="value-col"><span class="lock-icon">🔒</span> Locked</td>
-                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">📂</span> 500+
-                  Templates</td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">📂</span> 500+ Templates</td>
               </tr>
               <tr>
                 <td class="feature-name">Proposal Generator</td>
@@ -1916,8 +1518,7 @@
               <tr>
                 <td class="feature-name">Business Dashboard</td>
                 <td class="value-col">Limited</td>
-                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✓</span> Full Access
-                </td>
+                <td class="value-col highlight premium-glow-col"><span class="feature-icon-cyan">✓</span> Full Access</td>
               </tr>
               <tr>
                 <td class="feature-name">Lifetime Updates</td>
@@ -1932,52 +1533,45 @@
             </tbody>
           </table>
         </div>
-
+        
         <!-- Pricing Cards Section -->
         <div class="saas-pricing-container">
           <!-- Basic Plan Option -->
-          <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)" role="button"
-            tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="saas-card-header">Basic</div>
             <div class="saas-card-price">₹0</div>
             <div class="saas-card-subtitle">Lifetime Preview</div>
           </div>
-
+          
           <!-- Premium Monthly Option -->
-          <div class="saas-pricing-card active highlighted" id="card-plan-monthly"
-            onclick="selectSassPlan('monthly', this)" role="button" tabindex="0"
-            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="saas-pricing-card active highlighted" id="card-plan-monthly" onclick="selectSassPlan('monthly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <span class="saas-card-badge">Most Popular</span>
             <div class="saas-card-header">Monthly</div>
             <div class="saas-card-price">₹99<span class="price-period">/mo</span></div>
             <div class="saas-card-subtitle">Cancel Anytime</div>
           </div>
-
+          
           <!-- Premium Yearly Option -->
-          <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)" role="button"
-            tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <span class="saas-card-badge savings">Save 15%</span>
             <div class="saas-card-header">Yearly</div>
             <div class="saas-card-price">₹999<span class="price-period">/yr</span></div>
             <div class="saas-card-subtitle">Best Value</div>
           </div>
         </div>
-
+        
         <!-- Call to Action Container -->
         <div class="saas-cta-container">
           <button class="btn-saas-proceed" onclick="proceedSassSelection()">
             <span>Continue with Monthly (₹99)</span> ➔
           </button>
           <div class="saas-trust-text">Cancel Anytime • Secure Payment • Instant Access</div>
-
+          
           <!-- Coupon link -->
-          <span class="coupon-trigger-link" style="margin-top: 10px;"
-            onclick="document.getElementById('btn-pricing-coupon').click()" role="button" tabindex="0"
-            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Have a promo
-            code? Use Coupon</span>
+          <span class="coupon-trigger-link" style="margin-top: 10px;" onclick="document.getElementById('btn-pricing-coupon').click()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Have a promo code? Use Coupon</span>
         </div>
       </div>
-
+      
       <!-- Hidden elements containing the original buttons for event listener mapping -->
       <div style="display: none;">
         <button id="btn-pricing-free"></button>
@@ -1985,14 +1579,14 @@
         <button id="btn-pricing-yearly"></button>
         <button id="btn-pricing-coupon"></button>
       </div>
-
+      
       <script>
         let selectedSassPlan = 'monthly';
         function selectSassPlan(planType, cardEl) {
           selectedSassPlan = planType;
           document.querySelectorAll('.saas-pricing-card').forEach(card => card.classList.remove('active'));
           cardEl.classList.add('active');
-
+          
           // Update proceed button text dynamically to match selection
           const proceedBtnSpan = document.querySelector('.btn-saas-proceed span');
           if (planType === 'free') {
@@ -2003,7 +1597,7 @@
             proceedBtnSpan.textContent = 'Continue with Yearly (₹999)';
           }
         }
-
+        
         function proceedSassSelection() {
           if (selectedSassPlan === 'free') {
             document.getElementById('btn-pricing-free').click();
@@ -2019,43 +1613,32 @@
 
   <!-- Profile Modal -->
   <div id="profile-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
-    <div class="auth-modal-card"
-      style="max-width: 500px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
-      <button id="profile-modal-close-btn" class="auth-modal-close-btn"
-        style="position: absolute; top: 15px; right: 20px; z-index: 10;" aria-label="Close modal">&times;</button>
-      <div class="profile-modal-scroll-content"
-        style="overflow-y: auto; padding: 40px 32px 32px; flex: 1; box-sizing: border-box; text-align: center;">
+    <div class="auth-modal-card" style="max-width: 500px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
+      <button id="profile-modal-close-btn" class="auth-modal-close-btn" style="position: absolute; top: 15px; right: 20px; z-index: 10;" aria-label="Close modal">&times;</button>
+      <div class="profile-modal-scroll-content" style="overflow-y: auto; padding: 40px 32px 32px; flex: 1; box-sizing: border-box; text-align: center;">
         <div class="auth-modal-icon">👤</div>
         <h3>Workspace Profile</h3>
         <p>View and manage your account configurations.</p>
-
+        
         <form id="profile-edit-form" style="text-align: left; display: flex; flex-direction: column; gap: 16px;">
           <div>
-            <label for="pf-email"
-              style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Email
-              Address</label>
-            <input type="email" id="pf-email" readonly class="coupon-input"
-              style="margin-top:0; background: rgba(0,0,0,0.15); color: #888; cursor: not-allowed;">
+            <label for="pf-email" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Email Address</label>
+            <input type="email" id="pf-email" readonly class="coupon-input" style="margin-top:0; background: rgba(0,0,0,0.15); color: #888; cursor: not-allowed;">
           </div>
-
+          
           <div>
-            <label for="pf-fullname"
-              style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full
-              Name *</label>
+            <label for="pf-fullname" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full Name *</label>
             <input type="text" id="pf-fullname" required class="coupon-input" style="margin-top:0;">
           </div>
-
+          
           <div style="display: flex; gap: 12px;">
             <div style="flex: 1;">
-              <label for="pf-dob"
-                style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date
-                of Birth</label>
+              <label for="pf-dob" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Date of Birth</label>
               <input type="date" id="pf-dob" class="coupon-input" style="margin-top:0; color-scheme: dark;">
             </div>
-
+            
             <div style="flex: 1;">
-              <label for="pf-gender"
-                style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender</label>
+              <label for="pf-gender" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Gender</label>
               <select id="pf-gender" class="coupon-input" style="margin-top:0; background: #111;">
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -2065,10 +1648,9 @@
               </select>
             </div>
           </div>
-
+          
           <div>
-            <label for="pf-profession"
-              style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession</label>
+            <label for="pf-profession" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Profession</label>
             <select id="pf-profession" class="coupon-input" style="margin-top:0; background: #111;">
               <option value="">Select Profession</option>
               <option value="Student">Student</option>
@@ -2083,46 +1665,27 @@
 
           <div style="display: flex; gap: 12px;">
             <div style="flex: 1;">
-              <span
-                style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Account
-                Type</span>
-              <div id="pf-account-type-display"
-                style="padding: 10px; border-radius: 8px; border: 1px solid var(--bus-border); background: rgba(0,0,0,0.15); color: #ccc; font-weight: 600; font-size: 0.85rem; min-height: 38px;">
-                Email User</div>
+              <span style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Account Type</span>
+              <div id="pf-account-type-display" style="padding: 10px; border-radius: 8px; border: 1px solid var(--bus-border); background: rgba(0,0,0,0.15); color: #ccc; font-weight: 600; font-size: 0.85rem; min-height: 38px;">Email User</div>
             </div>
-
+            
             <div style="flex: 1;">
-              <span
-                style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Access
-                Level</span>
-              <div
-                style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--bus-border); background: rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; min-height: 38px;">
-                <span id="pf-access-status-display" class="profile-dropdown-status"
-                  style="margin-bottom:0; font-weight:700;">Basic</span>
-                <button type="button" id="btn-pf-upgrade" class="btn-upgrade-premium-bus"
-                  style="padding: 4px 8px !important; font-size: 0.65rem !important;">Upgrade</button>
+              <span style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Access Level</span>
+              <div style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--bus-border); background: rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; min-height: 38px;">
+                <span id="pf-access-status-display" class="profile-dropdown-status" style="margin-bottom:0; font-weight:700;">Basic</span>
+                <button type="button" id="btn-pf-upgrade" class="btn-upgrade-premium-bus" style="padding: 4px 8px !important; font-size: 0.65rem !important;">Upgrade</button>
               </div>
             </div>
           </div>
-
+          
           <div style="display: none;">
             <span id="pf-plan-display">Basic</span>
           </div>
-
-          <div id="profile-error-msg"
-            style="display: none; color: #ff4a4a; font-size: 0.85rem; font-family: var(--font-mono); margin-top: 8px;">
-          </div>
-
-          <button type="submit" class="btn-upgrade-premium-bus"
-            style="width: 100%; padding: 12px !important; justify-content: center; margin-top: 10px;">Save Profile
-            Changes</button>
+          
+          <div id="profile-error-msg" style="display: none; color: #ff4a4a; font-size: 0.85rem; font-family: var(--font-mono); margin-top: 8px;"></div>
+          
+          <button type="submit" class="btn-upgrade-premium-bus" style="width: 100%; padding: 12px !important; justify-content: center; margin-top: 10px;">Save Profile Changes</button>
         </form>
-        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06);">
-          <button type="button" onclick="handleDeleteAccount()" class="btn-upgrade-premium-bus"
-            style="width: 100%; padding: 12px !important; justify-content: center; background: #ff4a4a !important; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s;"
-            onmouseover="this.style.background='#ff3333'" onmouseout="this.style.background='#ff4a4a'">Delete
-            Account</button>
-        </div>
       </div>
     </div>
   </div>
@@ -2133,33 +1696,24 @@
       <button id="about-bus-modal-close-btn" class="auth-modal-close-btn" aria-label="Close modal">&times;</button>
       <div class="auth-modal-icon" style="text-align: center; font-size: 3rem;">💼</div>
       <h3 style="text-align: center; font-size: 1.6rem; margin-bottom: 12px;">About AI-OS Business Hub</h3>
-      <p style="text-align: center; font-size: 0.9rem; color: var(--bus-text-secondary); margin-bottom: 24px;">An elite
-        operational environment designed to fast-track business launch and scaling using automation.</p>
-
+      <p style="text-align: center; font-size: 0.9rem; color: var(--bus-text-secondary); margin-bottom: 24px;">An elite operational environment designed to fast-track business launch and scaling using automation.</p>
+      
       <div style="display: flex; flex-direction: column; gap: 16px; font-size: 0.88rem; line-height: 1.6;">
         <div>
-          <strong style="color: var(--bus-primary); display: block; margin-bottom: 4px;">📚 01 // The Academy
-            Workspace</strong>
-          <span style="color: var(--bus-text-secondary);">Offers first-principles structured knowledge tailored for
-            complete beginners, covering margins, LTV, CAC, product design, and client acquisition.</span>
+          <strong style="color: var(--bus-primary); display: block; margin-bottom: 4px;">📚 01 // The Academy Workspace</strong>
+          <span style="color: var(--bus-text-secondary);">Offers first-principles structured knowledge tailored for complete beginners, covering margins, LTV, CAC, product design, and client acquisition.</span>
         </div>
         <div>
-          <strong style="color: var(--bus-accent); display: block; margin-bottom: 4px;">🚀 02 // The Launchpad
-            Workspace</strong>
-          <span style="color: var(--bus-text-secondary);">Compiles execution matrix blueprints, setup estimates, and
-            localized launch guidelines matching your available budget parameters.</span>
+          <strong style="color: var(--bus-accent); display: block; margin-bottom: 4px;">🚀 02 // The Launchpad Workspace</strong>
+          <span style="color: var(--bus-text-secondary);">Compiles execution matrix blueprints, setup estimates, and localized launch guidelines matching your available budget parameters.</span>
         </div>
         <div>
-          <strong style="color: var(--bus-secondary); display: block; margin-bottom: 4px;">📈 03 // The Strategist
-            Workspace</strong>
-          <span style="color: var(--bus-text-secondary);">Acts as your executive business intelligence advisor (A.R.
-            Business Strategist) to draft a unified 7-tab launch and outreach roadmap.</span>
+          <strong style="color: var(--bus-secondary); display: block; margin-bottom: 4px;">📈 03 // The Strategist Workspace</strong>
+          <span style="color: var(--bus-text-secondary);">Acts as your executive business intelligence advisor (A.R. Business Strategist) to draft a unified 7-tab launch and outreach roadmap.</span>
         </div>
       </div>
-
-      <button class="btn-upgrade-premium-bus" id="btn-about-close"
-        style="width: 100%; margin-top: 24px; padding: 12px !important; justify-content: center;">Acknowledge and
-        Continue</button>
+      
+      <button class="btn-upgrade-premium-bus" id="btn-about-close" style="width: 100%; margin-top: 24px; padding: 12px !important; justify-content: center;">Acknowledge and Continue</button>
     </div>
   </div>
 
@@ -2168,8 +1722,7 @@
     <div class="footer-grid-container">
       <div class="footer-brand-col">
         <div class="logo" style="margin-bottom: 12px;">
-          <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+          <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
             <line x1="18" y1="20" x2="18" y2="10"></line>
             <line x1="12" y1="20" x2="12" y2="4"></line>
             <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -2181,31 +1734,25 @@
             <span class="logo-subtitle" style="font-size: 0.6rem;">Powered by A.R. Labs</span>
           </div>
         </div>
-        <p class="footer-brand-desc">Autonomous enterprise scaling systems and structured business simulators built
-          under a single luxury corporate environment.</p>
+        <p class="footer-brand-desc">Autonomous enterprise scaling systems and structured business simulators built under a single luxury corporate environment.</p>
         <div class="footer-signature">AI-OS BUSINESS • A.R. Labs</div>
       </div>
-
+      
       <div class="footer-section-col">
         <h4 class="footer-col-title">Main Ecosystem</h4>
         <ul class="footer-links">
           <li><a href="index.html" class="footer-link">AI-OS Dashboard</a></li>
-          <li><a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank" rel="noopener"
-              class="footer-link">RF Communication Portal</a></li>
-          <li><a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener"
-              class="footer-link">A.R. Publications</a></li>
+          <li><a href="https://anujrawal05.github.io/rf-communication-portal/index.html" target="_blank" rel="noopener" class="footer-link">RF Communication Portal</a></li>
+          <li><a href="https://arproduction050-byte.github.io/A.R.-Publications/" target="_blank" rel="noopener" class="footer-link">A.R. Publications</a></li>
         </ul>
       </div>
 
       <div class="footer-section-col">
         <h4 class="footer-col-title">Connect</h4>
         <ul class="footer-links">
-          <li><a href="mailto:arproduction050@gmail.com" target="_blank" rel="noopener" class="footer-link">Email
-              Support</a></li>
-          <li><a href="https://instagram.com/anujrawal.ar/" target="_blank" rel="noopener"
-              class="footer-link">Instagram</a></li>
-          <li><a href="https://www.linkedin.com/in/anujrawal-ar" target="_blank" rel="noopener"
-              class="footer-link">LinkedIn</a></li>
+          <li><a href="mailto:arproduction050@gmail.com" target="_blank" rel="noopener" class="footer-link">Email Support</a></li>
+          <li><a href="https://instagram.com/anujrawal.ar/" target="_blank" rel="noopener" class="footer-link">Instagram</a></li>
+          <li><a href="https://www.linkedin.com/in/anujrawal-ar" target="_blank" rel="noopener" class="footer-link">LinkedIn</a></li>
         </ul>
       </div>
 
@@ -2251,49 +1798,28 @@
        ============================================================ -->
   <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Primary mobile navigation">
     <button type="button" class="mobile-nav-tab active" data-workspace="dashboard">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path d="M3 10.5 12 3l9 7.5"></path>
-        <path d="M5 9.5V21h14V9.5"></path>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
       <span>Dashboard</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-workspace="learn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       <span>Learn</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-workspace="build">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path d="M13 2 3 14h7l-1 8 10-12h-7z"></path>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"></path></svg>
       <span>Build</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-workspace="grow">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <polyline points="3 17 9 11 13 15 21 6"></polyline>
-        <polyline points="14 6 21 6 21 13"></polyline>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 6"></polyline><polyline points="14 6 21 6 21 13"></polyline></svg>
       <span>Grow</span>
     </button>
     <button type="button" class="mobile-nav-tab" id="mobile-nav-profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <circle cx="12" cy="8" r="4"></circle>
-        <path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
       <span>Profile</span>
     </button>
   </nav>
 
   <script type="module" src="business.js?v=3.6"></script>
-  <script type="module" src="modules/core.js"></script>
-  <script type="module" src="modules/auth.js"></script>
-</body>
 
+</body>
 </html>

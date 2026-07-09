@@ -72,33 +72,11 @@
     bottom: calc(30px + var(--mob-bottomnav-height)) !important;
   }
 
-  /* Prevent horizontal scrolling on mobile viewports */
-  html, body {
-    overflow-x: hidden !important;
-    width: 100% !important;
-  }
-
   /* Reserve breathing room at the bottom of the page so the last
      bit of content isn't hidden behind the fixed bottom nav. */
   body {
-    padding-bottom: calc(var(--mob-bottomnav-height) + env(safe-area-inset-bottom, 0px) + 20px) !important;
+    padding-bottom: var(--mob-bottomnav-height);
     -webkit-overflow-scrolling: touch;
-  }
-
-  /* Ensure all touch targets are at least 44px on mobile devices for ease of tap */
-  button, 
-  a.btn, 
-  .btn, 
-  input[type="button"], 
-  input[type="submit"],
-  .mobile-nav-tab,
-  .workspace-dropdown-trigger,
-  .nav-link,
-  .tab-btn,
-  .strategist-tab-btn,
-  .learn-module-header {
-    min-height: 44px !important;
-    box-sizing: border-box;
   }
 
   /* ============================================================
