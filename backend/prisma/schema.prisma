@@ -312,7 +312,7 @@ model VideoProgress {
   userId         String   @map("user_id") @db.Uuid
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   videoFilename  String   @map("video_filename")
-  progressSeconds Decimal  @default(0.00) @map("progress_seconds") @db.Decimal(10, 2)
+  progressSeconds Decimal  @default("0.00") @map("progress_seconds") @db.Decimal(10, 2)
   isCompleted    Boolean  @default(false) @map("is_completed")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
