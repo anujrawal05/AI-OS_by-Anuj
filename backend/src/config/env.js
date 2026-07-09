@@ -72,7 +72,7 @@ try {
     RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
     BREVO_API_KEY: process.env.BREVO_API_KEY || '',
     EMAIL_FROM: process.env.EMAIL_FROM || 'arproduction050@gmail.com',
-    EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME || 'AI-OS',
+    EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME || 'AI-OS Powered by A.R. Labs',
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
     NEWS_API_KEY: process.env.NEWS_API_KEY || '',
     FINNHUB_API_KEY: process.env.FINNHUB_API_KEY || '',
