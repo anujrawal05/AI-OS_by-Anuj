@@ -11,15 +11,10 @@ const progressRoutes = require('./routes/progressRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
 const { requestLogger } = require('./middleware/loggingMiddleware');
-const { securityHeaders } = require('./middleware/securityHeadersMiddleware');
-const { csrfProtection } = require('./middleware/csrfMiddleware');
 const prisma = require('./lib/db');
 const logger = require('./utils/logger');
 
 const app = express();
-
-// Apply production-grade security headers globally
-app.use(securityHeaders);
 
 // Enable Gzip Compression for optimization of transfer payloads
 app.use(compression());
@@ -67,9 +62,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Enable Production Request Logging
 app.use(requestLogger);
-
-// Apply CSRF validation on all state-changing API calls
-app.use('/api', csrfProtection);
 
 // Register API Route Groups
 app.use('/api/auth', authRoutes);

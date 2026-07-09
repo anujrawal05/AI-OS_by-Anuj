@@ -31,17 +31,6 @@ function replacePlaceholders(html, variables = {}) {
   return output;
 }
 
-// Helper to mask sensitive email addresses in logs
-function maskEmail(email) {
-  if (typeof email !== 'string') return email;
-  const parts = email.split('@');
-  if (parts.length !== 2) return '***';
-  const name = parts[0];
-  const domain = parts[1];
-  if (name.length <= 2) return `${name[0]}***@${domain}`;
-  return `${name[0]}***${name[name.length - 1]}@${domain}`;
-}
-
 async function sendEmail(templateName, to, subject, variables = {}) {
   try {
     const emailSubject = subject || SUBJECTS[templateName] || 'Notification from AI-OS';
@@ -61,13 +50,8 @@ async function sendEmail(templateName, to, subject, variables = {}) {
     const processedHtml = replacePlaceholders(rawHtml, mergedVariables);
 
     if (!BREVO_API_KEY) {
-      const isProd = process.env.NODE_ENV === 'production';
-      console.warn(`[Email Service] BREVO_API_KEY is missing. Mock dispatch logic engaged.`);
-      if (isProd) {
-        console.log(`[Email Service] Mock email to ${maskEmail(to)} with subject "${emailSubject}" simulated (content hidden in production).`);
-      } else {
-        console.log(`[Email Service] Mock email to ${maskEmail(to)}\nSubject: ${emailSubject}\nContent:\n${processedHtml}`);
-      }
+      console.warn(`[Email Service] BREVO_API_KEY is missing. Printing HTML payload to console instead.`);
+      console.log(`To: ${to}\nSubject: ${emailSubject}\nContent:\n${processedHtml}`);
       return { success: true, mock: true };
     }
 
@@ -92,11 +76,11 @@ async function sendEmail(templateName, to, subject, variables = {}) {
     }
 
     const result = await response.json();
-    console.log(`[Email Service] Email "${templateName}" sent successfully to ${maskEmail(to)}. MessageId:`, result.messageId);
+    console.log(`[Email Service] Email "${templateName}" sent successfully to ${to}. MessageId:`, result.messageId);
     return { success: true, messageId: result.messageId };
 
   } catch (err) {
-    console.error(`[Email Service Error] Failed to send email "${templateName}" to ${maskEmail(to)}:`, err.message);
+    console.error(`[Email Service Error] Failed to send email "${templateName}" to ${to}:`, err.message);
     return { success: false, error: err.message };
   }
 }
