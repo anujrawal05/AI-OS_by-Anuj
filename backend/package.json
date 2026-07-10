@@ -4,7 +4,7 @@
   "description": "AI-OS v2 Backend Foundation - Clean Rebuild",
   "main": "src/server.js",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   },
   "scripts": {
     "start": "node src/server.js",
