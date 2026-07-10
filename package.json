@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "AI-OS Execution Platform - Unified Frontend and Vercel Serverless Backend",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "vercel-build": "prisma generate --schema=backend/prisma/schema.prisma"
