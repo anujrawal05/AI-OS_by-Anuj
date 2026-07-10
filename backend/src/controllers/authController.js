@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const prisma = require('../lib/db');
 const { sendEmail } = require('../services/emailService');
 const { logAuditEvent } = require('../services/auditService');
+const { getSubscription } = require('../services/subscriptionService');
 const {
   MAX_FAILED_LOGIN_ATTEMPTS,
   LOCKOUT_DURATION_MS,
@@ -437,7 +438,6 @@ async function login(req, res, next) {
 // 5. GET ACTIVE PROFILE (/me)
 async function getMe(req, res, next) {
   try {
-    const { getSubscription } = require('../services/subscriptionService');
     const subscription = await getSubscription(req.user.id);
 
     const user = await prisma.user.findUnique({
