@@ -19,10 +19,13 @@ function validateEnv() {
   }
 
   // Allow test running to skip full env restrictions for localized tests if database is mockable,
-  // but fail for standard environments
+  // but fail for standard environments.
+  // NOTE: process.exit(1) is intentionally NOT used here — it is unsafe in Vercel Serverless
+  // (terminates the runtime without a proper HTTP response). Throw instead.
   if (missing.length > 0 && process.env.NODE_ENV !== 'test') {
-    logger.error(`[Env Validation Failure] Missing required environment variables: ${missing.join(', ')}`);
-    process.exit(1);
+    const errMsg = `[Env Validation Failure] Missing required environment variables: ${missing.join(', ')}. Set them in your deployment platform (Vercel Dashboard → Settings → Environment Variables).`;
+    logger.error(errMsg);
+    throw new Error(errMsg);
   }
 
   // Warn if NODE_ENV is not production — cross-origin cookies will break

@@ -3,11 +3,15 @@
   "version": "2.0.0",
   "description": "AI-OS v2 Backend Foundation - Clean Rebuild",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "vercel-build": "prisma generate",
     "build": "prisma generate"
-  }
+  },
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",

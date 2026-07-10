@@ -3,17 +3,25 @@ const logger = require('../utils/logger');
 
 let prisma;
 
-if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
-} else {
-  // Prevent multiple instances of Prisma Client in development during hot-reloads
-  if (!global.prisma) {
-    global.prisma = new PrismaClient({
-      log: ['error', 'warn']
-    });
+// Vercel Serverless: Each function invocation may be a new Node.js runtime instance (cold-start)
+// OR a reused warm instance. We use the global singleton pattern in BOTH environments to
+// prevent spawning multiple PrismaClient instances in the same process.
+// In production (Neon/PgBouncer), set connection_limit=1 to avoid exhausting the pool
+// across concurrent Vercel function invocations.
+if (!global._prismaClient) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  global._prismaClient = new PrismaClient({
+    log: isProduction ? ['error'] : ['error', 'warn'],
+    datasources: isProduction
+      ? { db: { url: process.env.DATABASE_URL } }
+      : undefined
+  });
+  if (isProduction) {
+    logger.info('[DB] Prisma client initialized for production (Vercel Serverless).');
   }
-  prisma = global.prisma;
 }
+
+prisma = global._prismaClient;
 
 // Neon's pooled (PgBouncer transaction-mode) connection intermittently drops
 // interactive transactions mid-flight, surfacing as "Transaction API error:

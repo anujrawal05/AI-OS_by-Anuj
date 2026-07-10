@@ -14,10 +14,16 @@ const {
   MAX_OTP_RESENDS
 } = require('../constants/authConstants');
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('[authController] JWT_SECRET environment variable is not set. Refusing to start.');
+// Lazy JWT secret accessor — do NOT throw at import time.
+// Throwing at module load crashes the entire serverless app even for endpoints that don't need JWT.
+// Instead, validate lazily so /api/health still works even if JWT_SECRET is misconfigured.
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('[authController] JWT_SECRET environment variable is not configured. Auth endpoints are unavailable.');
+  }
+  return secret;
 }
-const JWT_SECRET = process.env.JWT_SECRET;
 
 // Helper to set HttpOnly Session Cookie.
 // In production the frontend and backend are on different domains (Vercel vs Railway/Render),
@@ -199,7 +205,7 @@ async function verifyOtp(req, res, next) {
     }
 
     // Complete transaction: verify user, mark token as used, init base tables
-    const sessionToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+    const sessionToken = jwt.sign({ userId: user.id, role: user.role }, getJwtSecret(), { expiresIn: '30d' });
     const sessionExpires = new Date(Date.now() + SESSION_EXPIRY_MS);
 
     await prisma.withTransaction(async (tx) => {
@@ -262,7 +268,7 @@ async function resendOtp(req, res, next) {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { emailVerifications: { orderBy: { createdAt: 'desc' } } }
+      include: { emailVerifications: { orderBy: { createdAt: 'desc' }, take: 50 } }
     });
 
     if (!user) {
@@ -384,7 +390,7 @@ async function login(req, res, next) {
     // Generate JWT and register session inside the transaction callback
     let sessionToken;
     await prisma.withBatchTransaction(() => {
-      sessionToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+      sessionToken = jwt.sign({ userId: user.id, role: user.role }, getJwtSecret(), { expiresIn: '30d' });
       const sessionExpires = new Date(Date.now() + SESSION_EXPIRY_MS);
       return [
         prisma.session.create({

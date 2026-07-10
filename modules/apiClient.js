@@ -29,7 +29,7 @@ if (API_BASE_URL === '__NO_BACKEND__') {
     'in index.html and aios_buisness.html.'
   );
 } else if (API_BASE_URL === '') {
-  console.info('[AI-OS] Backend: same-origin (localhost development mode)');
+  console.info('[AI-OS] Backend: same-origin mode — API calls via /api/* (Vercel Serverless)');
 } else {
   console.info(`[AI-OS] Backend: ${API_BASE_URL}`);
 }

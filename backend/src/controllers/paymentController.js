@@ -4,17 +4,26 @@ const prisma = require('../lib/db');
 const { upgradeSubscription } = require('../services/subscriptionService');
 const { logAuditEvent } = require('../services/auditService');
 
-// Initialize Razorpay Client instance
-if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_SECRET_KEY) {
-  throw new Error('[paymentController] RAZORPAY_KEY_ID and RAZORPAY_SECRET_KEY environment variables must be set.');
+// Lazy Razorpay initialization — do NOT throw at import time (would crash entire serverless app).
+// Instead, validate and create the instance on first actual payment request.
+let _razorpay = null;
+function getRazorpay() {
+  if (_razorpay) return _razorpay;
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_SECRET_KEY;
+  if (!keyId || !keySecret) {
+    throw new Error('Payment service is not configured. RAZORPAY_KEY_ID and RAZORPAY_SECRET_KEY must be set in environment variables.');
+  }
+  _razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  return _razorpay;
 }
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
-const RAZORPAY_SECRET_KEY = process.env.RAZORPAY_SECRET_KEY;
 
-const razorpay = new Razorpay({
-  key_id: RAZORPAY_KEY_ID,
-  key_secret: RAZORPAY_SECRET_KEY
-});
+// For signature verification we need the secret — access lazily as well.
+function getRazorpaySecret() {
+  const secret = process.env.RAZORPAY_SECRET_KEY;
+  if (!secret) throw new Error('RAZORPAY_SECRET_KEY is not configured.');
+  return secret;
+}
 
 // 1. CREATE GATEWAY CHECKOUT ORDER
 async function createOrder(req, res, next) {
@@ -28,7 +37,7 @@ async function createOrder(req, res, next) {
     const amountInPaise = 999 * 100; // ₹999.00 in paise
     
     // Create Razorpay order
-    const order = await razorpay.orders.create({
+    const order = await getRazorpay().orders.create({
       amount: amountInPaise,
       currency: 'INR',
       receipt: `rec_${Date.now()}_${req.user.id.slice(0, 8)}`,
@@ -45,13 +54,17 @@ async function createOrder(req, res, next) {
     });
 
     if (!sub) {
-      // Auto-recover: provision a Free subscription for this user and continue
+      // Auto-recover: provision a Free subscription for this user and continue.
+      // Use correct Prisma schema field names (currentPeriodStart / currentPeriodEnd).
+      const now = new Date();
+      const oneYearLater = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
       sub = await prisma.subscription.create({
         data: {
           userId: req.user.id,
           plan: 'Free',
-          status: 'Active',
-          startDate: new Date()
+          status: 'Expired',
+          currentPeriodStart: now,
+          currentPeriodEnd: oneYearLater
         }
       });
     }
@@ -106,7 +119,7 @@ async function verifySignature(req, res, next) {
     // Verify cryptographic signature
     const text = `${razorpay_order_id}|${razorpay_payment_id}`;
     const generatedSignature = crypto
-      .createHmac('sha256', RAZORPAY_SECRET_KEY)
+      .createHmac('sha256', getRazorpaySecret())
       .update(text)
       .digest('hex');
 
@@ -249,10 +262,11 @@ async function redeemCoupon(req, res, next) {
 // 4. RETRIEVE PUBLIC PAYMENT KEY ID
 async function getPaymentKey(req, res, next) {
   try {
-    return res.status(200).json({
-      success: true,
-      key: process.env.RAZORPAY_KEY_ID || 'rzp_test_T4Mr1D3RBNpiEi'
-    });
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    if (!keyId) {
+      return res.status(503).json({ error: 'Payment service is not configured.' });
+    }
+    return res.status(200).json({ success: true, key: keyId });
   } catch (err) {
     next(err);
   }

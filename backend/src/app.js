@@ -63,6 +63,12 @@ app.use(express.urlencoded({ extended: true }));
 // Enable Production Request Logging
 app.use(requestLogger);
 
+// Health Endpoint — registered FIRST before all other routes.
+// This ensures /api/health always responds even if specific route files have partial failures.
+app.get(['/health', '/api/health'], (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date(), version: '2.0.0' });
+});
+
 // Register API Route Groups
 app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -82,11 +88,6 @@ app.use(express.static(staticPath, {
     }
   }
 }));
-
-// Health Endpoint (Liveness Check)
-app.get(['/health', '/api/health'], (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date() });
-});
 
 // Ready Endpoint (Readiness Check verifying DB connections)
 app.get(['/ready', '/api/ready'], async (req, res) => {

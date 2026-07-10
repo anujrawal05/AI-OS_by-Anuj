@@ -1,10 +1,16 @@
 const jwt = require('jsonwebtoken');
 const prisma = require('../lib/db');
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('[authMiddleware] JWT_SECRET environment variable is not set. Refusing to start.');
+// Lazy JWT secret accessor — do NOT throw at import time.
+// This prevents the entire Express app from crashing on Vercel cold-start
+// if JWT_SECRET is temporarily not set.
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('[authMiddleware] JWT_SECRET is not configured. Authentication is unavailable.');
+  }
+  return secret;
 }
-const JWT_SECRET = process.env.JWT_SECRET;
 
 // Cookie attributes must exactly mirror setSessionCookie / clearSessionCookie in authController.
 // SameSite=None + Secure is required for cross-origin (Vercel frontend + deployed backend).
@@ -31,8 +37,8 @@ async function authenticateUser(req, res, next) {
   }
 
   try {
-    // 1. Verify JWT signature and payload
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // 1. Verify JWT signature and payload (also validates JWT expiry)
+    const decoded = jwt.verify(token, getJwtSecret());
 
     // 2. Validate session exists in PostgreSQL (enforces revocation / sign-out all)
     const activeSession = await prisma.session.findUnique({
@@ -55,11 +61,19 @@ async function authenticateUser(req, res, next) {
       return res.status(401).json({ error: 'Session expired or revoked.' });
     }
 
+    // 3. Enforce session expiry stored in DB (belt-and-suspenders alongside JWT expiry)
+    if (new Date() > activeSession.expiresAt) {
+      // Clean up the stale session record
+      await prisma.session.delete({ where: { sessionToken: token } }).catch(() => {});
+      clearSessionCookieMiddleware(req, res);
+      return res.status(401).json({ error: 'Session has expired. Please sign in again.' });
+    }
+
     if (activeSession.user.suspended) {
       return res.status(403).json({ error: 'Account suspended.' });
     }
 
-    // 3. Attach session context to request object
+    // 4. Attach session context to request object
     req.user = activeSession.user;
     req.sessionToken = token;
 

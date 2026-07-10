@@ -2,18 +2,30 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/src/app.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
     },
     {
-      "src": "**/*",
+      "src": "*.{html,css,js,json,png,jpg,jpeg,gif,svg,ico,webp,txt,md}",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "modules/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "locales/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "docs/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/src/app.js"
+      "dest": "/api/index.js"
     },
     {
       "handle": "filesystem"
