@@ -41,6 +41,14 @@ async function loadTutorialsModule() {
   return tutorialsModuleInstance;
 }
 
+let uiModuleInstance = null;
+async function loadUIModule() {
+  if (!uiModuleInstance) {
+    uiModuleInstance = await import('./modules/ui.js');
+  }
+  return uiModuleInstance;
+}
+
 // Each workspace's init*Section() binds addEventListener without removing
 // prior listeners, so it must only ever run once per module (mirrors the
 // singleton-guarded pattern used by app.js's loadExploreModule). Calling it
@@ -185,6 +193,11 @@ window.verifyQuizAnswer = async function(...args) {
 window.downloadTemplate = async function(...args) {
   const mod = await loadLearnModule();
   if (mod && mod.downloadTemplate) mod.downloadTemplate(...args);
+};
+
+window.showPricingModal = async function(...args) {
+  const mod = await loadUIModule();
+  if (mod && mod.showPricingModal) mod.showPricingModal(...args);
 };
 
 // selectAndCompileBusiness and handleBusinessVideoPlay now live in build.js
