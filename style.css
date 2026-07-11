@@ -10397,7 +10397,7 @@ body.modal-open {
   width: 100%;
   padding: 11px;
   background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-  color: #0a0a0c;
+  color: var(--accent-bg-invert);
   border: none;
   border-radius: 10px;
   font-family: var(--font-mono);
