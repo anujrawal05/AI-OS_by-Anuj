@@ -3,6 +3,7 @@
 
 import { state } from './core.js';
 import { showToast } from './utils.js';
+import { apiCall } from './apiClient.js';
 import { isUserAuthenticated } from './auth.js';
 import { showPricingModal } from './ui.js';
 import { playVideoWithPlayer } from './video.js';
@@ -107,20 +108,20 @@ export async function loadLiveBusinessNews() {
   
   if (!contentEl) return;
 
+  if (loadingEl && loadingEl.style.display !== 'block') {
+    loadingEl.style.display = 'block';
+    if (errorEl) errorEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'none';
+  }
+
   try {
-    const mockArticles = [
-      { title: "OpenAI releases o3-mini — outperforms o1 at half the cost", source: "OpenAI", link: "https://news.google.com" },
-      { title: "Google DeepMind's Gemini 2.5 Pro scores #1 on coding benchmarks", source: "Google", link: "https://news.google.com" },
-      { title: "Anthropic raises $4B, targets AI safety research acceleration", source: "Anthropic", link: "https://news.google.com" },
-      { title: "AI agents now autonomously completing browser tasks at 80% success", source: "Research", link: "https://news.google.com" },
-      { title: "Google Cloud Announces $2B AI Accelerator Pool for Seed Startups", source: "TechCrunch", link: "https://news.google.com" },
-      { title: "Llama 3.3 Fine-tuning Benchmarks Reveal 40% Operational Cost Reductions", source: "VentureBeat", link: "https://news.google.com" },
-      { title: "Outbound Agentic Workflows Replace Traditional Call Center Pools", source: "Bloomberg", link: "https://news.google.com" },
-      { title: "Make.com Raises $150M Series C to Expand Enterprise Automation Integrations", source: "TechNews", link: "https://news.google.com" }
-    ];
-    
+    const data = await apiCall('/api/market/news');
+    if (!data || !data.success || !data.articles) {
+      throw new Error("Invalid response structure from news API proxy");
+    }
+
     contentEl.innerHTML = '';
-    mockArticles.forEach(art => {
+    data.articles.forEach(art => {
       const item = document.createElement('a');
       item.href = art.link;
       item.target = '_blank';
@@ -129,7 +130,8 @@ export async function loadLiveBusinessNews() {
       item.style.display = 'block';
       item.style.textDecoration = 'none';
       
-      const pubTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const pubDate = new Date(art.publishedAt);
+      const pubTime = pubDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + pubDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
       
       item.innerHTML = `
         <div class="news-item-meta" style="display:flex; justify-content:space-between; margin-bottom: 4px; font-family:var(--font-mono); font-size:0.75rem;">
@@ -146,9 +148,12 @@ export async function loadLiveBusinessNews() {
     if (contentEl) contentEl.style.display = 'block';
 
   } catch (err) {
-    console.error("News load failed:", err.message);
+    console.error("[Live News Load Error] Failed to retrieve live business news feeds:", err);
     if (loadingEl) loadingEl.style.display = 'none';
-    if (errorEl) errorEl.style.display = 'block';
+    if (errorEl) {
+      errorEl.textContent = `Live news feeds temporarily unavailable: ${err.message}`;
+      errorEl.style.display = 'block';
+    }
   }
 }
 

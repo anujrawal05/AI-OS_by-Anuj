@@ -81,6 +81,14 @@ function getMockStrategy(name, audience, bottleneck) {
   };
 }
 
+function formatINR(num) {
+  if (num === undefined || num === null) return 'N/A';
+  return '₹' + Number(num).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
 export async function loadLiveDashboardMetrics() {
   const loadingEl = document.getElementById('market-data-loading');
   const errorEl = document.getElementById('market-data-error');
@@ -89,35 +97,90 @@ export async function loadLiveDashboardMetrics() {
   
   if (!tbody) return;
 
+  // Show loading state initially
+  if (loadingEl && loadingEl.style.display !== 'block') {
+    loadingEl.style.display = 'block';
+    if (errorEl) errorEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'none';
+  }
+
   try {
-    // Render static premium market metrics
-    tbody.innerHTML = `
-      <tr>
-        <td style="font-family: var(--font-mono); color: #fff;">NIFTY 50</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #fff;">23,540.20</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #00D084;">+0.85%</td>
-      </tr>
-      <tr>
-        <td style="font-family: var(--font-mono); color: #fff;">NASDAQ</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #fff;">17,820.65</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #00D084;">+1.12%</td>
-      </tr>
-      <tr>
-        <td style="font-family: var(--font-mono); color: #fff;">NVDA (NVIDIA)</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #fff;">$127.40</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #00D084;">+3.42%</td>
-      </tr>
-      <tr>
-        <td style="font-family: var(--font-mono); color: #fff;">BTC (Bitcoin)</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #fff;">$65,480</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #ff4a4a;">-1.25%</td>
-      </tr>
-      <tr>
-        <td style="font-family: var(--font-mono); color: #fff;">Gold</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #fff;">$2,320.50</td>
-        <td style="font-family: var(--font-mono); text-align: right; color: #00D084;">+0.15%</td>
-      </tr>
+    const data = await apiCall('/api/market/quotes');
+    if (!data || !data.success || !data.quotes) {
+      throw new Error("Invalid response or quotes data missing");
+    }
+
+    const { quotes, usdInrRate, timestamp } = data;
+    let html = '';
+
+    const assetConfig = [
+      { key: 'NIFTY', name: 'NIFTY 50' },
+      { key: 'NASDAQ', name: 'NASDAQ*' },
+      { key: 'NVDA', name: 'NVDA (NVIDIA)*' },
+      { key: 'BTC', name: 'BTC (Bitcoin)*' },
+      { key: 'Gold', name: 'Gold*' }
+    ];
+
+    assetConfig.forEach(cfg => {
+      const q = quotes[cfg.key];
+      if (q) {
+        const priceStr = formatINR(q.priceINR);
+        const changeVal = q.changeINR;
+        const pctVal = q.percentChange;
+        
+        const sign = changeVal >= 0 ? '+' : '';
+        const color = changeVal >= 0 ? '#00D084' : '#ff4a4a';
+        const changeStr = `${sign}${changeVal.toFixed(2)}`;
+        const pctStr = `${sign}${pctVal.toFixed(2)}%`;
+
+        html += `
+          <tr>
+            <td style="font-family: var(--font-mono); color: #fff;">${cfg.name}</td>
+            <td style="font-family: var(--font-mono); text-align: right; color: #fff;">${priceStr}</td>
+            <td style="font-family: var(--font-mono); text-align: right; color: ${color};">${changeStr} (${pctStr})</td>
+          </tr>
+        `;
+      } else {
+        html += `
+          <tr>
+            <td style="font-family: var(--font-mono); color: #fff;">${cfg.name}</td>
+            <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-muted);">Data Unavailable</td>
+            <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-muted);">N/A</td>
+          </tr>
+        `;
+      }
+    });
+
+    tbody.innerHTML = html;
+
+    // Render footer details
+    let footerEl = document.getElementById('market-data-footer');
+    if (!footerEl) {
+      footerEl = document.createElement('div');
+      footerEl.id = 'market-data-footer';
+      footerEl.style.cssText = 'margin-top: 12px; font-size: 0.72rem; color: var(--bus-text-secondary); font-family: var(--font-mono); line-height: 1.4; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--bus-border); padding-top: 10px;';
+      contentEl.appendChild(footerEl);
+    }
+
+    const formattedTime = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    footerEl.innerHTML = `
+      <span>* Converted from USD. Rate: 1 USD = ₹${usdInrRate.toFixed(2)}</span>
+      <span>Last Updated: ${formattedTime}</span>
     `;
+
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (errorEl) errorEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
+
+  } catch (err) {
+    console.error("[Live Market Metrics Load Error] Failed to retrieve live quote data:", err);
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (errorEl) {
+      errorEl.textContent = `Live market data temporarily unavailable: ${err.message}`;
+      errorEl.style.display = 'block';
+    }
+  }
+}
 
     // Render calendar metrics
     const calList = document.getElementById('calendar-events-list');
@@ -432,6 +495,15 @@ export function initExpandSection() {
 
   loadLiveDashboardMetrics();
   loadLiveBusinessNews();
+
+  // Prevent multiple intervals stacking by clearing any prior instance
+  if (window.marketRefreshInterval) {
+    clearInterval(window.marketRefreshInterval);
+  }
+  // Setup 60-second auto-refresh
+  window.marketRefreshInterval = setInterval(() => {
+    loadLiveDashboardMetrics();
+  }, 60000);
 }
 
 // Global exposure for backwards compatibility
