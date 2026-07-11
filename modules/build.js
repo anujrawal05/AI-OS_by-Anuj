@@ -726,6 +726,26 @@ export function initBuildSection() {
         };
         const difficulty = difficultyMapping[model] || 'Medium';
 
+        const isHi = state.language === 'hi';
+        const isHng = state.language === 'hinglish';
+        
+        let complexityLabel = "Complexity Index";
+        let budgetLabel = "Operational Budget";
+        let toolsLabel = "Core Tech Tooling";
+        let autoLabel = "System Architecture Automation Flow";
+
+        if (isHi) {
+          complexityLabel = "जटिलता सूचकांक";
+          budgetLabel = "परिचालन बजट";
+          toolsLabel = "मुख्य तकनीकी उपकरण";
+          autoLabel = "सिस्टम आर्किटेक्चर ऑटोमेशन फ्लो";
+        } else if (isHng) {
+          complexityLabel = "Complexity Index";
+          budgetLabel = "Operational Budget";
+          toolsLabel = "Core Tech Tooling";
+          autoLabel = "System Automation Flow";
+        }
+
         bOutput.innerHTML = `
           <div style="border-left: 3px solid var(--bus-primary); padding-left: 16px;">
             <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:700; color:#fff; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.02em;">${modelData.title}</h3>
@@ -733,21 +753,21 @@ export function initBuildSection() {
             
             <div class="blueprint-meta-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:20px;">
               <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);">
-                <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">Complexity Index</span>
+                <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">${complexityLabel}</span>
                 <strong style="color:var(--bus-primary); font-size:0.9rem;">${difficulty}</strong>
               </div>
               <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);">
-                <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">Operational Budget</span>
+                <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">${budgetLabel}</span>
                 <strong style="color:#fff; font-size:0.9rem;">₹${parseFloat(budget).toLocaleString('en-IN')} / Mo</strong>
               </div>
               <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);">
-                <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">Core Tech Tooling</span>
+                <span style="font-size:0.7rem; color:var(--bus-text-secondary); text-transform:uppercase; display:block; margin-bottom:4px;">${toolsLabel}</span>
                 <strong style="color:var(--bus-accent); font-size:0.82rem; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${profile.tools}">${profile.tools}</strong>
               </div>
             </div>
 
             <div style="background:rgba(0,208,132,0.04); border:1px solid rgba(0,208,132,0.15); padding:14px; border-radius:8px; margin-bottom:20px;">
-              <h4 style="color:var(--bus-primary); font-family:var(--font-title); font-size:0.8rem; margin-bottom:4px; text-transform:uppercase;">System Architecture Automation Flow</h4>
+              <h4 style="color:var(--bus-primary); font-family:var(--font-title); font-size:0.8rem; margin-bottom:4px; text-transform:uppercase;">${autoLabel}</h4>
               <p style="font-size:0.8rem; color:#fff; line-height:1.5; margin:0;">${profile.automation}</p>
             </div>
           </div>

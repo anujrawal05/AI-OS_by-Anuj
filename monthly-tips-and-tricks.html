@@ -40,19 +40,10 @@
     }
   </script>
   <script>
-    // Initialize current active theme from storage
-    const storedTheme = localStorage.getItem('kronos-theme') || 'dark';
-    document.documentElement.className = storedTheme;
-    document.documentElement.setAttribute('data-theme', storedTheme);
-
-    // Watch for theme switch event across tabs
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'kronos-theme') {
-        const theme = e.newValue || 'dark';
-        document.documentElement.className = theme;
-        document.documentElement.setAttribute('data-theme', theme);
-      }
-    });
+    // Initialize dark theme
+    document.documentElement.className = 'dark';
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('kronos-theme', 'dark');
   </script>
   <style>
     body {

@@ -85,6 +85,18 @@
         <button id="btn-upgrade-premium-cta" class="btn-upgrade-premium-bus" style="display: none;">Upgrade To Premium</button>
         <!-- Subscription tier badge — populated dynamically by auth.js -->
         <div id="header-subscription-badge" class="header-sub-badge" style="display:none;"></div>
+        <!-- Language Selector Dropdown -->
+        <div class="workspace-dropdown-wrap" id="language-dropdown-wrap" style="margin-right: 4px;">
+          <button class="workspace-dropdown-trigger" id="language-dropdown-btn" style="padding: 6px 12px; font-size: 0.8rem; font-family: monospace; display: flex; align-items: center; gap: 6px; border: 1px solid var(--bus-border); border-radius: 8px; background: rgba(0,0,0,0.2); color: #fff; cursor: pointer;">
+            🌐 <span id="current-lang-label">English</span> <span style="font-size:0.6rem; opacity:0.7;">▼</span>
+          </button>
+          <div class="workspace-dropdown-menu" style="min-width: 120px; background: rgba(18, 18, 22, 0.95); border: 1px solid var(--bus-border);">
+            <button class="workspace-dropdown-item lang-opt" data-lang="en">English</button>
+            <button class="workspace-dropdown-item lang-opt" data-lang="hi">हिन्दी</button>
+            <button class="workspace-dropdown-item lang-opt" data-lang="hinglish">Hinglish</button>
+          </div>
+        </div>
+        
         <!-- User Profile Header Dropdown -->
         <div id="user-profile-header" class="user-profile-header"></div>
       </div>
@@ -1627,6 +1639,15 @@
           </div>
           
           <div>
+            <label for="pf-lang" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Language / भाषा</label>
+            <select id="pf-lang" class="coupon-input" style="margin-top:0; background: #111;">
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+              <option value="hinglish">Hinglish</option>
+            </select>
+          </div>
+          
+          <div>
             <label for="pf-fullname" style="display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: var(--bus-text-secondary);">Full Name *</label>
             <input type="text" id="pf-fullname" required class="coupon-input" style="margin-top:0;">
           </div>
@@ -1769,24 +1790,43 @@
     </div>
   </footer>
 
-  <!-- First-Visit Onboarding Journey Popup Overlay -->
-  <div id="first-visit-popup-overlay" class="business-popup-overlay">
-    <div class="business-popup-card">
-      <div class="business-popup-title">Welcome to AI-OS Business Hub</div>
-      <p class="business-popup-desc">Orient your workflow by selecting your primary commercial objective today:</p>
-      <div class="business-popup-options">
-        <button class="business-popup-opt-btn" id="first-visit-opt-learn">
-          <span><span class="opt-icon">📚</span> LEARN (Academy Curriculum)</span>
-          <span class="opt-arrow">→</span>
-        </button>
-        <button class="business-popup-opt-btn" id="first-visit-opt-build">
-          <span><span class="opt-icon">🚀</span> BUILD (Launchpad Blueprints)</span>
-          <span class="opt-arrow">→</span>
-        </button>
-        <button class="business-popup-opt-btn" id="first-visit-opt-expand">
-          <span><span class="opt-icon">📈</span> EXPAND (AI Strategist Advice)</span>
-          <span class="opt-arrow">→</span>
-        </button>
+  <!-- Mandatory First-Launch Language & Destination Onboarding Modal -->
+  <div id="business-onboarding-modal" class="business-popup-overlay" style="display: none;">
+    <div class="business-popup-card" style="max-width: 600px; text-align: left; padding: 28px;">
+      <h2 id="ob-title" class="business-popup-title" style="text-align: center; margin-bottom: 6px;">Welcome to AI-OS Business</h2>
+      <p id="ob-subtitle" class="business-popup-desc" style="text-align: center; font-size: 0.9rem; margin-bottom: 24px; color: var(--bus-text-secondary);">Configure your language and initial workspace destination:</p>
+      
+      <!-- Section 1: Language Selection -->
+      <div class="ob-section" style="margin-bottom: 24px;">
+        <h4 id="ob-lang-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-primary); margin-bottom: 12px; font-weight: 700;">1. Language / भाषा</h4>
+        <div style="display: flex; gap: 12px;">
+          <button class="business-popup-opt-btn lang-select-btn active" data-lang="en" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">English</button>
+          <button class="business-popup-opt-btn lang-select-btn" data-lang="hi" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">हिन्दी</button>
+          <button class="business-popup-opt-btn lang-select-btn" data-lang="hinglish" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">Hinglish</button>
+        </div>
+      </div>
+      
+      <!-- Section 2: Destination Module Selection -->
+      <div class="ob-section">
+        <h4 id="ob-dest-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-accent); margin-bottom: 12px; font-weight: 700;">2. Module Destination / मॉड्यूल गंतव्य</h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="business-popup-opt-btn dest-select-btn" data-workspace="dashboard" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
+            <strong class="dest-title" style="font-size: 1rem; color: #fff;">📊 Dashboard</strong>
+            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">Real-time market indices, currency rates, and curated tech business news feeds.</span>
+          </button>
+          <button class="business-popup-opt-btn dest-select-btn" data-workspace="learn" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
+            <strong class="dest-title" style="font-size: 1rem; color: #fff;">📚 Academy</strong>
+            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">First-principles business curriculum covering validation, pricing, margins, and contracts.</span>
+          </button>
+          <button class="business-popup-opt-btn dest-select-btn" data-workspace="build" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
+            <strong class="dest-title" style="font-size: 1rem; color: #fff;">🚀 Launchpad</strong>
+            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">Compile execution blueprints, estimated costs, and launch pathways tailored to budget.</span>
+          </button>
+          <button class="business-popup-opt-btn dest-select-btn" data-workspace="grow" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
+            <strong class="dest-title" style="font-size: 1rem; color: #fff;">📈 Strategist</strong>
+            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">Interactive strategic business scaling plans and roadmap generation with AI.</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1799,23 +1839,23 @@
   <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Primary mobile navigation">
     <button type="button" class="mobile-nav-tab active" data-workspace="dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
-      <span>Dashboard</span>
+      <span class="mobile-nav-label">Dashboard</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-workspace="learn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-      <span>Learn</span>
+      <span class="mobile-nav-label">Learn</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-workspace="build">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"></path></svg>
-      <span>Build</span>
+      <span class="mobile-nav-label">Build</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-workspace="grow">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 6"></polyline><polyline points="14 6 21 6 21 13"></polyline></svg>
-      <span>Grow</span>
+      <span class="mobile-nav-label">Grow</span>
     </button>
     <button type="button" class="mobile-nav-tab" id="mobile-nav-profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
-      <span>Profile</span>
+      <span class="mobile-nav-label">Profile</span>
     </button>
   </nav>
 

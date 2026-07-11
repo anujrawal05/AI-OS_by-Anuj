@@ -293,16 +293,32 @@ export function initExpandSection() {
     const handleChatSend = async () => {
       const text = chatInput.value.trim();
       if (!text) return;
+      const isHi = state.language === 'hi';
+      const isHng = state.language === 'hinglish';
+
+      let authMsg = "Please sign in to use the AI Strategist chat.";
+      let compileFirstMsg = "Please compile the Enterprise Matrix first.";
+      let typingMsg = "⏳ Consultant is typing...";
       
+      if (isHi) {
+        authMsg = "कृपया AI रणनीतिकार चैट का उपयोग करने के लिए साइन इन करें।";
+        compileFirstMsg = "कृपया पहले उद्यम मैट्रिक्स संकलित करें।";
+        typingMsg = "⏳ सलाहकार टाइप कर रहा है...";
+      } else if (isHng) {
+        authMsg = "Please AI Strategist chat use karne ke liye sign in karein.";
+        compileFirstMsg = "Please pehle Enterprise Matrix compile karein.";
+        typingMsg = "⏳ Consultant type kar raha hai...";
+      }
+
       if (!isUserAuthenticated()) {
-        showToast("Please sign in to use the AI Strategist chat.", "warning");
+        showToast(authMsg, "warning");
         const authOverlay = document.getElementById('auth-modal-overlay');
         if (authOverlay) authOverlay.style.display = 'flex';
         return;
       }
       
       if (!isAnalysisComputed) {
-        showToast("Please compile the Enterprise Matrix first.", "warning");
+        showToast(compileFirstMsg, "warning");
         return;
       }
 
@@ -316,14 +332,20 @@ export function initExpandSection() {
 
       const typingBubble = document.createElement('div');
       typingBubble.className = 'chat-bubble assistant typing';
-      typingBubble.innerHTML = `<div class="chat-bubble-text">⏳ Consultant is typing...</div>`;
+      typingBubble.innerHTML = `<div class="chat-bubble-text">${typingMsg}</div>`;
       chatLogs.appendChild(typingBubble);
       chatLogs.scrollTop = chatLogs.scrollHeight;
 
       const intent = classifyIntent(text);
       if (intent === 'greeting') {
         typingBubble.remove();
-        const reply = "Hello! I am your Elite Business Strategist. Let me know when you're ready to deconstruct your business strategy, roadmap, or scaling plans.";
+        
+        let reply = "Hello! I am your Elite Business Strategist. Let me know when you're ready to deconstruct your business strategy, roadmap, or scaling plans.";
+        if (isHi) {
+          reply = "नमस्ते! मैं आपका बिज़नेस रणनीतिकार हूँ। मुझे बताएं कि आप अपनी व्यावसायिक रणनीति या रोडमैप पर चर्चा करने के लिए कब तैयार हैं।";
+        } else if (isHng) {
+          reply = "Hello! Main aapka Business Strategist hoon. Mujhe batayein jab aap apni business strategy ya roadmap discuss karne ke liye ready hon.";
+        }
         
         strategistChatHistory.push({ role: 'user', content: text });
         strategistChatHistory.push({ role: 'assistant', content: reply });
@@ -338,7 +360,13 @@ export function initExpandSection() {
       
       if (intent === 'casual') {
         typingBubble.remove();
-        const reply = "I am a specialized Red-Team Business Strategist. Let's focus on strategy, roadmap, planning, or scaling to get the most value out of our session. What strategy or plan are we audit-testing today?";
+        
+        let reply = "I am a specialized Red-Team Business Strategist. Let's focus on strategy, roadmap, planning, or scaling to get the most value out of our session. What strategy or plan are we audit-testing today?";
+        if (isHi) {
+          reply = "मैं एक विशेषज्ञ रणनीतिकार हूँ। आइए मूल्यवान चर्चा के लिए बिज़नेस रणनीति, रोडमैप या प्लानिंग पर ध्यान केंद्रित करें। आज हम किस योजना का परीक्षण कर रहे हैं?";
+        } else if (isHng) {
+          reply = "Main ek specialized Business Strategist hoon. Session se maximum value lene ke liye chaliye business strategy, planning ya scaling par focus karte hain. Aaj hum kaunsi strategy test kar rahe hain?";
+        }
         
         strategistChatHistory.push({ role: 'user', content: text });
         strategistChatHistory.push({ role: 'assistant', content: reply });
@@ -458,7 +486,15 @@ export function initExpandSection() {
             chatLogs.innerHTML = '';
             const welcomeBubble = document.createElement('div');
             welcomeBubble.className = 'chat-bubble assistant';
-            welcomeBubble.innerHTML = `<strong>Enterprise Analysis Compiled!</strong><br>I have generated a customized operational blueprint based on your query. Please review the <strong>7-tab Strategy Board</strong> below.<br><br>You can now ask follow-up questions in the chat bar below.`;
+            
+            let welcomeMsg = `<strong>Enterprise Analysis Compiled!</strong><br>I have generated a customized operational blueprint based on your query. Please review the <strong>7-tab Strategy Board</strong> below.<br><br>You can now ask follow-up questions in the chat bar below.`;
+            if (state.language === 'hi') {
+              welcomeMsg = `<strong>उद्यम विश्लेषण संकलित!</strong><br>मैंने आपके प्रश्नों के आधार पर एक अनुकूलित परिचालन खाका तैयार किया है। कृपया नीचे दिए गए <strong>7-टैब रणनीति बोर्ड</strong> की समीक्षा करें।<br><br>अब आप नीचे चैट बार में अनुवर्ती प्रश्न पूछ सकते हैं।`;
+            } else if (state.language === 'hinglish') {
+              welcomeMsg = `<strong>Enterprise Analysis Compile ho gaya!</strong><br>Maine aapki query ke hisab se ek customized operational blueprint generate kiya hai. Please niche diye gaye <strong>7-tab Strategy Board</strong> ko review karein.<br><br>Aap niche chat bar me follow-up sawal pooch sakte hain.`;
+            }
+
+            welcomeBubble.innerHTML = welcomeMsg;
             chatLogs.appendChild(welcomeBubble);
           }
 
@@ -471,10 +507,23 @@ export function initExpandSection() {
           });
 
           if (outputPanel) outputPanel.style.display = 'block';
-          showToast("Strategic analysis matrix compiled successfully!");
+          
+          let successMsg = "Strategic analysis matrix compiled successfully!";
+          if (state.language === 'hi') {
+            successMsg = "सामरिक विश्लेषण मैट्रिक्स सफलतापूर्वक संकलित किया गया!";
+          } else if (state.language === 'hinglish') {
+            successMsg = "Strategic analysis matrix successfully compile ho gaya!";
+          }
+          showToast(successMsg);
           
           if (data.quota) {
-            showToast(`Remaining Daily Quota: ${data.quota.remaining}/${data.quota.limit}`, "info");
+            let quotaMsg = `Remaining Daily Quota: ${data.quota.remaining}/${data.quota.limit}`;
+            if (state.language === 'hi') {
+              quotaMsg = `शेष दैनिक कोटा: ${data.quota.remaining}/${data.quota.limit}`;
+            } else if (state.language === 'hinglish') {
+              quotaMsg = `Remaining Daily Quota: ${data.quota.remaining}/${data.quota.limit}`;
+            }
+            showToast(quotaMsg, "info");
           }
         }
       } catch (err) {

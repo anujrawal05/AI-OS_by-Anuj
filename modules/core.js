@@ -41,58 +41,17 @@ export const state = {
 window.state = state;
 
 export function initTheme() {
-  const savedTheme = localStorage.getItem('kronos-theme');
-  if (savedTheme) {
-    state.theme = savedTheme;
-  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-    state.theme = 'light';
-  }
-  
-  document.documentElement.classList.add('theme-transitioning');
-  document.documentElement.setAttribute('data-theme', state.theme);
-  updateThemeIcon();
-  
-  // Force layout reflow to apply theme instantly
-  document.documentElement.offsetHeight;
-  document.documentElement.classList.remove('theme-transitioning');
+  state.theme = 'dark';
+  document.documentElement.setAttribute('data-theme', 'dark');
+  localStorage.setItem('kronos-theme', 'dark');
 }
 
 export function updateThemeIcon() {
-  const themeToggleBtn = document.getElementById('theme-toggle');
-  if (!themeToggleBtn) return;
-  const sunIcon = themeToggleBtn.querySelector('.sun-icon');
-  const moonIcon = themeToggleBtn.querySelector('.moon-icon');
-  if (!sunIcon || !moonIcon) return;
-  
-  if (state.theme === 'light') {
-    sunIcon.style.display = 'none';
-    moonIcon.style.display = 'block';
-  } else {
-    sunIcon.style.display = 'block';
-    moonIcon.style.display = 'none';
-  }
+  // Theme icon updating disabled as light theme has been removed
 }
 
 export function toggleTheme() {
-  document.documentElement.classList.add('theme-transitioning');
-  
-  // Force layout reflow to ensure suppression class is computed
-  document.documentElement.offsetHeight;
-  
-  state.theme = state.theme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', state.theme);
-  localStorage.setItem('kronos-theme', state.theme);
-  updateThemeIcon();
-  
-  // Re-draw the road to align colors smoothly
-  if (window.drawRoad) {
-    window.drawRoad();
-  }
-  
-  // Force layout reflow to paint theme changes instantly
-  document.documentElement.offsetHeight;
-  
-  document.documentElement.classList.remove('theme-transitioning');
+  // Theme toggling disabled as light theme has been removed
 }
 
 // Global exposure for backwards compatibility

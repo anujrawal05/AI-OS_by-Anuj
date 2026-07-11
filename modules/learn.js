@@ -9,8 +9,31 @@ export function verifyQuizAnswer(btnElement, radioGroupName, expectedValue, expl
   const feedbackBox = container.querySelector('.quiz-feedback-box');
   const selectedRadio = container.querySelector(`input[name="${radioGroupName}"]:checked`);
   
+  const isHi = state.language === 'hi';
+  const isHng = state.language === 'hinglish';
+  
+  let correctTitle = "✅ Correct!";
+  let incorrectTitle = "❌ Incorrect.";
+  let successToast = "Concept check unlocked successfully!";
+  let errorToast = "Incorrect answer.";
+  let warningToast = "Please select an option before submitting.";
+
+  if (isHi) {
+    correctTitle = "✅ सही उत्तर!";
+    incorrectTitle = "❌ गलत उत्तर।";
+    successToast = "अवधारणा जांच सफलतापूर्वक अनलॉक हो गई!";
+    errorToast = "गलत उत्तर।";
+    warningToast = "जमा करने से पहले कृपया एक विकल्प चुनें।";
+  } else if (isHng) {
+    correctTitle = "✅ Correct answer!";
+    incorrectTitle = "❌ Incorrect answer.";
+    successToast = "Concept check successfully unlock ho gaya!";
+    errorToast = "Incorrect answer.";
+    warningToast = "Submit karne se pehle please ek option select karein.";
+  }
+
   if (!selectedRadio) {
-    showToast("Please select an option before submitting.", "warning");
+    showToast(warningToast, "warning");
     return;
   }
   
@@ -25,14 +48,14 @@ export function verifyQuizAnswer(btnElement, radioGroupName, expectedValue, expl
     feedbackBox.style.background = 'rgba(0, 208, 132, 0.1)';
     feedbackBox.style.border = '1px solid rgba(0, 208, 132, 0.3)';
     feedbackBox.style.color = 'var(--bus-primary)';
-    feedbackBox.innerHTML = `<strong>✅ Correct!</strong> ${explanationText}`;
-    showToast("Concept check unlocked successfully!");
+    feedbackBox.innerHTML = `<strong>${correctTitle}</strong> ${explanationText}`;
+    showToast(successToast);
   } else {
     feedbackBox.style.background = 'rgba(255, 74, 74, 0.1)';
     feedbackBox.style.border = '1px solid rgba(255, 74, 74, 0.3)';
     feedbackBox.style.color = '#ff4a4a';
-    feedbackBox.innerHTML = `<strong>❌ Incorrect.</strong> ${explanationText}`;
-    showToast("Incorrect answer.", "error");
+    feedbackBox.innerHTML = `<strong>${incorrectTitle}</strong> ${explanationText}`;
+    showToast(errorToast, "error");
   }
 }
 
