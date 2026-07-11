@@ -6,7 +6,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "vercel-build": "prisma generate --schema=backend/prisma/schema.prisma"
+    "postinstall": "prisma generate --schema=backend/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

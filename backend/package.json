@@ -9,7 +9,6 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "vercel-build": "prisma generate",
     "build": "prisma generate"
   },
   "dependencies": {
