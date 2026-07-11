@@ -4,6 +4,26 @@
     {
       "src": "api/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "*.{html,css,js,json,png,jpg,jpeg,gif,svg,ico,webp,txt,md,toml,xml}",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "modules/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "locales/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "docs/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "ar-labs/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
