@@ -17,7 +17,7 @@ try {
     res.status(503).json({
       error: 'Service Unavailable — Backend failed to initialize.',
       reason: err.message,
-      hint: 'Check that all required environment variables are set in the Vercel dashboard: JWT_SECRET, DATABASE_URL, RAZORPAY_KEY_ID, RAZORPAY_SECRET_KEY, BREVO_API_KEY, FRONTEND_URL, NODE_ENV'
+      hint: 'Check that all required environment variables are set in the Vercel dashboard: JWT_SECRET, DATABASE_URL, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, BREVO_API_KEY, FRONTEND_URL, NODE_ENV'
     });
   };
 }

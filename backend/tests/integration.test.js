@@ -89,7 +89,7 @@ async function runTests() {
   const paymentId = `pay_${crypto.randomBytes(8).toString('hex')}`;
   const text = `${orderId}|${paymentId}`;
   const mockSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_SECRET_KEY || 'S27ABLaRbJzgBUJSrnlhx2DC')
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'S27ABLaRbJzgBUJSrnlhx2DC')
     .update(text)
     .digest('hex');
 

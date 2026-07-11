@@ -10,9 +10,9 @@ let _razorpay = null;
 function getRazorpay() {
   if (_razorpay) return _razorpay;
   const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_SECRET_KEY;
-  if (!keyId || !keySecret) {
-    throw new Error('Payment service is not configured. RAZORPAY_KEY_ID and RAZORPAY_SECRET_KEY must be set in environment variables.');
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  if (!keySecret || !process.env.RAZORPAY_KEY_ID) {
+    throw new Error('Payment service is not configured. RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in environment variables.');
   }
   _razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
   return _razorpay;
@@ -20,8 +20,8 @@ function getRazorpay() {
 
 // For signature verification we need the secret — access lazily as well.
 function getRazorpaySecret() {
-  const secret = process.env.RAZORPAY_SECRET_KEY;
-  if (!secret) throw new Error('RAZORPAY_SECRET_KEY is not configured.');
+  const secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!secret) throw new Error('RAZORPAY_KEY_SECRET is not configured.');
   return secret;
 }
 

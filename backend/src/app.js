@@ -29,11 +29,15 @@ const BASE_ALLOWED_ORIGINS = [
   'https://www.ai-os-powerd-by-ar-labs.vercel.app'
 ];
 
-// Allow additional origins to be added via environment variable (comma-separated)
-// e.g. CORS_ALLOWED_ORIGINS=https://my-preview.vercel.app,https://custom-domain.com
-const envOrigins = process.env.CORS_ALLOWED_ORIGINS
-  ? process.env.CORS_ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
-  : [];
+// Allow additional origins via env var (comma-separated) + FRONTEND_URL
+// Both are stripped of trailing slashes to prevent CORS mismatches
+const envOrigins = [
+  process.env.FRONTEND_URL,
+  ...(process.env.CORS_ALLOWED_ORIGINS ? process.env.CORS_ALLOWED_ORIGINS.split(',') : [])
+]
+  .filter(Boolean)
+  .map(o => o.trim().replace(/\/$/, ''));
+
 
 const ALLOWED_ORIGINS = [...new Set([...BASE_ALLOWED_ORIGINS, ...envOrigins])];
 
