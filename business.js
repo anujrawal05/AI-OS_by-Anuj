@@ -7,6 +7,7 @@ import { initAuthSystem } from './modules/auth.js';
 import { initWorkspaceControls, switchBusinessWorkspace } from './modules/businessUI.js';
 import { initMobileUI } from './modules/mobileUI.js';
 import { completeMissionTask } from './modules/gamification.js';
+import { initTrialClock, closeTrialWelcomeModal } from './modules/premium.js';
 
 let learnModuleInstance = null;
 async function loadLearnModule() {
@@ -138,6 +139,32 @@ async function initBusiness() {
       }
     }).catch(() => {});
   }
+
+  // Initialize Premium Trial clock countdowns
+  initTrialClock();
+
+  // Handle First-Visit Onboarding Journey Popup
+  const onboardingOverlay = document.getElementById('first-visit-popup-overlay');
+  if (onboardingOverlay) {
+    const visitedKey = 'aios_business_visited';
+    const isVisited = localStorage.getItem(visitedKey) === 'true';
+    if (!isVisited) {
+      onboardingOverlay.classList.add('active');
+    }
+    const dismissPopup = (workspace) => {
+      onboardingOverlay.classList.remove('active');
+      localStorage.setItem(visitedKey, 'true');
+      if (workspace) {
+        (window.switchBusinessWorkspace || switchBusinessWorkspace)(workspace);
+      }
+    };
+    const btnLearn = document.getElementById('first-visit-opt-learn');
+    const btnBuild = document.getElementById('first-visit-opt-build');
+    const btnExpand = document.getElementById('first-visit-opt-expand');
+    if (btnLearn) btnLearn.addEventListener('click', () => dismissPopup('learn'));
+    if (btnBuild) btnBuild.addEventListener('click', () => dismissPopup('build'));
+    if (btnExpand) btnExpand.addEventListener('click', () => dismissPopup('grow'));
+  }
 }
 
 // Event handler bindings to entry points
@@ -147,33 +174,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Expose event handlers globally
 window.toggleTheme = toggleTheme;
+window.closeTrialWelcomeModal = closeTrialWelcomeModal;
 
 // Lazy proxies for inline handlers
-window.verifyQuizAnswer = async function(quizIdx, answerIndex) {
+window.verifyQuizAnswer = async function(...args) {
   const mod = await loadLearnModule();
-  if (mod && mod.verifyQuizAnswer) mod.verifyQuizAnswer(quizIdx, answerIndex);
+  if (mod && mod.verifyQuizAnswer) mod.verifyQuizAnswer(...args);
 };
 
-window.downloadTemplate = async function(templateKey, category) {
+window.downloadTemplate = async function(...args) {
   const mod = await loadLearnModule();
-  if (mod && mod.downloadTemplate) mod.downloadTemplate(templateKey, category);
+  if (mod && mod.downloadTemplate) mod.downloadTemplate(...args);
 };
 
 // selectAndCompileBusiness and handleBusinessVideoPlay now live in build.js
 // (they were moved there from tutorials.js so the build catalog can call them).
-window.selectAndCompileBusiness = async function(key) {
+window.selectAndCompileBusiness = async function(...args) {
   const mod = await loadBuildModule();
   if (mod && mod.selectAndCompileBusiness) {
-    mod.selectAndCompileBusiness(key);
+    mod.selectAndCompileBusiness(...args);
   } else if (window._selectAndCompileBusiness) {
-    window._selectAndCompileBusiness(key);
+    window._selectAndCompileBusiness(...args);
   }
 };
 
-window.handleBusinessVideoPlay = async function(key, videoBaseName, title) {
+window.handleBusinessVideoPlay = async function(...args) {
   // Fall through to tutorials module which holds the language selection popup
   const tutMod = await loadTutorialsModule();
   if (tutMod && tutMod.handleBusinessVideoPlay) {
-    tutMod.handleBusinessVideoPlay(key, videoBaseName, title);
+    tutMod.handleBusinessVideoPlay(...args);
   }
 };
