@@ -272,9 +272,56 @@ async function getPaymentKey(req, res, next) {
   }
 }
 
+// 5. CANCEL SUBSCRIPTION
+async function cancelSubscription(req, res, next) {
+  const ipAddress = req.ip;
+  const userAgent = req.headers['user-agent'];
+
+  try {
+    const existingSub = await prisma.subscription.findUnique({
+      where: { userId: req.user.id }
+    });
+
+    if (!existingSub || existingSub.plan === 'Free') {
+      return res.status(400).json({ error: 'No active premium subscription found to cancel.' });
+    }
+
+    const planBefore = existingSub.plan;
+
+    const updatedSub = await prisma.subscription.update({
+      where: { userId: req.user.id },
+      data: {
+        plan: 'Free',
+        status: 'Canceled',
+        updatedAt: new Date()
+      }
+    });
+
+    await logAuditEvent({
+      userId: req.user.id,
+      action: 'SUBSCRIPTION_CANCEL',
+      ipAddress,
+      userAgent,
+      details: { planBefore }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Subscription canceled successfully.',
+      plan: 'Free',
+      status: 'Canceled'
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createOrder,
   verifySignature,
   redeemCoupon,
-  getPaymentKey
+  getPaymentKey,
+  cancelSubscription
 };
+

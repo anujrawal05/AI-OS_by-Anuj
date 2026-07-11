@@ -554,6 +554,36 @@ export function showProfileModal() {
       accessStatusEl.className = 'badge-access free-badge';
     }
   }
+
+  // Cancel Subscription Button logic: show if plan is Premium or Trial
+  const upgradeBtn = document.getElementById('btn-pf-upgrade');
+  if (upgradeBtn) {
+    let cancelBtn = document.getElementById('btn-pf-cancel');
+    if (planName === 'Premium' || planName === 'Trial') {
+      upgradeBtn.style.display = 'none';
+      if (!cancelBtn) {
+        cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'btn-pf-cancel';
+        cancelBtn.textContent = 'Cancel';
+        if (upgradeBtn.className === 'btn-upgrade-premium-bus') {
+          cancelBtn.className = 'btn-upgrade-premium-bus';
+          cancelBtn.style.cssText = 'padding: 4px 8px !important; font-size: 0.65rem !important; background: #e53e3e !important; color: white !important; border: none !important; border-radius: 4px; cursor: pointer; font-weight: bold;';
+        } else {
+          cancelBtn.className = 'btn btn-secondary';
+          cancelBtn.style.cssText = 'padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; background: #e53e3e; color: white; border: none; cursor: pointer; font-weight: 600;';
+        }
+        upgradeBtn.parentNode.appendChild(cancelBtn);
+        cancelBtn.addEventListener('click', handleCancelSubscription);
+      }
+      cancelBtn.style.display = 'inline-block';
+    } else {
+      upgradeBtn.style.display = 'inline-block';
+      if (cancelBtn) {
+        cancelBtn.style.display = 'none';
+      }
+    }
+  }
   
   // BUG-021: Null-guard mobile theme toggle label
   const mobileThemeLabel = document.querySelector('#pf-mobile-theme-toggle .pf-theme-label');
@@ -668,6 +698,50 @@ export async function handleCouponLogin(couponCode) {
       errorEl.textContent = err.message;
       errorEl.style.display = 'block';
     }
+  }
+}
+
+export async function handleCancelSubscription() {
+  if (!confirm('Are you sure you want to cancel your Premium subscription? You will lose all Premium features and digital modules immediately.')) {
+    return;
+  }
+
+  try {
+    const data = await apiCall('/api/payments/cancel', {
+      method: 'DELETE'
+    });
+
+    if (data.success) {
+      showToast("Subscription cancelled successfully.");
+      
+      // Update session state
+      const context = await apiCall('/api/auth/me');
+      state.user = context.user;
+      localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+
+      // Refresh UI
+      updateUserProfileHeader();
+      
+      // Hide modal or refresh profile display
+      const overlay = document.getElementById('profile-modal-overlay');
+      if (overlay) overlay.style.display = 'none';
+
+      // Update external views if they exist
+      if (window.AdManager && typeof window.AdManager.updateAdVisibility === 'function') {
+        window.AdManager.updateAdVisibility();
+      }
+      if (typeof window.regenerateActiveRoadmap === 'function') {
+        window.regenerateActiveRoadmap();
+      }
+      if (typeof window.initTrialClock === 'function') {
+        window.initTrialClock();
+      }
+      if (typeof window.toggleBusinessSectionView === 'function') {
+        window.toggleBusinessSectionView();
+      }
+    }
+  } catch (err) {
+    showToast(err.message || "Failed to cancel subscription.", "error");
   }
 }
 
@@ -796,6 +870,16 @@ export function hideAuthModals() {
 }
 
 export async function initAuthSystem() {
+  // Clear any coupon session state from storage to prevent persistence across sessions
+  localStorage.removeItem('aios_coupon_code');
+  sessionStorage.removeItem('aios_coupon_code');
+  sessionStorage.removeItem('aios_coupon_session');
+  
+  const couponInput = document.getElementById('coupon-input');
+  if (couponInput) couponInput.value = '';
+  const couponError = document.getElementById('coupon-error-msg');
+  if (couponError) couponError.style.display = 'none';
+
   // Restore session context dynamically from backend on startup
   try {
     const data = await apiCall('/api/auth/me');
@@ -1033,6 +1117,17 @@ export async function initAuthSystem() {
     profileCloseBtn.addEventListener('click', () => {
       const profileOverlay = document.getElementById('profile-modal-overlay');
       if (profileOverlay) profileOverlay.style.display = 'none';
+    });
+  }
+
+  // Upgrade button inside profile modal
+  const pfUpgradeBtn = document.getElementById('btn-pf-upgrade');
+  if (pfUpgradeBtn) {
+    pfUpgradeBtn.addEventListener('click', () => {
+      const profileOverlay = document.getElementById('profile-modal-overlay');
+      if (profileOverlay) profileOverlay.style.display = 'none';
+      const pricingOverlay = document.getElementById('pricing-modal-overlay');
+      if (pricingOverlay) pricingOverlay.style.display = 'flex';
     });
   }
 

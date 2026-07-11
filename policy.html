@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 
 <head>
+  <script>
+    const storedTheme = localStorage.getItem('kronos-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', storedTheme);
+    document.documentElement.className = storedTheme;
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy | AI-OS</title>
@@ -173,9 +178,25 @@
           <span class="logo-subtitle">Powered by A.R. Labs</span>
         </div>
       </div>
-      <nav class="main-nav">
+      <nav class="main-nav" style="display: flex; align-items: center; gap: 16px;">
         <a href="index.html" class="nav-link">Home</a>
         <a href="./aios_buisness.html" class="nav-btn-business" id="nav-business-btn">AI-OS Business</a>
+        <button id="theme-toggle" aria-label="Toggle monochrome theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
       </nav>
     </div>
   </header>
@@ -298,7 +319,35 @@
     <div class="footer-bottom-container">
       <p>© 2026 A.R. Labs. All Rights Reserved.</p>
     </div>
-  </footer>
+  <script>
+    (function() {
+      const storedTheme = localStorage.getItem('kronos-theme') || 'dark';
+      const toggleBtn = document.getElementById('theme-toggle');
+      if (toggleBtn) {
+        const sunIcon = toggleBtn.querySelector('.sun-icon');
+        const moonIcon = toggleBtn.querySelector('.moon-icon');
+        
+        function updateIcon(theme) {
+          if (theme === 'light') {
+            if (sunIcon) sunIcon.style.display = 'none';
+            if (moonIcon) moonIcon.style.display = 'block';
+          } else {
+            if (sunIcon) sunIcon.style.display = 'block';
+            if (moonIcon) moonIcon.style.display = 'none';
+          }
+        }
+        updateIcon(storedTheme);
 
+        toggleBtn.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') || 'dark';
+          const nextTheme = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', nextTheme);
+          document.documentElement.className = nextTheme;
+          localStorage.setItem('kronos-theme', nextTheme);
+          updateIcon(nextTheme);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -207,7 +207,7 @@ function weekNumber() {
  * @param {string} [reason]
  */
 export function awardXP(amount, reason = '') {
-  if (!_state) return;
+  if (!_state || !isGamificationUnlocked()) return;
   const prev = _state.xp;
   _state.xp += amount;
   const newLevel = xpToLevel(_state.xp);
@@ -249,7 +249,7 @@ export function awardXP(amount, reason = '') {
  * @param {number} amount
  */
 export function awardCoins(amount) {
-  if (!_state) return;
+  if (!_state || !isGamificationUnlocked()) return;
   _state.coins += amount;
   saveState(_state);
   broadcast({ type: 'coins', amount });
@@ -275,7 +275,7 @@ export function getState() {
 // ─── Daily Streak ─────────────────────────────────────────────────────────────
 
 export function checkDailyStreak() {
-  if (!_state) return;
+  if (!_state || !isGamificationUnlocked()) return;
   const today = todayStr();
   if (_state.lastVisit === today) return; // already counted today
 
@@ -439,9 +439,27 @@ export function unlockAchievement(id) {
   broadcast({ type: 'achievement_unlocked', achievement: def });
 }
 
+// ─── Auth Guard ──────────────────────────────────────────────────────────────
+
+/**
+ * Returns true if a user is logged in and gamification should be active.
+ * All public gamification functions check this before modifying state.
+ */
+export function isGamificationUnlocked() {
+  return !!(window.state && window.state.user && window.state.user.id);
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 export function initGamification() {
+  // Gate: gamification is only active for logged-in users
+  if (!isGamificationUnlocked()) {
+    // Broadcast a locked event so UI can show login prompts
+    document.dispatchEvent(new CustomEvent('aios:gm:locked'));
+    window.gamification = { isGamificationUnlocked, locked: true };
+    return;
+  }
+
   _state = loadState();
 
   // First-ever visit
@@ -458,6 +476,7 @@ export function initGamification() {
 
   // Expose on window for cross-module use
   window.gamification = {
+    isGamificationUnlocked,
     awardXP,
     awardCoins,
     getState,
@@ -470,6 +489,7 @@ export function initGamification() {
     unlockAchievement,
     checkDailyStreak,
     ACHIEVEMENTS,
+    locked: false,
   };
 
   broadcast({ type: 'init' });

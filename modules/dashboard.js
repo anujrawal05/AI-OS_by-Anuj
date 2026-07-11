@@ -337,7 +337,18 @@ function renderDashboard() {
   if (!section) return;
 
   const gm        = getState();
-  if (!gm) return;
+  if (!gm) {
+    section.innerHTML = `
+      <div class="gm-locked-dashboard" style="background: rgba(10, 10, 12, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 48px 32px; text-align: center; backdrop-filter: blur(12px); max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);">
+        <div class="lock-icon" style="font-size: 3rem; margin-bottom: 8px;">🔒</div>
+        <h2 style="font-family: var(--font-title); font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0;">Gamification & Daily Missions Locked</h2>
+        <p style="color: var(--text-secondary); max-width: 480px; line-height: 1.6; font-size: 0.95rem; margin: 0;">Sign in to unlock your daily learning tasks, earn XP, track streaks, and climb the leaderboard with personalized AI roadmaps.</p>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('btn-header-signin')?.click()" style="padding: 12px 32px; font-weight: 700; border-radius: 24px; border: none; cursor: pointer;">
+          🔑 Sign In to Unlock
+        </button>
+      </div>`;
+    return;
+  }
 
   const mission   = getDailyMission();
   const challenge = getWeeklyChallenge();
@@ -581,7 +592,18 @@ export function renderMobileUpdates() {
   if (!container) return;
 
   const gm = getState();
-  if (!gm) return;
+  if (!gm) {
+    container.innerHTML = `
+      <div class="gm-locked-dashboard" style="background: rgba(10, 10, 12, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 32px 20px; text-align: center; backdrop-filter: blur(12px); margin: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);">
+        <div class="lock-icon" style="font-size: 2.5rem; margin-bottom: 4px;">🔒</div>
+        <h2 style="font-family: var(--font-title); font-size: 1.5rem; font-weight: 800; color: #fff; margin: 0;">Missions & Rewards Locked</h2>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.85rem; margin: 0;">Sign in to unlock your daily learning tasks, earn XP, track streaks, and claim coins.</p>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('btn-header-signin')?.click()" style="padding: 10px 24px; font-weight: 700; border-radius: 20px; border: none; cursor: pointer; font-size: 0.85rem;">
+          🔑 Sign In
+        </button>
+      </div>`;
+    return;
+  }
 
   const mission = getDailyMission();
   const challenge = getWeeklyChallenge();

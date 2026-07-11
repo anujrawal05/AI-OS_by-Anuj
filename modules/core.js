@@ -23,20 +23,10 @@ export const state = {
   // Currently active roadmap goal text (set by explore.js on compile)
   goalText: 'Exploring AI',
 
-  // Hardcoded authenticated premium session by default
-  user: {
-    id: "demo-user-123",
-    email: "demo@aios.com",
-    name: "Demo Premium User",
-    gender: "Male",
-    profession: "Business Owner",
-    date_of_birth: "1995-01-01",
-    plan_type: "Premium",
-    trial_started_at: new Date().toISOString(),
-    trial_expires_at: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
-    trial_days_remaining: 3,
-    is_coupon: false
-  },
+  // User state: null until initAuthSystem() populates it from /api/auth/me
+  // Do NOT set a default user here — every feature gate depends on this being null for guests.
+  user: null,
+
   analytics: {
     compileRoadmapClicks: 0,
     loginAttempts: 0,
