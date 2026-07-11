@@ -19,6 +19,14 @@ export function calculateUnlockRate() {
 }
 
 export function updateUserProfileHeader() {
+  // Reactive update for gamification & daily dashboard when user status changes
+  if (typeof window.initGamification === 'function') {
+    window.initGamification();
+  }
+  if (typeof window.initDailyDashboard === 'function') {
+    window.initDailyDashboard(true);
+  }
+
   const container = document.getElementById('user-profile-header');
   if (!container) return;
 

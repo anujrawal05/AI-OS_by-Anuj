@@ -91,6 +91,8 @@ window.handleEmailSignup = handleEmailSignup;
 window.handleVerifyOtp = handleVerifyOtp;
 window.handleForgotPassword = handleForgotPassword;
 window.closeTrialWelcomeModal = closeTrialWelcomeModal;
+window.initGamification = initGamification;
+window.initDailyDashboard = initDailyDashboard;
 
 // Explore AI lazy loading proxies
 window.drawRoad = async function() {

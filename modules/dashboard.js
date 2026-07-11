@@ -697,7 +697,10 @@ function _autoCompleteVisitTasks() {
 
 // ─── Init (idempotent) ───────────────────────────────────────────────────────
 
-export async function initDailyDashboard() {
+export async function initDailyDashboard(force = false) {
+  if (force) {
+    _initialized = false;
+  }
   if (_initialized) return; // Guard against double-init
   _initialized = true;
 
@@ -710,6 +713,7 @@ export async function initDailyDashboard() {
   renderDashboard();
   renderMobileUpdates();
 
+  document.removeEventListener('aios:gm:update', _handleGmUpdate);
   document.addEventListener('aios:gm:update', _handleGmUpdate);
 
   requestAnimationFrame(() => {
