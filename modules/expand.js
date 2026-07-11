@@ -6,6 +6,7 @@ import { showToast } from './utils.js';
 import { apiCall } from './apiClient.js';
 import { isUserAuthenticated } from './auth.js';
 import { showPricingModal } from './ui.js';
+import { loadLiveBusinessNews } from './tutorials.js';
 
 export function updateConversionFunnel(modelData, budgetValue) {
   const trafficEl = document.getElementById('funnel-traffic');
@@ -235,11 +236,6 @@ export async function loadLiveDashboardMetrics() {
   }
 }
 
-export async function loadLiveBusinessNews() {
-  if (window.loadLiveBusinessNews && window.loadLiveBusinessNews !== loadLiveBusinessNews) {
-    return window.loadLiveBusinessNews();
-  }
-}
 
 export function initExpandSection() {
   const chatInput = document.getElementById('chat-strategist-input');
@@ -509,5 +505,4 @@ export function initExpandSection() {
 // Global exposure for backwards compatibility
 window.updateConversionFunnel = updateConversionFunnel;
 window.loadLiveDashboardMetrics = loadLiveDashboardMetrics;
-window.loadLiveBusinessNews = loadLiveBusinessNews;
 window.initExpandSection = initExpandSection;

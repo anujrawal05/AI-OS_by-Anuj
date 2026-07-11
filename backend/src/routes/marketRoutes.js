@@ -2,6 +2,24 @@ const express = require('express');
 const router = express.Router();
 const logger = require('../utils/logger');
 
+// Helper: Fetch with timeout to prevent hanging connections
+async function fetchWithTimeout(resource, options = {}) {
+  const { timeout = 5000 } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
+}
+
 // Cache variables
 let exchangeRateCache = { rate: 83.5, timestamp: 0 }; // default fallback 83.5
 let quotesCache = { data: null, timestamp: 0 };
@@ -21,7 +39,7 @@ async function getUsdInrRate() {
   }
 
   try {
-    const res = await fetch('https://open.er-api.com/v6/latest/USD');
+    const res = await fetchWithTimeout('https://open.er-api.com/v6/latest/USD');
     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const data = await res.json();
     if (data && data.rates && data.rates.INR) {
@@ -39,7 +57,7 @@ async function getUsdInrRate() {
 async function fetchYahooQuote(symbol) {
   try {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
-    const res = await fetch(url);
+    const res = await fetchWithTimeout(url);
     if (!res.ok) throw new Error(`HTTP error ${res.status} for ${symbol}`);
     const data = await res.json();
     const result = data.chart?.result?.[0];
@@ -76,7 +94,7 @@ async function fetchFinnhubQuote(symbol) {
 
   try {
     const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${token}`;
-    const res = await fetch(url);
+    const res = await fetchWithTimeout(url);
     if (!res.ok) throw new Error(`HTTP error ${res.status} for ${symbol}`);
     const data = await res.json();
 
@@ -188,7 +206,7 @@ router.get('/news', async (req, res) => {
   try {
     const query = encodeURIComponent('AI startup OR SaaS OR business tech');
     const url = `https://newsapi.org/v2/everything?q=${query}&sortBy=publishedAt&pageSize=10&apiKey=${apiKey}`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     
     if (!response.ok) {
       throw new Error(`HTTP error ${response.status} from News API`);
