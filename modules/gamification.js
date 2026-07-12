@@ -283,12 +283,17 @@ export function checkDailyStreak() {
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
 
+  let shouldAwardXp = false;
+
   if (_state.lastVisit === yesterdayStr) {
     _state.streak++;
+    shouldAwardXp = true;
   } else if (_state.lastVisit !== null) {
     _state.streak = 1; // streak broken
+    shouldAwardXp = true;
   } else {
-    _state.streak = 1; // first ever visit
+    // Brand-new user: first ever visit starts at streak 0, no automatic XP
+    _state.streak = 0;
   }
 
   _state.longestStreak = Math.max(_state.longestStreak, _state.streak);
@@ -301,9 +306,11 @@ export function checkDailyStreak() {
   if (_state.streak >= 7)  unlockAchievement('streak_7');
   if (_state.streak >= 30) unlockAchievement('streak_30');
 
-  // Award daily visit XP
-  awardXP(50, 'daily_visit');
-  updateWeeklyChallengeProgress(1, 'days');
+  // Award daily visit XP (returning users only)
+  if (shouldAwardXp) {
+    awardXP(50, 'daily_visit');
+    updateWeeklyChallengeProgress(1, 'days');
+  }
 }
 
 // ─── Daily Mission ────────────────────────────────────────────────────────────
@@ -438,7 +445,6 @@ export function unlockAchievement(id) {
 
   broadcast({ type: 'achievement_unlocked', achievement: def });
 }
-
 // ─── Auth Guard ──────────────────────────────────────────────────────────────
 
 /**
@@ -449,6 +455,31 @@ export function isGamificationUnlocked() {
   return !!(window.state && window.state.user && window.state.user.id);
 }
 
+// ─── Reset State Helper ───────────────────────────────────────────────────────
+
+export function resetGamificationState() {
+  const keys = [
+    'xp', 'level', 'coins', 'streak', 'longestStreak', 'lastVisit',
+    'achievements', 'roadmapsCompiled', 'missionsCompleted', 'toolsOpened',
+    'lastDailyReward', 'dailyMission', 'weeklyChallenge'
+  ];
+  keys.forEach(k => localStorage.removeItem(NS + k));
+  _state = {
+    xp: 0,
+    level: 1,
+    coins: 0,
+    streak: 0,
+    longestStreak: 0,
+    lastVisit: null,
+    achievements: [],
+    roadmapsCompiled: 0,
+    missionsCompleted: 0,
+    toolsOpened: 0,
+    lastDailyReward: null
+  };
+  saveState(_state);
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 export function initGamification() {
@@ -456,19 +487,52 @@ export function initGamification() {
   if (!isGamificationUnlocked()) {
     // Broadcast a locked event so UI can show login prompts
     document.dispatchEvent(new CustomEvent('aios:gm:locked'));
-    window.gamification = { isGamificationUnlocked, locked: true };
+    
+    // Provide safe no-op stubs to prevent front-end crashes on other scripts
+    window.gamification = {
+      isGamificationUnlocked,
+      awardXP: () => {},
+      awardCoins: () => {},
+      getState: () => ({
+        xp: 0,
+        level: 1,
+        coins: 0,
+        streak: 0,
+        longestStreak: 0,
+        lastVisit: null,
+        achievements: [],
+        roadmapsCompiled: 0,
+        missionsCompleted: 0,
+        toolsOpened: 0,
+        lastDailyReward: null,
+        levelProgress: { pct: 0, current: 0, needed: 100 },
+        xpThreshold: 100
+      }),
+      getDailyMission: () => ({ date: todayStr(), tasks: [], claimed: false }),
+      completeMissionTask: () => false,
+      claimDailyReward: () => false,
+      canClaimDailyReward: () => false,
+      getWeeklyChallenge: () => ({ key: '', progress: 0, goal: 1, claimed: false }),
+      updateWeeklyChallengeProgress: () => {},
+      unlockAchievement: () => {},
+      checkDailyStreak: () => {},
+      resetGamificationState,
+      ACHIEVEMENTS,
+      locked: true,
+    };
     return;
   }
 
-  _state = loadState();
-
-  // First-ever visit
-  const isFirstVisit = _state.lastVisit === null;
-  checkDailyStreak();
-
-  if (isFirstVisit) {
-    unlockAchievement('first_visit');
+  // Force reset if this is a brand new signup session
+  const isNewSignup = sessionStorage.getItem('aios_new_signup') === 'true';
+  if (isNewSignup) {
+    resetGamificationState();
+  } else {
+    _state = loadState();
   }
+
+  // First-ever visit daily streak check
+  checkDailyStreak();
 
   // Make sure weekly challenge exists
   getWeeklyChallenge();
@@ -488,9 +552,14 @@ export function initGamification() {
     updateWeeklyChallengeProgress,
     unlockAchievement,
     checkDailyStreak,
+    resetGamificationState,
     ACHIEVEMENTS,
     locked: false,
   };
 
   broadcast({ type: 'init' });
 }
+
+// Global exposure
+window.initGamification = initGamification;
+window.resetGamificationState = resetGamificationState;

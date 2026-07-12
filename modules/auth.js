@@ -859,6 +859,10 @@ export async function logoutUser() {
   sessionStorage.removeItem('aios_coupon_session');
   localStorage.removeItem('ai-os-favorites');
   
+  if (typeof window.resetGamificationState === 'function') {
+    window.resetGamificationState();
+  }
+  
   hideAuthModals();
   updateUserProfileHeader();
   if (window.AdManager) window.AdManager.updateAdVisibility();
@@ -1519,7 +1523,7 @@ export async function checkAndShowIcraOnboarding() {
 
       // Update flag in backend DB
       try {
-        const data = await apiCall('/api/complete-onboarding', { method: 'POST' });
+        const data = await apiCall('/api/auth/complete-onboarding', { method: 'POST' });
         if (data.success) {
           state.user.preferences = data.preferences;
           localStorage.setItem('aios_user_profile', JSON.stringify(state.user));

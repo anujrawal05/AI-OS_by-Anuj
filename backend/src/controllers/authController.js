@@ -253,7 +253,10 @@ async function verifyOtp(req, res, next) {
         id: user.id,
         email: user.email,
         role: user.role,
-        isVerified: true
+        isVerified: true,
+        level: 1,
+        xp: 0,
+        streak: 0
       }
     });
 
@@ -426,7 +429,10 @@ async function login(req, res, next) {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        level: 1,
+        xp: 0,
+        streak: 0
       }
     });
 
@@ -456,7 +462,10 @@ async function getMe(req, res, next) {
       success: true,
       user: {
         ...user,
-        subscription
+        subscription,
+        level: 1,
+        xp: 0,
+        streak: 0
       }
     });
   } catch (err) {
@@ -697,5 +706,6 @@ module.exports = {
   logoutAllDevices,
   forgotPassword,
   resetPassword,
-  updateProfile
+  updateProfile,
+  completeOnboarding
 };
