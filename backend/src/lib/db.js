@@ -64,4 +64,15 @@ function withBatchTransaction(operationsFactory) {
 prisma.withTransaction = withTransaction;
 prisma.withBatchTransaction = withBatchTransaction;
 
+// Run dynamic schema migrations to ensure DB columns exist (essential since we deploy to Neon serverless via Vercel)
+if (process.env.NODE_ENV !== 'test') {
+  prisma.$executeRawUnsafe(`
+    ALTER TABLE user_preferences ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false;
+  `).then(() => {
+    logger.info('[DB] Dynamic schema migration: onboarding_completed check passed.');
+  }).catch(err => {
+    logger.error('[DB Schema Migration Failure] Failed to add onboarding_completed column:', err);
+  });
+}
+
 module.exports = prisma;

@@ -286,10 +286,11 @@ model UserPreference {
   id        String       @id @default(uuid()) @db.Uuid
   userId    String       @unique @map("user_id") @db.Uuid
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  theme     ThemeMode    @default(Dark)
-  language  LanguageMode @default(English)
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
+  theme               ThemeMode    @default(Dark)
+  language            LanguageMode @default(English)
+  onboardingCompleted Boolean      @default(false) @map("onboarding_completed")
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
 
   @@map("user_preferences")
 }

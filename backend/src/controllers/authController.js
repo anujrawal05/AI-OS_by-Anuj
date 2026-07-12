@@ -625,6 +625,24 @@ async function resetPassword(req, res, next) {
   }
 }
 
+// 9b. COMPLETE ONBOARDING
+async function completeOnboarding(req, res, next) {
+  try {
+    const updatedPrefs = await prisma.userPreference.upsert({
+      where: { userId: req.user.id },
+      update: { onboardingCompleted: true },
+      create: { userId: req.user.id, onboardingCompleted: true, theme: 'Dark', language: 'English' }
+    });
+    return res.status(200).json({
+      success: true,
+      message: 'Onboarding marked completed.',
+      preferences: updatedPrefs
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // 10. UPDATE PROFILE DETAILS
 async function updateProfile(req, res, next) {
   const { name, dateOfBirth, gender, profession } = req.body;

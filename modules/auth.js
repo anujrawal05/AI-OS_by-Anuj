@@ -501,6 +501,7 @@ export async function handleOnboardingSubmit(e) {
     });
 
     if (data.success) {
+      sessionStorage.setItem('aios_new_signup', 'true');
       const overlay = document.getElementById('onboarding-modal-overlay');
       if (overlay) overlay.style.display = 'none';
       
@@ -518,6 +519,10 @@ export async function handleOnboardingSubmit(e) {
       updateUserProfileHeader();
       if (window.initTrialClock) window.initTrialClock();
       showToast("Profile completed successfully!");
+      // Automatically trigger the video onboarding check
+      if (typeof window.checkAndShowIcraOnboarding === 'function') {
+        window.checkAndShowIcraOnboarding();
+      }
     }
   } catch (err) {
     if (errorEl) {
@@ -914,6 +919,9 @@ export async function initAuthSystem() {
   }
   
   updateUserProfileHeader();
+  
+  // Trigger ICRA onboarding video check if applicable
+  await checkAndShowIcraOnboarding();
   
   // Handle Reset Password action extract on page load
   const urlParams = new URLSearchParams(window.location.search);
@@ -1442,6 +1450,108 @@ async function toggleUserSuspension(userId, currentSuspended) {
   }
 }
 
+export async function checkAndShowIcraOnboarding() {
+  if (!state.user) return;
+  const isNewSignup = sessionStorage.getItem('aios_new_signup') === 'true';
+  const hasCompleted = state.user.preferences?.onboardingCompleted === true;
+
+  if (isNewSignup && !hasCompleted) {
+    const overlay = document.getElementById('icra-onboarding-modal-overlay');
+    const video = document.getElementById('icra-onboarding-video');
+    const skipContainer = document.getElementById('icra-skip-container');
+    const skipBtn = document.getElementById('btn-icra-skip');
+
+    if (!overlay || !video) return;
+
+    // Blur and disable underlying elements
+    document.body.style.overflow = 'hidden';
+    overlay.style.display = 'flex';
+    
+    // Play video
+    video.currentTime = 0;
+    video.muted = false;
+    video.play().catch(err => {
+      console.warn("Autoplay block. Playing muted as fallback:", err);
+      video.muted = true;
+      video.play().catch(e => console.error("Playback failed completely:", e));
+    });
+
+    // Disable pause, seeking, and timeline manipulation
+    video.addEventListener('pause', (e) => {
+      if (video.currentTime < video.duration && !video.ended) {
+        video.play().catch(() => {});
+      }
+    });
+
+    video.addEventListener('seeking', () => {
+      // Prevent seeking forward
+      if (video.currentTime > 0) {
+        video.currentTime = 0;
+      }
+    });
+
+    // Disable context menu
+    video.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Disable picture-in-picture
+    video.disablePictureInPicture = true;
+
+    // Prevent keyboard shortcuts
+    const preventKeys = (e) => {
+      const keys = ['Space', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyK', 'KeyJ', 'KeyL'];
+      if (keys.includes(e.code)) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', preventKeys);
+
+    let onboardingFinished = false;
+    const finishOnboarding = async () => {
+      if (onboardingFinished) return;
+      onboardingFinished = true;
+
+      // Clean up restrictions
+      window.removeEventListener('keydown', preventKeys);
+      video.pause();
+      overlay.style.display = 'none';
+      document.body.style.overflow = '';
+      sessionStorage.removeItem('aios_new_signup');
+
+      // Update flag in backend DB
+      try {
+        const data = await apiCall('/api/complete-onboarding', { method: 'POST' });
+        if (data.success) {
+          state.user.preferences = data.preferences;
+          localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+          updateUserProfileHeader();
+        }
+      } catch (err) {
+        console.error("Failed to persist onboarding state in backend:", err);
+      }
+    };
+
+    // Skip button timing
+    let skipTimer = setTimeout(() => {
+      if (skipContainer) {
+        skipContainer.style.opacity = '1';
+        skipContainer.style.pointerEvents = 'auto';
+      }
+    }, 10000); // show after 10 seconds
+
+    if (skipBtn) {
+      skipBtn.onclick = () => {
+        clearTimeout(skipTimer);
+        finishOnboarding();
+      };
+    }
+
+    video.onended = () => {
+      clearTimeout(skipTimer);
+      finishOnboarding();
+    };
+  }
+}
+
 // Global exposure for backwards compatibility with inline HTML events
 window.isUserAuthenticated = isUserAuthenticated;
 window.updateUserProfileHeader = updateUserProfileHeader;
@@ -1465,3 +1575,4 @@ window.initAuthSystem = initAuthSystem;
 window.showAdminModal = showAdminModal;
 window.updateUserTier = updateUserTier;
 window.toggleUserSuspension = toggleUserSuspension;
+window.checkAndShowIcraOnboarding = checkAndShowIcraOnboarding;
