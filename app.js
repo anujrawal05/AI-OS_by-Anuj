@@ -77,9 +77,13 @@ async function initApp() {
 }
 
 // Event handler bindings to entry points
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initApp().catch(console.error);
+  });
+} else {
   initApp().catch(console.error);
-});
+}
 
 // Expose event handler functions to the global scope for inline onclick/onchange HTML compatibility
 window.toggleTheme = toggleTheme;

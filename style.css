@@ -10851,3 +10851,764 @@ body.modal-open {
     display: none !important; /* Hide preview card on mobile Home timeline */
   }
 }
+
+/* ==========================================
+   AI-OS V3.1.0 BOOT OVERLAY INTEGRATED STYLES
+   ========================================== */
+#aios-boot,
+#aios-boot *,
+#aios-boot *::before,
+#aios-boot *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#aios-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  will-change: opacity;
+  -webkit-font-smoothing: antialiased;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  font-family: 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+#aios-gradient-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease;
+  z-index: 1;
+}
+
+#aios-particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  z-index: 2;
+}
+
+.aios-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 1;
+}
+
+.aios-orb-1 {
+  width: 700px; height: 700px;
+  top: -200px; left: -200px;
+  background: radial-gradient(circle, rgba(150,180,220,0.08) 0%, transparent 70%);
+  animation: aios-orb-morph1 16s ease-in-out infinite alternate;
+}
+
+.aios-orb-2 {
+  width: 600px; height: 600px;
+  bottom: -150px; right: -100px;
+  background: radial-gradient(circle, rgba(100,140,200,0.07) 0%, transparent 70%);
+  animation: aios-orb-morph2 18s ease-in-out infinite alternate;
+}
+
+.aios-orb-3 {
+  width: 500px; height: 500px;
+  top: 20%; left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(120,160,210,0.06) 0%, transparent 70%);
+  animation: aios-orb-morph3 14s ease-in-out infinite alternate;
+}
+
+.aios-orb-4 {
+  width: 450px; height: 450px;
+  bottom: 10%; right: 5%;
+  background: radial-gradient(circle, rgba(80,120,180,0.05) 0%, transparent 70%);
+  animation: aios-orb-morph4 20s ease-in-out infinite alternate;
+}
+
+@keyframes aios-orb-morph1 {
+  from {
+    transform: translate(0, 0) scale(1);
+    filter: blur(140px);
+  }
+  to {
+    transform: translate(60px, 40px) scale(1.15);
+    filter: blur(160px);
+  }
+}
+
+@keyframes aios-orb-morph2 {
+  from {
+    transform: translate(0, 0) scale(1);
+    filter: blur(140px);
+  }
+  to {
+    transform: translate(-50px, -30px) scale(1.1);
+    filter: blur(155px);
+  }
+}
+
+@keyframes aios-orb-morph3 {
+  from {
+    transform: translateX(-50%) translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(-50%) translate(20px, -20px) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+@keyframes aios-orb-morph4 {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  to {
+    transform: translate(-30px, 30px) scale(1.15);
+    opacity: 0.7;
+  }
+}
+
+.aios-brand-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.aios-brand-icon {
+  position: absolute;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  will-change: transform, opacity;
+  transition: opacity 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.aios-brand-icon-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 0 18px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+  transition: all 0.4s ease;
+}
+
+.aios-brand-icon svg {
+  width: 60%;
+  height: 60%;
+  fill: #FFFFFF;
+  stroke: none;
+  opacity: 0.75;
+  display: block;
+}
+
+.aios-brand-icon-label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-family: 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif;
+}
+
+.aios-brand-icon:nth-child(odd)  { animation: aios-icon-float-a var(--ft, 7s) ease-in-out infinite; }
+.aios-brand-icon:nth-child(even) { animation: aios-icon-float-b var(--ft, 9s) ease-in-out infinite; }
+
+@keyframes aios-icon-float-a {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-8px) rotate(0.5deg); }
+}
+@keyframes aios-icon-float-b {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(8px) rotate(-0.5deg); }
+}
+
+.aios-stage {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 500px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.aios-glow-field {
+  position: absolute;
+  inset: -100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,200,230,0.04) 0%, transparent 70%);
+  filter: blur(80px);
+  animation: aios-glow-breathe 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes aios-glow-breathe {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.08); }
+}
+
+.aios-logo-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.7) translateY(20px);
+  will-change: opacity, transform;
+}
+
+.aios-outer-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.2px solid rgba(200, 200, 220, 0.2);
+  animation: aios-rotate-ring 8s linear infinite reverse;
+}
+
+@keyframes aios-rotate-ring {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.aios-logo-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.aios-logo-mark {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.aios-mark-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 20px rgba(150, 180, 220, 0.3));
+}
+
+.aios-spiral-group {
+  transform-origin: 32px 32px;
+  animation: aios-spiral-rotate 12s linear infinite;
+}
+
+@keyframes aios-spiral-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.aios-rotating-arc {
+  transform-origin: 32px 32px;
+  animation: aios-arc-spin 4s linear infinite;
+}
+
+@keyframes aios-arc-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.aios-orbit-particle {
+  animation: aios-orbit 6s linear infinite;
+  opacity: 0.9;
+}
+
+.aios-orbit-1 {
+  animation-name: aios-orbit-1;
+}
+.aios-orbit-2 {
+  animation-name: aios-orbit-2;
+}
+.aios-orbit-3 {
+  animation-name: aios-orbit-3;
+}
+.aios-orbit-4 {
+  animation-name: aios-orbit-4;
+}
+
+@keyframes aios-orbit-1 {
+  from { transform: translate(0, -16px) rotate(0deg) translate(0, 16px); }
+  to   { transform: translate(0, -16px) rotate(360deg) translate(0, 16px); }
+}
+@keyframes aios-orbit-2 {
+  from { transform: translate(16px, 0) rotate(0deg) translate(-16px, 0); }
+  to   { transform: translate(16px, 0) rotate(360deg) translate(-16px, 0); }
+}
+@keyframes aios-orbit-3 {
+  from { transform: translate(0, 16px) rotate(0deg) translate(0, -16px); }
+  to   { transform: translate(0, 16px) rotate(360deg) translate(0, -16px); }
+}
+@keyframes aios-orbit-4 {
+  from { transform: translate(-16px, 0) rotate(0deg) translate(16px, 0); }
+  to   { transform: translate(-16px, 0) rotate(360deg) translate(16px, 0); }
+}
+
+.aios-axis-line {
+  animation: aios-pulse-line 2s ease-in-out infinite;
+}
+
+@keyframes aios-pulse-line {
+  0%, 100% { opacity: 0.6; stroke-width: 1; }
+  50%      { opacity: 1;   stroke-width: 1.4; }
+}
+
+.aios-mark-glow-layer {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.aios-glow-1 {
+  background: radial-gradient(circle, rgba(200,220,255,0.15) 0%, transparent 70%);
+  animation: aios-glow-pulse-1 2s ease-in-out infinite;
+}
+
+.aios-glow-2 {
+  background: radial-gradient(circle, rgba(150,180,220,0.08) 0%, transparent 70%);
+  animation: aios-glow-pulse-2 2.8s ease-in-out infinite;
+}
+
+.aios-glow-3 {
+  background: radial-gradient(circle, rgba(100,150,200,0.05) 0%, transparent 70%);
+  animation: aios-glow-pulse-3 3.6s ease-in-out infinite;
+}
+
+@keyframes aios-glow-pulse-1 {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.3); }
+}
+
+@keyframes aios-glow-pulse-2 {
+  0%, 100% { opacity: 0.2; transform: scale(1.1); }
+  50%      { opacity: 0.6; transform: scale(1.5); }
+}
+
+@keyframes aios-glow-pulse-3 {
+  0%, 100% { opacity: 0.15; transform: scale(1.2); }
+  50%      { opacity: 0.4; transform: scale(1.7); }
+}
+
+.aios-resonance-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 220, 255, 0.4);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.aios-ring-1 {
+  width: 120px;
+  height: 120px;
+  animation: aios-resonate-1 2.4s ease-out infinite;
+}
+
+.aios-ring-2 {
+  width: 100px;
+  height: 100px;
+  animation: aios-resonate-2 2.4s ease-out infinite;
+  animation-delay: 0.4s;
+}
+
+.aios-ring-3 {
+  width: 80px;
+  height: 80px;
+  animation: aios-resonate-3 2.4s ease-out infinite;
+  animation-delay: 0.8s;
+}
+
+@keyframes aios-resonate-1 {
+  0% {
+    width: 120px;
+    height: 120px;
+    opacity: 1;
+  }
+  100% {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+  }
+}
+
+@keyframes aios-resonate-2 {
+  0% {
+    width: 100px;
+    height: 100px;
+    opacity: 1;
+  }
+  100% {
+    width: 180px;
+    height: 180px;
+    opacity: 0;
+  }
+}
+
+@keyframes aios-resonate-3 {
+  0% {
+    width: 80px;
+    height: 80px;
+    opacity: 1;
+  }
+  100% {
+    width: 160px;
+    height: 160px;
+    opacity: 0;
+  }
+}
+
+.aios-headline {
+  font-size: clamp(42px, 8vw, 72px);
+  font-weight: 200;
+  letter-spacing: 0.3em;
+  color: #FAFAFA;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-top: 20px;
+  opacity: 0;
+}
+
+.aios-headline-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  will-change: transform, opacity;
+}
+
+.aios-headline-letter:nth-child(1) { animation: aios-letter-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards; }
+.aios-headline-letter:nth-child(2) { animation: aios-letter-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
+.aios-headline-letter:nth-child(3) { animation: aios-letter-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
+.aios-headline-letter:nth-child(4) { animation: aios-letter-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
+.aios-headline-letter:nth-child(5) { animation: aios-letter-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+
+@keyframes aios-letter-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.aios-version-badge {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  color: #666;
+  text-transform: uppercase;
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: aios-badge-fade 0.6s ease-out 0.7s forwards;
+}
+
+@keyframes aios-badge-fade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aios-subtitle {
+  margin-top: 24px;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: #555;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: aios-subtitle-rise 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+}
+
+@keyframes aios-subtitle-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aios-progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 48px;
+  width: 100%;
+  opacity: 0;
+  animation: aios-progress-show 0.6s ease-out 0.9s forwards;
+}
+
+@keyframes aios-progress-show {
+  to {
+    opacity: 1;
+  }
+}
+
+.aios-progress-container {
+  flex: 1;
+}
+
+.aios-progress-track {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: visible;
+  will-change: auto;
+}
+
+.aios-progress-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: linear-gradient(90deg, #6B7280 0%, #D1D5DB 50%, #9CA3AF 100%);
+  border-radius: 2px;
+  will-change: width;
+  box-shadow: 0 0 12px rgba(209, 213, 219, 0.4);
+}
+
+.aios-progress-core {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.8) 100%);
+  border-radius: 2px;
+  transform: translateY(-50%);
+  will-change: width;
+  filter: blur(0.5px);
+}
+
+.aios-progress-glow-head {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 24px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(220, 220, 240, 0.8), transparent);
+  transform: translate(-50%, -50%);
+  will-change: left;
+  box-shadow: 0 0 20px rgba(200, 210, 230, 0.6);
+  opacity: 0;
+}
+
+.aios-progress-percentage {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: #666;
+  min-width: 32px;
+  text-align: right;
+}
+
+.aios-status {
+  margin-top: 16px;
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: #4A4A4A;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: aios-status-fade 0.5s ease-out 1s forwards;
+}
+
+@keyframes aios-status-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+.aios-tech-words {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.aios-tech-word {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: rgba(150, 180, 220, 0.15);
+  text-transform: uppercase;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.aios-tech-word:nth-child(1) {
+  top: 15%;
+  left: 8%;
+  animation: aios-word-float1 6s ease-in-out 2s infinite;
+}
+
+.aios-tech-word:nth-child(2) {
+  top: 25%;
+  right: 5%;
+  animation: aios-word-float2 7s ease-in-out 2.5s infinite;
+}
+
+.aios-tech-word:nth-child(3) {
+  bottom: 20%;
+  left: 5%;
+  animation: aios-word-float3 6.5s ease-in-out 1.8s infinite;
+}
+
+.aios-tech-word:nth-child(4) {
+  bottom: 15%;
+  right: 8%;
+  animation: aios-word-float4 7.5s ease-in-out 2.2s infinite;
+}
+
+@keyframes aios-word-float1 {
+  0%, 100% { opacity: 0; transform: translateY(0) translateX(0); }
+  50%      { opacity: 0.25; transform: translateY(-20px) translateX(10px); }
+}
+
+@keyframes aios-word-float2 {
+  0%, 100% { opacity: 0; transform: translateY(0) translateX(0); }
+  50%      { opacity: 0.25; transform: translateY(-25px) translateX(-8px); }
+}
+
+@keyframes aios-word-float3 {
+  0%, 100% { opacity: 0; transform: translateY(0) translateX(0); }
+  50%      { opacity: 0.2; transform: translateY(22px) translateX(-12px); }
+}
+
+@keyframes aios-word-float4 {
+  0%, 100% { opacity: 0; transform: translateY(0) translateX(0); }
+  50%      { opacity: 0.25; transform: translateY(18px) translateX(10px); }
+}
+
+.aios-footer {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  right: 0;
+  z-index: 11;
+  text-align: center;
+}
+
+.aios-powered-by {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: #444;
+  opacity: 0;
+  animation: aios-footer-fade 0.6s ease-out 1.2s forwards;
+}
+
+.aios-ar-labs-text {
+  color: #888;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@keyframes aios-footer-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+#aios-boot.aios-exiting {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aios-orb,
+  .aios-outer-ring,
+  .aios-spiral-group,
+  .aios-rotating-arc,
+  .aios-orbit-particle,
+  .aios-axis-line,
+  .aios-mark-glow-layer,
+  .aios-resonance-ring,
+  .aios-glow-field,
+  .aios-tech-word,
+  .aios-headline-letter {
+    animation: none !important;
+  }
+
+  .aios-logo-wrap,
+  .aios-headline,
+  .aios-version-badge,
+  .aios-subtitle,
+  .aios-progress-wrapper,
+  .aios-status,
+  .aios-powered-by {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  #aios-boot.aios-exiting {
+    transition: opacity 0.3s linear;
+  }
+}
+
+@media (max-width: 480px) {
+  .aios-headline {
+    font-size: 36px;
+  }
+
+  .aios-progress-wrapper {
+    margin-top: 36px;
+  }
+
+  .aios-logo-container {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 12px;
+  }
+
+  .aios-logo-wrap {
+    width: 60px;
+    height: 60px;
+  }
+}

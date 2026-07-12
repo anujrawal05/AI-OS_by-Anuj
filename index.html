@@ -66,6 +66,146 @@
 
 <body>
 
+  <!-- ═══════════ BOOT OVERLAY HTML ═══════════ -->
+  <div id="aios-boot" aria-hidden="true" role="presentation">
+
+    <!-- Animated mesh gradient background canvas -->
+    <canvas id="aios-gradient-canvas"></canvas>
+
+    <!-- Particle system canvas for distributed particles -->
+    <canvas id="aios-particle-canvas"></canvas>
+
+    <!-- Morphing orbs with complex animation -->
+    <div class="aios-orb aios-orb-1"></div>
+    <div class="aios-orb aios-orb-2"></div>
+    <div class="aios-orb aios-orb-3"></div>
+    <div class="aios-orb aios-orb-4"></div>
+
+    <!-- Background AI ecosystem brand icons -->
+    <div class="aios-brand-grid" id="aios-brand-grid">
+      <!-- Icons injected by JS -->
+    </div>
+
+    <!-- Center stage -->
+    <div class="aios-stage">
+
+      <!-- Animated background glow field -->
+      <div class="aios-glow-field"></div>
+
+      <!-- Logo lockup with advanced animations -->
+      <div class="aios-logo-container" id="aios-logo-container">
+        
+        <!-- Outer rotating ring -->
+        <div class="aios-outer-ring"></div>
+
+        <!-- Main logo mark with glow -->
+        <div class="aios-logo-wrap" id="aios-logo-wrap">
+          <div class="aios-logo-mark">
+            <svg class="aios-mark-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="glow-gradient" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+                  <stop offset="50%" stop-color="#B8B8B8" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="#555555" stop-opacity="0"/>
+                </radialGradient>
+                <filter id="glow-filter">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              
+              <!-- Outer circle -->
+              <circle cx="32" cy="32" r="30" stroke="url(#glow-gradient)" stroke-width="0.8" fill="none" opacity="0.8"/>
+              
+              <!-- Core sphere -->
+              <circle cx="32" cy="32" r="6" fill="url(#glow-gradient)" filter="url(#glow-filter)"/>
+              
+              <!-- Rotating spiral lines -->
+              <g class="aios-spiral-group">
+                <path d="M 32 4 Q 48 18 48 32 Q 48 46 32 60" stroke="url(#glow-gradient)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 32 4 Q 16 18 16 32 Q 16 46 32 60" stroke="url(#glow-gradient)" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.6"/>
+              </g>
+
+              <!-- Axis lines with pulse -->
+              <line class="aios-axis-line" x1="32" y1="8" x2="32" y2="18" stroke="url(#glow-gradient)" stroke-width="1" stroke-linecap="round"/>
+              <line class="aios-axis-line" x1="32" y1="46" x2="32" y2="56" stroke="url(#glow-gradient)" stroke-width="1" stroke-linecap="round"/>
+              <line class="aios-axis-line" x1="8" y1="32" x2="18" y2="32" stroke="url(#glow-gradient)" stroke-width="1" stroke-linecap="round"/>
+              <line class="aios-axis-line" x1="46" y1="32" x2="56" y2="32" stroke="url(#glow-gradient)" stroke-width="1" stroke-linecap="round"/>
+
+              <!-- Orbiting particles -->
+              <circle class="aios-orbit-particle aios-orbit-1" cx="32" cy="16" r="1.5" fill="url(#glow-gradient)"/>
+              <circle class="aios-orbit-particle aios-orbit-2" cx="48" cy="32" r="1.5" fill="url(#glow-gradient)"/>
+              <circle class="aios-orbit-particle aios-orbit-3" cx="32" cy="48" r="1.5" fill="url(#glow-gradient)"/>
+              <circle class="aios-orbit-particle aios-orbit-4" cx="16" cy="32" r="1.5" fill="url(#glow-gradient)"/>
+
+              <!-- Rotating dash arc -->
+              <circle class="aios-rotating-arc" cx="32" cy="32" r="24" stroke="url(#glow-gradient)" stroke-width="1" fill="none" stroke-dasharray="18,88" stroke-linecap="round"/>
+            </svg>
+
+            <!-- Multiple layered glow halos -->
+            <div class="aios-mark-glow-layer aios-glow-1"></div>
+            <div class="aios-mark-glow-layer aios-glow-2"></div>
+            <div class="aios-mark-glow-layer aios-glow-3"></div>
+          </div>
+        </div>
+
+        <!-- Pulsing resonance rings around logo -->
+        <div class="aios-resonance-ring aios-ring-1"></div>
+        <div class="aios-resonance-ring aios-ring-2"></div>
+        <div class="aios-resonance-ring aios-ring-3"></div>
+
+      </div>
+
+      <!-- Headline with letter-by-letter stagger -->
+      <h1 class="aios-headline" id="aios-headline">
+        <span class="aios-headline-letter">A</span>
+        <span class="aios-headline-letter">I</span>
+        <span class="aios-headline-letter">-</span>
+        <span class="aios-headline-letter">O</span>
+        <span class="aios-headline-letter">S</span>
+      </h1>
+
+      <!-- Version badge -->
+      <div class="aios-version-badge" id="aios-version-badge">V3.1.0</div>
+
+      <!-- Subtitle with scroll-up animation -->
+      <p class="aios-subtitle" id="aios-subtitle">Loading your best AI experience</p>
+
+      <!-- Advanced progress visualization -->
+      <div class="aios-progress-wrapper">
+        <div class="aios-progress-container">
+          <div class="aios-progress-track" id="aios-progress-track">
+            <div class="aios-progress-fill" id="aios-progress-fill"></div>
+            <div class="aios-progress-core" id="aios-progress-core"></div>
+            <div class="aios-progress-glow-head" id="aios-progress-glow-head"></div>
+          </div>
+        </div>
+        <div class="aios-progress-percentage" id="aios-progress-percentage">0%</div>
+      </div>
+
+      <!-- Status messages with fade transitions -->
+      <p class="aios-status" id="aios-status">Initializing neural pathways</p>
+
+      <!-- Floating tech words -->
+      <div class="aios-tech-words" id="aios-tech-words">
+        <span class="aios-tech-word">Neural</span>
+        <span class="aios-tech-word">Quantum</span>
+        <span class="aios-tech-word">Adaptive</span>
+        <span class="aios-tech-word">Intelligent</span>
+      </div>
+
+    </div><!-- /stage -->
+
+    <!-- Powered by footer -->
+    <div class="aios-footer">
+      <p class="aios-powered-by">Powered by <span class="aios-ar-labs-text">AR Labs</span></p>
+    </div>
+
+  </div><!-- /boot overlay -->
+
   <!-- Background Decorative Grid -->
   <!-- Fullscreen Wizard Overlay -->
   <!-- Main Content Wrapper (shown by default) -->
@@ -1275,7 +1415,434 @@
     </button>
   </nav>
 
-  <script type="module" src="app.js?v=3.7"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ── Check reduced motion preference ──────────────────────── */
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ── DOM references ──────────────────────────────────────── */
+    const boot              = document.getElementById('aios-boot');
+    const gradCanvas        = document.getElementById('aios-gradient-canvas');
+    const particleCanvas    = document.getElementById('aios-particle-canvas');
+    const logoContainer     = document.getElementById('aios-logo-container');
+    const subtitle          = document.getElementById('aios-subtitle');
+    const track             = document.getElementById('aios-progress-track');
+    const fill              = document.getElementById('aios-progress-fill');
+    const core              = document.getElementById('aios-progress-core');
+    const glowHead          = document.getElementById('aios-progress-glow-head');
+    const statusEl          = document.getElementById('aios-status');
+    const percentageEl      = document.getElementById('aios-progress-percentage');
+    const brandGrid         = document.getElementById('aios-brand-grid');
+
+    /* ── Brand icons — all 18 tools, monochrome only ─────────── */
+    const BRANDS = [
+      {
+        name: 'ChatGPT',
+        vb: '0 0 41 41',
+        paths: ['M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835 9.964 9.964 0 0 0-6.205-3.498 10.079 10.079 0 0 0-11.233 4.932 9.964 9.964 0 0 0-6.205 3.498 10.079 10.079 0 0 0-2.043 11.358 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 6.205 3.498 10.08 10.08 0 0 0 11.234-4.932 9.964 9.964 0 0 0 6.205-3.499 10.079 10.079 0 0 0 2.042-11.358zm-22.51 11.77a7.473 7.473 0 0 1-4.518-2.924l.46-.266 7.487-4.327a.756.756 0 0 0 .383-.661v-10.57l3.167 1.828a.07.07 0 0 1 .038.052v8.752c-.003 4.201-3.411 7.61-7.617 7.616zm-16.025-7.044a7.474 7.474 0 0 1-.894-5.11l.46.277 7.487 4.328a.758.758 0 0 0 .765 0l9.144-5.28v3.655a.07.07 0 0 1-.028.061L9.2 27.835a7.617 7.617 0 0 1-10.203-6.209zm-2.08-17.179a7.476 7.476 0 0 1 3.91-3.287V9.23a.765.765 0 0 0 .383.66l9.144 5.28-3.168 1.828a.07.07 0 0 1-.066.006L.549 13.295a7.617 7.617 0 0 1 .368-8.878zM30.369 20.096l-9.144-5.28 3.168-1.828a.07.07 0 0 1 .066-.006l8.999 3.849a7.617 7.617 0 0 1-.37 8.878 7.473 7.473 0 0 1-3.908 3.286v-4.694a.769.769 0 0 0-.381-.661l-.43-.256zm3.152-5.11-.46-.277-7.487-4.328a.758.758 0 0 0-.765 0l-9.144 5.28V12.01a.07.07 0 0 1 .028-.06l8.999-5.19a7.617 7.617 0 0 1 8.83 7.226zm-19.757 6.499-3.167-1.828a.07.07 0 0 1-.038-.053v-8.752c.003-4.202 3.412-7.61 7.619-7.616a7.473 7.473 0 0 1 4.518 2.924l-.46.266-7.487 4.326a.756.756 0 0 0-.383.661l-.002 10.572zm1.72-3.71 4.071-2.351 4.071 2.35v4.701l-4.07 2.351-4.072-2.35V17.775z'],
+      },
+      {
+        name: 'Claude',
+        vb: '0 0 24 24',
+        paths: ['M4.709 15.955l4.72-4.72 4.023 4.023-4.719 4.719a2.843 2.843 0 0 1-4.024-4.022zM16.634 3l-6.61 6.61 4.024 4.024L21.658 7.02A2.843 2.843 0 0 0 17.635 3h-1.001zM4.044 9.044A2.843 2.843 0 0 0 7.5 13.534l1.126-1.126-4.023-4.023-.559.659zm10.89 10.912l-1.227 1.227a2.843 2.843 0 1 0 4.023-4.023l-1.019-1.019-1.777 3.815zm.979-10.912L11.89 13.067l1.027 1.026 4.023-4.023-.564-.664-.443-.364z'],
+      },
+      {
+        name: 'Gemini',
+        vb: '0 0 24 24',
+        paths: ['M12 24A14.304 14.304 0 0 0 0 12 14.304 14.304 0 0 0 12 0a14.305 14.305 0 0 0 12 12 14.305 14.305 0 0 0-12 12'],
+      },
+      {
+        name: 'Perplexity',
+        vb: '0 0 24 24',
+        paths: ['M20.315 8.499h-2.766L13.006 3h-2.012L6.451 8.499H3.685L3 9.184v10.133l.685.683H6.45v1.314L7.135 22h9.73l.685-.686V19.317h2.765l.685-.683V9.184l-.685-.685zm-3.45 8.818h-2.765V9.184l-.685-.685H8.585V5.37l3.003-2.002 4.842 5.131h.435v8.818zm-7.216 0V9.183h6.53v8.133h-6.53zm-3.452 0V9.183H8.584v8.134H6.197zm9.98 3.314H7.82v-.628h8.357v.628zm3.45-3.314h-2.765V9.183h2.765v8.134z'],
+      },
+      {
+        name: 'Grok',
+        vb: '0 0 24 24',
+        paths: ['M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'],
+      },
+      {
+        name: 'Cursor',
+        vb: '0 0 24 24',
+        paths: ['M12 2L2 9l3.5 12.5L12 24l6.5-2.5L22 9 12 2zm0 3.5l6.5 4.5-2 8L12 20l-4.5-2-2-8L12 5.5z', 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z'],
+      },
+      {
+        name: 'GitHub',
+        vb: '0 0 24 24',
+        paths: ['M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z'],
+      },
+      {
+        name: 'VS Code',
+        vb: '0 0 24 24',
+        paths: ['M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 19.986V4.014a1.5 1.5 0 0 0-.85-1.427zm-5.146 14.861L10.826 12l7.178-5.448v10.896z'],
+      },
+      {
+        name: 'OpenRouter',
+        vb: '0 0 24 24',
+        paths: ['M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 2a8 8 0 1 1 0 16A8 8 0 0 1 12 4zm-1 3v2H7v2h4v2l3-3-3-3zm2 8v-2h4v-2h-4V9l-3 3 3 3z'],
+      },
+      {
+        name: 'ElevenLabs',
+        vb: '0 0 24 24',
+        paths: ['M9 3h2v18H9zm4 0h2v18h-2z'],
+      },
+      {
+        name: 'Runway',
+        vb: '0 0 24 24',
+        paths: ['M4 3h16v4H4zm4 6h12v4H8zm4 6h8v4h-8z'],
+      },
+      {
+        name: 'Suno',
+        vb: '0 0 24 24',
+        paths: ['M12 3a9 9 0 1 0 0 18A9 9 0 0 0 12 3zm0 2a7 7 0 1 1 0 14A7 7 0 0 1 12 5zm-1 3v8l6-4-6-4z'],
+      },
+      {
+        name: 'NotebookLM',
+        vb: '0 0 24 24',
+        paths: ['M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z'],
+      },
+      {
+        name: 'Midjourney',
+        vb: '0 0 24 24',
+        paths: ['M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l7 4.5-7 4.5z'],
+      },
+      {
+        name: 'Leonardo AI',
+        vb: '0 0 24 24',
+        paths: ['M12 2L2 7l2 13 8 2 8-2 2-13L12 2zm0 2.5l7.5 3.9-1.7 10.5L12 20.5l-5.8-1.6L4.5 8.4 12 4.5zM9 9l1.5 6H9zm4.5 0H15l1 6h-1.5z'],
+      },
+      {
+        name: 'Figma',
+        vb: '0 0 24 24',
+        paths: ['M8 2a4 4 0 0 0 0 8h4V2H8zm0 10a4 4 0 0 0 0 8h4v-8H8zm4 4a4 4 0 1 0 8 0 4 4 0 0 0-8 0zm4-6a4 4 0 0 0 0-8h-4v8h4z'],
+      },
+      {
+        name: 'Firebase',
+        vb: '0 0 24 24',
+        paths: ['M3.89 15.672L6.255.461A.542.542 0 0 1 7.27.288l2.543 4.771 1.285-2.462a.542.542 0 0 1 .960 0l5.556 12.994L3.89 15.672zM0 17.387l2.216-3.773 9.329 5.367-4.364 1.689L0 17.387zm21.388-2.218l-4.542-10.624a.542.542 0 0 0-.987.033L3.89 22.5h16.575a.542.542 0 0 0 .465-.836l-1.543-2.495 2.001-1.997z'],
+      },
+      {
+        name: 'Supabase',
+        vb: '0 0 24 24',
+        paths: ['M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C.199 12.786.733 13.81 1.66 13.81H8.26l.105 9.126c.015.986 1.26 1.409 1.874.637l9.26-11.653c.565-.735.031-1.758-.897-1.758H12.5z'],
+      },
+    ];
+
+    /* ── Dense grid positions covering all screen quadrants ─────── */
+    const gridPositions = [
+      { x:  3, y:  4, s: 58 },
+      { x: 18, y:  6, s: 52 },
+      { x: 34, y:  3, s: 56 },
+      { x: 50, y:  5, s: 54 },
+      { x: 66, y:  3, s: 58 },
+      { x: 80, y:  6, s: 52 },
+      { x:  6, y: 22, s: 54 },
+      { x: 20, y: 26, s: 50 },
+      { x: 74, y: 20, s: 56 },
+      { x: 88, y: 24, s: 50 },
+      { x:  2, y: 44, s: 56 },
+      { x: 83, y: 42, s: 52 },
+      { x:  8, y: 62, s: 54 },
+      { x: 22, y: 66, s: 50 },
+      { x: 70, y: 60, s: 56 },
+      { x: 86, y: 64, s: 52 },
+      { x: 14, y: 82, s: 52 },
+      { x: 45, y: 84, s: 56 },
+      { x: 76, y: 82, s: 54 },
+    ];
+
+    BRANDS.forEach((brand, idx) => {
+      const pos = gridPositions[idx % gridPositions.length];
+      const floatDur = (6 + (idx % 5)) + 's';
+      const floatDelay = (idx * 0.4) + 's';
+
+      const el = document.createElement('div');
+      el.className = 'aios-brand-icon';
+      el.style.cssText = [
+        `left: ${pos.x}%`,
+        `top: ${pos.y}%`,
+        `width: ${pos.s}px`,
+        `--ft: ${floatDur}`,
+        `animation-delay: ${floatDelay}`,
+      ].join(';');
+
+      /* Inner box */
+      const inner = document.createElement('div');
+      inner.className = 'aios-brand-icon-inner';
+      inner.style.width = pos.s + 'px';
+      inner.style.height = pos.s + 'px';
+
+      /* SVG */
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox', brand.vb);
+      svg.setAttribute('fill', 'currentColor');
+
+      brand.paths.forEach(d => {
+        const path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', d);
+        svg.appendChild(path);
+      });
+
+      inner.appendChild(svg);
+      el.appendChild(inner);
+
+      /* Label */
+      const label = document.createElement('span');
+      label.className = 'aios-brand-icon-label';
+      label.textContent = brand.name;
+      el.appendChild(label);
+
+      brandGrid.appendChild(el);
+    });
+
+    /* ── Gradient canvas background ──────────────────────────── */
+    const gradCtx = gradCanvas.getContext('2d');
+    let gradW, gradH;
+
+    function resizeGradCanvas() {
+      gradW = gradCanvas.width = window.innerWidth;
+      gradH = gradCanvas.height = window.innerHeight;
+    }
+
+    function drawGradient(t) {
+      const hue = (t * 10) % 360;
+      const grad = gradCtx.createLinearGradient(0, 0, gradW, gradH);
+
+      grad.addColorStop(0, `hsl(${hue}, 45%, 8%)`);
+      grad.addColorStop(0.5, `hsl(${(hue + 30) % 360}, 40%, 5%)`);
+      grad.addColorStop(1, `hsl(${(hue + 60) % 360}, 50%, 7%)`);
+
+      gradCtx.fillStyle = grad;
+      gradCtx.fillRect(0, 0, gradW, gradH);
+    }
+
+    resizeGradCanvas();
+    window.addEventListener('resize', resizeGradCanvas);
+
+    /* ── Particle canvas system ──────────────────────────────– */
+    const partCtx = particleCanvas.getContext('2d');
+    let partW, partH, particles = [];
+
+    function resizeParticleCanvas() {
+      partW = particleCanvas.width = window.innerWidth;
+      partH = particleCanvas.height = window.innerHeight;
+    }
+
+    function initParticles() {
+      const count = Math.min(80, Math.floor((partW * partH) / 20000));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * partW,
+        y: Math.random() * partH,
+        r: Math.random() * 1.8 + 0.4,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.18,
+        a: Math.random() * 0.4 + 0.05,
+        life: 1,
+      }));
+    }
+
+    resizeParticleCanvas();
+    initParticles();
+    window.addEventListener('resize', () => {
+      resizeParticleCanvas();
+      initParticles();
+    });
+
+    let rafGradId, rafPartId;
+
+    function animateGradient(t) {
+      drawGradient(t / 10000);
+      rafGradId = requestAnimationFrame(animateGradient);
+    }
+
+    function animateParticles() {
+      partCtx.clearRect(0, 0, partW, partH);
+
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.001;
+
+        if (p.x < 0) p.x = partW;
+        if (p.x > partW) p.x = 0;
+        if (p.y < 0) p.y = partH;
+        if (p.y > partH) p.y = 0;
+
+        partCtx.beginPath();
+        partCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        partCtx.fillStyle = `rgba(200,210,230,${p.a * p.life})`;
+        partCtx.fill();
+      });
+
+      rafPartId = requestAnimationFrame(animateParticles);
+    }
+
+    /* ── Status messages ─────────────────────────────────────– */
+    const STATUS_MSGS = [
+      'Initializing neural pathways',
+      'Synchronizing quantum states',
+      'Calibrating intelligence matrices',
+      'Loading adaptive systems',
+      'Converging AI models',
+      'Final optimization',
+      'Ready',
+    ];
+
+    function setStatus(msg, instant = false) {
+      if (instant) {
+        statusEl.textContent = msg;
+        statusEl.style.opacity = '1';
+      } else {
+        statusEl.style.transition = 'opacity 0.3s ease';
+        statusEl.style.opacity = '0';
+        setTimeout(() => {
+          statusEl.textContent = msg;
+          statusEl.style.opacity = '1';
+        }, 300);
+      }
+    }
+
+    /* ── Easing functions ────────────────────────────────────– */
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    /* ── Animate function ────────────────────────────────────– */
+    function animate({ duration, from, to, easing = easeInOutCubic, onUpdate, onComplete }) {
+      const start = performance.now();
+      function tick(now) {
+        const elapsed = now - start;
+        const raw = Math.min(elapsed / duration, 1);
+        const t = easing(raw);
+        onUpdate(lerp(from, to, t), t, raw);
+        if (raw < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          onComplete && onComplete();
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    /* ── Main boot sequence (Exactly 3 seconds total) ───────────– */
+    function runBoot() {
+      const T = prefersReduced ? 0.2 : 1;
+
+      /* Fade in gradient and particles */
+      gradCanvas.style.opacity = '1';
+      particleCanvas.style.opacity = '1';
+
+      if (!prefersReduced) {
+        animateGradient(0);
+        animateParticles();
+      }
+
+      /* Fade in brand icons with varied opacity for depth */
+      document.querySelectorAll('.aios-brand-icon').forEach((el, i) => {
+        setTimeout(() => {
+          const base = 0.22 + Math.random() * 0.2;
+          el.style.opacity = String(base);
+        }, (i * 40 + 100) * T);
+      });
+
+      /* Logo appears at 100ms */
+      setTimeout(() => {
+        logoContainer.style.transition = `all ${0.5 * T + 0.2}s cubic-bezier(0.16, 1, 0.3, 1)`;
+        logoContainer.style.opacity = '1';
+        logoContainer.style.transform = 'scale(1) translateY(0)';
+      }, 100 * T);
+
+      /* Headlines pop at 400ms */
+      setTimeout(() => {
+        document.querySelectorAll('.aios-headline-letter').forEach((letter) => {
+          letter.style.opacity = '1';
+        });
+      }, 400 * T);
+
+      /* Subtitle at 700ms */
+      setTimeout(() => {
+        subtitle.style.opacity = '1';
+        subtitle.style.transform = 'translateY(0)';
+      }, 700 * T);
+
+      /* Progress bar starts at 800ms */
+      setTimeout(() => {
+        track.style.opacity = '1';
+        glowHead.style.opacity = '1';
+        statusEl.style.opacity = '1';
+        percentageEl.style.opacity = '1';
+        setStatus(STATUS_MSGS[0], true);
+
+        const progressDuration = prefersReduced ? 100 : 1800; // completes at 2600ms
+        let statusIdx = 0;
+        let lastStatusTime = 0;
+
+        animate({
+          duration: progressDuration,
+          from: 0,
+          to: 100,
+          easing: easeInOutCubic,
+          onUpdate: (val) => {
+            fill.style.width = val + '%';
+            core.style.width = val + '%';
+            glowHead.style.left = val + '%';
+            percentageEl.textContent = Math.round(val) + '%';
+
+            const now = performance.now();
+            if (now - lastStatusTime > 250 && statusIdx < STATUS_MSGS.length - 1) {
+              statusIdx++;
+              setStatus(STATUS_MSGS[statusIdx]);
+              lastStatusTime = now;
+            }
+          },
+          onComplete: () => {
+            setStatus(STATUS_MSGS[STATUS_MSGS.length - 1]);
+            percentageEl.textContent = '100%';
+          },
+        });
+      }, 800 * T);
+
+      /* Exit exactly at 3 seconds */
+      setTimeout(exit, 3000 * T);
+    }
+
+    /* ── Exit sequence ───────────────────────────────────────– */
+    function exit() {
+      cancelAnimationFrame(rafGradId);
+      cancelAnimationFrame(rafPartId);
+
+      boot.classList.add('aios-exiting');
+
+      boot.addEventListener(
+        'transitionend',
+        () => {
+          boot.remove();
+          
+          // Dynamically load the core website app modules only after loading completes
+          const scriptEl = document.createElement('script');
+          scriptEl.type = 'module';
+          scriptEl.src = 'app.js?v=3.7';
+          document.body.appendChild(scriptEl);
+        },
+        { once: true }
+      );
+    }
+
+    /* ── Start boot when DOM is ready ────────────────────────– */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runBoot);
+    } else {
+      runBoot();
+    }
+  })();
+  </script>
 
 
 
