@@ -688,6 +688,17 @@ export function renderMobileUpdates() {
 // ─── Auto-complete tasks triggered by the visit itself ────────────────────────
 
 function _autoCompleteVisitTasks() {
+  if (window.gamification?.locked) return;
+  
+  // Guard: if the user has just registered or is a new user with 0 XP & 0 streak,
+  // do not automatically complete any tasks or award XP/Coins on initialization.
+  const gmState = window.gamification?.getState();
+  const isNewSignup = sessionStorage.getItem('aios_new_signup') === 'true';
+  if (isNewSignup || (gmState && gmState.xp === 0 && gmState.streak === 0)) {
+    console.info('[gamification] Skipping auto-completion of visit/streak tasks for new account.');
+    return;
+  }
+
   window.gamification?.completeMissionTask('visit');
   window.gamification?.completeMissionTask('streak');
   if (isTipRead()) {
