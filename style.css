@@ -10868,7 +10868,7 @@ body.modal-open {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: #050505;
+  background: #0A0A0A;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10913,14 +10913,14 @@ body.modal-open {
 .aios-orb-1 {
   width: 700px; height: 700px;
   top: -200px; left: -200px;
-  background: radial-gradient(circle, rgba(150,180,220,0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(34,34,34,0.15) 0%, transparent 70%);
   animation: aios-orb-morph1 16s ease-in-out infinite alternate;
 }
 
 .aios-orb-2 {
   width: 600px; height: 600px;
   bottom: -150px; right: -100px;
-  background: radial-gradient(circle, rgba(100,140,200,0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(24,24,24,0.12) 0%, transparent 70%);
   animation: aios-orb-morph2 18s ease-in-out infinite alternate;
 }
 
@@ -10928,14 +10928,14 @@ body.modal-open {
   width: 500px; height: 500px;
   top: 20%; left: 50%;
   transform: translateX(-50%);
-  background: radial-gradient(circle, rgba(120,160,210,0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(17,17,17,0.1) 0%, transparent 70%);
   animation: aios-orb-morph3 14s ease-in-out infinite alternate;
 }
 
 .aios-orb-4 {
   width: 450px; height: 450px;
   bottom: 10%; right: 5%;
-  background: radial-gradient(circle, rgba(80,120,180,0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(10,10,10,0.08) 0%, transparent 70%);
   animation: aios-orb-morph4 20s ease-in-out infinite alternate;
 }
 
@@ -11197,17 +11197,17 @@ body.modal-open {
 }
 
 .aios-glow-1 {
-  background: radial-gradient(circle, rgba(200,220,255,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
   animation: aios-glow-pulse-1 2s ease-in-out infinite;
 }
 
 .aios-glow-2 {
-  background: radial-gradient(circle, rgba(150,180,220,0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
   animation: aios-glow-pulse-2 2.8s ease-in-out infinite;
 }
 
 .aios-glow-3 {
-  background: radial-gradient(circle, rgba(100,150,200,0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
   animation: aios-glow-pulse-3 3.6s ease-in-out infinite;
 }
 
@@ -11229,7 +11229,7 @@ body.modal-open {
 .aios-resonance-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(200, 220, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -11334,7 +11334,7 @@ body.modal-open {
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.3em;
-  color: #666;
+  color: rgba(255, 255, 255, 0.35);
   text-transform: uppercase;
   margin-top: 8px;
   opacity: 0;
@@ -11354,7 +11354,7 @@ body.modal-open {
   font-size: 12px;
   font-weight: 300;
   letter-spacing: 0.1em;
-  color: #555;
+  color: rgba(255, 255, 255, 0.4);
   opacity: 0;
   transform: translateY(12px);
   animation: aios-subtitle-rise 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
@@ -11401,10 +11401,10 @@ body.modal-open {
   position: absolute;
   inset: 0;
   width: 0%;
-  background: linear-gradient(90deg, #6B7280 0%, #D1D5DB 50%, #9CA3AF 100%);
+  background: #FFFFFF;
   border-radius: 2px;
   will-change: width;
-  box-shadow: 0 0 12px rgba(209, 213, 219, 0.4);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
 }
 
 .aios-progress-core {
@@ -11413,7 +11413,7 @@ body.modal-open {
   left: 0;
   width: 0%;
   height: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.8) 100%);
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 2px;
   transform: translateY(-50%);
   will-change: width;
@@ -11427,10 +11427,10 @@ body.modal-open {
   width: 24px;
   height: 8px;
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(220, 220, 240, 0.8), transparent);
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.8), transparent);
   transform: translate(-50%, -50%);
   will-change: left;
-  box-shadow: 0 0 20px rgba(200, 210, 230, 0.6);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
   opacity: 0;
 }
 
@@ -11448,7 +11448,7 @@ body.modal-open {
   font-size: 9.5px;
   font-weight: 400;
   letter-spacing: 0.15em;
-  color: #4A4A4A;
+  color: rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
   opacity: 0;
   animation: aios-status-fade 0.5s ease-out 1s forwards;
@@ -11474,7 +11474,7 @@ body.modal-open {
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.1em;
-  color: rgba(150, 180, 220, 0.15);
+  color: rgba(255, 255, 255, 0.12);
   text-transform: uppercase;
   opacity: 0;
   will-change: transform, opacity;
@@ -11537,13 +11537,13 @@ body.modal-open {
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.08em;
-  color: #444;
+  color: rgba(255, 255, 255, 0.25);
   opacity: 0;
   animation: aios-footer-fade 0.6s ease-out 1.2s forwards;
 }
 
 .aios-ar-labs-text {
-  color: #888;
+  color: rgba(255, 255, 255, 0.4);
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;

@@ -1608,12 +1608,14 @@
     }
 
     function drawGradient(t) {
-      const hue = (t * 10) % 360;
       const grad = gradCtx.createLinearGradient(0, 0, gradW, gradH);
 
-      grad.addColorStop(0, `hsl(${hue}, 45%, 8%)`);
-      grad.addColorStop(0.5, `hsl(${(hue + 30) % 360}, 40%, 5%)`);
-      grad.addColorStop(1, `hsl(${(hue + 60) % 360}, 50%, 7%)`);
+      const shift = (Math.sin(t) + 1) / 2; // ranges from 0 to 1
+      
+      grad.addColorStop(0, '#0A0A0A');
+      grad.addColorStop(0.3 + shift * 0.15, '#111111');
+      grad.addColorStop(0.65 - shift * 0.15, '#181818');
+      grad.addColorStop(1, '#222222');
 
       gradCtx.fillStyle = grad;
       gradCtx.fillRect(0, 0, gradW, gradH);
