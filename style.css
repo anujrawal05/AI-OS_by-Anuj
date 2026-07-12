@@ -10868,7 +10868,7 @@ body.modal-open {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: #0A0A0A;
+  background: #050505;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11611,43 +11611,51 @@ body.modal-open {
   }
 }
 
-@media (max-width: 767px) {
-  /* Mobile Portrait and Landscape optimization */
+@media (max-width: 767px) and (orientation: portrait) {
+  /* Mobile Portrait optimization (specifically for tall displays like 1080x2400 9:20 aspect ratio) */
   #aios-boot {
-    padding: calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+    padding: calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
     height: 100dvh;
     min-height: -webkit-fill-available;
+    background: #050505;
   }
   
   .aios-stage {
-    gap: clamp(6px, 1.5vh, 12px);
-    padding: 0 16px;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 20px;
   }
 
   .aios-glow-field {
-    inset: -60px;
-    filter: blur(50px);
+    inset: -100px;
+    filter: blur(60px);
   }
 
+  /* Logo: 170-210px height on mobile portrait */
   .aios-logo-container {
-    width: clamp(80px, 18vw, 110px);
-    height: clamp(80px, 18vw, 110px);
-    margin: 0 auto clamp(6px, 2vh, 12px);
+    width: clamp(170px, 45vw, 210px) !important;
+    height: clamp(170px, 45vw, 210px) !important;
+    margin: 0 auto 24px !important; /* 24px spacing below logo */
+    animation: aios-logo-float 4s ease-in-out infinite alternate;
   }
 
   .aios-logo-wrap {
-    width: clamp(44px, 10vw, 64px);
-    height: clamp(44px, 10vw, 64px);
+    width: clamp(90px, 25vw, 110px) !important;
+    height: clamp(90px, 25vw, 110px) !important;
   }
 
   .aios-outer-ring {
     border-width: 1px;
   }
 
+  /* Title: AI-OS V3.1.0 using clamp(34px, 4vw, 52px) */
   .aios-headline {
-    font-size: clamp(28px, 7vw, 36px);
-    margin-top: 8px;
-    letter-spacing: 0.2em;
+    font-size: clamp(34px, 4.5vw, 52px) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.18em !important;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important; /* 16px spacing below title */
   }
 
   .aios-headline-letter {
@@ -11655,47 +11663,66 @@ body.modal-open {
   }
 
   .aios-version-badge {
-    margin-top: 4px;
-    letter-spacing: 0.2em;
+    display: none !important; /* Integrated cleanly or hidden for premium visual flow */
   }
 
+  /* Subtitle: clamp(16px, 2vw, 22px) and 16px below title */
   .aios-subtitle {
-    margin-top: 14px;
-    font-size: clamp(10px, 2.5vw, 12px);
+    margin-top: 0 !important;
+    font-size: clamp(16px, 2.2vw, 22px) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    margin-bottom: 28px !important; /* 28px spacing below subtitle */
   }
 
+  /* Progress indicator: width 65%, height 4-6px, 28px below subtitle */
   .aios-progress-wrapper {
-    margin-top: clamp(24px, 5vh, 36px);
-    gap: 10px;
+    margin-top: 0 !important;
+    width: 65% !important;
+    margin-bottom: 28px !important;
+    gap: 12px;
   }
 
   .aios-progress-track, .aios-progress-fill, .aios-progress-core {
-    height: 2px;
+    height: 5px !important;
+    border-radius: 3px !important;
   }
 
   .aios-progress-glow-head {
-    width: 16px;
-    height: 6px;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+    width: 20px;
+    height: 8px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
   }
 
   .aios-progress-percentage {
-    font-size: 10px;
-    min-width: 28px;
+    font-size: 11px;
+    min-width: 32px;
   }
 
   .aios-status {
-    margin-top: 10px;
-    font-size: 8.5px;
+    margin-top: 12px;
+    font-size: 9px;
     letter-spacing: 0.12em;
   }
 
-  /* Reposition background brand logos to left & right margin columns to prevent overlaying the content stage */
+  /* Reposition background brand logos to margins, leaving center completely clean */
   .aios-brand-icon {
-    opacity: 0.22 !important; /* 20-30% opacity on mobile */
+    opacity: 0.06 !important; /* 4-8% opacity */
     left: auto !important;
   }
 
+  /* Hide elements not specified in background target list */
+  .aios-brand-icon:nth-child(6),
+  .aios-brand-icon:nth-child(7),
+  .aios-brand-icon:nth-child(8),
+  .aios-brand-icon:nth-child(12),
+  .aios-brand-icon:nth-child(15),
+  .aios-brand-icon:nth-child(16),
+  .aios-brand-icon:nth-child(17),
+  .aios-brand-icon:nth-child(18) {
+    display: none !important;
+  }
+
+  /* Scatter naturally around the edges */
   .aios-brand-icon:nth-child(odd) {
     left: 4% !important;
   }
@@ -11704,25 +11731,40 @@ body.modal-open {
     right: 4% !important;
   }
 
-  /* Distribute vertical positions of background brand icons on mobile to prevent overlapping */
-  .aios-brand-icon:nth-child(1),  .aios-brand-icon:nth-child(2)  { top: 4% !important; }
-  .aios-brand-icon:nth-child(3),  .aios-brand-icon:nth-child(4)  { top: 15% !important; }
-  .aios-brand-icon:nth-child(5),  .aios-brand-icon:nth-child(6)  { top: 26% !important; }
-  .aios-brand-icon:nth-child(7),  .aios-brand-icon:nth-child(8)  { top: 37% !important; }
-  .aios-brand-icon:nth-child(9),  .aios-brand-icon:nth-child(10) { top: 48% !important; }
-  .aios-brand-icon:nth-child(11), .aios-brand-icon:nth-child(12) { top: 59% !important; }
-  .aios-brand-icon:nth-child(13), .aios-brand-icon:nth-child(14) { top: 70% !important; }
-  .aios-brand-icon:nth-child(15), .aios-brand-icon:nth-child(16) { top: 81% !important; }
-  .aios-brand-icon:nth-child(17), .aios-brand-icon:nth-child(18) { top: 92% !important; }
+  /* Symmetrical vertical distributions at screen edges */
+  .aios-brand-icon:nth-child(1)  { top: 10% !important; } /* ChatGPT (Left) */
+  .aios-brand-icon:nth-child(2)  { top: 10% !important; } /* Claude (Right) */
+  .aios-brand-icon:nth-child(3)  { top: 30% !important; } /* Gemini (Left) */
+  .aios-brand-icon:nth-child(4)  { top: 30% !important; } /* Perplexity (Right) */
+  .aios-brand-icon:nth-child(5)  { top: 50% !important; } /* Grok (Left) */
+  .aios-brand-icon:nth-child(13) { top: 50% !important; left: auto !important; right: 4% !important; } /* NotebookLM (Right) */
+  .aios-brand-icon:nth-child(11) { top: 70% !important; } /* Runway (Left) */
+  .aios-brand-icon:nth-child(14) { top: 70% !important; } /* Midjourney (Right) */
+  .aios-brand-icon:nth-child(9)  { top: 88% !important; } /* OpenRouter (Left) */
+  .aios-brand-icon:nth-child(10) { top: 88% !important; } /* ElevenLabs (Right) */
 
-  .aios-brand-icon, .aios-brand-icon-inner {
-    width: clamp(32px, 8vw, 38px) !important;
-    height: clamp(32px, 8vw, 38px) !important;
+  /* Scaled icon sizes for visual depth */
+  .aios-brand-icon:nth-child(1), .aios-brand-icon:nth-child(2),
+  .aios-brand-icon:nth-child(3), .aios-brand-icon:nth-child(5) {
+    width: 46px !important; height: 46px !important;
+  }
+  .aios-brand-icon:nth-child(4), .aios-brand-icon:nth-child(11),
+  .aios-brand-icon:nth-child(14) {
+    width: 38px !important; height: 38px !important;
+  }
+  .aios-brand-icon:nth-child(9), .aios-brand-icon:nth-child(10),
+  .aios-brand-icon:nth-child(13) {
+    width: 32px !important; height: 32px !important;
+  }
+
+  .aios-brand-icon-inner {
+    width: 100% !important;
+    height: 100% !important;
     border-radius: 8px !important;
   }
 
   .aios-brand-icon-label {
-    display: none !important; /* Prevent text clutter and overlap */
+    display: none !important;
   }
 
   /* GPU optimization: Reduce blurs and complex animation loops to hit 60 FPS */
@@ -11740,15 +11782,16 @@ body.modal-open {
   }
   
   .aios-tech-word {
-    display: none !important; /* Hide floating text words to clean up performance */
+    display: none !important;
   }
 
   .aios-footer {
-    bottom: max(14px, env(safe-area-inset-bottom));
+    bottom: max(24px, env(safe-area-inset-bottom)) !important;
   }
 
   .aios-powered-by {
-    font-size: 8.5px;
+    font-size: 10px !important;
+    opacity: 0.45 !important;
   }
 }
 
@@ -11793,5 +11836,14 @@ body.modal-open {
 
   .aios-brand-icon {
     display: none !important; /* Hide all background floating assets in landscape for zero overlap */
+  }
+}
+
+@keyframes aios-logo-float {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  100% {
+    transform: translateY(-8px) scale(1.02);
   }
 }

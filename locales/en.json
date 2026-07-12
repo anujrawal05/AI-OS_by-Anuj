@@ -6,7 +6,12 @@
     "explore": "Explore Tools",
     "categories": "Categories",
     "about": "About",
-    "more": "More from A.R. Labs"
+    "more": "More from A.R. Labs",
+    "home": "Home",
+    "business": "Business",
+    "updates": "Updates",
+    "profile": "Profile",
+    "guide": "Guide"
   },
   "hero": {
     "fromCreator": "✦ FROM THE CREATOR",
