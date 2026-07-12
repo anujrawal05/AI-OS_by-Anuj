@@ -1,6 +1,6 @@
 {
   "name": "ai-os-backend",
-  "version": "2.0.0",
+  "version": "3.1.0",
   "description": "AI-OS v2 Backend Foundation - Clean Rebuild",
   "main": "src/server.js",
   "engines": {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aios-v5.14'; // Bumped — force-clears stale caches with broken Supabase scripts
+const CACHE_NAME = 'aios-v3.1.0'; // Bumped for version 3.1.0
 const ASSETS = [
   '/',
   '/index.html',

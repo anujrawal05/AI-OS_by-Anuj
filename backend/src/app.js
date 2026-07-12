@@ -79,7 +79,7 @@ app.use(requestLogger);
 // Health Endpoint — registered FIRST before all other routes.
 // This ensures /api/health always responds even if specific route files have partial failures.
 app.get(['/health', '/api/health'], (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date(), version: '2.0.0' });
+  res.status(200).json({ status: 'ok', timestamp: new Date(), version: '3.1.0' });
 });
 
 // Register API Route Groups
