@@ -1051,17 +1051,164 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
-    /* Responsive */
+    /* Responsive Optimization */
     @media (max-width: 992px) {
       .guide-layout {
         grid-template-columns: 1fr;
+        gap: 30px;
+        margin-top: 30px;
       }
       .sidebar-nav {
         position: relative;
         top: 0;
-        margin-bottom: 40px;
+        margin-bottom: 30px;
       }
     }
+
+    @media (max-width: 768px) {
+      /* Header mobile tuning */
+      .logo-text {
+        font-size: 1.1rem;
+      }
+      .logo-subtitle {
+        display: none;
+      }
+      .header-actions {
+        gap: 8px;
+      }
+      .header-actions .btn {
+        padding: 8px 12px;
+        font-size: 0.72rem;
+      }
+
+      /* Sticky horizontal tags on mobile */
+      .sidebar-nav {
+        position: sticky;
+        top: 73px;
+        z-index: 99;
+        margin-bottom: 24px;
+        width: 100vw;
+        margin-left: -30px;
+      }
+      .sidebar-card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 10px 20px;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(10, 10, 12, 0.95);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+      }
+      .sidebar-title-nav {
+        display: none;
+      }
+      .sidebar-links {
+        flex-direction: row;
+        gap: 12px;
+        width: auto;
+      }
+      .sidebar-link a {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .sidebar-link.active a {
+        border: 1px solid var(--accent-cyan);
+        background: rgba(46, 197, 255, 0.1);
+        border-radius: 20px;
+        padding-left: 14px;
+      }
+
+      /* Sections Mobile Spacing */
+      .doc-section {
+        padding: 24px 20px;
+        margin-bottom: 24px;
+        border-radius: 12px;
+      }
+      .section-title {
+        font-size: 1.6rem;
+        margin-bottom: 14px;
+      }
+      .section-desc {
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+      .sub-heading {
+        font-size: 1.1rem;
+        margin-top: 20px;
+      }
+
+      /* Vertical Stepper timeline for mobile */
+      .diag-timeline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        padding: 10px 0 10px 20px;
+      }
+      .diag-timeline::before {
+        left: 27px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        height: 100%;
+      }
+      .diag-step {
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        text-align: left;
+      }
+      .diag-lbl {
+        text-align: left;
+        font-size: 0.75rem;
+      }
+
+      /* Table responsive wrapping */
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+      }
+      .specs-table {
+        margin-top: 0;
+        min-width: 500px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 16px;
+      }
+      .sidebar-nav {
+        margin-left: -16px;
+      }
+      .logo-text-group {
+        display: none; /* hide text completely on very small screens to fit buttons */
+      }
+      .btn {
+        padding: 8px 10px;
+        font-size: 0.7rem;
+      }
+      .logo {
+        gap: 4px;
+      }
+    }
+
 
     /* ICRA Floating Button Styles */
     #icra-assistant-btn {
@@ -1175,40 +1322,42 @@
           The system indexes, categories, and serves structural prompt nodes continuously. The live operational parameters of the active codebase are cataloged as follows:
         </p>
 
-        <table class="specs-table">
-          <thead>
-            <tr>
-              <th>Architecture Component</th>
-              <th>Platform Specification</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Database Library Scope</td>
-              <td>162 Complete System Nodes (API & Web UI configurations)</td>
-            </tr>
-            <tr>
-              <td>Classification Sectors</td>
-              <td>12 Industry Partition Sectors</td>
-            </tr>
-            <tr>
-              <td>System Theme Base</td>
-              <td>Strict Monotone Dark (Soot Black) with Light Mode support</td>
-            </tr>
-            <tr>
-              <td>Primary Contrast Colors</td>
-              <td>Neon Cyan (#2EC5FF) & Emerald Green (#00D084)</td>
-            </tr>
-            <tr>
-              <td>Localization Engine</td>
-              <td>Triple Translation: Native English, Translated Hindi, Hybrid Hinglish</td>
-            </tr>
-            <tr>
-              <td>Premium Modules</td>
-              <td>Supabase User Management, Razerpay Integration, and AI-OS Business Hub</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="specs-table">
+            <thead>
+              <tr>
+                <th>Architecture Component</th>
+                <th>Platform Specification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Database Library Scope</td>
+                <td>162 Complete System Nodes (API & Web UI configurations)</td>
+              </tr>
+              <tr>
+                <td>Classification Sectors</td>
+                <td>12 Industry Partition Sectors</td>
+              </tr>
+              <tr>
+                <td>System Theme Base</td>
+                <td>Strict Monotone Dark (Soot Black) with Light Mode support</td>
+              </tr>
+              <tr>
+                <td>Primary Contrast Colors</td>
+                <td>Neon Cyan (#2EC5FF) & Emerald Green (#00D084)</td>
+              </tr>
+              <tr>
+                <td>Localization Engine</td>
+                <td>Triple Translation: Native English, Translated Hindi, Hybrid Hinglish</td>
+              </tr>
+              <tr>
+                <td>Premium Modules</td>
+                <td>Supabase User Management, Razerpay Integration, and AI-OS Business Hub</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- Section 2.0: Vision & Goals -->
