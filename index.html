@@ -42,9 +42,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=3.5">
+  <link rel="stylesheet" href="style.css?v=3.1.0">
   <!-- Dedicated Mobile UI (native-app-style, <=767px only) -->
-  <link rel="stylesheet" href="mobile.css?v=1.1" media="(max-width: 767px)">
+  <link rel="stylesheet" href="mobile.css?v=3.1.0" media="(max-width: 767px)">
   <!-- Razorpay is loaded lazily in auth.js only when the user initiates
        a payment — loading it eagerly triggered a browser permission prompt
        for the Web Payment Handler API on every page load. -->
@@ -172,7 +172,7 @@
       <div class="aios-version-badge" id="aios-version-badge">V3.1.0</div>
 
       <!-- Subtitle with scroll-up animation -->
-      <p class="aios-subtitle" id="aios-subtitle">Loading your best AI experience</p>
+      <p class="aios-subtitle" id="aios-subtitle">Loading your best AI experience...</p>
 
       <!-- Advanced progress visualization -->
       <div class="aios-progress-wrapper">
@@ -1610,12 +1610,12 @@
     function drawGradient(t) {
       const grad = gradCtx.createLinearGradient(0, 0, gradW, gradH);
 
-      const shift = (Math.sin(t) + 1) / 2; // ranges from 0 to 1
+      const shift = (Math.sin(t) + 1) / 2;
       
-      grad.addColorStop(0, '#0A0A0A');
-      grad.addColorStop(0.3 + shift * 0.15, '#111111');
-      grad.addColorStop(0.65 - shift * 0.15, '#181818');
-      grad.addColorStop(1, '#222222');
+      grad.addColorStop(0, '#050505');
+      grad.addColorStop(0.35 + shift * 0.1, '#090909');
+      grad.addColorStop(0.7 - shift * 0.1, '#101010');
+      grad.addColorStop(1, '#050505');
 
       gradCtx.fillStyle = grad;
       gradCtx.fillRect(0, 0, gradW, gradH);
@@ -1830,7 +1830,7 @@
           // Dynamically load the core website app modules only after loading completes
           const scriptEl = document.createElement('script');
           scriptEl.type = 'module';
-          scriptEl.src = 'app.js?v=3.7';
+          scriptEl.src = 'app.js?v=3.1.0';
           document.body.appendChild(scriptEl);
         },
         { once: true }

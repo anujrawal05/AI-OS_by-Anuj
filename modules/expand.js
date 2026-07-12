@@ -115,7 +115,7 @@ export async function loadLiveDashboardMetrics() {
     // 2. Fetch live local Indian bullion prices
     let metalsData = null;
     try {
-      metalsData = await apiCall('/api/metals');
+      metalsData = await apiCall('/api/market/metals');
     } catch (e) {
       console.warn('[Live Market Monitor] Failed to retrieve metals:', e);
     }

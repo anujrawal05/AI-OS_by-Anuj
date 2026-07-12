@@ -65,7 +65,6 @@ export function toggleBusinessSectionView() {
   
   const isPremium = state.user && (
     state.user.plan_type === 'Premium' || 
-    state.user.plan_type === 'Trial Premium' ||
     state.user.subscription?.plan === 'Premium'
   );
   const isTrial = state.user && (

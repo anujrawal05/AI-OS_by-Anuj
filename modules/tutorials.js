@@ -115,7 +115,7 @@ export async function loadLiveBusinessNews() {
   }
 
   try {
-    const data = await apiCall('/api/news');
+    const data = await apiCall('/api/market/news');
     if (!data || !data.success || !data.articles) {
       throw new Error("Invalid response structure from news API proxy");
     }

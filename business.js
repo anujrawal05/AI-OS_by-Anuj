@@ -9,6 +9,8 @@ import { initMobileUI } from './modules/mobileUI.js';
 import { completeMissionTask } from './modules/gamification.js';
 import { initTrialClock, closeTrialWelcomeModal } from './modules/premium.js';
 import { loadTranslations } from './modules/utils.js';
+import { apiCall } from './modules/apiClient.js';
+
 
 let learnModuleInstance = null;
 async function loadLearnModule() {
