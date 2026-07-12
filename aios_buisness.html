@@ -52,20 +52,20 @@
         </svg>
         <div class="logo-text-group">
           <span class="logo-text">AI-OS BUSINESS</span>
-          <span class="logo-subtitle">Powered by A.R. Labs</span>
+          <span class="logo-subtitle" data-i18n="logoSub">Powered by A.R. Labs</span>
         </div>
       </div>
 
       <!-- Center Navigation switches -->
       <nav class="header-center-nav">
         <a href="index.html" class="btn-back-home">
-          <span>← Back to AI-OS</span>
+          <span data-i18n="business.backToAios">← Back to AI-OS</span>
         </a>
         
         <!-- Workspace Swapper Dropdown -->
         <div class="workspace-dropdown-wrap" id="workspace-dropdown-wrap">
           <button class="workspace-dropdown-trigger" id="workspace-dropdown-btn">
-            <span>Workspace: Dashboard</span>
+            <span data-i18n="business.workspaceDashboard">Workspace: Dashboard</span>
             <span class="workspace-dropdown-arrow">▼</span>
           </button>
           <div class="workspace-dropdown-menu">
@@ -76,8 +76,8 @@
           </div>
         </div>
         
-        <button class="btn-about-bus" id="btn-about-trigger">About & Methodology</button>
-        <a href="intro.html" class="btn-about-bus" style="text-decoration: none; color: #2ec5ff; display: inline-flex; align-items: center; justify-content: center;">System Guide ✦</a>
+        <button class="btn-about-bus" id="btn-about-trigger" data-i18n="business.btnAboutTrigger">About & Methodology</button>
+        <a href="intro.html" class="btn-about-bus" style="text-decoration: none; color: #2ec5ff; display: inline-flex; align-items: center; justify-content: center;" data-i18n="business.btnSystemGuide">System Guide ✦</a>
       </nav>
 
       <!-- Right Header Action buttons -->
@@ -205,7 +205,7 @@
           <!-- Widget 1: Live Financial Overview -->
           <div class="dashboard-card widget-markets">
             <div class="widget-header">
-              <h4 class="widget-card-title">📈 Live Financial Monitor</h4>
+              <h4 class="widget-card-title" data-i18n="business.monitorTitle">📈 Live Financial Monitor</h4>
               <div class="live-pulse-indicator">● LIVE DATA</div>
             </div>
             <div id="market-data-loading" class="widget-loader">
@@ -233,7 +233,7 @@
           <!-- Widget 2: AI & Business News Feed -->
           <div class="dashboard-card widget-news">
             <div class="widget-header">
-              <h4 class="widget-card-title">📰 AI & Business Intelligence</h4>
+              <h4 class="widget-card-title" data-i18n="business.newsTitle">📰 AI & Business Intelligence</h4>
               <div class="live-pulse-indicator" style="background: rgba(46, 197, 255, 0.1); color: var(--bus-accent);">● REAL-TIME</div>
             </div>
             <div id="news-data-loading" class="widget-loader">
@@ -987,7 +987,7 @@
       <div class="workspace-wrapper" id="pane-bus-build">
         <!-- Vetted AI Business Catalog Grid -->
         <div class="business-catalog-section" style="margin-bottom: 40px; border-bottom: 1px solid var(--bus-border); padding-bottom: 40px;">
-          <h3 style="color:#fff; margin-bottom: 24px; font-family: var(--font-mono); font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+          <h3 style="color:#fff; margin-bottom: 24px; font-family: var(--font-mono); font-size: 1.15rem; display: flex; align-items: center; gap: 8px;" data-i18n="business.launchpadHeading">
             🚀 Vetted AI Business Catalog <span style="font-size: 0.72rem; color: var(--bus-accent); border: 1px solid var(--bus-accent); padding: 2px 8px; border-radius: 12px; font-family: sans-serif; font-weight: 500;">9 ACTIVE MODELS</span>
           </h3>
           <div class="business-cards-grid" id="business-cards-grid">
@@ -999,7 +999,7 @@
           
           <!-- Configurator inputs panel -->
           <div class="blueprint-form-card">
-            <h4 style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem;">Launch Matrix Config</h4>
+            <h4 style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem;" data-i18n="business.growFormTitle">Launch Matrix Config</h4>
             
             <div class="blueprint-form-group">
               <label for="blueprint-model-select">Business Model Target</label>
@@ -1055,21 +1055,21 @@
           
           <!-- Funnel metrics analytics mock -->
           <div class="strategist-sidebar-panel" style="display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
-            <h4 style="color:#fff; margin-bottom: 5px; font-family: var(--font-mono); font-size: 1rem;">📊 Enterprise Matrix</h4>
+            <h4 style="color:#fff; margin-bottom: 5px; font-family: var(--font-mono); font-size: 1rem;" data-i18n="business.growFormTitle">📊 Enterprise Matrix</h4>
             
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label for="strategist-business-name" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">1. What is your business name, domain niche, or core service offer?</label>
-              <textarea class="blueprint-form-select" id="strategist-business-name" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Apex AI Solutions, custom LLM fine-tuning..."></textarea>
+              <label for="strategist-business-name" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);" data-i18n="business.growLabelName">1. What is your business name, domain niche, or core service offer?</label>
+              <textarea class="blueprint-form-select" id="strategist-business-name" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" data-i18n-placeholder="business.growPlaceholderName" placeholder="e.g., Apex AI Solutions, custom LLM fine-tuning..."></textarea>
             </div>
 
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label for="strategist-target-audience" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">2. Describe your primary target audience or ideal client avatar</label>
-              <textarea class="blueprint-form-select" id="strategist-target-audience" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Mid-sized healthcare clinics, operations managers..."></textarea>
+              <label for="strategist-target-audience" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);" data-i18n="business.growLabelAudience">2. Describe your primary target audience or ideal client avatar</label>
+              <textarea class="blueprint-form-select" id="strategist-target-audience" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" data-i18n-placeholder="business.growPlaceholderAudience" placeholder="e.g., Mid-sized healthcare clinics, operations managers..."></textarea>
             </div>
 
             <div class="blueprint-form-group" style="margin-bottom: 0;">
-              <label for="strategist-bottleneck" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);">3. What is your biggest current business bottleneck? (e.g., Traffic, Sales Conversions, Retention)</label>
-              <textarea class="blueprint-form-select" id="strategist-bottleneck" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" placeholder="e.g., Getting qualified leads, sales closing rates..."></textarea>
+              <label for="strategist-bottleneck" style="font-size: 0.68rem; line-height: 1.4; color: var(--bus-primary);" data-i18n="business.growLabelBottleneck">3. What is your biggest current business bottleneck? (e.g., Traffic, Sales Conversions, Retention)</label>
+              <textarea class="blueprint-form-select" id="strategist-bottleneck" rows="3" style="resize: none; font-family: inherit; font-size: 0.8rem; padding: 10px; cursor: text; background: rgba(0,0,0,0.4); border: 1px solid var(--bus-border); color: #fff; border-radius: 8px; outline: none; width: 100%; transition: all var(--transition-fast);" data-i18n-placeholder="business.growPlaceholderBottleneck" placeholder="e.g., Getting qualified leads, sales closing rates..."></textarea>
             </div>
 
             <button class="btn-blueprint-compile" id="btn-strategist-analyze" style="margin-top: 5px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; padding: 12px; background: var(--bus-primary); color: #000; border: none; border-radius: 8px; cursor: pointer; transition: all var(--transition-fast);">ANALYZE ENTERPRISE MATRIX</button>
@@ -1793,12 +1793,12 @@
   <!-- Mandatory First-Launch Language & Destination Onboarding Modal -->
   <div id="business-onboarding-modal" class="business-popup-overlay" style="display: none;">
     <div class="business-popup-card" style="max-width: 600px; text-align: left; padding: 28px;">
-      <h2 id="ob-title" class="business-popup-title" style="text-align: center; margin-bottom: 6px;">Welcome to AI-OS Business</h2>
-      <p id="ob-subtitle" class="business-popup-desc" style="text-align: center; font-size: 0.9rem; margin-bottom: 24px; color: var(--bus-text-secondary);">Configure your language and initial workspace destination:</p>
+      <h2 id="ob-title" class="business-popup-title" style="text-align: center; margin-bottom: 6px;" data-i18n="business.onboardingTitle">Welcome to AI-OS Business</h2>
+      <p id="ob-subtitle" class="business-popup-desc" style="text-align: center; font-size: 0.9rem; margin-bottom: 24px; color: var(--bus-text-secondary);" data-i18n="business.onboardingSubtitle">Configure your language and initial workspace destination:</p>
       
       <!-- Section 1: Language Selection -->
       <div class="ob-section" style="margin-bottom: 24px;">
-        <h4 id="ob-lang-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-primary); margin-bottom: 12px; font-weight: 700;">1. Language / भाषा</h4>
+        <h4 id="ob-lang-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-primary); margin-bottom: 12px; font-weight: 700;" data-i18n="business.langSectionTitle">1. Language / भाषा</h4>
         <div style="display: flex; gap: 12px;">
           <button class="business-popup-opt-btn lang-select-btn active" data-lang="en" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">English</button>
           <button class="business-popup-opt-btn lang-select-btn" data-lang="hi" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">हिन्दी</button>
@@ -1808,7 +1808,7 @@
       
       <!-- Section 2: Destination Module Selection -->
       <div class="ob-section">
-        <h4 id="ob-dest-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-accent); margin-bottom: 12px; font-weight: 700;">2. Module Destination / मॉड्यूल गंतव्य</h4>
+        <h4 id="ob-dest-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-accent); margin-bottom: 12px; font-weight: 700;" data-i18n="business.destSectionTitle">2. Module Destination / मॉड्यूल गंतव्य</h4>
         <div style="display: flex; flex-direction: column; gap: 10px;">
           <button class="business-popup-opt-btn dest-select-btn" data-workspace="dashboard" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
             <strong class="dest-title" style="font-size: 1rem; color: #fff;">📊 Dashboard</strong>

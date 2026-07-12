@@ -7,6 +7,10 @@ import { updateUserProfileHeader } from './auth.js';
 import { completeMissionTask } from './gamification.js';
 
 export function switchBusinessWorkspace(workspaceName) {
+  if (!workspaceName) {
+    console.warn("[Workspace Switch Warning] workspaceName is null or undefined");
+    return;
+  }
   if (workspaceName === 'learn') {
     completeMissionTask('learn');
     switchBusinessWorkspace('dashboard');
@@ -121,7 +125,7 @@ export function initWorkspaceControls() {
     if (swBtnWrap) swBtnWrap.classList.remove('active');
   });
 
-  const dropdownItems = document.querySelectorAll('.workspace-dropdown-menu button');
+  const dropdownItems = document.querySelectorAll('#workspace-dropdown-wrap .workspace-dropdown-menu button');
   dropdownItems.forEach(item => {
     item.addEventListener('click', (e) => {
       e.stopPropagation();

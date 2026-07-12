@@ -96,7 +96,12 @@ export function playAudioTelemetry() {
 }
 
 export function getNestedTranslation(obj, path) {
-  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  const result = path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  if (result === undefined || result === null || result === '') {
+    console.warn(`[i18n Missing Key] "${path}"`);
+    return null;
+  }
+  return result;
 }
 
 export function applyTranslations(translations) {
@@ -107,11 +112,17 @@ export function applyTranslations(translations) {
   elements.forEach(el => {
     const key = el.getAttribute('data-i18n');
     const translation = getNestedTranslation(translations, key);
-    if (translation) {
+    if (translation !== null) {
       if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
         el.placeholder = translation;
       } else {
         el.innerHTML = translation;
+      }
+    } else {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = `[Missing: ${key}]`;
+      } else {
+        el.innerHTML = `[Missing: ${key}]`;
       }
     }
   });
@@ -121,8 +132,10 @@ export function applyTranslations(translations) {
   placeholderElements.forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
     const translation = getNestedTranslation(translations, key);
-    if (translation) {
+    if (translation !== null) {
       el.placeholder = translation;
+    } else {
+      el.placeholder = `[Missing: ${key}]`;
     }
   });
 
@@ -131,8 +144,10 @@ export function applyTranslations(translations) {
   titleElements.forEach(el => {
     const key = el.getAttribute('data-i18n-title');
     const translation = getNestedTranslation(translations, key);
-    if (translation) {
+    if (translation !== null) {
       el.title = translation;
+    } else {
+      el.title = `[Missing: ${key}]`;
     }
   });
 }
@@ -143,9 +158,11 @@ export async function loadTranslations(lang) {
   const fileMap = {
     english: 'en',
     hindi: 'hi',
-    hinglish: 'hinglish'
+    hinglish: 'hinglish',
+    en: 'en',
+    hi: 'hi'
   };
-  const fileName = fileMap[langKey] || 'en';
+  const fileName = fileMap[langKey] || langKey || 'en';
   try {
     const response = await fetch(`/locales/${fileName}.json`);
     if (!response.ok) {
