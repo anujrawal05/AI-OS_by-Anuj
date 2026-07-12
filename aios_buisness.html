@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -134,18 +134,18 @@
       <!-- Bloomberg-style live financial data ticker strip -->
       <div class="financial-ticker-bar">
         <div class="ticker-label">MARKET INDICATORS</div>
-        <div class="ticker-scroll">
-          <div class="ticker-item"><span class="name">AI-OS NET</span><span class="val">₹9,450</span><span class="change up">▲ +145%</span></div>
-          <div class="ticker-item"><span class="name">ARR TARGET</span><span class="val">₹4.2M</span><span class="change up">▲ +18.2%</span></div>
-          <div class="ticker-item"><span class="name">OUTREACH CR</span><span class="val">2.8%</span><span class="change up">▲ +5.2%</span></div>
-          <div class="ticker-item"><span class="name">AUTOMATION RATE</span><span class="val">92%</span><span class="change up">▲ +25.0%</span></div>
-          <div class="ticker-item"><span class="name">VALUATION INDEX</span><span class="val">₹12.4M</span><span class="change up">▲ +12.4%</span></div>
+        <div class="ticker-scroll" id="live-ticker-scroll">
+          <div class="ticker-item"><span class="name">NIFTY 50</span><span class="val" id="tk-nifty-val">₹--</span><span class="change" id="tk-nifty-chg">--</span></div>
+          <div class="ticker-item"><span class="name">SENSEX</span><span class="val" id="tk-sensex-val">₹--</span><span class="change" id="tk-sensex-chg">--</span></div>
+          <div class="ticker-item"><span class="name">BTC (Bitcoin)</span><span class="val" id="tk-btc-val">₹--</span><span class="change" id="tk-btc-chg">--</span></div>
+          <div class="ticker-item"><span class="name">NVDA (NVIDIA)</span><span class="val" id="tk-nvda-val">₹--</span><span class="change" id="tk-nvda-chg">--</span></div>
+          <div class="ticker-item"><span class="name">Gold 24K</span><span class="val" id="tk-gold-val">₹--</span><span class="change" id="tk-gold-chg">Retail</span></div>
           <!-- Loop content for continuous animation -->
-          <div class="ticker-item"><span class="name">AI-OS NET</span><span class="val">₹9,450</span><span class="change up">▲ +145%</span></div>
-          <div class="ticker-item"><span class="name">ARR TARGET</span><span class="val">₹4.2M</span><span class="change up">▲ +18.2%</span></div>
-          <div class="ticker-item"><span class="name">OUTREACH CR</span><span class="val">2.8%</span><span class="change up">▲ +5.2%</span></div>
-          <div class="ticker-item"><span class="name">AUTOMATION RATE</span><span class="val">92%</span><span class="change up">▲ +25.0%</span></div>
-          <div class="ticker-item"><span class="name">VALUATION INDEX</span><span class="val">₹12.4M</span><span class="change up">▲ +12.4%</span></div>
+          <div class="ticker-item"><span class="name">NIFTY 50</span><span class="val" id="tk-nifty-val-loop">₹--</span><span class="change" id="tk-nifty-chg-loop">--</span></div>
+          <div class="ticker-item"><span class="name">SENSEX</span><span class="val" id="tk-sensex-val-loop">₹--</span><span class="change" id="tk-sensex-chg-loop">--</span></div>
+          <div class="ticker-item"><span class="name">BTC (Bitcoin)</span><span class="val" id="tk-btc-val-loop">₹--</span><span class="change" id="tk-btc-chg-loop">--</span></div>
+          <div class="ticker-item"><span class="name">NVDA (NVIDIA)</span><span class="val" id="tk-nvda-val-loop">₹--</span><span class="change" id="tk-nvda-chg-loop">--</span></div>
+          <div class="ticker-item"><span class="name">Gold 24K</span><span class="val" id="tk-gold-val-loop">₹--</span><span class="change" id="tk-gold-chg-loop">Retail</span></div>
         </div>
       </div>
 

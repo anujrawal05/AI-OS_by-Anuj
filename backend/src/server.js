@@ -11,6 +11,13 @@ const PORT = process.env.PORT || 8080;
 
 const server = app.listen(PORT, () => {
   logger.info(`AI-OS v2 Backend Production Engine listening on port ${PORT}`);
+  // Start the background market data service scheduler
+  try {
+    const { startScheduler } = require('./services/marketDataService');
+    startScheduler();
+  } catch (err) {
+    logger.error('Failed to start Market Data Service scheduler:', err);
+  }
 });
 
 // 2. Unhandled Exception Logging

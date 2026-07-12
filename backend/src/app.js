@@ -20,6 +20,14 @@ const app = express();
 // Enable Gzip Compression for optimization of transfer payloads
 app.use(compression());
 
+// Vercel Serverless Fail-safe: Start the market data background scheduler immediately
+try {
+  const { startScheduler } = require('./services/marketDataService');
+  startScheduler();
+} catch (err) {
+  logger.error('[App Init] Failed to bootstrap fail-safe market scheduler:', err);
+}
+
 // ─── CORS Configuration ────────────────────────────────────────────────────────
 // Base allowed origins — always included
 const BASE_ALLOWED_ORIGINS = [

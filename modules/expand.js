@@ -106,20 +106,29 @@ export async function loadLiveDashboardMetrics() {
   }
 
   try {
-    const data = await apiCall('/api/market/quotes');
+    // 1. Fetch live stock/crypto quotes and exchange rate
+    const data = await apiCall('/api/market');
     if (!data || !data.success || !data.quotes) {
       throw new Error("Invalid response or quotes data missing");
     }
 
-    const { quotes, usdInrRate, timestamp } = data;
+    // 2. Fetch live local Indian bullion prices
+    let metalsData = null;
+    try {
+      metalsData = await apiCall('/api/metals');
+    } catch (e) {
+      console.warn('[Live Market Monitor] Failed to retrieve metals:', e);
+    }
+
+    const { quotes, usdInrRate, timestamp, status } = data;
     let html = '';
 
     const assetConfig = [
       { key: 'NIFTY', name: 'NIFTY 50' },
-      { key: 'NASDAQ', name: 'NASDAQ*' },
-      { key: 'NVDA', name: 'NVDA (NVIDIA)*' },
-      { key: 'BTC', name: 'BTC (Bitcoin)*' },
-      { key: 'Gold', name: 'Gold*' }
+      { key: 'BANKNIFTY', name: 'Bank Nifty' },
+      { key: 'SENSEX', name: 'Sensex' },
+      { key: 'BTC', name: 'BTC (Bitcoin)' },
+      { key: 'NVDA', name: 'NVDA (NVIDIA)' }
     ];
 
     assetConfig.forEach(cfg => {
@@ -152,20 +161,95 @@ export async function loadLiveDashboardMetrics() {
       }
     });
 
+    // Add Gold and Silver
+    if (metalsData && metalsData.success) {
+      const gold24k = metalsData.gold24k;
+      const gold22k = metalsData.gold22k;
+      const silver = metalsData.silver;
+
+      html += `
+        <tr>
+          <td style="font-family: var(--font-mono); color: #fff;">Gold 24K (10g)</td>
+          <td style="font-family: var(--font-mono); text-align: right; color: #fff;">${formatINR(gold24k)}</td>
+          <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-muted);">Retail Rate</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); color: #fff;">Gold 22K (10g)</td>
+          <td style="font-family: var(--font-mono); text-align: right; color: #fff;">${formatINR(gold22k)}</td>
+          <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-muted);">Retail Rate</td>
+        </tr>
+        <tr>
+          <td style="font-family: var(--font-mono); color: #fff;">Silver (1kg)</td>
+          <td style="font-family: var(--font-mono); text-align: right; color: #fff;">${formatINR(silver)}</td>
+          <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-muted);">Retail Rate</td>
+        </tr>
+      `;
+    }
+
     tbody.innerHTML = html;
 
-    // Render footer details
+    // Render footer details with Live/Cached badges
     let footerEl = document.getElementById('market-data-footer');
     if (!footerEl) {
       footerEl = document.createElement('div');
       footerEl.id = 'market-data-footer';
-      footerEl.style.cssText = 'margin-top: 12px; font-size: 0.72rem; color: var(--bus-text-secondary); font-family: var(--font-mono); line-height: 1.4; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--bus-border); padding-top: 10px;';
+      footerEl.style.cssText = 'margin-top: 12px; font-size: 0.72rem; color: var(--bus-text-secondary); font-family: var(--font-mono); line-height: 1.4; display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--bus-border); padding-top: 10px;';
       contentEl.appendChild(footerEl);
+    }
+
+    const isLive = (status === 'online');
+    const badgeHtml = isLive 
+      ? `<span class="badge-live" style="background: rgba(0, 208, 132, 0.15); color: #00D084; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; width: fit-content;">● LIVE</span>`
+      : `<span class="badge-cached" style="background: rgba(255, 165, 0, 0.15); color: #ffa500; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; width: fit-content;">● CACHED</span>`;
+
+    // Bind values dynamically to ticker strip elements (with loop mirrors)
+    const updateTickerItem = (key, valId, chgId, isUSD = false) => {
+      const q = quotes[key];
+      const elVal = document.getElementById(valId);
+      const elChg = document.getElementById(chgId);
+      const elValLoop = document.getElementById(valId + '-loop');
+      const elChgLoop = document.getElementById(chgId + '-loop');
+      
+      if (q) {
+        const priceStr = formatINR(q.priceINR);
+        const changeVal = q.changeINR;
+        const pctVal = q.percentChange;
+        const sign = changeVal >= 0 ? '+' : '';
+        const colorClass = changeVal >= 0 ? 'up' : 'down';
+        const arrow = changeVal >= 0 ? '▲' : '▼';
+        const changeStr = `${arrow} ${sign}${pctVal.toFixed(2)}%`;
+
+        [elVal, elValLoop].forEach(el => {
+          if (el) el.textContent = priceStr;
+        });
+        [elChg, elChgLoop].forEach(el => {
+          if (el) {
+            el.textContent = changeStr;
+            el.className = `change ${colorClass}`;
+          }
+        });
+      }
+    };
+
+    updateTickerItem('NIFTY', 'tk-nifty-val', 'tk-nifty-chg');
+    updateTickerItem('SENSEX', 'tk-sensex-val', 'tk-sensex-chg');
+    updateTickerItem('BTC', 'tk-btc-val', 'tk-btc-chg');
+    updateTickerItem('NVDA', 'tk-nvda-val', 'tk-nvda-chg');
+
+    if (metalsData && metalsData.success) {
+      const goldVal = document.getElementById('tk-gold-val');
+      const goldValLoop = document.getElementById('tk-gold-val-loop');
+      [goldVal, goldValLoop].forEach(el => {
+        if (el) el.textContent = formatINR(metalsData.gold24k);
+      });
     }
 
     const formattedTime = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     footerEl.innerHTML = `
-      <span>* Converted from USD. Rate: 1 USD = ₹${usdInrRate.toFixed(2)}</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        ${badgeHtml}
+        <span>Rate: 1 USD = ₹${usdInrRate.toFixed(2)}</span>
+      </div>
       <span>Last Updated: ${formattedTime}</span>
     `;
 
@@ -219,7 +303,6 @@ export async function loadLiveDashboardMetrics() {
 
   } catch (err) {
     console.error("[Live Market Metrics Load Error] Failed to retrieve live quote data:", err);
-    if (loadingEl) loadingEl.style.display = 'none';
     if (errorEl) {
       errorEl.textContent = `Live market data temporarily unavailable: ${err.message}`;
       errorEl.style.display = 'block';

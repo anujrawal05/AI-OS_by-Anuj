@@ -27,7 +27,7 @@ export function switchBusinessWorkspace(workspaceName) {
     completeMissionTask('build');
   }
   if (workspaceName === 'grow') {
-    completeMissionTask('learn');
+    completeMissionTask('business');
   }
 
   state.activeWorkspace = workspaceName;

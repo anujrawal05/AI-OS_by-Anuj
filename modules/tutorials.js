@@ -115,13 +115,15 @@ export async function loadLiveBusinessNews() {
   }
 
   try {
-    const data = await apiCall('/api/market/news');
+    const data = await apiCall('/api/news');
     if (!data || !data.success || !data.articles) {
       throw new Error("Invalid response structure from news API proxy");
     }
 
+    const { articles, status, timestamp } = data;
+
     contentEl.innerHTML = '';
-    data.articles.forEach(art => {
+    articles.forEach(art => {
       const item = document.createElement('a');
       item.href = art.link;
       item.target = '_blank';
@@ -142,6 +144,25 @@ export async function loadLiveBusinessNews() {
       `;
       contentEl.appendChild(item);
     });
+
+    // Add News refresh footer with Live/Cached badge
+    let newsFooter = document.getElementById('news-data-footer');
+    if (!newsFooter) {
+      newsFooter = document.createElement('div');
+      newsFooter.id = 'news-data-footer';
+      newsFooter.style.cssText = 'margin-top: 12px; font-size: 0.72rem; color: var(--bus-text-secondary); font-family: var(--font-mono); line-height: 1.4; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--bus-border); padding-top: 10px;';
+      contentEl.appendChild(newsFooter);
+    }
+    const isLive = (status === 'online');
+    const badgeHtml = isLive 
+      ? `<span class="badge-live" style="background: rgba(0, 208, 132, 0.15); color: #00D084; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold;">● LIVE</span>`
+      : `<span class="badge-cached" style="background: rgba(255, 165, 0, 0.15); color: #ffa500; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold;">● CACHED</span>`;
+
+    const formattedTime = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    newsFooter.innerHTML = `
+      ${badgeHtml}
+      <span>Updated: ${formattedTime}</span>
+    `;
 
     if (loadingEl) loadingEl.style.display = 'none';
     if (errorEl) errorEl.style.display = 'none';

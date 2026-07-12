@@ -329,8 +329,8 @@ export async function translateBusinessUI(lang) {
 
   if (state.user) {
     state.user.interface_lang = lang;
-    apiCall('/api/auth/profile', {
-      method: 'PUT',
+    apiCall('/api/auth/update-profile', {
+      method: 'POST',
       body: JSON.stringify({ interface_lang: lang })
     }).catch(() => {});
   }
