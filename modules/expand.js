@@ -169,20 +169,6 @@ export async function loadLiveDashboardMetrics() {
       <span>Last Updated: ${formattedTime}</span>
     `;
 
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (errorEl) errorEl.style.display = 'none';
-    if (contentEl) contentEl.style.display = 'block';
-
-  } catch (err) {
-    console.error("[Live Market Metrics Load Error] Failed to retrieve live quote data:", err);
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (errorEl) {
-      errorEl.textContent = `Live market data temporarily unavailable: ${err.message}`;
-      errorEl.style.display = 'block';
-    }
-  }
-}
-
     // Render calendar metrics
     const calList = document.getElementById('calendar-events-list');
     if (calList) {
@@ -232,7 +218,12 @@ export async function loadLiveDashboardMetrics() {
     if (contentEl) contentEl.style.display = 'block';
 
   } catch (err) {
-    console.error("Dashboard live market data load failed:", err.message);
+    console.error("[Live Market Metrics Load Error] Failed to retrieve live quote data:", err);
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (errorEl) {
+      errorEl.textContent = `Live market data temporarily unavailable: ${err.message}`;
+      errorEl.style.display = 'block';
+    }
   }
 }
 
