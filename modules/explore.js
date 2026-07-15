@@ -2554,11 +2554,11 @@ export function initDashboardControls() {
       state.selectedExperience = "Beginner";
       
       if (!skipRegen) {
-        // Generate Exploring AI learning roadmap immediately
-        regenerateActiveRoadmap();
-        setTimeout(() => {
-          drawRoad();
-        }, 150);
+        // Show Choice modal for Exploring AI
+        const choiceModal = document.getElementById('video-roadmap-choice-modal');
+        if (choiceModal) {
+          choiceModal.style.display = 'flex';
+        }
       }
     } else {
       // Re-enable Budget selector
