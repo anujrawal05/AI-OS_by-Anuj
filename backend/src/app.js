@@ -16,6 +16,7 @@ const prisma = require('./lib/db');
 const logger = require('./utils/logger');
 
 const app = express();
+console.log("DEBUG DATABASE_URL:", process.env.DATABASE_URL);
 
 // Enable Gzip Compression for optimization of transfer payloads
 app.use(compression());
