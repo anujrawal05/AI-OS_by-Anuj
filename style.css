@@ -9650,6 +9650,9 @@ body.modal-open {
   margin-top: auto;
   position: relative;
   overflow: hidden;
+  height: 220px !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .saas-value-box::before {
@@ -9677,6 +9680,9 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
+  overflow-y: auto !important;
+  padding-right: 4px;
 }
 
 .saas-value-box-list li {
@@ -10061,6 +10067,80 @@ body.modal-open {
 body.no-scroll {
   overflow: hidden !important;
   height: 100vh !important;
+}
+
+/* Mobile Comparison Cards Styling */
+.saas-mobile-comparison-cards {
+  display: none;
+}
+
+.comparison-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.comp-feature {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.comp-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  align-items: center;
+}
+
+.comp-label {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+
+.comp-val {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.comp-val.highlight {
+  color: #2EC5FF;
+  font-weight: 600;
+}
+
+.comp-val.gold {
+  color: #FFD700;
+  font-weight: 600;
+}
+
+/* Mobile responsive override */
+@media (max-width: 950px) {
+  .saas-table-container {
+    display: none !important;
+  }
+  .saas-mobile-comparison-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    overflow-y: auto !important;
+    margin-bottom: 12px !important;
+    padding-right: 4px;
+  }
+  /* Custom scrollbar for mobile comparison cards */
+  .saas-mobile-comparison-cards::-webkit-scrollbar {
+    width: 4px;
+  }
+  .saas-mobile-comparison-cards::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
 }
 
 

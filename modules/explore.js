@@ -3133,30 +3133,7 @@ export function renderRoadmap(optimalWorkflow, steps) {
       listContainer.appendChild(rowEl);
     });
     
-    // Append premium upgrade card banner for Basic users at the bottom of the timeline list
-    const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
-    if (isUserAuthenticated() && isBasic) {
-      const bannerEl = document.createElement('div');
-      bannerEl.className = 'timeline-row left';
-      bannerEl.style.gridTemplateColumns = '1fr';
-      bannerEl.style.justifyContent = 'center';
-      bannerEl.style.padding = '40px 0';
-      bannerEl.innerHTML = `
-        <div class="timeline-card premium-upgrade-card" style="margin: 0 auto; max-width: 500px; text-align: center; border: 2px dashed #7f00ff; background: rgba(127, 0, 255, 0.05); padding: 30px; border-radius: 16px; box-shadow: 0 0 20px rgba(127,0,255,0.2);">
-          <div style="font-size: 2rem; margin-bottom: 12px;">🌟</div>
-          <h3 style="font-family: var(--font-title); font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Unlock Remaining 30 Lessons</h3>
-          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">Upgrade to Premium for ₹99/month to access the complete 40-step AI learning curriculum.</p>
-          <button class="btn btn-primary" id="btn-timeline-upgrade" style="background: linear-gradient(135deg, #ff007f, #7f00ff); border: none; box-shadow: 0 0 15px rgba(127, 0, 255, 0.4); animation: premiumPulse 2.5s infinite alternate; width: 100%; justify-content: center;">Upgrade To Premium</button>
-        </div>
-      `;
-      listContainer.appendChild(bannerEl);
-      
-      // Bind button
-      setTimeout(() => {
-        const upBtn = document.getElementById('btn-timeline-upgrade');
-        if (upBtn) upBtn.addEventListener('click', showPricingModal);
-      }, 50);
-    }
+
 
     setupCardInteractions();
     
@@ -4190,7 +4167,7 @@ export function renderComparisonTable() {
 
 export function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = false, stepName = '', stepIndex = 0, effectiveCost = null, effectiveMode = '') {
   const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
-  const isLocked = !isUserAuthenticated() || (isBasic && (isTimeline ? stepIndex > 10 : stepIndex >= 10));
+  const isLocked = !isUserAuthenticated() || (isBasic && !isTimeline && stepIndex >= 10);
   if (isLocked) {
     const label = isTimeline ? `STEP ${stepIndex}` : `CARD ${stepIndex + 1}`;
     return `
