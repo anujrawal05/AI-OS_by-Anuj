@@ -794,7 +794,7 @@ export async function handlePremiumUpgrade(planLabel) {
 
     const order = await apiCall('/api/payments/checkout', {
       method: 'POST',
-      body: JSON.stringify({ planType: 'Premium' })
+      body: JSON.stringify({ planType: 'Premium', billingCycle: planLabel })
     });
 
     const rzp = new window.Razorpay({

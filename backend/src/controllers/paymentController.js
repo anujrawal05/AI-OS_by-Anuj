@@ -27,14 +27,24 @@ function getRazorpaySecret() {
 
 // 1. CREATE GATEWAY CHECKOUT ORDER
 async function createOrder(req, res, next) {
-  const { planType } = req.body;
+  const { planType, billingCycle } = req.body;
 
   if (planType !== 'Premium') {
     return res.status(400).json({ error: 'Invalid plan choice. Only Premium upgrades are active.' });
   }
 
   try {
-    const amountInPaise = 999 * 100; // ₹999.00 in paise
+    const cycle = (billingCycle || 'Monthly').toLowerCase();
+    let price = 99.00;
+    if (cycle === 'yearly') {
+      price = 999.00;
+    } else if (cycle === 'monthly') {
+      price = 99.00;
+    } else {
+      return res.status(400).json({ error: 'Invalid billing cycle. Choose Monthly or Yearly.' });
+    }
+
+    const amountInPaise = price * 100;
     
     // Create Razorpay order
     const order = await getRazorpay().orders.create({
@@ -43,7 +53,8 @@ async function createOrder(req, res, next) {
       receipt: `rec_${Date.now()}_${req.user.id.slice(0, 8)}`,
       notes: {
         userId: req.user.id,
-        planType
+        planType,
+        billingCycle: cycle
       }
     });
 
@@ -74,7 +85,7 @@ async function createOrder(req, res, next) {
         userId: req.user.id,
         subscriptionId: sub.id,
         provider: 'Razorpay',
-        amount: 999.00,
+        amount: price,
         currency: 'INR',
         gatewayOrderId: order.id,
         status: 'Pending'
@@ -84,7 +95,7 @@ async function createOrder(req, res, next) {
     return res.status(200).json({
       success: true,
       orderId: order.id,
-      amount: 999.00,
+      amount: price,
       currency: 'INR'
     });
 
@@ -167,8 +178,10 @@ async function verifySignature(req, res, next) {
         }
       });
 
-      // Upgrade to Premium for 30 days
-      const durationMs = 30 * 24 * 60 * 60 * 1000;
+      // Upgrade to Premium based on amount paid (Yearly = ₹999, Monthly = ₹99)
+      const amount = Number(payment.amount);
+      const durationDays = amount === 999.00 ? 365 : 30;
+      const durationMs = durationDays * 24 * 60 * 60 * 1000;
       const now = new Date();
       const expiresAt = new Date(now.getTime() + durationMs);
 
@@ -186,7 +199,7 @@ async function verifySignature(req, res, next) {
         data: {
           userId: req.user.id,
           paymentId: payment.id,
-          amount: 999.00,
+          amount: payment.amount,
           type: 'Credit',
           description: `Razorpay upgrade: invoice ${invoiceNumber}`
         }

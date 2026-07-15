@@ -76,12 +76,24 @@ async function runTests() {
   const orderRes = await fetch('http://localhost:8080/api/payments/checkout', {
     method: 'POST',
     headers: { 'Cookie': authCookie, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ planType: 'Premium' })
+    body: JSON.stringify({ planType: 'Premium' }) // Defaults to Monthly (₹99)
   });
   const orderData = await orderRes.json();
   console.log('[Test] Razorpay Order response:', orderData);
-  if (!orderRes.ok || !orderData.orderId) {
-    throw new Error("Razorpay checkout order creation failed");
+  if (!orderRes.ok || !orderData.orderId || orderData.amount !== 99) {
+    throw new Error("Razorpay checkout order creation failed or amount is incorrect");
+  }
+
+  console.log('[Test] Requesting Razorpay checkout order for Yearly...');
+  const orderResYearly = await fetch('http://localhost:8080/api/payments/checkout', {
+    method: 'POST',
+    headers: { 'Cookie': authCookie, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ planType: 'Premium', billingCycle: 'Yearly' })
+  });
+  const orderDataYearly = await orderResYearly.json();
+  console.log('[Test] Razorpay Order (Yearly) response:', orderDataYearly);
+  if (!orderResYearly.ok || !orderDataYearly.orderId || orderDataYearly.amount !== 999) {
+    throw new Error("Razorpay yearly checkout order creation failed or amount is incorrect");
   }
 
   // 5. Test payment signature verification
