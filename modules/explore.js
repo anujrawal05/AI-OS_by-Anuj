@@ -2533,7 +2533,25 @@ export function initDashboardControls() {
     state.userIdeaDescription = '';
     state.compiledQuickStartPrompt = '';
     
-    if (taskSelect.value === "Exploring AI") {
+    const taskValues = [
+      "Exploring AI",
+      "Generating Video",
+      "Generating Images",
+      "Designing",
+      "Coding",
+      "Building Apps",
+      "Tips to Earn Money",
+      "Music Making",
+      "Voice Over Generation",
+      "Brand Building",
+      "Personal AI Building",
+      "Hardware Building",
+      "Study Using AI",
+      "Crack Interview Using AI"
+    ];
+    const selectedTask = taskSelect ? (taskValues[taskSelect.selectedIndex] || taskSelect.value) : 'Exploring AI';
+
+    if (selectedTask === "Exploring AI") {
       // Auto-select "₹0 Free" (value: "0")
       budgetSelect.value = "0";
       budgetSelect.disabled = true;
@@ -2552,14 +2570,6 @@ export function initDashboardControls() {
       state.goalText = "Exploring AI";
       state.budgetLimit = 0;
       state.selectedExperience = "Beginner";
-      
-      if (!skipRegen) {
-        // Show Choice modal for Exploring AI
-        const choiceModal = document.getElementById('video-roadmap-choice-modal');
-        if (choiceModal) {
-          choiceModal.style.display = 'flex';
-        }
-      }
     } else {
       // Re-enable Budget selector
       budgetSelect.disabled = false;
@@ -2578,7 +2588,7 @@ export function initDashboardControls() {
       if (workflowSelect.value === "Beginner") workflowSelect.value = "Intermediate";
 
       // Update state with selected values
-      state.goalText = taskSelect.value;
+      state.goalText = selectedTask;
       state.budgetLimit = parseInt(budgetSelect.value);
       state.selectedExperience = workflowSelect.value;
     }
@@ -2646,9 +2656,25 @@ export function initDashboardControls() {
         showToast("Please login first to compile your roadmap.", "warning");
         return;
       }
-      const goal = taskSelect ? taskSelect.value : 'Exploring AI';
-
       
+      const taskValues = [
+        "Exploring AI",
+        "Generating Video",
+        "Generating Images",
+        "Designing",
+        "Coding",
+        "Building Apps",
+        "Tips to Earn Money",
+        "Music Making",
+        "Voice Over Generation",
+        "Brand Building",
+        "Personal AI Building",
+        "Hardware Building",
+        "Study Using AI",
+        "Crack Interview Using AI"
+      ];
+      const goal = taskSelect ? (taskValues[taskSelect.selectedIndex] || taskSelect.value) : 'Exploring AI';
+
       if (goal === "Exploring AI") {
         const choiceModal = document.getElementById('video-roadmap-choice-modal');
         if (choiceModal) {
