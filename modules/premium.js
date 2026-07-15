@@ -79,12 +79,26 @@ export function closeTrialWelcomeModal() {
 }
 
 export function checkPromptLimit() {
-  // Always returns true because limits are bypassed in fully premium unlocked static mode
+  const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+  const limit = isPremium ? 15 : 5;
+  
+  const today = new Date().toDateString();
+  const countKey = `aios_prompt_count_${today}`;
+  const currentCount = parseInt(localStorage.getItem(countKey) || '0', 10);
+  
+  if (currentCount >= limit) {
+    showToast(`Daily prompt limit reached (${currentCount}/${limit}). Upgrade to Premium or wait until tomorrow.`, "warning");
+    showPricingModal();
+    return false;
+  }
   return true;
 }
 
 export function incrementPromptLimit() {
-  // Limit increments bypassed for static premium mode
+  const today = new Date().toDateString();
+  const countKey = `aios_prompt_count_${today}`;
+  const currentCount = parseInt(localStorage.getItem(countKey) || '0', 10);
+  localStorage.setItem(countKey, (currentCount + 1).toString());
 }
 
 export function applyRoadmapLock() {

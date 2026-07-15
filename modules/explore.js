@@ -2647,12 +2647,6 @@ export function initDashboardControls() {
         return;
       }
       const goal = taskSelect ? taskSelect.value : 'Exploring AI';
-      const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
-      if (goal !== 'Exploring AI' && state.user && !isPremium) {
-        showPricingModal(true);
-        showToast("Upgrade to Premium or start trial to access Advanced Roadmaps.", "warning");
-        return;
-      }
 
       
       if (goal === "Exploring AI") {
@@ -3034,6 +3028,12 @@ export function renderRoadmap(optimalWorkflow, steps) {
         `;
         
         rowEl.addEventListener('click', () => {
+          const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+          if (!isPremium) {
+            showToast("Videos are Premium only. Please upgrade to unlock.", "warning");
+            showPricingModal();
+            return;
+          }
           let filename = `part${p.part}_${vLang}.mp4`;
           if (state.discoveredVideos && state.discoveredVideos.explore && state.discoveredVideos.explore.length > 0) {
             const matched = state.discoveredVideos.explore.find(f => f.toLowerCase() === filename.toLowerCase());
@@ -3165,9 +3165,7 @@ export function renderRoadmap(optimalWorkflow, steps) {
       drawRoad();
     }, 50);
     
-    const currentGoal = state.goalText || 'Exploring AI';
-    const isPremiumUser = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
-    if (!isUserAuthenticated() || (currentGoal !== 'Exploring AI' && !isPremiumUser)) {
+    if (!isUserAuthenticated()) {
       applyRoadmapLock();
     }
     return;
@@ -3182,9 +3180,7 @@ export function renderRoadmap(optimalWorkflow, steps) {
   const mapping = officialTasksMappings[resolvedTaskKey];
   if (mapping) {
     renderPremiumToolCard(mapping);
-    const currentGoal = state.goalText || 'Exploring AI';
-    const isPremiumUser = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
-    if (!isUserAuthenticated() || (currentGoal !== 'Exploring AI' && !isPremiumUser)) {
+    if (!isUserAuthenticated()) {
       applyRoadmapLock();
     }
     return;
@@ -4194,13 +4190,14 @@ export function renderComparisonTable() {
 
 export function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = false, stepName = '', stepIndex = 0, effectiveCost = null, effectiveMode = '') {
   const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
-  const isLocked = !isUserAuthenticated() || (isBasic && isTimeline && stepIndex > 10);
+  const isLocked = !isUserAuthenticated() || (isBasic && (isTimeline ? stepIndex > 10 : stepIndex >= 10));
   if (isLocked) {
+    const label = isTimeline ? `STEP ${stepIndex}` : `CARD ${stepIndex + 1}`;
     return `
       <div class="timeline-card-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px;">
         <div class="card-icon" style="background: rgba(255,255,255,0.05); color: #777; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">🔒</div>
         <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
-          <span class="timeline-step-badge">STEP ${stepIndex} // LOCKED</span>
+          <span class="timeline-step-badge">${label} // LOCKED</span>
           <span class="card-number" style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase;">
             ${tool.id} // PREMIUM LOCK
           </span>
@@ -4208,7 +4205,7 @@ export function createCardHTML(tool, originalIndex, isFav, isCompared, isTimelin
       </div>
       <div class="timeline-card-body" style="padding: 24px;">
         <h3 class="card-title" style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">Locked Premium Node</h3>
-        <p class="card-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 16px;">This step is locked. Please upgrade to Premium or log in to unlock this node.</p>
+        <p class="card-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 16px;">This node is locked. Please upgrade to Premium or log in to unlock full operational templates and instructions.</p>
         <button class="btn btn-primary" onclick="showPricingModal()" style="width: 100%; justify-content: center;">Unlock Premium Access</button>
       </div>
     `;
@@ -4700,7 +4697,7 @@ export function renderLibraryGrid() {
       cardEl.setAttribute('data-node', originalIndex);
       const isFav = isFavorite(tool.id);
       const isCompared = state.comparisonList.includes(tool.id);
-      cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false);
+      cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', idx);
       libraryGrid.appendChild(cardEl);
 
       // Injected Ads (Code 1 after 4th and 8th tools on Desktop)
@@ -4726,7 +4723,7 @@ export function renderLibraryGrid() {
       cardEl.setAttribute('data-node', originalIndex);
       const isFav = isFavorite(tool.id);
       const isCompared = state.comparisonList.includes(tool.id);
-      cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false);
+      cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', idx);
       libraryGrid.appendChild(cardEl);
 
       // Injected Ads (Code 1 after 4th and 8th tools on Desktop)
@@ -4771,14 +4768,14 @@ export function renderLibraryGrid() {
         
         const gridContainer = groupWrap.querySelector('.category-group-grid');
         
-        catTools.forEach(tool => {
+        catTools.forEach((tool, idx) => {
           const originalIndex = toolsData.findIndex(t => t.id === tool.id);
           const cardEl = document.createElement('div');
           cardEl.className = 'timeline-card library-item-card visible';
           cardEl.setAttribute('data-node', originalIndex);
           const isFav = isFavorite(tool.id);
           const isCompared = state.comparisonList.includes(tool.id);
-          cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false);
+          cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', idx);
           gridContainer.appendChild(cardEl);
         });
         
@@ -4898,7 +4895,7 @@ export function renderCategoryExplorer() {
     cardEl.setAttribute('data-node', originalIndex);
     const isFav = isFavorite(tool.id);
     const isCompared = state.comparisonList.includes(tool.id);
-    cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false);
+    cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', idx);
     categoryToolsGrid.appendChild(cardEl);
 
     // Injected Ad (Code 1 after the 2nd card on Desktop)

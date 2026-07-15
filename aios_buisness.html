@@ -1549,43 +1549,46 @@
           </table>
         </div>
         
-        <!-- Pricing Cards Section -->
-        <div class="saas-pricing-container">
-          <!-- Basic Plan Option -->
-          <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
-            <div class="saas-card-header">Basic</div>
-            <div class="saas-card-price">₹0</div>
-            <div class="saas-card-subtitle">Lifetime Preview</div>
+        <!-- Sticky Bottom Footer for plans & CTA -->
+        <div class="saas-modal-footer">
+          <!-- Pricing Cards Section -->
+          <div class="saas-pricing-container">
+            <!-- Basic Plan Option -->
+            <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+              <div class="saas-card-header">Basic</div>
+              <div class="saas-card-price">₹0</div>
+              <div class="saas-card-subtitle">Lifetime Preview</div>
+            </div>
+            
+            <!-- Premium Monthly Option -->
+            <div class="saas-pricing-card active highlighted" id="card-plan-monthly" onclick="selectSassPlan('monthly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+              <span class="saas-card-badge">Most Popular</span>
+              <div class="saas-card-header">Monthly</div>
+              <div class="saas-card-price">₹99<span class="price-period">/mo</span></div>
+              <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges at checkout</div>
+              <div class="saas-card-subtitle">Cancel Anytime</div>
+            </div>
+            
+            <!-- Premium Yearly Option -->
+            <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+              <span class="saas-card-badge savings">Save 15%</span>
+              <div class="saas-card-header">Yearly</div>
+              <div class="saas-card-price">₹999<span class="price-period">/yr</span></div>
+              <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges at checkout</div>
+              <div class="saas-card-subtitle">Best Value</div>
+            </div>
           </div>
           
-          <!-- Premium Monthly Option -->
-          <div class="saas-pricing-card active highlighted" id="card-plan-monthly" onclick="selectSassPlan('monthly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
-            <span class="saas-card-badge">Most Popular</span>
-            <div class="saas-card-header">Monthly</div>
-            <div class="saas-card-price">₹99<span class="price-period">/mo</span></div>
-            <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges at checkout</div>
-            <div class="saas-card-subtitle">Cancel Anytime</div>
+          <!-- Call to Action Container -->
+          <div class="saas-cta-container">
+            <button class="btn-saas-proceed" onclick="proceedSassSelection()">
+              <span>Continue with Monthly (₹99)</span> ➔
+            </button>
+            <div class="saas-trust-text">Cancel Anytime • Secure Payment • Instant Access</div>
+            
+            <!-- Coupon link -->
+            <span class="coupon-trigger-link" style="margin-top: 10px;" onclick="document.getElementById('btn-pricing-coupon').click()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Have a promo code? Use Coupon</span>
           </div>
-          
-          <!-- Premium Yearly Option -->
-          <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
-            <span class="saas-card-badge savings">Save 15%</span>
-            <div class="saas-card-header">Yearly</div>
-            <div class="saas-card-price">₹999<span class="price-period">/yr</span></div>
-            <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges at checkout</div>
-            <div class="saas-card-subtitle">Best Value</div>
-          </div>
-        </div>
-        
-        <!-- Call to Action Container -->
-        <div class="saas-cta-container">
-          <button class="btn-saas-proceed" onclick="proceedSassSelection()">
-            <span>Continue with Monthly (₹99)</span> ➔
-          </button>
-          <div class="saas-trust-text">Cancel Anytime • Secure Payment • Instant Access</div>
-          
-          <!-- Coupon link -->
-          <span class="coupon-trigger-link" style="margin-top: 10px;" onclick="document.getElementById('btn-pricing-coupon').click()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Have a promo code? Use Coupon</span>
         </div>
       </div>
       

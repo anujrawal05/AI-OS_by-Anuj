@@ -8,3 +8,4 @@ build tutorial/
 explore AI/
 
 .vercel
+.env*
