@@ -80,7 +80,7 @@ async function runTests() {
   });
   const orderData = await orderRes.json();
   console.log('[Test] Razorpay Order response:', orderData);
-  if (!orderRes.ok || !orderData.orderId || orderData.amount !== 99) {
+  if (!orderRes.ok || !orderData.orderId || orderData.finalAmount !== 101.40) {
     throw new Error("Razorpay checkout order creation failed or amount is incorrect");
   }
 
@@ -92,7 +92,7 @@ async function runTests() {
   });
   const orderDataYearly = await orderResYearly.json();
   console.log('[Test] Razorpay Order (Yearly) response:', orderDataYearly);
-  if (!orderResYearly.ok || !orderDataYearly.orderId || orderDataYearly.amount !== 999) {
+  if (!orderResYearly.ok || !orderDataYearly.orderId || orderDataYearly.finalAmount !== 1023.15) {
     throw new Error("Razorpay yearly checkout order creation failed or amount is incorrect");
   }
 

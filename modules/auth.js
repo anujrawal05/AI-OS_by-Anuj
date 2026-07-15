@@ -799,7 +799,7 @@ export async function handlePremiumUpgrade(planLabel) {
 
     const rzp = new window.Razorpay({
       key: razorpayKeyId,
-      amount: Math.round(order.amount * 100),
+      amount: Math.round(order.finalAmount * 100),
       currency: order.currency,
       order_id: order.orderId,
       name: 'AI-OS Premium',
@@ -842,7 +842,33 @@ export async function handlePremiumUpgrade(planLabel) {
       showToast(resp?.error?.description || "Payment failed. Please try again.", "error");
     });
 
-    rzp.open();
+    // Show Billing Summary Modal
+    const summaryOverlay = document.getElementById('billing-summary-modal-overlay');
+    if (summaryOverlay) {
+      const pricingOverlay = document.getElementById('pricing-modal-overlay');
+      if (pricingOverlay) pricingOverlay.style.display = 'none';
+
+      document.getElementById('summary-plan-type').textContent = `Premium (${order.billingCycle.charAt(0).toUpperCase() + order.billingCycle.slice(1)})`;
+      document.getElementById('summary-base-price').textContent = `₹${order.baseAmount.toFixed(2)}`;
+      document.getElementById('summary-platform-charge').textContent = `₹${order.platformCharge.toFixed(2)}`;
+      document.getElementById('summary-gst').textContent = `₹${order.gstAmount.toFixed(2)}`;
+      document.getElementById('summary-total').textContent = `₹${order.finalAmount.toFixed(2)}`;
+
+      summaryOverlay.style.display = 'flex';
+
+      const closeBtn = document.getElementById('billing-summary-close-btn');
+      closeBtn.onclick = () => {
+        summaryOverlay.style.display = 'none';
+      };
+
+      const payBtn = document.getElementById('btn-billing-pay-now');
+      payBtn.onclick = () => {
+        summaryOverlay.style.display = 'none';
+        rzp.open();
+      };
+    } else {
+      rzp.open();
+    }
   } catch (err) {
     showToast(err.message || "Unable to start checkout. Please try again.", "error");
   }

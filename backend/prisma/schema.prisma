@@ -198,6 +198,12 @@ model Payment {
   gatewayPaymentId String?         @unique @map("gateway_payment_id")
   gatewaySignature String?         @map("gateway_signature")
   status           PaymentStatus   @default(Pending)
+  billingCycle     String?         @map("billing_cycle")
+  baseAmount       Decimal?        @map("base_amount") @db.Decimal(12, 2)
+  platformCharge   Decimal?        @map("platform_charge") @db.Decimal(12, 2)
+  gstAmount        Decimal?        @map("gst_amount") @db.Decimal(12, 2)
+  finalAmount      Decimal?        @map("final_amount") @db.Decimal(12, 2)
+  paymentGatewayAmount Decimal?    @map("payment_gateway_amount") @db.Decimal(12, 2)
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
   transactions     Transaction[]

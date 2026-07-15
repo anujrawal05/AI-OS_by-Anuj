@@ -3,6 +3,7 @@ const Razorpay = require('razorpay');
 const prisma = require('../lib/db');
 const { upgradeSubscription } = require('../services/subscriptionService');
 const { logAuditEvent } = require('../services/auditService');
+const { PRICING } = require('../config/pricing');
 
 // Lazy Razorpay initialization — do NOT throw at import time (would crash entire serverless app).
 // Instead, validate and create the instance on first actual payment request.
@@ -35,16 +36,13 @@ async function createOrder(req, res, next) {
 
   try {
     const cycle = (billingCycle || 'Monthly').toLowerCase();
-    let price = 99.00;
-    if (cycle === 'yearly') {
-      price = 999.00;
-    } else if (cycle === 'monthly') {
-      price = 99.00;
-    } else {
+    const pricingDetails = PRICING[cycle];
+    if (!pricingDetails) {
       return res.status(400).json({ error: 'Invalid billing cycle. Choose Monthly or Yearly.' });
     }
 
-    const amountInPaise = price * 100;
+    const amountInPaise = pricingDetails.totalPaise;
+    const finalAmountDec = pricingDetails.totalPaise / 100;
     
     // Create Razorpay order
     const order = await getRazorpay().orders.create({
@@ -54,7 +52,11 @@ async function createOrder(req, res, next) {
       notes: {
         userId: req.user.id,
         planType,
-        billingCycle: cycle
+        billingCycle: cycle,
+        basePrice: (pricingDetails.basePricePaise / 100).toFixed(2),
+        platformCharge: (pricingDetails.platformChargePaise / 100).toFixed(2),
+        gst: (pricingDetails.gstPaise / 100).toFixed(2),
+        totalPayable: finalAmountDec.toFixed(2)
       }
     });
 
@@ -85,18 +87,28 @@ async function createOrder(req, res, next) {
         userId: req.user.id,
         subscriptionId: sub.id,
         provider: 'Razorpay',
-        amount: price,
+        amount: finalAmountDec,
         currency: 'INR',
         gatewayOrderId: order.id,
-        status: 'Pending'
+        status: 'Pending',
+        billingCycle: cycle,
+        baseAmount: pricingDetails.basePricePaise / 100,
+        platformCharge: pricingDetails.platformChargePaise / 100,
+        gstAmount: pricingDetails.gstPaise / 100,
+        finalAmount: finalAmountDec,
+        paymentGatewayAmount: finalAmountDec
       }
     });
 
     return res.status(200).json({
       success: true,
       orderId: order.id,
-      amount: price,
-      currency: 'INR'
+      currency: 'INR',
+      billingCycle: cycle,
+      baseAmount: pricingDetails.basePricePaise / 100,
+      platformCharge: pricingDetails.platformChargePaise / 100,
+      gstAmount: pricingDetails.gstPaise / 100,
+      finalAmount: finalAmountDec
     });
 
   } catch (err) {
@@ -178,9 +190,9 @@ async function verifySignature(req, res, next) {
         }
       });
 
-      // Upgrade to Premium based on amount paid (Yearly = ₹999, Monthly = ₹99)
-      const amount = Number(payment.amount);
-      const durationDays = amount === 999.00 ? 365 : 30;
+      // Upgrade to Premium based on stored billing cycle (Yearly = 365 days, Monthly = 30 days)
+      const cycle = payment.billingCycle || 'monthly';
+      const durationDays = cycle.toLowerCase() === 'yearly' ? 365 : 30;
       const durationMs = durationDays * 24 * 60 * 60 * 1000;
       const now = new Date();
       const expiresAt = new Date(now.getTime() + durationMs);

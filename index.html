@@ -1213,6 +1213,7 @@
             <span class="saas-card-badge">Most Popular</span>
             <div class="saas-card-header">Monthly</div>
             <div class="saas-card-price">₹99<span class="price-period">/mo</span></div>
+            <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges at checkout</div>
             <div class="saas-card-subtitle">Cancel Anytime</div>
           </div>
           
@@ -1221,6 +1222,7 @@
             <span class="saas-card-badge savings">Save 15%</span>
             <div class="saas-card-header">Yearly</div>
             <div class="saas-card-price">₹999<span class="price-period">/yr</span></div>
+            <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges at checkout</div>
             <div class="saas-card-subtitle">Best Value</div>
           </div>
         </div>
@@ -1273,6 +1275,43 @@
           }
         }
       </script>
+    </div>
+  </div>
+
+  <!-- Billing Summary Modal -->
+  <div id="billing-summary-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
+    <div class="auth-modal-card" style="max-width: 420px; width: 90%; background: linear-gradient(135deg, #111 0%, #1a1a2e 100%); border: 1px solid rgba(46, 197, 255, 0.2); box-shadow: 0 15px 35px rgba(0,0,0,0.8); border-radius: 16px; padding: 30px; text-align: left; position: relative;">
+      <button id="billing-summary-close-btn" class="auth-modal-close-btn" style="position: absolute; top: 15px; right: 20px; font-size: 1.5rem; background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer;" aria-label="Close modal">&times;</button>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <span style="font-size: 2.5rem;">📄</span>
+        <h3 style="font-family: var(--font-title); font-size: 1.4rem; color: #fff; margin-top: 10px; margin-bottom: 4px;">Billing Summary</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0;">Please review your invoice details below</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #ccc;">
+          <span>Plan Type:</span>
+          <span id="summary-plan-type" style="font-weight: 600; color: #fff;">Premium (Monthly)</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 4px 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #ccc;">
+          <span>Subscription Base Price:</span>
+          <span id="summary-base-price">₹99.00</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #ccc;">
+          <span>Platform Charge:</span>
+          <span id="summary-platform-charge">₹2.00</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #ccc;">
+          <span>GST:</span>
+          <span id="summary-gst">₹0.40</span>
+        </div>
+        <hr style="border: 0; border-top: 1px dashed rgba(46, 197, 255, 0.3); margin: 6px 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 700; color: #2EC5FF;">
+          <span>Total Payable:</span>
+          <span id="summary-total">₹101.40</span>
+        </div>
+      </div>
+      <button id="btn-billing-pay-now" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-weight: 700; background: linear-gradient(135deg, #00D084, #2EC5FF); border: none; box-shadow: 0 0 15px rgba(46, 197, 255, 0.3);">Proceed to Secure Payment</button>
     </div>
   </div>
 
