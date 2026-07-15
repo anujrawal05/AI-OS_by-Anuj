@@ -3503,7 +3503,7 @@ export function renderPremiumToolCard(mapping) {
   if (!recContainer) return;
 
   const isPremiumUser = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
-  const isLocked = !isUserAuthenticated() || !isPremiumUser;
+  const isLocked = !isUserAuthenticated();
   if (isLocked) {
     recContainer.innerHTML = `
       <div class="premium-tool-card">
@@ -4168,25 +4168,7 @@ export function renderComparisonTable() {
 export function createCardHTML(tool, originalIndex, isFav, isCompared, isTimeline = false, stepName = '', stepIndex = 0, effectiveCost = null, effectiveMode = '') {
   const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
   const isLocked = !isUserAuthenticated() || (isBasic && !isTimeline && stepIndex >= 10);
-  if (isLocked) {
-    const label = isTimeline ? `STEP ${stepIndex}` : `CARD ${stepIndex + 1}`;
-    return `
-      <div class="timeline-card-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px;">
-        <div class="card-icon" style="background: rgba(255,255,255,0.05); color: #777; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">🔒</div>
-        <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
-          <span class="timeline-step-badge">${label} // LOCKED</span>
-          <span class="card-number" style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase;">
-            ${tool.id} // PREMIUM LOCK
-          </span>
-        </div>
-      </div>
-      <div class="timeline-card-body" style="padding: 24px;">
-        <h3 class="card-title" style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">Locked Premium Node</h3>
-        <p class="card-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 16px;">This node is locked. Please upgrade to Premium or log in to unlock full operational templates and instructions.</p>
-        <button class="btn btn-primary" onclick="showPricingModal()" style="width: 100%; justify-content: center;">Unlock Premium Access</button>
-      </div>
-    `;
-  }
+
 
   let costStr = '';
   if (effectiveCost !== null) {
@@ -4283,6 +4265,7 @@ export function createCardHTML(tool, originalIndex, isFav, isCompared, isTimelin
       `
     : `
       <div class="card-badges">
+        ${isLocked ? `<span class="card-badge price-badge" style="background: rgba(255, 74, 74, 0.12); border-color: rgba(255, 74, 74, 0.25); color: #ff4a4a; font-weight: 700; font-family: var(--font-mono);">🔒 PREMIUM LOCKED</span>` : ''}
         <span class="card-badge price-badge">${tool.cost === 0 ? 'FREE' : `₹${tool.cost}`}</span>
         ${tool.industries ? tool.industries.map(ind => `<span class="card-badge industry-badge">${ind}</span>`).join('') : ''}
       </div>
@@ -4672,6 +4655,14 @@ export function renderLibraryGrid() {
       const cardEl = document.createElement('div');
       cardEl.className = 'timeline-card library-item-card visible';
       cardEl.setAttribute('data-node', originalIndex);
+      
+      const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
+      const isLocked = !isUserAuthenticated() || (isBasic && idx >= 10);
+      if (isLocked) {
+        cardEl.setAttribute('data-locked', 'true');
+        cardEl.classList.add('premium-locked-card');
+      }
+      
       const isFav = isFavorite(tool.id);
       const isCompared = state.comparisonList.includes(tool.id);
       cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', idx);
@@ -4698,6 +4689,14 @@ export function renderLibraryGrid() {
       const cardEl = document.createElement('div');
       cardEl.className = 'timeline-card library-item-card visible';
       cardEl.setAttribute('data-node', originalIndex);
+      
+      const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
+      const isLocked = !isUserAuthenticated() || (isBasic && idx >= 10);
+      if (isLocked) {
+        cardEl.setAttribute('data-locked', 'true');
+        cardEl.classList.add('premium-locked-card');
+      }
+      
       const isFav = isFavorite(tool.id);
       const isCompared = state.comparisonList.includes(tool.id);
       cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', idx);
@@ -4750,9 +4749,18 @@ export function renderLibraryGrid() {
           const cardEl = document.createElement('div');
           cardEl.className = 'timeline-card library-item-card visible';
           cardEl.setAttribute('data-node', originalIndex);
+          
+          const fIdx = filtered.indexOf(tool);
+          const isBasic = state.user && (!state.user.subscription || state.user.subscription.plan === 'Free');
+          const isLocked = !isUserAuthenticated() || (isBasic && fIdx >= 10);
+          if (isLocked) {
+            cardEl.setAttribute('data-locked', 'true');
+            cardEl.classList.add('premium-locked-card');
+          }
+          
           const isFav = isFavorite(tool.id);
           const isCompared = state.comparisonList.includes(tool.id);
-          cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', idx);
+          cardEl.innerHTML = createCardHTML(tool, originalIndex, isFav, isCompared, false, '', fIdx);
           gridContainer.appendChild(cardEl);
         });
         
@@ -4951,6 +4959,10 @@ export function setupExploreEventListeners() {
       
       const card = e.target.closest('.timeline-card');
       if (card) {
+        if (card.getAttribute('data-locked') === 'true') {
+          showPricingModal();
+          return;
+        }
         const nodeIdx = parseInt(card.getAttribute('data-node'));
         if (!isNaN(nodeIdx)) {
           openDrawer(nodeIdx);
