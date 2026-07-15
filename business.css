@@ -3507,8 +3507,9 @@ body {
   }
   
   .saas-left-panel {
-    height: 35% !important;
-    min-height: 35% !important;
+    height: auto !important;
+    max-height: 25% !important;
+    flex-shrink: 0 !important;
     border-right: none !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     padding: 20px !important;
@@ -3516,8 +3517,9 @@ body {
   }
   
   .saas-right-panel {
-    height: 65% !important;
-    min-height: 65% !important;
+    flex: 1 !important;
+    height: auto !important;
+    min-height: 0 !important;
     padding: 20px !important;
     overflow: hidden !important;
     display: flex;

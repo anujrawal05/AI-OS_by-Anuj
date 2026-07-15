@@ -4909,17 +4909,12 @@ window.initLibrarySection = initLibrarySection;
 window.initCategoryExplorerSection = initCategoryExplorerSection;
 
 export function resetWizard() {
-  const wizardOverlay = document.getElementById('wizard-overlay');
-  const mainWrapper = document.getElementById('main-content-wrapper');
-  
-  if (mainWrapper) mainWrapper.classList.remove('active');
-  if (wizardOverlay) {
-    wizardOverlay.style.opacity = '1';
-    wizardOverlay.style.visibility = 'visible';
+  const dashboardControls = document.getElementById('dashboard-controls');
+  if (dashboardControls) {
+    dashboardControls.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  document.body.style.overflow = 'hidden';
-  
-  window.scrollTo(0, 0);
 }
 window.resetWizard = resetWizard;
 
