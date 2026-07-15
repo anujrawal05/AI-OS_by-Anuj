@@ -10,21 +10,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>System Manual & Developer Documentation | AI-OS</title>
-  <meta name="description" content="Ultimate guide, developer documentation, visual specs, and interactive simulation console for AI-OS (Artificial Intelligence Overall Solutions).">
+  <meta name="description"
+    content="Ultimate guide, developer documentation, visual specs, and interactive simulation console for AI-OS (Artificial Intelligence Overall Solutions).">
 
   <link rel="icon" type="image/png" href="aios_logo.png">
   <link rel="apple-touch-icon" href="aios_logo.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <style>
     :root {
       /* Typography */
       --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: 'Space Grotesk', monospace;
-      
+
       /* Colors - Dark Theme (Default) */
       --bg-color: #050508;
       --bg-card: rgba(13, 13, 17, 0.75);
@@ -34,7 +37,7 @@
       --text-muted: rgba(240, 240, 240, 0.32);
       --border-color: rgba(255, 255, 255, 0.08);
       --border-focus: rgba(255, 255, 255, 0.25);
-      
+
       /* Accents */
       --accent-cyan: #2EC5FF;
       --accent-emerald: #00D084;
@@ -42,7 +45,7 @@
       --accent-glow: rgba(46, 197, 255, 0.12);
       --border-glow: rgba(46, 197, 255, 0.2);
       --header-bg: rgba(5, 5, 8, 0.85);
-      
+
       /* Transitions */
       --transition-fast: 0.15s ease;
       --transition-medium: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -59,7 +62,7 @@
       --border-color: rgba(0, 0, 0, 0.08);
       --border-focus: rgba(0, 0, 0, 0.3);
       --header-bg: rgba(245, 245, 247, 0.85);
-      
+
       /* Light accents */
       --accent-cyan: #0a0a0c;
       --accent-emerald: #1c1c1e;
@@ -94,7 +97,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: 
+      background-image:
         radial-gradient(var(--border-color) 1.2px, transparent 1.2px),
         linear-gradient(to right, rgba(255, 255, 255, 0.005) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.005) 1px, transparent 1px);
@@ -170,8 +173,19 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 0.5; transform: scale(1); filter: drop-shadow(0 0 2px rgba(46,197,255,0.1)); }
-      50% { opacity: 1; transform: scale(1.18); filter: drop-shadow(0 0 8px rgba(46,197,255,0.4)); }
+
+      0%,
+      100% {
+        opacity: 0.5;
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px rgba(46, 197, 255, 0.1));
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.18);
+        filter: drop-shadow(0 0 8px rgba(46, 197, 255, 0.4));
+      }
     }
 
     .logo-text-group {
@@ -509,7 +523,7 @@
     .color-hex {
       font-family: var(--font-mono);
       font-weight: 700;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.7);
       color: #fff;
       padding: 4px 8px;
       border-radius: 4px;
@@ -679,7 +693,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .sim-road {
@@ -1041,14 +1057,21 @@
       padding: 14px 24px;
       border-radius: 8px;
       z-index: 1000;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
       display: none;
       animation: toastIn 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes toastIn {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     /* Responsive Optimization */
@@ -1058,6 +1081,7 @@
         gap: 30px;
         margin-top: 30px;
       }
+
       .sidebar-nav {
         position: relative;
         top: 0;
@@ -1066,16 +1090,20 @@
     }
 
     @media (max-width: 768px) {
+
       /* Header mobile tuning */
       .logo-text {
         font-size: 1.1rem;
       }
+
       .logo-subtitle {
         display: none;
       }
+
       .header-actions {
         gap: 8px;
       }
+
       .header-actions .btn {
         padding: 8px 12px;
         font-size: 0.72rem;
@@ -1090,6 +1118,7 @@
         width: 100vw;
         margin-left: -30px;
       }
+
       .sidebar-card {
         border-radius: 0;
         border-left: none;
@@ -1106,14 +1135,17 @@
         border-top: 1px solid var(--border-color);
         border-bottom: 1px solid var(--border-color);
       }
+
       .sidebar-title-nav {
         display: none;
       }
+
       .sidebar-links {
         flex-direction: row;
         gap: 12px;
         width: auto;
       }
+
       .sidebar-link a {
         padding: 6px 14px;
         font-size: 0.8rem;
@@ -1121,6 +1153,7 @@
         border: 1px solid var(--border-color);
         background: rgba(255, 255, 255, 0.02);
       }
+
       .sidebar-link.active a {
         border: 1px solid var(--accent-cyan);
         background: rgba(46, 197, 255, 0.1);
@@ -1134,15 +1167,18 @@
         margin-bottom: 24px;
         border-radius: 12px;
       }
+
       .section-title {
         font-size: 1.6rem;
         margin-bottom: 14px;
       }
+
       .section-desc {
         font-size: 0.95rem;
         margin-bottom: 24px;
         line-height: 1.6;
       }
+
       .sub-heading {
         font-size: 1.1rem;
         margin-top: 20px;
@@ -1155,6 +1191,7 @@
         gap: 24px;
         padding: 10px 0 10px 20px;
       }
+
       .diag-timeline::before {
         left: 27px;
         top: 0;
@@ -1162,6 +1199,7 @@
         width: 2px;
         height: 100%;
       }
+
       .diag-step {
         flex-direction: row;
         align-items: center;
@@ -1169,6 +1207,7 @@
         width: 100%;
         text-align: left;
       }
+
       .diag-lbl {
         text-align: left;
         font-size: 0.75rem;
@@ -1184,6 +1223,7 @@
         border: 1px solid var(--border-color);
         border-radius: 8px;
       }
+
       .specs-table {
         margin-top: 0;
         min-width: 500px;
@@ -1194,16 +1234,21 @@
       .container {
         padding: 0 16px;
       }
+
       .sidebar-nav {
         margin-left: -16px;
       }
+
       .logo-text-group {
-        display: none; /* hide text completely on very small screens to fit buttons */
+        display: none;
+        /* hide text completely on very small screens to fit buttons */
       }
+
       .btn {
         padding: 8px 10px;
         font-size: 0.7rem;
       }
+
       .logo {
         gap: 4px;
       }
@@ -1225,24 +1270,28 @@
       justify-content: center;
       cursor: pointer;
       z-index: 9999;
-      box-shadow: 0 0 20px rgba(46, 197, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 0 20px rgba(46, 197, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       animation: icra-breathing 3s ease-in-out infinite;
       padding: 0;
       outline: none;
     }
+
     #icra-assistant-btn:hover {
       transform: scale(1.1);
       border-color: var(--accent-cyan);
-      box-shadow: 0 0 30px rgba(46, 197, 255, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+      box-shadow: 0 0 30px rgba(46, 197, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
-    
+
     @keyframes icra-breathing {
-      0%, 100% {
-        box-shadow: 0 0 20px rgba(46, 197, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(46, 197, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       }
+
       50% {
-        box-shadow: 0 0 30px rgba(46, 197, 255, 0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+        box-shadow: 0 0 30px rgba(46, 197, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
         border-color: rgba(46, 197, 255, 0.7);
       }
     }
@@ -1264,7 +1313,7 @@
           <span class="logo-subtitle">Powered by A.R. Labs</span>
         </div>
       </a>
-      
+
       <div class="header-actions">
         <a href="index.html" class="btn btn-secondary">← Return to App</a>
         <a href="aios_buisness.html" class="btn btn-primary">Business Hub</a>
@@ -1274,21 +1323,30 @@
 
   <!-- Main Layout Container -->
   <main class="container guide-layout">
-    
+
     <!-- Navigation Sidebar -->
     <aside class="sidebar-nav">
       <div class="sidebar-card">
         <h3 class="sidebar-title-nav">System Guide</h3>
         <ul class="sidebar-links">
-          <li class="sidebar-link active" data-target="sec-intro"><a href="#sec-intro">Introduction <span class="sidebar-link-badge">1.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-vision"><a href="#sec-vision">Vision & Goals <span class="sidebar-link-badge">2.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-identity"><a href="#sec-identity">Branding Specs <span class="sidebar-link-badge">3.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-features"><a href="#sec-features">Feature Manual <span class="sidebar-link-badge">4.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-business-hub"><a href="#sec-business-hub">Business Hub <span class="sidebar-link-badge">5.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-simulator"><a href="#sec-simulator">Live Simulator <span class="sidebar-link-badge">6.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-case-studies"><a href="#sec-case-studies">Masterclass Guides <span class="sidebar-link-badge">7.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-faq"><a href="#sec-faq">Troubleshooting <span class="sidebar-link-badge">8.0</span></a></li>
-          <li class="sidebar-link" data-target="sec-roadmap"><a href="#sec-roadmap">Future Vision <span class="sidebar-link-badge">9.0</span></a></li>
+          <li class="sidebar-link active" data-target="sec-intro"><a href="#sec-intro">Introduction <span
+                class="sidebar-link-badge">1.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-vision"><a href="#sec-vision">Vision & Goals <span
+                class="sidebar-link-badge">2.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-identity"><a href="#sec-identity">Branding Specs <span
+                class="sidebar-link-badge">3.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-features"><a href="#sec-features">Feature Manual <span
+                class="sidebar-link-badge">4.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-business-hub"><a href="#sec-business-hub">Business Hub <span
+                class="sidebar-link-badge">5.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-simulator"><a href="#sec-simulator">Live Simulator <span
+                class="sidebar-link-badge">6.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-case-studies"><a href="#sec-case-studies">Masterclass Guides <span
+                class="sidebar-link-badge">7.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-faq"><a href="#sec-faq">Troubleshooting <span
+                class="sidebar-link-badge">8.0</span></a></li>
+          <li class="sidebar-link" data-target="sec-roadmap"><a href="#sec-roadmap">Future Vision <span
+                class="sidebar-link-badge">9.0</span></a></li>
         </ul>
       </div>
     </aside>
@@ -1301,25 +1359,34 @@
         <div class="section-kicker">SYSTEM DECK OVERVIEW // SEC_1.0</div>
         <h2 class="section-title">Introduction to AI-OS</h2>
         <p class="section-desc">
-          Welcome to the official developer manual and user guide for **AI-OS** (Artificial Intelligence Overall Solutions). 
-          AI-OS is a premium, decentralized artificial intelligence execution operating system engineered by **Anuj Rawal** and powered by **A.R. Labs**. 
+          Welcome to the official developer manual and user guide for **AI-OS** (Artificial Intelligence Overall
+          Solutions).
+          AI-OS is a premium, decentralized artificial intelligence execution operating system engineered by **Anuj
+          Rawal** and powered by **A.R. Labs**.
           <br><br>
-          Traditional AI guides focus on abstract concepts, theoretical limitations, and slow learning courses. **AI-OS rejects this framework.** It is engineered for immediate, real-world productivity. By cross-referencing an internal library of 162+ custom-configured artificial intelligence nodes, AI-OS translates complex user objectives into actionable, step-by-step pipeline structures.
+          Traditional AI guides focus on abstract concepts, theoretical limitations, and slow learning courses. **AI-OS
+          rejects this framework.** It is engineered for immediate, real-world productivity. By cross-referencing an
+          internal library of 162+ custom-configured artificial intelligence nodes, AI-OS translates complex user
+          objectives into actionable, step-by-step pipeline structures.
         </p>
 
         <h3 class="sub-heading">System Onboarding Masterclass</h3>
         <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.95rem;">
-          Watch the operational overview of the AI-OS platform to learn how to compile roadmap pipelines, configure custom prompt models, and access sandbox applications:
+          Watch the operational overview of the AI-OS platform to learn how to compile roadmap pipelines, configure
+          custom prompt models, and access sandbox applications:
         </p>
-        <div class="onboarding-video-container" style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+        <div class="onboarding-video-container"
+          style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
           <video style="width: 100%; height: 100%; object-fit: contain;" controls playsinline preload="metadata">
-            <source src="https://res.cloudinary.com/x6vd3gvv/video/upload/v1783884071/video_20260713_004703_mnrmfe.mp4" type="video/mp4">
+            <source src="https://res.cloudinary.com/x6vd3gvv/video/upload/v1784145947/lv_0_20260715231035_dywdpn.mp4"
+              type="video/mp4">
           </video>
         </div>
 
         <h3 class="sub-heading">Operational Metrics</h3>
         <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.95rem;">
-          The system indexes, categories, and serves structural prompt nodes continuously. The live operational parameters of the active codebase are cataloged as follows:
+          The system indexes, categories, and serves structural prompt nodes continuously. The live operational
+          parameters of the active codebase are cataloged as follows:
         </p>
 
         <div class="table-wrapper">
@@ -1365,12 +1432,15 @@
         <div class="section-kicker">SYSTEM PHILOSOPHY // SEC_2.0</div>
         <h2 class="section-title">Vision and Platform Goals</h2>
         <p class="section-desc">
-          AI-OS was conceived as a solution to the growing problem of "AI fatigue" and tool overload. As hundreds of new tools launch weekly, users spend more time registering, testing, and reading documentation than actually executing their business or developer tasks.
+          AI-OS was conceived as a solution to the growing problem of "AI fatigue" and tool overload. As hundreds of new
+          tools launch weekly, users spend more time registering, testing, and reading documentation than actually
+          executing their business or developer tasks.
         </p>
 
         <h3 class="sub-heading">The Core Philosophy</h3>
         <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.95rem;">
-          The platform operates on a single principle: **Pure Execution over Pure Theory**. The goals driving this ecosystem are divided into three areas:
+          The platform operates on a single principle: **Pure Execution over Pure Theory**. The goals driving this
+          ecosystem are divided into three areas:
         </p>
 
         <div class="detail-grid">
@@ -1380,7 +1450,8 @@
               <h4 class="detail-card-title">Frictionless Compilation</h4>
             </div>
             <p class="detail-card-text">
-              Eliminate setup delays. Instead of forcing users to build prompt systems, AI-OS matches their goal to a pre-tested workflow pipeline immediately.
+              Eliminate setup delays. Instead of forcing users to build prompt systems, AI-OS matches their goal to a
+              pre-tested workflow pipeline immediately.
             </p>
           </div>
 
@@ -1390,7 +1461,8 @@
               <h4 class="detail-card-title">Localized Accessibility</h4>
             </div>
             <p class="detail-card-text">
-              Prompts written in standard English often fail to capture semantic context for hybrid-language speakers. AI-OS bridges this gap by creating prompts tailored for English, Hindi, and colloquial Hinglish.
+              Prompts written in standard English often fail to capture semantic context for hybrid-language speakers.
+              AI-OS bridges this gap by creating prompts tailored for English, Hindi, and colloquial Hinglish.
             </p>
           </div>
 
@@ -1400,7 +1472,8 @@
               <h4 class="detail-card-title">Wealth Creation Focus</h4>
             </div>
             <p class="detail-card-text">
-              Tools are useless without a financial structure. The AI-OS Business Hub is designed to help builders translate operational tool nodes directly into side-incomes and enterprise-level startups.
+              Tools are useless without a financial structure. The AI-OS Business Hub is designed to help builders
+              translate operational tool nodes directly into side-incomes and enterprise-level startups.
             </p>
           </div>
         </div>
@@ -1411,13 +1484,15 @@
         <div class="section-kicker">VISUAL GRAPHICS // SEC_3.0</div>
         <h2 class="section-title">Brand and Identity Specifications</h2>
         <p class="section-desc">
-          The visual styling of AI-OS is designed for clean, distraction-free productivity. By minimizing non-functional colors and emphasizing high-contrast neon highlights, the system mimics an advanced command terminal.
+          The visual styling of AI-OS is designed for clean, distraction-free productivity. By minimizing non-functional
+          colors and emphasizing high-contrast neon highlights, the system mimics an advanced command terminal.
         </p>
 
         <h3 class="sub-heading">Logo Architectures</h3>
         <div class="logo-showcase">
           <div class="logo-showcase-card">
-            <h4 style="font-family:var(--font-mono); font-size:0.9rem; margin-bottom:12px; color:var(--accent-cyan);">PRIMARY DOT LOGO</h4>
+            <h4 style="font-family:var(--font-mono); font-size:0.9rem; margin-bottom:12px; color:var(--accent-cyan);">
+              PRIMARY DOT LOGO</h4>
             <div class="logo-render-box">
               <span class="logo-symbol" style="color: #2EC5FF;">●</span>
               <div class="logo-text-group" style="text-align:left; margin-left:10px;">
@@ -1426,14 +1501,18 @@
               </div>
             </div>
             <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:12px;">
-              The standard dot brand symbol (<code>●</code>) represents the single entry point for overall system execution.
+              The standard dot brand symbol (<code>●</code>) represents the single entry point for overall system
+              execution.
             </p>
           </div>
 
           <div class="logo-showcase-card">
-            <h4 style="font-family:var(--font-mono); font-size:0.9rem; margin-bottom:12px; color:var(--accent-emerald);">BUSINESS LOGO</h4>
+            <h4
+              style="font-family:var(--font-mono); font-size:0.9rem; margin-bottom:12px; color:var(--accent-emerald);">
+              BUSINESS LOGO</h4>
             <div class="logo-render-box">
-              <svg class="logo-icon-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00D084" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="logo-icon-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00D084"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="20" x2="18" y2="10"></line>
                 <line x1="12" y1="20" x2="12" y2="4"></line>
                 <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -1453,7 +1532,9 @@
 
         <h3 class="sub-heading">System Color Theme (Click block to copy HEX value)</h3>
         <div class="brand-showroom">
-          <div class="color-block" onclick="copyHex('#0a0a0c')" role="button" tabindex="0" aria-label="Copy hex code #0a0a0c" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="color-block" onclick="copyHex('#0a0a0c')" role="button" tabindex="0"
+            aria-label="Copy hex code #0a0a0c"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #0a0a0c;">
               <span class="color-hex">#0A0A0C</span>
             </div>
@@ -1463,7 +1544,9 @@
             </div>
           </div>
 
-          <div class="color-block" onclick="copyHex('#2ec5ff')" role="button" tabindex="0" aria-label="Copy hex code #2ec5ff" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="color-block" onclick="copyHex('#2ec5ff')" role="button" tabindex="0"
+            aria-label="Copy hex code #2ec5ff"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #2ec5ff;">
               <span class="color-hex" style="color:#000; background:rgba(255,255,255,0.85);">#2EC5FF</span>
             </div>
@@ -1473,7 +1556,9 @@
             </div>
           </div>
 
-          <div class="color-block" onclick="copyHex('#00d084')" role="button" tabindex="0" aria-label="Copy hex code #00d084" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="color-block" onclick="copyHex('#00d084')" role="button" tabindex="0"
+            aria-label="Copy hex code #00d084"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #00d084;">
               <span class="color-hex" style="color:#000; background:rgba(255,255,255,0.85);">#00D084</span>
             </div>
@@ -1483,7 +1568,9 @@
             </div>
           </div>
 
-          <div class="color-block" onclick="copyHex('#121216')" role="button" tabindex="0" aria-label="Copy hex code #121216" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+          <div class="color-block" onclick="copyHex('#121216')" role="button" tabindex="0"
+            aria-label="Copy hex code #121216"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
             <div class="color-preview" style="background-color: #121216;">
               <span class="color-hex">#121216</span>
             </div>
@@ -1500,18 +1587,24 @@
         <div class="section-kicker">EXHAUSTIVE USER GUIDE // SEC_4.0</div>
         <h2 class="section-title">Core Features & Function Explanations</h2>
         <p class="section-desc">
-          AI-OS provides a highly-optimized suite of tools. Each feature is broken down below to help you master its operational flow.
+          AI-OS provides a highly-optimized suite of tools. Each feature is broken down below to help you master its
+          operational flow.
         </p>
 
         <!-- Feature 1 -->
         <h3 class="sub-heading" style="font-size:1.15rem;">1. Operational Configuration & Compiler (Dashboard)</h3>
         <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
-          The system's control panel sits at the top of the workspace. Users can specify objective matrices to trigger the compiler.
+          The system's control panel sits at the top of the workspace. Users can specify objective matrices to trigger
+          the compiler.
         </p>
-        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
-          <li><strong>Task Select Dropdown</strong>: Maps to 14 objective databases, including software building, image/video generation, study optimization, interview cracking, and hardware design.</li>
-          <li><strong>Language Config</strong>: Instantly translates the compiler output. Selecting <i>Hinglish</i> will preload hybrid templates using Hindi nouns inside English instructions, optimized for local developers.</li>
-          <li><strong>Execution</strong>: Pressing <i>Compile Roadmap</i> queries the client-side database engine to render custom timeline pathways.</li>
+        <ul
+          style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Task Select Dropdown</strong>: Maps to 14 objective databases, including software building,
+            image/video generation, study optimization, interview cracking, and hardware design.</li>
+          <li><strong>Language Config</strong>: Instantly translates the compiler output. Selecting <i>Hinglish</i> will
+            preload hybrid templates using Hindi nouns inside English instructions, optimized for local developers.</li>
+          <li><strong>Execution</strong>: Pressing <i>Compile Roadmap</i> queries the client-side database engine to
+            render custom timeline pathways.</li>
         </ul>
 
         <!-- Feature 2 -->
@@ -1519,9 +1612,12 @@
         <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
           Once compiled, a linear path is rendered using an SVG coordinate generator.
         </p>
-        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
-          <li><strong>Visual Traveler Dot</strong>: A glowing cyan traveler indicator traces your scroll position along the center dashed centerline.</li>
-          <li><strong>Layer Toggles</strong>: Filter nodes dynamically between **Creation Layer** (content tools), **Engineering Layer** (setup and APIs), and **Analytics Layer** (metrics and deployment).</li>
+        <ul
+          style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Visual Traveler Dot</strong>: A glowing cyan traveler indicator traces your scroll position along
+            the center dashed centerline.</li>
+          <li><strong>Layer Toggles</strong>: Filter nodes dynamically between **Creation Layer** (content tools),
+            **Engineering Layer** (setup and APIs), and **Analytics Layer** (metrics and deployment).</li>
         </ul>
 
         <!-- Feature 3 -->
@@ -1529,10 +1625,14 @@
         <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
           Clicking any card opens a slide-in drawer revealing technical details.
         </p>
-        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
-          <li><strong>Performance Specs</strong>: Evaluates and displays average processing rate, response latency in milliseconds, accuracy rates, and context window limits.</li>
-          <li><strong>Sandbox Playground</strong>: An interactive code playground or canvas preview simulation environment.</li>
-          <li><strong>Alternatives</strong>: Lists other AI models in case the recommended option is offline or fails.</li>
+        <ul
+          style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Performance Specs</strong>: Evaluates and displays average processing rate, response latency in
+            milliseconds, accuracy rates, and context window limits.</li>
+          <li><strong>Sandbox Playground</strong>: An interactive code playground or canvas preview simulation
+            environment.</li>
+          <li><strong>Alternatives</strong>: Lists other AI models in case the recommended option is offline or fails.
+          </li>
         </ul>
 
         <!-- Feature 4 -->
@@ -1540,9 +1640,12 @@
         <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
           Allows cross-tool benchmarking to make informed tooling decisions.
         </p>
-        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
-          <li><strong>Selection Mode</strong>: Check up to 3 tools in the Explore Library to trigger the compare status panel.</li>
-          <li><strong>Overlay Benchmarks</strong>: Click <i>Compare</i> to open a side-by-side comparison modal containing pricing plans, difficulty parameters, and performance latencies.</li>
+        <ul
+          style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Selection Mode</strong>: Check up to 3 tools in the Explore Library to trigger the compare status
+            panel.</li>
+          <li><strong>Overlay Benchmarks</strong>: Click <i>Compare</i> to open a side-by-side comparison modal
+            containing pricing plans, difficulty parameters, and performance latencies.</li>
         </ul>
 
         <!-- Feature 5 -->
@@ -1550,11 +1653,16 @@
         <p style="color:var(--text-secondary); margin-bottom:14px; font-size:0.9rem;">
           The SaaS framework designed for side-income and growth operations.
         </p>
-        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
-          <li><strong>Bloomberg Financial Ticker</strong>: Renders live metrics for projected side-income index, ARR, lead conversions, and automation progress.</li>
-          <li><strong>Business Academy</strong>: Structured blueprints covering customer discovery, SaaS scaling loop models, pricing loops, and agency operational strategies.</li>
-          <li><strong>Build (Launchpad)</strong>: Renders automated pitch proposals, investor pitch structures, and outbound outreach templates.</li>
-          <li><strong>Grow (Strategist Chat)</strong>: A tailored chat agent that models customer acquisition funnels based on industry sectors.</li>
+        <ul
+          style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Bloomberg Financial Ticker</strong>: Renders live metrics for projected side-income index, ARR,
+            lead conversions, and automation progress.</li>
+          <li><strong>Business Academy</strong>: Structured blueprints covering customer discovery, SaaS scaling loop
+            models, pricing loops, and agency operational strategies.</li>
+          <li><strong>Build (Launchpad)</strong>: Renders automated pitch proposals, investor pitch structures, and
+            outbound outreach templates.</li>
+          <li><strong>Grow (Strategist Chat)</strong>: A tailored chat agent that models customer acquisition funnels
+            based on industry sectors.</li>
         </ul>
       </section>
 
@@ -1563,41 +1671,55 @@
         <div class="section-kicker">GROWTH ENGINE // SEC_5.0</div>
         <h2 class="section-title">AI-OS Business Hub</h2>
         <p class="section-desc">
-          An elite, operational framework engineered to help digital builders, developers, and creators translate raw technology nodes into structured side-income pipelines, automated agencies, and scalable SaaS startups.
+          An elite, operational framework engineered to help digital builders, developers, and creators translate raw
+          technology nodes into structured side-income pipelines, automated agencies, and scalable SaaS startups.
         </p>
 
-        <div class="case-study-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:24px; margin-bottom:30px;">
-          <h3 class="sub-heading" style="font-size:1.25rem; margin-bottom:12px; color:var(--text-primary);">Core Operational Features</h3>
+        <div class="case-study-card"
+          style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:24px; margin-bottom:30px;">
+          <h3 class="sub-heading" style="font-size:1.25rem; margin-bottom:12px; color:var(--text-primary);">Core
+            Operational Features</h3>
           <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem; line-height:1.6;">
-            The Business Hub consolidates financial metrics, educational matrices, marketing templates, and interactive AI strategist advice into a single unified workspace.
+            The Business Hub consolidates financial metrics, educational matrices, marketing templates, and interactive
+            AI strategist advice into a single unified workspace.
           </p>
 
           <div style="display:flex; flex-direction:column; gap:20px;">
             <div style="border-left:3px solid var(--accent-cyan); padding-left:16px;">
-              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">📊 1. Bloomberg Financial Ticker</h4>
+              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">📊 1. Bloomberg
+                Financial Ticker</h4>
               <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-top:2px;">
-                Renders real-time simulated calculations for side-income growth indices. Tracks ARR, lead conversion parameters, and automation progress meters to model monthly operational viability.
+                Renders real-time simulated calculations for side-income growth indices. Tracks ARR, lead conversion
+                parameters, and automation progress meters to model monthly operational viability.
               </p>
             </div>
 
             <div style="border-left:3px solid var(--accent-emerald); padding-left:16px;">
-              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">🎓 2. Interactive Business Academy (Learn)</h4>
+              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">🎓 2.
+                Interactive Business Academy (Learn)</h4>
               <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-top:2px;">
-                Accordion-style curriculum providing practical launch blueprints. Cover customer discovery, SaaS architecture frameworks, distribution channels, automated pricing loops, and service operations scaling.
+                Accordion-style curriculum providing practical launch blueprints. Cover customer discovery, SaaS
+                architecture frameworks, distribution channels, automated pricing loops, and service operations scaling.
               </p>
             </div>
 
             <div style="border-left:3px solid var(--accent-purple); padding-left:16px;">
-              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">🚀 3. Launchpad Pitch Compiler (Build)</h4>
+              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">🚀 3. Launchpad
+                Pitch Compiler (Build)</h4>
               <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-top:2px;">
-                Generate sales and outreach templates in seconds. Select a target model (B2B SaaS, Agency, Digital Products, E-commerce) to dynamically generate professional cold emails, marketing value proposals, and investor pitch structures.
+                Generate sales and outreach templates in seconds. Select a target model (B2B SaaS, Agency, Digital
+                Products, E-commerce) to dynamically generate professional cold emails, marketing value proposals, and
+                investor pitch structures.
               </p>
             </div>
 
             <div style="border-left:3px solid var(--accent-cyan); padding-left:16px;">
-              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">💬 4. AI Business Strategist Chat (Grow)</h4>
+              <h4 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">💬 4. AI
+                Business Strategist Chat (Grow)</h4>
               <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-top:2px;">
-                Interact directly with a specialized AI strategist. Ask questions, construct customer acquisition funnels, resolve pricing bottlenecks, and refine scaling roadmaps based on customized prompts and market inputs.
+                Interact directly with a specialized AI strategist. Ask questions, construct customer acquisition
+                funnels, resolve pricing bottlenecks, and refine scaling roadmaps based on customized prompts and market
+                inputs.
               </p>
             </div>
           </div>
@@ -1609,7 +1731,8 @@
         <div class="section-kicker">SANDBOX INTERACTIVE // SEC_6.0</div>
         <h2 class="section-title">Roadmap Compiler Simulator</h2>
         <p class="section-desc">
-          Test the compilation logic directly within this documentation page. Select an objective, choose a language configuration, and click **Compile** to simulate a live roadmap compilation.
+          Test the compilation logic directly within this documentation page. Select an objective, choose a language
+          configuration, and click **Compile** to simulate a live roadmap compilation.
         </p>
 
         <div class="simulator-wrap">
@@ -1641,7 +1764,7 @@
             <div class="sim-status" id="sim-status-message">
               <span class="sim-loader"></span> Configuring system pipelines...
             </div>
-            
+
             <div class="sim-road" id="sim-road-nodes">
               <!-- Dynamically populated simulator nodes -->
             </div>
@@ -1663,36 +1786,44 @@
             <span class="masterclass-num">CASE STUDY A // SOFTWARE</span>
             <h3 class="masterclass-title">Building & Deploying a Web Application</h3>
             <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
-              Learn how to take a simple software idea and launch it on a custom domain in under 30 minutes using compiled tool roadmaps.
+              Learn how to take a simple software idea and launch it on a custom domain in under 30 minutes using
+              compiled tool roadmaps.
             </p>
-            
+
             <div class="masterclass-steps">
               <div class="masterclass-step">
                 <span class="step-badge">1</span>
                 <div class="step-body">
                   <span class="step-title">Compile Coding Roadmap</span>
-                  <span class="step-desc">Open the AI-OS Dashboard. Select "Build Software Using AI" as your task, set language to "Hinglish" (recommended for intuitive coding guides), and click Compile.</span>
+                  <span class="step-desc">Open the AI-OS Dashboard. Select "Build Software Using AI" as your task, set
+                    language to "Hinglish" (recommended for intuitive coding guides), and click Compile.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">2</span>
                 <div class="step-body">
                   <span class="step-title">Deploy Claude 3.5 Sonnet Node</span>
-                  <span class="step-desc">Locate the first node on the compiled roadmap. Open the detail inspect drawer, copy the **Universal Master Prompt**, and click *Deploy Engine Pipeline* to launch Claude. Paste the prompt to generate your application layout files.</span>
+                  <span class="step-desc">Locate the first node on the compiled roadmap. Open the detail inspect drawer,
+                    copy the **Universal Master Prompt**, and click *Deploy Engine Pipeline* to launch Claude. Paste the
+                    prompt to generate your application layout files.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">3</span>
                 <div class="step-body">
                   <span class="step-title">Integrate with local IDE</span>
-                  <span class="step-desc">Copy Claude's generated files into your local development dashboard (VS Code or Android Studio nodes). Use the **Antigravity 2.0** debugger steps listed in the roadmap to fix local errors.</span>
+                  <span class="step-desc">Copy Claude's generated files into your local development dashboard (VS Code
+                    or Android Studio nodes). Use the **Antigravity 2.0** debugger steps listed in the roadmap to fix
+                    local errors.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">4</span>
                 <div class="step-body">
                   <span class="step-title">Host Serverless</span>
-                  <span class="step-desc">Navigate to the final Engineering milestone card, copy the deployment prompts, open the Vercel or Netlify sandbox node, and bind your GitHub repository to go live instantly.</span>
+                  <span class="step-desc">Navigate to the final Engineering milestone card, copy the deployment prompts,
+                    open the Vercel or Netlify sandbox node, and bind your GitHub repository to go live
+                    instantly.</span>
                 </div>
               </div>
             </div>
@@ -1705,34 +1836,41 @@
             <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
               Create high-retention video content for YouTube or TikTok using automated asset generation models.
             </p>
-            
+
             <div class="masterclass-steps">
               <div class="masterclass-step">
                 <span class="step-badge">1</span>
                 <div class="step-body">
                   <span class="step-title">Draft the Master Script</span>
-                  <span class="step-desc">Compile "Generate a Complete AI Video". Click the ChatGPT/Gemini card, copy the scriptwriting Master Prompt, and input your topic guidelines to output a high-hook video script.</span>
+                  <span class="step-desc">Compile "Generate a Complete AI Video". Click the ChatGPT/Gemini card, copy
+                    the scriptwriting Master Prompt, and input your topic guidelines to output a high-hook video
+                    script.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">2</span>
                 <div class="step-body">
                   <span class="step-title">Synthesize Audio Voiceover</span>
-                  <span class="step-desc">Copy the generated script, click the **ElevenLabs** roadmap node, select a premium voice profile, and compile the audio track.</span>
+                  <span class="step-desc">Copy the generated script, click the **ElevenLabs** roadmap node, select a
+                    premium voice profile, and compile the audio track.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">3</span>
                 <div class="step-body">
                   <span class="step-title">Generate Video B-Roll</span>
-                  <span class="step-desc">Open the **Runway Gen-3** or **Flow AI** node. Paste the script paragraph summaries into the prompt boxes to render cinematic visual scenes matching the audio sequence.</span>
+                  <span class="step-desc">Open the **Runway Gen-3** or **Flow AI** node. Paste the script paragraph
+                    summaries into the prompt boxes to render cinematic visual scenes matching the audio
+                    sequence.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">4</span>
                 <div class="step-body">
                   <span class="step-title">Automated Assembly</span>
-                  <span class="step-desc">Deploy the **CapCut AI** editing environment. Use the timeline editor to synchronize your ElevenLabs voiceover, Runway video segments, and trigger automatic dynamic caption subtitles before final export.</span>
+                  <span class="step-desc">Deploy the **CapCut AI** editing environment. Use the timeline editor to
+                    synchronize your ElevenLabs voiceover, Runway video segments, and trigger automatic dynamic caption
+                    subtitles before final export.</span>
                 </div>
               </div>
             </div>
@@ -1745,27 +1883,31 @@
             <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
               Utilize the AI-OS Business Hub to scale workflows into direct sales.
             </p>
-            
+
             <div class="masterclass-steps">
               <div class="masterclass-step">
                 <span class="step-badge">1</span>
                 <div class="step-body">
                   <span class="step-title">Analyze Unit Economics</span>
-                  <span class="step-desc">Open the AI-OS Business Academy. Study the side-income monetization loops and agency pricing templates. Calculate your client break-even margins.</span>
+                  <span class="step-desc">Open the AI-OS Business Academy. Study the side-income monetization loops and
+                    agency pricing templates. Calculate your client break-even margins.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">2</span>
                 <div class="step-body">
                   <span class="step-title">Generate Outreach Copy</span>
-                  <span class="step-desc">Navigate to the **Launchpad (Build Tab)**. Select the outreach template generator, input your target service offering, and compile the personalized proposals.</span>
+                  <span class="step-desc">Navigate to the **Launchpad (Build Tab)**. Select the outreach template
+                    generator, input your target service offering, and compile the personalized proposals.</span>
                 </div>
               </div>
               <div class="masterclass-step">
                 <span class="step-badge">3</span>
                 <div class="step-body">
                   <span class="step-title">Map Lead Funnels via Strategist</span>
-                  <span class="step-desc">Open the **Strategist Chat (Grow Tab)**. Input your niche specifications: <i>"Cold outreach for digital design services to local retail businesses with a ₹10,000 budget."</i> Use the generated 90-day step-by-step strategy sheet.</span>
+                  <span class="step-desc">Open the **Strategist Chat (Grow Tab)**. Input your niche specifications:
+                    <i>"Cold outreach for digital design services to local retail businesses with a ₹10,000 budget."</i>
+                    Use the generated 90-day step-by-step strategy sheet.</span>
                 </div>
               </div>
             </div>
@@ -1783,30 +1925,41 @@
 
         <div class="faq-accordion">
           <div class="faq-item">
-            <button class="faq-trigger" onclick="toggleFaq(this)">What is the difference between AI-OS and standard AI directories?</button>
+            <button class="faq-trigger" onclick="toggleFaq(this)">What is the difference between AI-OS and standard AI
+              directories?</button>
             <div class="faq-content">
-               directories list tools as simple directories. AI-OS analyzes the specific relationship between tools, ordering them into chronological steps called "roadmaps". It also provides pre-tested copyable prompts designed specifically for the steps inside that pipeline, rather than forcing you to write prompts from scratch.
+              directories list tools as simple directories. AI-OS analyzes the specific relationship between tools,
+              ordering them into chronological steps called "roadmaps". It also provides pre-tested copyable prompts
+              designed specifically for the steps inside that pipeline, rather than forcing you to write prompts from
+              scratch.
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-trigger" onclick="toggleFaq(this)">How do I bypass Supabase signup issues?</button>
             <div class="faq-content">
-              If the database is undergoing maintanence, you can obtain a Lifetime Access Pass via our coupon redemption card. Enter a registered offline passcode (e.g. coupon keys generated by our payment gateways) to bypass registration parameters.
+              If the database is undergoing maintanence, you can obtain a Lifetime Access Pass via our coupon redemption
+              card. Enter a registered offline passcode (e.g. coupon keys generated by our payment gateways) to bypass
+              registration parameters.
             </div>
           </div>
 
           <div class="faq-item">
-            <button class="faq-trigger" onclick="toggleFaq(this)">How do I compare more than three tools at once?</button>
+            <button class="faq-trigger" onclick="toggleFaq(this)">How do I compare more than three tools at
+              once?</button>
             <div class="faq-content">
-              The benchmarking system is limited to three concurrent nodes to prevent visual layout breaking and maintain mobile comparison support. If you want to compare a fourth tool, uncheck one of the active selections in the directory.
+              The benchmarking system is limited to three concurrent nodes to prevent visual layout breaking and
+              maintain mobile comparison support. If you want to compare a fourth tool, uncheck one of the active
+              selections in the directory.
             </div>
           </div>
 
           <div class="faq-item">
-            <button class="faq-trigger" onclick="toggleFaq(this)">Where can I report database node errors or submit a tool?</button>
+            <button class="faq-trigger" onclick="toggleFaq(this)">Where can I report database node errors or submit a
+              tool?</button>
             <div class="faq-content">
-              Submit your AI nodes to Anuj Rawal at <strong>arproduction050@gmail.com</strong>. Include your tool name, pricing model, performance latency rate, context size, and official landing page URL.
+              Submit your AI nodes to Anuj Rawal at <strong>arproduction050@gmail.com</strong>. Include your tool name,
+              pricing model, performance latency rate, context size, and official landing page URL.
             </div>
           </div>
         </div>
@@ -1817,11 +1970,13 @@
         <div class="section-kicker">FUTURE DEPLOYMENTS // SEC_9.0</div>
         <h2 class="section-title">Vision and Future Roadmap</h2>
         <p class="section-desc">
-          AI-OS is evolving. The future development cycle mapped out by A.R. Labs aims to shift the platform from a guide-and-compile system to a fully automated agent execution layer.
+          AI-OS is evolving. The future development cycle mapped out by A.R. Labs aims to shift the platform from a
+          guide-and-compile system to a fully automated agent execution layer.
         </p>
 
         <div class="alert-box">
-          <strong>Under Development:</strong> Automated background prompt runners (V3.0 specs) are currently undergoing alpha testing.
+          <strong>Under Development:</strong> Automated background prompt runners (V3.0 specs) are currently undergoing
+          alpha testing.
         </div>
 
         <h3 class="sub-heading">V3.0 System Architecture Roadmap</h3>
@@ -1844,10 +1999,15 @@
           </div>
         </div>
 
-        <ul style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-top:30px; display:flex; flex-direction:column; gap:8px;">
-          <li><strong>Phase 1: Community Integration (V2.0)</strong>: Users will be able to share customized compiled pipelines, upvote prompts, and export JSON roadmaps to local storage.</li>
-          <li><strong>Phase 2: Decentralized API Bindings (V2.5)</strong>: Integrations with HuggingFace and Replicate endpoints to run lightweight tools directly inside the detail drawers.</li>
-          <li><strong>Phase 3: Agentic Execution Layer (V3.0)</strong>: Connect local AI-OS instances to agent systems (like Antigravity) to execute the compiled roadmap steps automatically in the background without user intervention.</li>
+        <ul
+          style="color:var(--text-secondary); font-size:0.88rem; padding-left:20px; margin-top:30px; display:flex; flex-direction:column; gap:8px;">
+          <li><strong>Phase 1: Community Integration (V2.0)</strong>: Users will be able to share customized compiled
+            pipelines, upvote prompts, and export JSON roadmaps to local storage.</li>
+          <li><strong>Phase 2: Decentralized API Bindings (V2.5)</strong>: Integrations with HuggingFace and Replicate
+            endpoints to run lightweight tools directly inside the detail drawers.</li>
+          <li><strong>Phase 3: Agentic Execution Layer (V3.0)</strong>: Connect local AI-OS instances to agent systems
+            (like Antigravity) to execute the compiled roadmap steps automatically in the background without user
+            intervention.</li>
         </ul>
       </section>
 
@@ -1855,12 +2015,16 @@
   </main>
 
   <!-- Footer -->
-  <footer style="border-top: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.45); padding: 40px 0; font-family: var(--font-mono); font-size: 0.8rem; margin-top: auto; position: relative; z-index: 1;">
-    <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+  <footer
+    style="border-top: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.45); padding: 40px 0; font-family: var(--font-mono); font-size: 0.8rem; margin-top: auto; position: relative; z-index: 1;">
+    <div class="container"
+      style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
       <p>© 2026 A.R. Labs. All Rights Reserved. Engineered by Anuj.</p>
       <div style="display:flex; gap:16px;">
-        <a href="mailto:arproduction050@gmail.com" target="_blank" rel="noopener" style="color:var(--text-secondary); text-decoration:none;">Contact Email</a> •
-        <a href="index.html#about-section" style="color:var(--text-secondary); text-decoration:none;">About A.R. Labs</a>
+        <a href="mailto:arproduction050@gmail.com" target="_blank" rel="noopener"
+          style="color:var(--text-secondary); text-decoration:none;">Contact Email</a> •
+        <a href="index.html#about-section" style="color:var(--text-secondary); text-decoration:none;">About A.R.
+          Labs</a>
       </div>
     </div>
   </footer>
@@ -1892,10 +2056,10 @@
     function toggleFaq(button) {
       const item = button.parentElement;
       const isActive = item.classList.contains('active');
-      
+
       // Close all first
       document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-      
+
       if (!isActive) {
         item.classList.add('active');
       }
@@ -1911,12 +2075,12 @@
       const scrollPos = window.scrollY + 120;
       const sections = document.querySelectorAll('.doc-section');
       const navLinks = document.querySelectorAll('.sidebar-link');
-      
+
       sections.forEach(sec => {
         const top = sec.offsetTop;
         const height = sec.offsetHeight;
         const id = sec.getAttribute('id');
-        
+
         if (scrollPos >= top && scrollPos < top + height) {
           navLinks.forEach(link => {
             link.classList.remove('active');
@@ -1975,16 +2139,16 @@
       const panel = document.getElementById('sim-output');
       const road = document.getElementById('sim-road-nodes');
       const status = document.getElementById('sim-status-message');
-      
+
       panel.style.display = 'block';
       road.innerHTML = '';
       status.style.display = 'flex';
       status.innerHTML = `<span class="sim-loader"></span> Compiling custom system roadmap for: ${task.toUpperCase()} in ${lang.toUpperCase()}...`;
-      
+
       setTimeout(() => {
         status.style.display = 'none';
         const steps = compilationSimData[task][lang];
-        
+
         steps.forEach((s, idx) => {
           setTimeout(() => {
             const div = document.createElement('div');
@@ -2014,19 +2178,25 @@
   </button>
 
   <!-- ICRA Onboarding Video Replay Modal -->
-  <div id="icra-replay-modal-overlay" class="auth-modal-overlay" style="display: none; justify-content: center; align-items: center; z-index: 100000; background: rgba(5,5,8,0.92); backdrop-filter: blur(15px); overflow: hidden; position: fixed; inset: 0;" role="dialog" aria-modal="true">
-    <button id="btn-icra-replay-close" style="position: absolute; top: 20px; right: 20px; z-index: 100001; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 44px; height: 44px; border-radius: 50%; color: #fff; font-size: 1.5rem; font-weight: 300; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px);">
+  <div id="icra-replay-modal-overlay" class="auth-modal-overlay"
+    style="display: none; justify-content: center; align-items: center; z-index: 100000; background: rgba(5,5,8,0.92); backdrop-filter: blur(15px); overflow: hidden; position: fixed; inset: 0;"
+    role="dialog" aria-modal="true">
+    <button id="btn-icra-replay-close"
+      style="position: absolute; top: 20px; right: 20px; z-index: 100001; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 44px; height: 44px; border-radius: 50%; color: #fff; font-size: 1.5rem; font-weight: 300; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px);">
       &times;
     </button>
-    <div class="icra-video-wrapper" style="position: relative; width: 90%; max-width: 850px; aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 80px rgba(0,0,0,0.8), 0 0 30px rgba(46,197,255,0.15);">
-      <video id="icra-replay-video" style="width: 100%; height: 100%; object-fit: contain;" controls playsinline preload="metadata">
-        <source src="https://res.cloudinary.com/x6vd3gvv/video/upload/v1783884071/video_20260713_004703_mnrmfe.mp4" type="video/mp4">
+    <div class="icra-video-wrapper"
+      style="position: relative; width: 90%; max-width: 850px; aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 80px rgba(0,0,0,0.8), 0 0 30px rgba(46,197,255,0.15);">
+      <video id="icra-replay-video" style="width: 100%; height: 100%; object-fit: contain;" controls playsinline
+        preload="metadata">
+        <source src="https://res.cloudinary.com/x6vd3gvv/video/upload/v1784145947/lv_0_20260715231035_dywdpn.mp4"
+          type="video/mp4">
       </video>
     </div>
   </div>
 
   <script>
-    (function() {
+    (function () {
       const assistantBtn = document.getElementById('icra-assistant-btn');
       const replayModal = document.getElementById('icra-replay-modal-overlay');
       const replayVideo = document.getElementById('icra-replay-video');
