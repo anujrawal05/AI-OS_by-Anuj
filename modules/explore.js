@@ -2653,8 +2653,7 @@ export function initDashboardControls() {
         showToast("Upgrade to Premium or start trial to access Advanced Roadmaps.", "warning");
         return;
       }
-      
-      const goal = taskSelect ? taskSelect.value : 'Exploring AI';
+
       
       if (goal === "Exploring AI") {
         const choiceModal = document.getElementById('video-roadmap-choice-modal');
