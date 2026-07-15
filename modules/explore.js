@@ -2646,10 +2646,11 @@ export function initDashboardControls() {
         showToast("Please login first to compile your roadmap.", "warning");
         return;
       }
+      const goal = taskSelect ? taskSelect.value : 'Exploring AI';
       const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
-      if (state.user && !isPremium) {
+      if (goal !== 'Exploring AI' && state.user && !isPremium) {
         showPricingModal(true);
-        showToast("Please select a plan to access roadmap features.", "warning");
+        showToast("Upgrade to Premium or start trial to access Advanced Roadmaps.", "warning");
         return;
       }
       
@@ -3165,7 +3166,9 @@ export function renderRoadmap(optimalWorkflow, steps) {
       drawRoad();
     }, 50);
     
-    if (!isUserAuthenticated()) {
+    const currentGoal = state.goalText || 'Exploring AI';
+    const isPremiumUser = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+    if (!isUserAuthenticated() || (currentGoal !== 'Exploring AI' && !isPremiumUser)) {
       applyRoadmapLock();
     }
     return;
@@ -3180,7 +3183,9 @@ export function renderRoadmap(optimalWorkflow, steps) {
   const mapping = officialTasksMappings[resolvedTaskKey];
   if (mapping) {
     renderPremiumToolCard(mapping);
-    if (!isUserAuthenticated()) {
+    const currentGoal = state.goalText || 'Exploring AI';
+    const isPremiumUser = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+    if (!isUserAuthenticated() || (currentGoal !== 'Exploring AI' && !isPremiumUser)) {
       applyRoadmapLock();
     }
     return;
@@ -3525,7 +3530,8 @@ export function renderPremiumToolCard(mapping) {
   
   if (!recContainer) return;
 
-  const isLocked = !isUserAuthenticated();
+  const isPremiumUser = isUserAuthenticated() && state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
+  const isLocked = !isUserAuthenticated() || !isPremiumUser;
   if (isLocked) {
     recContainer.innerHTML = `
       <div class="premium-tool-card">

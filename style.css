@@ -9568,7 +9568,8 @@ body.modal-open {
 @media (max-width: 800px) {
   .pricing-hotstar-modal {
     flex-direction: column !important;
-    max-height: 95vh !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
   .pricing-modal-left {
     padding: 24px !important;
@@ -9961,7 +9962,8 @@ body.modal-open {
 @media (max-width: 950px) {
   .premium-saas-layout {
     flex-direction: column !important;
-    max-height: 95vh !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
   
   .saas-left-panel {
