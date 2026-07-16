@@ -1,68 +1,164 @@
 const crypto = require('crypto');
 const logger = require('../utils/logger');
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || 'sk-or-v1-dummy-key';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'mock-gemini-key';
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || 'mock-nvidia-key';
 const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes cache
 const REQUEST_TIMEOUT_MS = 15000;      // 15s timeout
-const MAX_RETRIES = 3;
-const FALLBACK_MODELS = [
-  "google/gemma-3-27b-it:free",
-  "qwen/qwen3-30b-a3b:free",
-  "deepseek/deepseek-r1-0528:free",
-  "meta-llama/llama-3.2-3b-instruct:free"
-];
 
-let lastWorkingModel = null;
-let activeOpenRouterModels = null;
-let lastModelsFetchTime = 0;
-const MODELS_FETCH_CACHE_MS = 60 * 60 * 1000; // 1 hour
-
-async function fetchActiveModels() {
-  if (activeOpenRouterModels && (Date.now() - lastModelsFetchTime < MODELS_FETCH_CACHE_MS)) {
-    return activeOpenRouterModels;
+// CENTRALIZED AI PROVIDER MANAGER
+class AIProviderManager {
+  constructor() {
+    this.geminiKey = GEMINI_API_KEY;
+    this.nvidiaKey = NVIDIA_API_KEY;
+    this.geminiModel = 'gemini-1.5-flash';
+    this.nvidiaModel = 'nvidia/nemotron-3-ultra-550b-a55b';
   }
-  try {
-    logger.info('[AI Core] Fetching active models list from OpenRouter...');
-    const res = await fetch('https://openrouter.ai/api/v1/models');
-    if (res.ok) {
-      const data = await res.json();
-      if (data && Array.isArray(data.data)) {
-        activeOpenRouterModels = new Set(data.data.map(m => m.id));
-        lastModelsFetchTime = Date.now();
-        logger.info(`[AI Core] Successfully cached ${activeOpenRouterModels.size} active models.`);
-        return activeOpenRouterModels;
+
+  async executeCompletion(messages, options = {}) {
+    const temperature = options.temperature !== undefined ? options.temperature : 0.7;
+    const maxTokens = options.maxTokens || 1000;
+
+    // Check if keys are dummy/mock keys to generate dynamic mock response
+    const isDummy = (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY.includes('mock') || process.env.GEMINI_API_KEY === 'mock-gemini-key') &&
+                    (!process.env.NVIDIA_API_KEY || process.env.NVIDIA_API_KEY.includes('mock') || process.env.NVIDIA_API_KEY === 'mock-nvidia-key');
+
+    if (isDummy) {
+      logger.warn('[AI Provider Manager] Using dynamic mock completion fallback (missing/mock API keys).');
+      const mockResult = generateDynamicMock(messages, this.geminiModel, options);
+      return mockResult;
+    }
+
+    let lastError = null;
+
+    // ─── PRIMARY PROVIDER: GOOGLE GEMINI ───────────────────────────────────────
+    // Retry Gemini once (up to 2 attempts)
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const startTime = Date.now();
+      try {
+        logger.info(`[AI Provider Manager] Attempting primary provider: Google Gemini (Attempt ${attempt}/2)`);
+        
+        // Map messages to Gemini REST schema (contents array)
+        const systemMessage = messages.find(m => m.role === 'system');
+        const chatMessages = messages.filter(m => m.role !== 'system');
+
+        const contents = chatMessages.map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }]
+        }));
+
+        const body = {
+          contents,
+          generationConfig: {
+            temperature,
+            maxOutputTokens: maxTokens
+          }
+        };
+
+        if (systemMessage) {
+          body.systemInstruction = {
+            parts: [{ text: systemMessage.content }]
+          };
+        }
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${this.geminiModel}:generateContent?key=${this.geminiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const duration = Date.now() - startTime;
+        logger.info(`[AI Provider Manager] Gemini response status: ${response.status} | Response time: ${duration}ms`);
+
+        if (!response.ok) {
+          const errText = await response.text();
+          logger.warn(`[AI Provider Manager] Gemini attempt ${attempt} failed: ${errText}`);
+          lastError = new Error(`Gemini status ${response.status}`);
+          continue; // Retry
+        }
+
+        const data = await response.json();
+        if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content || !data.candidates[0].content.parts) {
+          logger.warn(`[AI Provider Manager] Gemini attempt ${attempt} returned invalid response structure.`);
+          lastError = new Error('Invalid response structure from Gemini');
+          continue; // Retry
+        }
+
+        const text = data.candidates[0].content.parts[0].text;
+        const promptTokens = data.usageMetadata?.promptTokenCount || 0;
+        const completionTokens = data.usageMetadata?.candidatesTokenCount || 0;
+
+        logger.info(`[AI Provider Manager] Google Gemini resolved successfully. Selected provider: Gemini. Tokens: Prompt=${promptTokens}, Completion=${completionTokens}. Response time: ${duration}ms`);
+
+        return {
+          text,
+          modelUsed: this.geminiModel,
+          provider: 'Gemini',
+          promptTokens,
+          completionTokens
+        };
+
+      } catch (err) {
+        logger.error(`[AI Provider Manager] Exception on Gemini attempt ${attempt}:`, {}, err.message);
+        lastError = err;
       }
     }
-    logger.warn(`[AI Core] Failed to fetch active models. Status: ${res.status}`);
-  } catch (err) {
-    logger.error('[AI Core] Exception fetching active models list:', {}, err.message);
-  }
-  return null;
-}
 
-async function getValidatedModel(requestedModel) {
-  const targetModel = requestedModel || process.env.OPENROUTER_MODEL || FALLBACK_MODELS[0];
-  
-  // Fetch/Validate list of active models
-  const activeList = await fetchActiveModels();
-  if (activeList) {
-    if (activeList.has(targetModel)) {
-      return targetModel;
-    }
-    logger.warn(`[AI Core] Requested model "${targetModel}" is not in active OpenRouter list. Finding fallback...`);
-    for (const fallback of FALLBACK_MODELS) {
-      if (activeList.has(fallback)) {
-        logger.info(`[AI Core] Found active fallback model: "${fallback}"`);
-        return fallback;
+    // ─── FALLBACK PROVIDER: NVIDIA NIM ──────────────────────────────────────────
+    logger.warn('[AI Provider Manager] Google Gemini failed after 2 attempts. Activating NVIDIA NIM fallback...');
+    const fallbackStartTime = Date.now();
+
+    try {
+      const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.nvidiaKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: this.nvidiaModel,
+          messages,
+          temperature,
+          max_tokens: maxTokens
+        })
+      });
+
+      const duration = Date.now() - fallbackStartTime;
+      logger.info(`[AI Provider Manager] NVIDIA NIM response status: ${response.status} | Fallback response time: ${duration}ms`);
+
+      if (!response.ok) {
+        const errText = await response.text();
+        logger.error(`[AI Provider Manager] NVIDIA NIM fallback failed: ${errText}`);
+        throw new Error(`NVIDIA NIM status ${response.status}`);
       }
+
+      const data = await response.json();
+      if (!data.choices || data.choices.length === 0) {
+        throw new Error('Empty choices returned from NVIDIA NIM');
+      }
+
+      const text = data.choices[0].message.content;
+      const promptTokens = data.usage?.prompt_tokens || 0;
+      const completionTokens = data.usage?.completion_tokens || 0;
+
+      logger.info(`[AI Provider Manager] NVIDIA NIM resolved successfully. Selected provider: NVIDIA NIM. Tokens: Prompt=${promptTokens}, Completion=${completionTokens}. Response time: ${duration}ms`);
+
+      return {
+        text,
+        modelUsed: this.nvidiaModel,
+        provider: 'NVIDIA_NIM',
+        promptTokens,
+        completionTokens
+      };
+
+    } catch (err) {
+      logger.error('[AI Provider Manager] NVIDIA NIM fallback also failed:', {}, err.message);
+      throw new Error('The AI Consultant is temporarily overloaded. Please try again in a few moments.');
     }
   }
-  
-  return targetModel || FALLBACK_MODELS[0];
 }
 
-// In-memory caching layer
-const aiResponseCache = new Map();
+const aiProviderManager = new AIProviderManager();
 
 // Concurrency queue manager
 class RequestQueue {
@@ -97,7 +193,7 @@ class RequestQueue {
 
 const queue = new RequestQueue(5);
 
-// Helper to count approximate tokens (rule of thumb: ~4 characters or ~0.75 words per token)
+// Helper to count approximate tokens
 function estimateTokenCount(text) {
   if (!text) return 0;
   const words = text.trim().split(/\s+/).length;
@@ -115,20 +211,6 @@ function timeoutPromise(ms) {
   return new Promise((_, reject) => {
     setTimeout(() => reject(new Error(`AI service timeout after ${ms}ms`)), ms);
   });
-}
-
-function getRetryAfterMs(response) {
-  const retryAfter = response.headers.get('retry-after');
-  if (!retryAfter) return 0;
-  const seconds = parseInt(retryAfter, 10);
-  if (!isNaN(seconds)) {
-    return seconds * 1000;
-  }
-  const dateMs = Date.parse(retryAfter);
-  if (!isNaN(dateMs)) {
-    return Math.max(0, dateMs - Date.now());
-  }
-  return 0;
 }
 
 function generateDynamicMock(messages, modelName, options) {
@@ -184,137 +266,14 @@ function generateDynamicMock(messages, modelName, options) {
   return {
     text: mockText,
     modelUsed: `${modelName}-DynamicMock`,
+    provider: 'Mock',
     promptTokens: 15,
     completionTokens: estimateTokenCount(mockText)
   };
 }
 
-async function callOpenRouter(messages, model, options = {}) {
-  const activeList = await fetchActiveModels();
-  
-  let candidateModels = [
-    lastWorkingModel,
-    model,
-    process.env.OPENROUTER_MODEL,
-    ...FALLBACK_MODELS
-  ].filter(Boolean);
-
-  if (activeList) {
-    candidateModels = candidateModels.filter(m => activeList.has(m));
-  }
-
-  // Get unique ordered list
-  candidateModels = [...new Set(candidateModels)];
-
-  if (candidateModels.length === 0) {
-    candidateModels = [...FALLBACK_MODELS];
-  }
-
-  logger.info('[AI Core] Prepared candidates for completion request:', candidateModels);
-
-  let lastError = null;
-
-  for (let i = 0; i < candidateModels.length; i++) {
-    const currentModel = candidateModels[i];
-    
-    // Attempt each model up to 2 times (initial + 1 retry if transient error)
-    let maxModelAttempts = 2;
-    let modelAttempt = 0;
-
-    while (modelAttempt < maxModelAttempts) {
-      modelAttempt++;
-      logger.info(`[AI Core] Model "${currentModel}" attempt ${modelAttempt}/${maxModelAttempts}. Selected model: ${currentModel}`);
-
-      // If key is dummy, use the dynamic mock generator
-      if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes('dummy') || OPENROUTER_API_KEY === 'sk-or-v1-dummy-key') {
-        const result = generateDynamicMock(messages, currentModel, options);
-        lastWorkingModel = currentModel;
-        logger.info(`[AI Core] Request handled successfully by model (Mock): ${currentModel}. Fallback model used: ${currentModel !== model}`);
-        return result;
-      }
-
-      try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://ai-os.com',
-            'X-Title': 'AI-OS'
-          },
-          body: JSON.stringify({
-            model: currentModel,
-            messages,
-            temperature: options.temperature !== undefined ? options.temperature : 0.7,
-            max_tokens: options.maxTokens || 1000
-          })
-        });
-
-        const status = response.status;
-        const providerName = response.headers.get('x-provider') || 'OpenRouter';
-        logger.info(`[AI Core] OpenRouter status code: ${status} | Provider: ${providerName} | Model: ${currentModel} | Attempt: ${modelAttempt}`);
-
-        if (!response.ok) {
-          const errText = await response.text();
-          logger.warn(`[AI Core] Model "${currentModel}" returned non-200 status (${status}): ${errText}`);
-          
-          lastError = new Error(`Status ${status}`);
-
-          // Only retry if it is a transient error (429, 500, 502, 503, 504)
-          const isTransient = [429, 500, 502, 503, 504].includes(status);
-          if (isTransient && modelAttempt < maxModelAttempts) {
-            // Respect Retry-After header
-            const retryAfterMs = getRetryAfterMs(response);
-            const waitMs = retryAfterMs > 0 ? retryAfterMs : Math.pow(2, modelAttempt) * 250;
-            logger.info(`[AI Core] Waiting for ${waitMs}ms before retrying same model: ${currentModel}`);
-            await new Promise(resolve => setTimeout(resolve, waitMs));
-            continue; // Retry same model
-          } else {
-            break; // Transition to next model fallback
-          }
-        }
-
-        const data = await response.json();
-        if (!data.choices || data.choices.length === 0) {
-          logger.warn(`[AI Core] Model "${currentModel}" returned empty choices.`);
-          lastError = new Error('Empty choices returned');
-          break; // Transition to next model fallback
-        }
-
-        // Successful request handling
-        lastWorkingModel = currentModel;
-        logger.info(`[AI Core] Request handled successfully by model: ${currentModel}. Fallback model used: ${currentModel !== model}`);
-
-        const replyText = data.choices[0].message.content;
-        return {
-          text: replyText,
-          modelUsed: currentModel,
-          promptTokens: data.usage?.prompt_tokens || estimateTokenCount(messages.map(m => m.content).join(' ')),
-          completionTokens: data.usage?.completion_tokens || estimateTokenCount(replyText)
-        };
-
-      } catch (err) {
-        logger.warn(`[AI Core] Exception during model "${currentModel}" attempt ${modelAttempt}: ${err.message}`);
-        lastError = err;
-
-        if (modelAttempt < maxModelAttempts) {
-          const backoffDelay = Math.pow(2, modelAttempt) * 250;
-          logger.info(`[AI Core] Delaying ${backoffDelay}ms before retrying same model: ${currentModel}`);
-          await new Promise(resolve => setTimeout(resolve, backoffDelay));
-          continue; // Retry same model
-        } else {
-          break; // Transition to next model fallback
-        }
-      }
-    }
-
-    logger.info(`[AI Core] Model "${currentModel}" exhausted. Moving to next candidate fallback.`);
-  }
-
-  // If we exhaust all models
-  logger.error('[AI Core] All candidate models failed to complete request.');
-  throw new Error('The AI Consultant is temporarily overloaded. Please try again in a few moments.');
-}
+// In-memory caching layer
+const aiResponseCache = new Map();
 
 /**
  * Orchestrates AI requests with caching, queueing, retries, timeouts, and logging.
@@ -332,38 +291,19 @@ async function requestAICompletion(messages, model, options = {}) {
     aiResponseCache.delete(cacheKey);
   }
 
-  // Define execute function containing retries with exponential backoff
   const executeWithRetry = async () => {
-    let attempt = 0;
-    while (attempt < MAX_RETRIES) {
-      try {
-        attempt++;
-        logger.info(`[AI Core] Executing model call (Attempt ${attempt}/${MAX_RETRIES})`);
-
-        // Race the actual API completion against timeout
-        const result = await Promise.race([
-          callOpenRouter(messages, model, options),
-          timeoutPromise(REQUEST_TIMEOUT_MS)
-        ]);
-
-        // Save to cache
-        aiResponseCache.set(cacheKey, {
-          data: result,
-          expiresAt: Date.now() + CACHE_EXPIRY_MS
-        });
-
-        return result;
-
-      } catch (err) {
-        logger.warn(`[AI Core] Attempt ${attempt} failed: ${err.message}`);
-        if (attempt >= MAX_RETRIES) {
-          throw err;
-        }
-        // Exponential backoff: 500ms -> 1000ms -> 2000ms
-        const delay = Math.pow(2, attempt) * 250;
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
+    // Race the actual API completion against timeout
+    return Promise.race([
+      aiProviderManager.executeCompletion(messages, options),
+      timeoutPromise(REQUEST_TIMEOUT_MS)
+    ]).then(result => {
+      // Save to cache
+      aiResponseCache.set(cacheKey, {
+        data: result,
+        expiresAt: Date.now() + CACHE_EXPIRY_MS
+      });
+      return result;
+    });
   };
 
   // Add the execution block to concurrent queue manager
@@ -451,6 +391,5 @@ module.exports = {
   generatePrompt,
   compileStrategy,
   chatAssistant,
-  generateRoadmap,
-  getValidatedModel
+  generateRoadmap
 };

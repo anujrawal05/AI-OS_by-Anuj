@@ -6,7 +6,9 @@ const REQUIRED_ENV = [
   'BREVO_API_KEY',
   'RAZORPAY_KEY_ID',
   'RAZORPAY_KEY_SECRET',
-  'FRONTEND_URL'
+  'FRONTEND_URL',
+  'GEMINI_API_KEY',
+  'NVIDIA_API_KEY'
 ];
 
 function validateEnv() {
