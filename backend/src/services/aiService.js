@@ -67,34 +67,73 @@ async function callOpenRouter(messages, model, options = {}) {
   const temperature = options.temperature !== undefined ? options.temperature : 0.7;
   const maxTokens = options.maxTokens || 1000;
 
+  // Log the complete request payload
+  logger.info(`[AI Core] Request payload for model ${modelName}:`, {
+    model: modelName,
+    messages,
+    temperature,
+    maxTokens,
+    options
+  });
+
   // Mock fallback logic for dummy keys or local verification runs
   if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes('dummy') || OPENROUTER_API_KEY === 'sk-or-v1-dummy-key') {
     logger.warn('[AI Core] Using mock completion fallback (dummy or missing OpenRouter key).');
     
-    let mockText = `AI-OS Mock response for prompt query: "${messages[messages.length - 1]?.content || ''}"`;
-    
-    if (modelName === 'nvidia/nemotron-3-ultra:free') {
+    const userPrompt = messages[messages.length - 1]?.content || '';
+    const ctx = options.context || {};
+    const businessName = ctx.businessName || 'Your Business';
+    const targetAudience = ctx.targetAudience || 'Target Audience';
+    const bottleneck = ctx.bottleneck || 'Bottleneck';
+    const workspace = ctx.workspace || 'grow';
+    const language = ctx.language || 'English';
+
+    const isHi = language === 'hi' || userPrompt.includes('हिंदी') || userPrompt.includes('hi');
+    const isHng = language === 'hinglish' || userPrompt.includes('hinglish');
+
+    let mockText = ``;
+
+    if (isHi) {
       mockText = 
-        `<p style="margin-top:0;"><strong>1. THE SHADOW COMPLETED MOVE:</strong>` +
+        `<p style="margin-top:0;"><strong>1. छाया पूर्ण कदम (Shadow Move) - ${businessName} (निशे: ${workspace}):</strong>` +
         `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>Build a fully white-labeled agency factory and offer zero-upfront integration setup to steal your clients.</li>` +
-        `<li>Scrape target list using automatic scrapers and run personalized Loom outreach video campaigns at 100x your speed.</li>` +
+        `<li>${userPrompt} के लिए: तुरंत एक स्वचालित आउटरीच प्रणाली स्थापित करें।</li>` +
+        `<li>अपने लक्षित दर्शकों (${targetAudience}) को आकर्षित करने के लिए वैयक्तिकृत वीडियो संदेश भेजें।</li>` +
+        `</ul></p>` +
+        `<p><strong>2. विषम आक्रमण (Asymmetric Attack):</strong>` +
+        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+        `<li>अनावश्यक खर्चों को कम करके सीधे ग्राहक अधिग्रहण पर ध्यान दें।</li>` +
+        `<li>मुख्य बाधा (${bottleneck}) को हल करने के लिए एआई ऑटोमेशन का उपयोग करें।</li>` +
+        `</ul></p>`;
+    } else if (isHng) {
+      mockText = 
+        `<p style="margin-top:0;"><strong>1. THE SHADOW MOVE - ${businessName} (Niche: ${workspace}):</strong>` +
+        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+        `<li>${userPrompt} ke liye: Ek instant automated outreach funnel build karein.</li>` +
+        `<li>Target audience (${targetAudience}) ko highly personalized Loom videos send karein.</li>` +
         `</ul></p>` +
         `<p><strong>2. THE ASYMMETRIC ATTACK:</strong>` +
         `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>Deploy open-source Docker containers offering voice agents and webhooks to bypass agency setups entirely.</li>` +
-        `<li>Package pre-configured Voiceflow templates for free, charging only for custom API connector updates.</li>` +
-        `</ul></p>` +
-        `<p style="margin-bottom:0;"><strong>3. THE UNDERGROUND DRIFT:</strong>` +
+        `<li>Pehle bottleneck (${bottleneck}) ko solve karne ke liye AI workflows trigger karein.</li>` +
+        `</ul></p>`;
+    } else {
+      mockText = 
+        `<p style="margin-top:0;"><strong>1. THE SHADOW MOVE - ${businessName} (Niche: ${workspace}):</strong>` +
         `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>OpenAI/Google natively bundle custom integrations inside base subscriptions, eliminating standalone bot setups.</li>` +
-        `<li>Clients experience developer burnout due to fragile webhooks and shift back to monolithic CRM-packaged workflows.</li>` +
+        `<li>Regarding "${userPrompt}": Spin up an automated client acquisition engine immediately.</li>` +
+        `<li>Pitch directly to your ideal client profile (${targetAudience}) using high-converting video audits.</li>` +
+        `</ul></p>` +
+        `<p><strong>2. THE ASYMMETRIC ATTACK:</strong>` +
+        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+        `<li>Solve the core bottleneck of "${bottleneck}" by implementing event-triggered webhook notifications.</li>` +
         `</ul></p>`;
     }
 
+    logger.info(`[AI Core] API response (Mock):`, { text: mockText });
+
     return {
       text: mockText,
-      modelUsed: `${modelName}-Mock`,
+      modelUsed: `${modelName}-DynamicMock`,
       promptTokens: 15,
       completionTokens: estimateTokenCount(mockText)
     };
@@ -119,15 +158,8 @@ async function callOpenRouter(messages, model, options = {}) {
 
     if (!response.ok) {
       const errText = await response.text();
-      // Handle OpenRouter errors gracefully by falling back to local mocks in staging/dev
-      logger.warn(`[AI Core] API call returned non-200. Falling back: ${errText}`);
-      const mockText = `AI-OS local mock fallback due to API status ${response.status}.`;
-      return {
-        text: mockText,
-        modelUsed: `${modelName}-Mock-Fallback`,
-        promptTokens: 10,
-        completionTokens: estimateTokenCount(mockText)
-      };
+      logger.error(`[AI Core] API call returned non-200: ${errText}`);
+      throw new Error(`OpenRouter API error (Status ${response.status}): ${errText}`);
     }
 
     const data = await response.json();
@@ -135,21 +167,18 @@ async function callOpenRouter(messages, model, options = {}) {
       throw new Error('OpenRouter response contains empty choices.');
     }
 
+    const replyText = data.choices[0].message.content;
+    logger.info(`[AI Core] API response (Real):`, { text: replyText });
+
     return {
-      text: data.choices[0].message.content,
+      text: replyText,
       modelUsed: modelName,
       promptTokens: data.usage?.prompt_tokens || estimateTokenCount(messages.map(m => m.content).join(' ')),
-      completionTokens: data.usage?.completion_tokens || estimateTokenCount(data.choices[0].message.content)
+      completionTokens: data.usage?.completion_tokens || estimateTokenCount(replyText)
     };
   } catch (err) {
-    logger.error('[AI Core Error] API exception. Returning mock fallback.', {}, err.message);
-    const mockText = `Local mock fallback response. Error was: ${err.message}`;
-    return {
-      text: mockText,
-      modelUsed: `${modelName}-Mock-Exception`,
-      promptTokens: 10,
-      completionTokens: estimateTokenCount(mockText)
-    };
+    logger.error('[AI Core Error] API exception during OpenRouter call:', {}, err.message);
+    throw err;
   }
 }
 
@@ -227,11 +256,23 @@ async function compileStrategy(userId, businessName, targetAudience, bottleneck)
   return requestAICompletion(messages, null, { temperature: 0.6 });
 }
 
-async function chatAssistant(userId, userInput, history = []) {
+async function chatAssistant(userId, userInput, history = [], context = {}) {
+  const { businessName, targetAudience, bottleneck, workspace, language } = context;
+  
+  let contextInfo = '';
+  if (businessName || targetAudience || bottleneck || workspace) {
+    contextInfo = `\nActive Business Context:\n` +
+      `- Business/Project Name: ${businessName || 'N/A'}\n` +
+      `- Target Audience: ${targetAudience || 'N/A'}\n` +
+      `- Current Bottleneck: ${bottleneck || 'N/A'}\n` +
+      `- Workspace/Niche: ${workspace || 'grow'}\n`;
+  }
+
   const systemPrompt = 
     "You are an Elite Red-Teaming Business Strategist built on NVIDIA Nemotron Ultra compute. " +
     "Your sole purpose is to ruthlessly deconstruct standard business advice and offer highly " +
     "unorthodox, contrarian, and radically different strategic angles.\n\n" +
+    `Ensure the response is written in the selected language: ${language || 'English'}.\n\n` +
     "When presented with a business plan or query, do NOT validate it. Do NOT give standard optimistic praise. " +
     "Instead, provide 3 distinct alternative perspectives. Under each perspective, provide exactly 2-3 short, " +
     "one-sentence actionable steps in a clean bulleted format (using <ul> and <li>). Do not write long paragraphs. " +
@@ -251,14 +292,15 @@ async function chatAssistant(userId, userInput, history = []) {
     "<li>Step 1: [Short, punchy action]</li>" +
     "<li>Step 2: [Short, punchy action]</li>" +
     "</ul></p>\n\n" +
-    "Be brutally realistic, data-focused, and direct. Skip standard introductions or conclusions. Do not output title banners.";
+    "Be brutally realistic, data-focused, and direct. Skip standard introductions or conclusions. Do not output title banners." +
+    contextInfo;
 
   const messages = [
     { role: "system", content: systemPrompt },
     ...history,
     { role: "user", content: userInput }
   ];
-  return requestAICompletion(messages, 'nvidia/nemotron-3-ultra:free', { temperature: 0.85, maxTokens: 2048 });
+  return requestAICompletion(messages, 'nvidia/nemotron-3-ultra:free', { temperature: 0.85, maxTokens: 2048, context });
 }
 
 async function generateRoadmap(userId, niche, timePeriodDays) {

@@ -410,55 +410,17 @@ export function initExpandSection() {
       chatLogs.appendChild(typingBubble);
       chatLogs.scrollTop = chatLogs.scrollHeight;
 
-      const intent = classifyIntent(text);
-      if (intent === 'greeting') {
-        typingBubble.remove();
-        
-        let reply = "Hello! I am your Elite Business Strategist. Let me know when you're ready to deconstruct your business strategy, roadmap, or scaling plans.";
-        if (isHi) {
-          reply = "नमस्ते! मैं आपका बिज़नेस रणनीतिकार हूँ। मुझे बताएं कि आप अपनी व्यावसायिक रणनीति या रोडमैप पर चर्चा करने के लिए कब तैयार हैं।";
-        } else if (isHng) {
-          reply = "Hello! Main aapka Business Strategist hoon. Mujhe batayein jab aap apni business strategy ya roadmap discuss karne ke liye ready hon.";
-        }
-        
-        strategistChatHistory.push({ role: 'user', content: text });
-        strategistChatHistory.push({ role: 'assistant', content: reply });
-
-        const replyBubble = document.createElement('div');
-        replyBubble.className = 'chat-bubble assistant';
-        replyBubble.innerHTML = `<div class="chat-bubble-text">${reply}</div>`;
-        chatLogs.appendChild(replyBubble);
-        chatLogs.scrollTop = chatLogs.scrollHeight;
-        return;
-      }
-      
-      if (intent === 'casual') {
-        typingBubble.remove();
-        
-        let reply = "I am a specialized Red-Team Business Strategist. Let's focus on strategy, roadmap, planning, or scaling to get the most value out of our session. What strategy or plan are we audit-testing today?";
-        if (isHi) {
-          reply = "मैं एक विशेषज्ञ रणनीतिकार हूँ। आइए मूल्यवान चर्चा के लिए बिज़नेस रणनीति, रोडमैप या प्लानिंग पर ध्यान केंद्रित करें। आज हम किस योजना का परीक्षण कर रहे हैं?";
-        } else if (isHng) {
-          reply = "Main ek specialized Business Strategist hoon. Session se maximum value lene ke liye chaliye business strategy, planning ya scaling par focus karte hain. Aaj hum kaunsi strategy test kar rahe hain?";
-        }
-        
-        strategistChatHistory.push({ role: 'user', content: text });
-        strategistChatHistory.push({ role: 'assistant', content: reply });
-
-        const replyBubble = document.createElement('div');
-        replyBubble.className = 'chat-bubble assistant';
-        replyBubble.innerHTML = `<div class="chat-bubble-text">${reply}</div>`;
-        chatLogs.appendChild(replyBubble);
-        chatLogs.scrollTop = chatLogs.scrollHeight;
-        return;
-      }
-
       try {
         const responseData = await apiCall('/api/strategist/chat', {
           method: 'POST',
           body: JSON.stringify({
             userInput: text,
-            history: strategistChatHistory
+            history: strategistChatHistory,
+            businessName: currentBusinessContext.name || '',
+            targetAudience: currentBusinessContext.audience || '',
+            bottleneck: currentBusinessContext.bottleneck || '',
+            workspace: 'grow',
+            language: state.language || 'English'
           })
         });
 
@@ -479,10 +441,20 @@ export function initExpandSection() {
           if (responseData.quota) {
             showToast(`Remaining Daily Quota: ${responseData.quota.remaining}/${responseData.quota.limit}`, "info");
           }
+        } else {
+          throw new Error(responseData.error || 'Failed to generate response.');
         }
       } catch (err) {
         typingBubble.remove();
         console.error('[Strategist Chat Error]', err);
+        showToast("Consultant connection error: " + err.message, "error");
+        
+        const errorBubble = document.createElement('div');
+        errorBubble.className = 'chat-bubble assistant error';
+        errorBubble.style.color = '#ff4a4a';
+        errorBubble.innerHTML = `<div class="chat-bubble-text">⚠️ Error: ${err.message || 'Failed to reach strategist advisor. Please check your credentials.'}</div>`;
+        chatLogs.appendChild(errorBubble);
+        chatLogs.scrollTop = chatLogs.scrollHeight;
       }
     };
 

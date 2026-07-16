@@ -61,14 +61,19 @@ async function compileStrategy(req, res, next) {
 }
 
 async function chatStrategist(req, res, next) {
-  const { userInput, history } = req.body;
+  const { userInput, history, businessName, targetAudience, bottleneck, workspace, language } = req.body;
 
   if (!userInput) {
     return res.status(400).json({ error: 'userInput text is required.' });
   }
 
   try {
-    const aiResponse = await chatAssistant(req.user.id, userInput, history || []);
+    const aiResponse = await chatAssistant(
+      req.user.id,
+      userInput,
+      history || [],
+      { businessName, targetAudience, bottleneck, workspace, language }
+    );
     const reply = aiResponse.text;
 
     // Save chat query in database history logs
@@ -76,7 +81,7 @@ async function chatStrategist(req, res, next) {
       data: {
         userId: req.user.id,
         action: 'Chat',
-        inputData: { userInput, history: history || [] },
+        inputData: { userInput, history: history || [], businessName, targetAudience, bottleneck, workspace, language },
         outputData: { reply }
       }
     });
