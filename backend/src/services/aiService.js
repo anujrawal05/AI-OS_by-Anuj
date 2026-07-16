@@ -300,7 +300,7 @@ async function chatAssistant(userId, userInput, history = [], context = {}) {
     ...history,
     { role: "user", content: userInput }
   ];
-  return requestAICompletion(messages, 'nvidia/nemotron-3-ultra:free', { temperature: 0.85, maxTokens: 2048, context });
+  return requestAICompletion(messages, 'meta-llama/llama-3-8b-instruct:free', { temperature: 0.85, maxTokens: 2048, context });
 }
 
 async function generateRoadmap(userId, niche, timePeriodDays) {
