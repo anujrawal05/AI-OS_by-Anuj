@@ -216,80 +216,99 @@ async function callOpenRouter(messages, model, options = {}) {
 
   for (let i = 0; i < candidateModels.length; i++) {
     const currentModel = candidateModels[i];
-    logger.info(`[AI Core] Attempting request using model: ${currentModel}`);
+    
+    // Attempt each model up to 2 times (initial + 1 retry if transient error)
+    let maxModelAttempts = 2;
+    let modelAttempt = 0;
 
-    // If key is dummy, use the dynamic mock generator
-    if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes('dummy') || OPENROUTER_API_KEY === 'sk-or-v1-dummy-key') {
-      const result = generateDynamicMock(messages, currentModel, options);
-      lastWorkingModel = currentModel;
-      logger.info(`[AI Core] Request handled successfully by model (Mock): ${currentModel}`);
-      return result;
-    }
+    while (modelAttempt < maxModelAttempts) {
+      modelAttempt++;
+      logger.info(`[AI Core] Model "${currentModel}" attempt ${modelAttempt}/${maxModelAttempts}. Selected model: ${currentModel}`);
 
-    try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://ai-os.com',
-          'X-Title': 'AI-OS'
-        },
-        body: JSON.stringify({
-          model: currentModel,
-          messages,
-          temperature: options.temperature !== undefined ? options.temperature : 0.7,
-          max_tokens: options.maxTokens || 1000
-        })
-      });
+      // If key is dummy, use the dynamic mock generator
+      if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes('dummy') || OPENROUTER_API_KEY === 'sk-or-v1-dummy-key') {
+        const result = generateDynamicMock(messages, currentModel, options);
+        lastWorkingModel = currentModel;
+        logger.info(`[AI Core] Request handled successfully by model (Mock): ${currentModel}. Fallback model used: ${currentModel !== model}`);
+        return result;
+      }
 
-      if (!response.ok) {
+      try {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://ai-os.com',
+            'X-Title': 'AI-OS'
+          },
+          body: JSON.stringify({
+            model: currentModel,
+            messages,
+            temperature: options.temperature !== undefined ? options.temperature : 0.7,
+            max_tokens: options.maxTokens || 1000
+          })
+        });
+
         const status = response.status;
-        const errText = await response.text();
-        logger.warn(`[AI Core] Model "${currentModel}" returned non-200 status (${status}): ${errText}`);
-        
-        // Respect Retry-After header
-        const retryAfterMs = getRetryAfterMs(response);
-        if (retryAfterMs > 0) {
-          logger.info(`[AI Core] Respecting Retry-After header: delaying for ${retryAfterMs}ms`);
-          await new Promise(resolve => setTimeout(resolve, retryAfterMs));
+        const providerName = response.headers.get('x-provider') || 'OpenRouter';
+        logger.info(`[AI Core] OpenRouter status code: ${status} | Provider: ${providerName} | Model: ${currentModel} | Attempt: ${modelAttempt}`);
+
+        if (!response.ok) {
+          const errText = await response.text();
+          logger.warn(`[AI Core] Model "${currentModel}" returned non-200 status (${status}): ${errText}`);
+          
+          lastError = new Error(`Status ${status}`);
+
+          // Only retry if it is a transient error (429, 500, 502, 503, 504)
+          const isTransient = [429, 500, 502, 503, 504].includes(status);
+          if (isTransient && modelAttempt < maxModelAttempts) {
+            // Respect Retry-After header
+            const retryAfterMs = getRetryAfterMs(response);
+            const waitMs = retryAfterMs > 0 ? retryAfterMs : Math.pow(2, modelAttempt) * 250;
+            logger.info(`[AI Core] Waiting for ${waitMs}ms before retrying same model: ${currentModel}`);
+            await new Promise(resolve => setTimeout(resolve, waitMs));
+            continue; // Retry same model
+          } else {
+            break; // Transition to next model fallback
+          }
         }
 
-        // Apply exponential backoff delay based on candidate index
-        const backoffDelay = Math.pow(2, i) * 250;
-        logger.info(`[AI Core] Exponential backoff delay: ${backoffDelay}ms`);
-        await new Promise(resolve => setTimeout(resolve, backoffDelay));
+        const data = await response.json();
+        if (!data.choices || data.choices.length === 0) {
+          logger.warn(`[AI Core] Model "${currentModel}" returned empty choices.`);
+          lastError = new Error('Empty choices returned');
+          break; // Transition to next model fallback
+        }
 
-        lastError = new Error(`Status ${status}`);
-        continue;
+        // Successful request handling
+        lastWorkingModel = currentModel;
+        logger.info(`[AI Core] Request handled successfully by model: ${currentModel}. Fallback model used: ${currentModel !== model}`);
+
+        const replyText = data.choices[0].message.content;
+        return {
+          text: replyText,
+          modelUsed: currentModel,
+          promptTokens: data.usage?.prompt_tokens || estimateTokenCount(messages.map(m => m.content).join(' ')),
+          completionTokens: data.usage?.completion_tokens || estimateTokenCount(replyText)
+        };
+
+      } catch (err) {
+        logger.warn(`[AI Core] Exception during model "${currentModel}" attempt ${modelAttempt}: ${err.message}`);
+        lastError = err;
+
+        if (modelAttempt < maxModelAttempts) {
+          const backoffDelay = Math.pow(2, modelAttempt) * 250;
+          logger.info(`[AI Core] Delaying ${backoffDelay}ms before retrying same model: ${currentModel}`);
+          await new Promise(resolve => setTimeout(resolve, backoffDelay));
+          continue; // Retry same model
+        } else {
+          break; // Transition to next model fallback
+        }
       }
-
-      const data = await response.json();
-      if (!data.choices || data.choices.length === 0) {
-        lastError = new Error('Empty choices returned');
-        continue;
-      }
-
-      // Successful request handling
-      lastWorkingModel = currentModel;
-      logger.info(`[AI Core] Request handled successfully by model: ${currentModel}`);
-
-      const replyText = data.choices[0].message.content;
-      return {
-        text: replyText,
-        modelUsed: currentModel,
-        promptTokens: data.usage?.prompt_tokens || estimateTokenCount(messages.map(m => m.content).join(' ')),
-        completionTokens: data.usage?.completion_tokens || estimateTokenCount(replyText)
-      };
-
-    } catch (err) {
-      logger.warn(`[AI Core] Exception during model "${currentModel}" attempt: ${err.message}`);
-      lastError = err;
-      
-      const backoffDelay = Math.pow(2, i) * 250;
-      await new Promise(resolve => setTimeout(resolve, backoffDelay));
-      continue;
     }
+
+    logger.info(`[AI Core] Model "${currentModel}" exhausted. Moving to next candidate fallback.`);
   }
 
   // If we exhaust all models
