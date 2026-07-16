@@ -64,16 +64,14 @@ async function initApp() {
   initTrialClock();
   
   // Setup background scroll smooth animation traveler loops
-  setTimeout(async () => {
-    try {
-      await loadExploreModule();
-      if (window.smoothScrollLoop) {
-        requestAnimationFrame(window.smoothScrollLoop);
-      }
-    } catch (e) {
-      console.warn("Failed to warm up explore module in background:", e);
+  try {
+    await loadExploreModule();
+    if (window.smoothScrollLoop) {
+      requestAnimationFrame(window.smoothScrollLoop);
     }
-  }, 1500);
+  } catch (e) {
+    console.warn("Failed to load explore module on init:", e);
+  }
 }
 
 // Event handler bindings to entry points

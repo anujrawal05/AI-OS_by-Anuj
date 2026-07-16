@@ -2650,6 +2650,7 @@ export function initDashboardControls() {
 
   if (compileBtn) {
     compileBtn.addEventListener('click', () => {
+      console.log("COMPILE ROADMAP clicked. authenticated:", isUserAuthenticated());
       if (!isUserAuthenticated()) {
         const authOverlay = document.getElementById('auth-modal-overlay');
         if (authOverlay) authOverlay.style.display = 'flex';
@@ -2673,12 +2674,20 @@ export function initDashboardControls() {
         "Study Using AI",
         "Crack Interview Using AI"
       ];
-      const goal = taskSelect ? (taskValues[taskSelect.selectedIndex] || taskSelect.value) : 'Exploring AI';
+      
+      const selectedIndex = taskSelect ? taskSelect.selectedIndex : 0;
+      const selectedValue = taskSelect ? taskSelect.value : "Exploring AI";
+      const goal = (selectedIndex >= 0 && selectedIndex < taskValues.length) ? taskValues[selectedIndex] : selectedValue;
+      
+      console.log("Compilation target determined:", goal, "Index:", selectedIndex, "Raw Value:", selectedValue);
 
-      if (goal === "Exploring AI") {
+      if (goal === "Exploring AI" || selectedValue === "Exploring AI") {
         const choiceModal = document.getElementById('video-roadmap-choice-modal');
         if (choiceModal) {
+          console.log("Displaying video-roadmap-choice-modal");
           choiceModal.style.display = 'flex';
+        } else {
+          console.error("video-roadmap-choice-modal element not found in DOM");
         }
       } else {
         compileRoadmapDirectly(goal, 'text');
