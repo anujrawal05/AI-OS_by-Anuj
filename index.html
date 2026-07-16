@@ -1213,366 +1213,306 @@
     </div>
   </div>
 
-  <!-- Pricing Modal -->
-  <!-- Pricing Modal -->
-  <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
-    <div class="pricing-hotstar-modal premium-saas-layout">
-      <!-- Close button mapped to original ID so existing JS hides modal -->
-      <button id="pricing-modal-close-btn" class="hotstar-close-btn" aria-label="Close modal">&times;</button>
-
-      <!-- Left Column: Value Proposition & Premium Summary -->
-      <div class="pricing-modal-left saas-left-panel">
-        <div class="pricing-left-content">
-          <div style="font-size: 2.2rem; margin-bottom: 8px; animation: authIconPulse 2s infinite alternate;">💎</div>
-          <h2
-            style="font-family: var(--font-title); font-weight: 800; color: #fff; margin-bottom: 8px; font-size: 1.6rem; letter-spacing: -0.02em;">
-            AI-OS Premium</h2>
-          <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.4;">Execute
-            business blueprints, prompt libraries, and interactive roadmaps at a world-class level.</p>
-
-          <div
-            style="background: rgba(46, 197, 255, 0.1); border: 1px solid rgba(46, 197, 255, 0.2); border-radius: 10px; padding: 12px; margin-bottom: 20px; font-size: 0.78rem; color: #2EC5FF; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; font-family: sans-serif; font-weight: 500; text-align: left;">
-            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700;">
-              <span>🎁</span>
-              <span>Every new account receives a complimentary 3-Day Premium Trial.</span>
-            </div>
-            <div style="color: rgba(255,255,255,0.7); font-size: 0.72rem; padding-left: 22px;">No payment required.
-              After the trial, your account automatically continues on the FREE plan unless you upgrade.</div>
-          </div>
-
-          <!-- Premium Includes List -->
-          <div class="saas-summary-section">
-            <h4 class="saas-section-title">Premium Includes</h4>
-            <ul class="pricing-feature-bullets saas-bullet-list">
-              <li><span>Unlimited AI Roadmaps</span></li>
-              <li><span>Hindi & English Videos</span></li>
-              <li><span>Unlimited JSON Prompts</span></li>
-              <li><span>AI Business Academy</span></li>
-              <li><span>Business Blueprints</span></li>
-              <li><span>500+ Business Templates</span></li>
-              <li><span>Automation Workflows</span></li>
-              <li><span>Premium Prompt Library</span></li>
-              <li><span>A.R. Strategist AI Chat</span></li>
-              <li><span>Priority Support & Updates</span></li>
-            </ul>
-          </div>
-
-          <!-- Premium Value Box -->
-          <div class="saas-value-box">
-            <div class="saas-value-box-title">🏆 Premium Value</div>
-            <ul class="saas-value-box-list">
-              <li>40+ Interactive AI Roadmaps</li>
-              <li>100+ Step-by-Step Video Tutorials</li>
-              <li>500+ Business Templates</li>
-              <li>Unlimited JSON Prompt Generation</li>
-              <li>Complete AI Business Academy</li>
-              <li>Lifetime Core Updates</li>
-            </ul>
-            <div class="saas-value-box-footer">Everything for only ₹99/month.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Comparison Table & Plans -->
-      <div class="pricing-modal-right saas-right-panel">
-        <div class="saas-right-header">
-          <h3 class="saas-main-title">Everything Included in AI-OS Premium</h3>
-          <p class="saas-main-subtitle">Compare what you get with Free vs Premium.</p>
-        </div>
-
-        <!-- Scrollable Comparison Table -->
-        <div class="saas-table-container">
-          <table class="hotstar-table saas-comparison-table">
-            <thead>
-              <tr>
-                <th style="text-align: left; width: 45%;">Feature</th>
-                <th style="text-align: center; width: 25%;">Standard (Free)</th>
-                <th style="text-align: center; width: 30%; color: #2EC5FF;">Premium</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="feature-name">Basic AI Dashboard</td>
-                <td class="value-col">✅ Included</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">AI Tool Directory</td>
-                <td class="value-col">✅ Included</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Explore AI &amp; Basic Roadmaps</td>
-                <td class="value-col">✅ Limited (10 Steps)</td>
-                <td class="value-col highlight premium-gold-col">⭐ Unlimited Steps</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Basic Prompt Generator</td>
-                <td class="value-col">✅ Included</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">AI News &amp; Updates</td>
-                <td class="value-col">✅ Included</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Guides (NotebookLM / System)</td>
-                <td class="value-col">✅ Included</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Gamification (XP, Streaks, Missions)</td>
-                <td class="value-col">✅ Included</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Complete AI Business Academy</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-gold-col">⭐ Full Access</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Complete Business Blueprints</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-glow-col">✅ Full Access</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Advanced Roadmaps</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-gold-col">⭐ Unlimited</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Premium JSON Prompt Library</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-gold-col">⭐ Unlimited</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Automation Workflows</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">A.R. Strategist AI</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-gold-col">⭐ Unlimited</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Premium Video Tutorials</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-glow-col">✅ Included</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Premium Templates</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-glow-col">✅ 500+ Templates</td>
-              </tr>
-              <tr>
-                <td class="feature-name">Premium Business Dashboard</td>
-                <td class="value-col">❌ Locked</td>
-                <td class="value-col highlight premium-glow-col">✅ Full Access</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Mobile Stacked Comparison Cards -->
-        <div class="saas-mobile-comparison-cards">
-          <div class="comparison-card">
-            <div class="comp-feature">Basic AI Dashboard</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">✅ Included</span>
-            </div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">AI Tool Directory</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">✅ Included</span>
-            </div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Explore AI &amp; Basic Roadmaps</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">✅ Limited (10
-                Steps)</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val gold">⭐ Unlimited
-                Steps</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Basic Prompt Generator</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">✅ Included</span>
-            </div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">AI News &amp; Updates</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">✅ Included</span>
-            </div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Guides (NotebookLM / System)</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">✅ Included</span>
-            </div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Gamification (XP, Streaks, Missions)</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">✅ Included</span>
-            </div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Complete AI Business Academy</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val gold">⭐ Full
-                Access</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Complete Business Blueprints</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅ Full
-                Access</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Advanced Roadmaps</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val gold">⭐
-                Unlimited</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Premium JSON Prompt Library</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val gold">⭐
-                Unlimited</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Automation Workflows</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">A.R. Strategist AI</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val gold">⭐
-                Unlimited</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Premium Video Tutorials</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅
-                Included</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Premium Templates</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅ 500+
-                Templates</span></div>
-          </div>
-          <div class="comparison-card">
-            <div class="comp-feature">Premium Business Dashboard</div>
-            <div class="comp-row"><span class="comp-label">Standard:</span> <span class="comp-val">❌ Locked</span></div>
-            <div class="comp-row"><span class="comp-label">Premium:</span> <span class="comp-val highlight">✅ Full
-                Access</span></div>
-          </div>
-
-          <!-- Sticky Bottom Footer for plans & CTA -->
-          <div class="saas-modal-footer">
-            <!-- Pricing Cards Section -->
-            <div class="saas-pricing-container">
-              <!-- Basic Plan Option -->
-              <div class="saas-pricing-card" id="card-plan-free" onclick="selectSassPlan('free', this)" role="button"
-                tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
-                <div class="saas-card-header">Basic</div>
-                <div class="saas-card-price">₹0</div>
-                <div class="saas-card-subtitle">Lifetime Preview</div>
-              </div>
-
-              <!-- Premium Monthly Option -->
-              <div class="saas-pricing-card active highlighted" id="card-plan-monthly"
-                onclick="selectSassPlan('monthly', this)" role="button" tabindex="0"
-                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
-                <span class="saas-card-badge">Most Popular</span>
-                <div class="saas-card-header">Monthly</div>
-                <div class="saas-card-price">₹99<span class="price-period">/mo</span></div>
-                <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges
-                  at checkout</div>
-                <div class="saas-card-subtitle">Cancel Anytime</div>
-              </div>
-
-              <!-- Premium Yearly Option -->
-              <div class="saas-pricing-card" id="card-plan-yearly" onclick="selectSassPlan('yearly', this)"
-                role="button" tabindex="0"
-                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
-                <span class="saas-card-badge savings">Save 15%</span>
-                <div class="saas-card-header">Yearly</div>
-                <div class="saas-card-price">₹999<span class="price-period">/yr</span></div>
-                <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin: 2px 0;">+ GST & Platform Charges
-                  at checkout</div>
-                <div class="saas-card-subtitle">Best Value</div>
-              </div>
-            </div>
-
-            <!-- Call to Action Container -->
-            <div class="saas-cta-container">
-              <button class="btn-saas-proceed" onclick="proceedSassSelection()">
-                <span>Continue with Monthly (₹99)</span> ➔
+          <div id="pricing-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog" aria-modal="true">
+    <div class="new-pricing-modal">
+      <button id="pricing-modal-close-btn" class="pricing-close-btn" aria-label="Close modal">&times;</button>
+      
+      <div class="pricing-modal-body">
+        <!-- Left: Scrollable Feature Details -->
+        <div class="pricing-features-column">
+          <h2 class="features-title">Platform Access &amp; Features</h2>
+          <p class="features-subtitle">Compare standard features with premium credentials</p>
+          
+          <div class="features-groups-wrapper">
+            
+            <!-- Dashboard Features -->
+            <div class="feature-category open" id="cat-dashboard">
+              <button class="category-header" onclick="togglePricingCategory('cat-dashboard')">
+                <span>🖥️ Dashboard &amp; Workspaces</span>
+                <span class="category-header-arrow">&#9656;</span>
               </button>
-              <div class="saas-trust-text">Cancel Anytime • Secure Payment • Instant Access</div>
+              <div class="category-content">
+                <div class="feature-card">
+                  <span>Multiple active workspaces</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>Daily check-in streak rewards</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>XP &amp; gamification level-ups</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-              <!-- Coupon link -->
-              <span class="coupon-trigger-link" style="margin-top: 10px;"
-                onclick="document.getElementById('btn-pricing-coupon').click()" role="button" tabindex="0"
-                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">Have a promo
-                code? Use Coupon</span>
+            <!-- Roadmaps Features -->
+            <div class="feature-category open" id="cat-roadmaps">
+              <button class="category-header" onclick="togglePricingCategory('cat-roadmaps')">
+                <span>🗺️ Interactive Roadmaps</span>
+                <span class="category-header-arrow">&#9656;</span>
+              </button>
+              <div class="category-content">
+                <div class="feature-card">
+                  <span>Standard 15-node timeline builder</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>Ordered premium video lectures</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">🔒 Locked</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>Advance development blueprints</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">🔒 Locked</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Explore AI Features -->
+            <div class="feature-category" id="cat-explore">
+              <button class="category-header" onclick="togglePricingCategory('cat-explore')">
+                <span>🔍 Explore AI Tool Library</span>
+                <span class="category-header-arrow">&#9656;</span>
+              </button>
+              <div class="category-content">
+                <div class="feature-card">
+                  <span>First 10 free catalog tools</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>Full access to 100+ premium tools</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">🔒 Locked</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Prompts Features -->
+            <div class="feature-category" id="cat-prompts">
+              <button class="category-header" onclick="togglePricingCategory('cat-prompts')">
+                <span>💡 AI Prompt Generator</span>
+                <span class="category-header-arrow">&#9656;</span>
+              </button>
+              <div class="category-content">
+                <div class="feature-card">
+                  <span>Daily free prompt quota (5/day)</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>Unlimited prompt generations</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">🔒 Locked</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Business Suite Features -->
+            <div class="feature-category" id="cat-business">
+              <button class="category-header" onclick="togglePricingCategory('cat-business')">
+                <span>💼 Business Suite &amp; Templates</span>
+                <span class="category-header-arrow">&#9656;</span>
+              </button>
+              <div class="category-content">
+                <div class="feature-card">
+                  <span>Basic corporate resources</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>Premium downloadable templates</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">🔒 Locked</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>Advanced legal &amp; business checklists</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">🔒 Locked</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Support Features -->
+            <div class="feature-category" id="cat-support">
+              <button class="category-header" onclick="togglePricingCategory('cat-support')">
+                <span>💬 Platform Support</span>
+                <span class="category-header-arrow">&#9656;</span>
+              </button>
+              <div class="category-content">
+                <div class="feature-card">
+                  <span>Community forum access</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">Basic</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <span>24/7 Priority developer support</span>
+                  <div class="feature-status-indicators">
+                    <span class="status-label basic">🔒 Locked</span>
+                    <span class="status-label premium">Premium</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right: Sticky Pricing Selection -->
+        <div class="pricing-selector-column">
+          <div class="pricing-column-header">
+            <span class="pricing-pill">AI-OS Premium</span>
+            <h2 class="pricing-title">Unlock Full Power</h2>
+          </div>
+          
+          <div class="plan-cards-container">
+            <!-- Basic Plan -->
+            <div class="plan-card" id="card-saas-free" onclick="selectSaasPricingPlan('free')">
+              <div class="plan-card-left">
+                <div class="plan-checkbox-mock"></div>
+                <div>
+                  <span class="plan-name">Basic Free</span>
+                  <span class="plan-desc">Standard features, 5 daily prompts</span>
+                </div>
+              </div>
+              <div class="plan-card-right">
+                <span class="plan-price">₹0</span>
+                <span class="plan-price-period">/forever</span>
+              </div>
+            </div>
+
+            <!-- Monthly Plan -->
+            <div class="plan-card active" id="card-saas-monthly" onclick="selectSaasPricingPlan('monthly')">
+              <span class="recommended-tag">RECOMMENDED</span>
+              <div class="plan-card-left">
+                <div class="plan-checkbox-mock"></div>
+                <div>
+                  <span class="plan-name">Monthly Pass</span>
+                  <span class="plan-desc">Full platform access, billed monthly</span>
+                </div>
+              </div>
+              <div class="plan-card-right">
+                <span class="plan-price">₹99</span>
+                <span class="plan-price-period">/mo</span>
+              </div>
+            </div>
+
+            <!-- Yearly Plan -->
+            <div class="plan-card" id="card-saas-yearly" onclick="selectSaasPricingPlan('yearly')">
+              <div class="plan-card-left">
+                <div class="plan-checkbox-mock"></div>
+                <div>
+                  <span class="plan-name">Yearly Pass</span>
+                  <span class="plan-desc">Best value, save over 15% annually</span>
+                </div>
+              </div>
+              <div class="plan-card-right">
+                <span class="plan-price">₹999</span>
+                <span class="plan-price-period">/yr</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pricing-cta-sticky">
+            <button id="btn-pricing-proceed-cta" class="proceed-cta-btn" onclick="proceedSaasPricingUpgrade()">
+              <span>Continue with Monthly (₹99)</span> &rarr;
+            </button>
+            <div class="pricing-footer-links">
+              <span class="pricing-coupon-link" onclick="document.getElementById('btn-pricing-coupon').click()">Have a promo code? Use Coupon</span>
+              <span class="pricing-terms-hint">Secure payment • Cancel anytime</span>
             </div>
           </div>
         </div>
 
-        <!-- Hidden elements containing the original buttons for event listener mapping -->
-        <div style="display: none;">
-          <button id="btn-pricing-free"></button>
-          <button id="btn-pricing-monthly"></button>
-          <button id="btn-pricing-yearly"></button>
-          <button id="btn-pricing-coupon"></button>
-        </div>
-
-        <script>
-          let selectedSassPlan = 'monthly';
-          function selectSassPlan(planType, cardEl) {
-            selectedSassPlan = planType;
-            document.querySelectorAll('.saas-pricing-card').forEach(card => card.classList.remove('active'));
-            cardEl.classList.add('active');
-
-            // Update proceed button text dynamically to match selection
-            const proceedBtnSpan = document.querySelector('.btn-saas-proceed span');
-            if (planType === 'free') {
-              proceedBtnSpan.textContent = 'Continue with Basic';
-            } else if (planType === 'monthly') {
-              proceedBtnSpan.textContent = 'Continue with Monthly (₹99)';
-            } else if (planType === 'yearly') {
-              proceedBtnSpan.textContent = 'Continue with Yearly (₹999)';
-            }
-          }
-
-          function proceedSassSelection() {
-            if (selectedSassPlan === 'free') {
-              document.getElementById('btn-pricing-free').click();
-            } else if (selectedSassPlan === 'monthly') {
-              document.getElementById('btn-pricing-monthly').click();
-            } else if (selectedSassPlan === 'yearly') {
-              document.getElementById('btn-pricing-yearly').click();
-            }
-          }
-        </script>
       </div>
+
+      <!-- Hidden elements containing the original buttons for event listener mapping (backend compatibility) -->
+      <div style="display: none;">
+        <button id="btn-pricing-free"></button>
+        <button id="btn-pricing-monthly"></button>
+        <button id="btn-pricing-yearly"></button>
+        <button id="btn-pricing-coupon"></button>
+      </div>
+
+      <script>
+        let activeSaasPlan = 'monthly';
+
+        function togglePricingCategory(catId) {
+          const cat = document.getElementById(catId);
+          if (cat) {
+            cat.classList.toggle('open');
+          }
+        }
+
+        function selectSaasPricingPlan(planType) {
+          activeSaasPlan = planType;
+          
+          // Toggle card active states
+          document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('active'));
+          const activeCard = document.getElementById('card-saas-' + planType);
+          if (activeCard) activeCard.classList.add('active');
+
+          // Update proceed button text dynamically
+          const btnSpan = document.querySelector('#btn-pricing-proceed-cta span');
+          if (btnSpan) {
+            if (planType === 'free') {
+              btnSpan.textContent = 'Continue with Basic';
+            } else if (planType === 'monthly') {
+              btnSpan.textContent = 'Continue with Monthly (₹99)';
+            } else if (planType === 'yearly') {
+              btnSpan.textContent = 'Continue with Yearly (₹999)';
+            }
+          }
+        }
+
+        function proceedSaasPricingUpgrade() {
+          if (activeSaasPlan === 'free') {
+            document.getElementById('btn-pricing-free').click();
+          } else if (activeSaasPlan === 'monthly') {
+            document.getElementById('btn-pricing-monthly').click();
+          } else if (activeSaasPlan === 'yearly') {
+            document.getElementById('btn-pricing-yearly').click();
+          }
+        }
+      </script>
     </div>
   </div>
+
 
     <!-- Billing Summary Modal -->
     <div id="billing-summary-modal-overlay" class="auth-modal-overlay" style="display: none;" role="dialog"

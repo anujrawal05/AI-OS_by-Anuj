@@ -1436,4 +1436,131 @@
   .daily-dashboard-section {
     margin-top: 16px !important; /* Reduce large empty space above greeting on mobile */
   }
+
+  /* Redesigned Pricing Modal Mobile Responsive Styles */
+  .new-pricing-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 90vh !important;
+    max-height: 90vh !important;
+    margin: 0 !important;
+    border-radius: 24px 24px 0 0 !important;
+    animation: mobSheetSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+
+  .pricing-modal-body {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+
+  .pricing-features-column {
+    flex: 1 !important;
+    padding: 24px 20px !important;
+    overflow-y: auto !important;
+  }
+
+  .features-title {
+    font-size: 1.4rem !important;
+  }
+
+  .features-subtitle {
+    margin-bottom: 20px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .pricing-selector-column {
+    flex-shrink: 0 !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 20px !important;
+    background: rgba(8, 8, 10, 0.98) !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6) !important;
+    z-index: 10 !important;
+  }
+
+  .pricing-column-header {
+    display: none !important; /* Save space on mobile since title is in features */
+  }
+
+  .plan-cards-container {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .plan-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 12px 6px !important;
+    border-radius: 10px !important;
+    justify-content: center !important;
+    min-height: 75px !important;
+  }
+
+  .plan-card-left {
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .plan-checkbox-mock {
+    display: none !important; /* Hide mock circle on mobile grid to conserve space */
+  }
+
+  .plan-name {
+    font-size: 0.8rem !important;
+  }
+
+  .plan-desc {
+    font-size: 0.65rem !important;
+    display: none !important; /* Hide description to keep it clean */
+  }
+
+  .plan-card-right {
+    margin-top: 4px !important;
+    text-align: center !important;
+  }
+
+  .plan-price {
+    font-size: 0.95rem !important;
+  }
+
+  .plan-price-period {
+    font-size: 0.65rem !important;
+  }
+
+  .recommended-tag {
+    top: -6px !important;
+    right: 4px !important;
+    left: 4px !important;
+    text-align: center !important;
+    font-size: 0.55rem !important;
+    padding: 1px 0 !important;
+    border-radius: 4px !important;
+  }
+
+  .proceed-cta-btn {
+    padding: 14px !important;
+    font-size: 0.9rem !important;
+    border-radius: 10px !important;
+  }
+
+  .pricing-footer-links {
+    margin-top: 10px !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 0 !important;
+  }
+
+  .pricing-coupon-link {
+    font-size: 0.72rem !important;
+  }
+
+  .pricing-terms-hint {
+    font-size: 0.68rem !important;
+  }
 }
+
