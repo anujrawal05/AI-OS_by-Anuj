@@ -1377,7 +1377,7 @@
         </p>
         <div class="onboarding-video-container"
           style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
-          <video style="width: 100%; height: 100%; object-fit: contain;" controls playsinline preload="metadata">
+          <video id="system-guide-video" style="width: 100%; height: 100%; object-fit: contain;" controls playsinline preload="metadata">
             <source src="https://res.cloudinary.com/x6vd3gvv/video/upload/v1784145947/lv_0_20260715231035_dywdpn.mp4"
               type="video/mp4">
           </video>
@@ -2229,6 +2229,28 @@
             closeModal();
           }
         });
+      }
+
+      // Device-specific video src swap on mobile devices
+      const isMobile = window.matchMedia('(max-width: 767px)').matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        // 1. Main system guide video
+        const guideVideo = document.getElementById('system-guide-video');
+        if (guideVideo) {
+          const source = guideVideo.querySelector('source');
+          if (source) {
+            source.setAttribute('src', 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784232558/lv_0_20260717001233_taor9g.mp4');
+            guideVideo.load();
+          }
+        }
+        // 2. ICRA replay video in modal
+        if (replayVideo) {
+          const source = replayVideo.querySelector('source');
+          if (source) {
+            source.setAttribute('src', 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784232558/lv_0_20260717001233_taor9g.mp4');
+            replayVideo.load();
+          }
+        }
       }
     })();
   </script>

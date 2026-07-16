@@ -1493,6 +1493,16 @@ export async function checkAndShowIcraOnboarding() {
 
     if (!overlay || !video) return;
 
+    // Detect mobile device to switch video source
+    const isMobile = window.matchMedia('(max-width: 767px)').matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      const source = video.querySelector('source');
+      if (source && source.getAttribute('src') !== 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784232560/lv_0_20260717001132_rvlvqq.mp4') {
+        source.setAttribute('src', 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784232560/lv_0_20260717001132_rvlvqq.mp4');
+        video.load();
+      }
+    }
+
     // Blur and disable underlying elements
     document.body.style.overflow = 'hidden';
     overlay.style.display = 'flex';
