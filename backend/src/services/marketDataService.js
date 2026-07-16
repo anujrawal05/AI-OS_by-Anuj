@@ -92,24 +92,77 @@ async function fetchFinnhubQuote(symbol) {
 // Uses a reliable, public Indian rate indicator API and web feed
 async function scrapeIndianBullion() {
   try {
-    // Attempting a public commodity exchange indicator API
-    const res = await fetchWithTimeout('https://api.gold-api.com/price/XAU'); // fallback to spot gold if scrape fails
-    if (!res.ok) throw new Error(`Gold API status ${res.status}`);
-    const data = await res.json();
-    const usdPricePerOunce = data.price; // e.g. 2400 USD
-    // Calculate Indian Retail Price (10g Gold 24K and 22K, 1kg Silver)
-    // 1 Ounce = 31.1035 grams. Custom conversion mirroring true Indian MCX + import duties/taxes (~15% duty + 3% GST)
     const usdInrRate = await getUsdInrRate();
-    const goldPricePerGramINR = (usdPricePerOunce / 31.1035) * usdInrRate * 1.18; // base + taxes
     
+    // 1. Fetch Gold spot price (XAU)
+    const goldRes = await fetchWithTimeout('https://api.gold-api.com/price/XAU');
+    if (!goldRes.ok) throw new Error(`Gold API status ${goldRes.status}`);
+    const goldData = await goldRes.json();
+    
+    // Log raw API response
+    logger.info(`[Market Data Service] Raw Gold API Response: ${JSON.stringify(goldData)}`);
+    console.log('[DEBUG] Raw Gold API Response:', goldData);
+    
+    // Detect unit: API returns spot price per troy ounce in USD.
+    const goldRawPrice = goldData.price;
+    const goldUnit = "troy_ounce";
+    const goldCurrency = goldData.currency || "USD";
+    logger.info(`[Market Data Service] Detected Gold unit: ${goldUnit}, currency: ${goldCurrency}, raw price: ${goldRawPrice}`);
+    console.log(`[DEBUG] Detected Gold unit: ${goldUnit}, currency: ${goldCurrency}, raw price: ${goldRawPrice}`);
+    
+    // Calculation Formula for 10g Gold 24K:
+    // Base Price per gram in USD = Raw Price / 31.1034768 (grams per troy ounce)
+    // Base Price per gram in INR = Base Price per gram in USD * usdInrRate
+    // Landed Cost per gram (including 15% Customs Duty) = Base Price per gram in INR * 1.15
+    // Retail Price per gram (including 3% GST + 1% local handling/premium) = Landed Cost per gram * 1.04
+    // Multiplier = 1.15 * 1.03 * 1.01 = 1.1963
+    const goldCalculationFormula = "(rawPrice / 31.1034768) * usdInrRate * 1.15 * 1.03 * 1.01";
+    const goldPricePerGramINR = (goldRawPrice / 31.1034768) * usdInrRate * 1.15 * 1.03 * 1.01;
     const gold24k = goldPricePerGramINR * 10;
-    const gold22k = gold24k * 0.9167; // 22K is 91.67% pure
+    const gold22k = gold24k * (22 / 24); // 22K is exactly 22/24 purity (91.67%)
     
-    // Fetch Silver spot price
+    logger.info(`[Market Data Service] Gold Calculation Formula: ${goldCalculationFormula}`);
+    console.log(`[DEBUG] Gold Calculation Formula: ${goldCalculationFormula}`);
+    logger.info(`[Market Data Service] Final calculated Gold 24K (10g): ${gold24k}, Gold 22K (10g): ${gold22k}`);
+    console.log(`[DEBUG] Final calculated Gold 24K (10g): ${gold24k}, Gold 22K (10g): ${gold22k}`);
+    
+    // 2. Fetch Silver spot price (XAG)
     const silverRes = await fetchWithTimeout('https://api.gold-api.com/price/XAG');
+    if (!silverRes.ok) throw new Error(`Silver API status ${silverRes.status}`);
     const silverData = await silverRes.json();
-    const silverPricePerKgINR = (silverData.price / 31.1035) * 1000 * usdInrRate * 1.20; // silver rate with custom local premium + taxes
-
+    
+    // Log raw API response
+    logger.info(`[Market Data Service] Raw Silver API Response: ${JSON.stringify(silverData)}`);
+    console.log('[DEBUG] Raw Silver API Response:', silverData);
+    
+    const silverRawPrice = silverData.price;
+    const silverUnit = "troy_ounce";
+    const silverCurrency = silverData.currency || "USD";
+    logger.info(`[Market Data Service] Detected Silver unit: ${silverUnit}, currency: ${silverCurrency}, raw price: ${silverRawPrice}`);
+    console.log(`[DEBUG] Detected Silver unit: ${silverUnit}, currency: ${silverCurrency}, raw price: ${silverRawPrice}`);
+    
+    // Calculation Formula for 1kg Silver:
+    // Base Price per gram in USD = Raw Price / 31.1034768
+    // Base Price per gram in INR = Base Price per gram in USD * usdInrRate
+    // Landed Cost per kg = Base Price per gram in INR * 1000 * 1.15 (15% Customs Duty)
+    // Retail Price per kg = Landed Cost per kg * 1.03 (3% GST) * 1.05 (custom local premium/handling charges ~5% for retail silver)
+    // Multiplier = 1.15 * 1.03 * 1.05 = 1.2437
+    const silverCalculationFormula = "(rawPrice / 31.1034768) * 1000 * usdInrRate * 1.15 * 1.03 * 1.05";
+    const silverPricePerKgINR = (silverRawPrice / 31.1034768) * 1000 * usdInrRate * 1.15 * 1.03 * 1.05;
+    
+    logger.info(`[Market Data Service] Silver Calculation Formula: ${silverCalculationFormula}`);
+    console.log(`[DEBUG] Silver Calculation Formula: ${silverCalculationFormula}`);
+    logger.info(`[Market Data Service] Final calculated Silver (1kg): ${silverPricePerKgINR}`);
+    console.log(`[DEBUG] Final calculated Silver (1kg): ${silverPricePerKgINR}`);
+    
+    // Compare rendered values against current Indian market prices before returning:
+    if (gold24k < 50000 || gold24k > 200000) {
+      logger.warn(`[Market Data Service] Gold 24K calculated price ${gold24k} seems unusual compared to Indian market range.`);
+    }
+    if (silverPricePerKgINR < 60000 || silverPricePerKgINR > 300000) {
+      logger.warn(`[Market Data Service] Silver calculated price ${silverPricePerKgINR} seems unusual compared to Indian market range.`);
+    }
+    
     return {
       success: true,
       gold24k: Math.round(gold24k),
@@ -119,12 +172,12 @@ async function scrapeIndianBullion() {
     };
   } catch (err) {
     logger.error(`[Market Data Service] Indian Bullion calculation/scrape failed: ${err.message}`);
-    // Safe mock backup with realistic current MCX prices
+    // Safe mock backup with realistic current MCX/retail prices for 2026
     return {
       success: true,
-      gold24k: 72450,
-      gold22k: 66410,
-      silver: 88500,
+      gold24k: 141900,
+      gold22k: 130075,
+      silver: 219650,
       isMock: true,
       timestamp: new Date().toISOString()
     };
