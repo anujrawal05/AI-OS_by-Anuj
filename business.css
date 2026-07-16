@@ -3658,3 +3658,29 @@ body.no-scroll {
   }
 }
 
+/* Centralized chat typing bubble animated loading indicator */
+.chat-bubble.assistant.typing {
+  align-self: flex-start;
+  background: var(--bus-surface);
+  border: 1px solid var(--bus-border);
+  color: var(--bus-text);
+  border-bottom-left-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.chat-bubble.assistant.typing::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(46, 197, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: #2EC5FF;
+  animation: spinLoader 1s ease-in-out infinite;
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
+}
+

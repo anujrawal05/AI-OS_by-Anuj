@@ -12413,3 +12413,25 @@ body.no-scroll {
     transform: translateY(-8px) scale(1.02);
   }
 }
+
+/* Centralized chat typing bubble animated loading indicator */
+.chat-bubble.assistant.typing {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  border-bottom-left-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.chat-bubble.assistant.typing::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(46, 197, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: #2EC5FF;
+  animation: spinLoader 1s ease-in-out infinite;
+}

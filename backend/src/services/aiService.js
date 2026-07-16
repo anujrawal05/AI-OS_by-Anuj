@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'mock-gemini-key';
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || 'mock-nvidia-key';
 const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes cache
-const REQUEST_TIMEOUT_MS = 15000;      // 15s timeout
+const REQUEST_TIMEOUT_MS = 120000;     // 120s safety timeout for route race
 
 // CENTRALIZED AI PROVIDER MANAGER
 class AIProviderManager {
@@ -29,14 +29,22 @@ class AIProviderManager {
       return mockResult;
     }
 
+    const geminiTimeoutMs = parseInt(process.env.GEMINI_TIMEOUT, 10) || 60000;
+    const nvidiaTimeoutMs = parseInt(process.env.NVIDIA_TIMEOUT, 10) || 60000;
+
     let lastError = null;
 
     // ─── PRIMARY PROVIDER: GOOGLE GEMINI ───────────────────────────────────────
-    // Retry Gemini once (up to 2 attempts)
+    // Retry Gemini once on timeout or failure (up to 2 attempts)
     for (let attempt = 1; attempt <= 2; attempt++) {
+      const requestStart = new Date().toISOString();
       const startTime = Date.now();
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), geminiTimeoutMs);
+
       try {
-        logger.info(`[AI Provider Manager] Attempting primary provider: Google Gemini (Attempt ${attempt}/2)`);
+        logger.info(`[AI Provider Manager] Request started for Google Gemini (Attempt ${attempt}/2) at ${requestStart}. Timeout config: ${geminiTimeoutMs}ms`);
         
         // Map messages to Gemini REST schema (contents array)
         const systemMessage = messages.find(m => m.role === 'system');
@@ -64,11 +72,15 @@ class AIProviderManager {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${this.geminiModel}:generateContent?key=${this.geminiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
         const duration = Date.now() - startTime;
-        logger.info(`[AI Provider Manager] Gemini response status: ${response.status} | Response time: ${duration}ms`);
+        const requestEnd = new Date().toISOString();
+
+        logger.info(`[AI Provider Manager] Request ended for Google Gemini at ${requestEnd}. Status: ${response.status} | Response duration: ${duration}ms`);
 
         if (!response.ok) {
           const errText = await response.text();
@@ -88,7 +100,7 @@ class AIProviderManager {
         const promptTokens = data.usageMetadata?.promptTokenCount || 0;
         const completionTokens = data.usageMetadata?.candidatesTokenCount || 0;
 
-        logger.info(`[AI Provider Manager] Google Gemini resolved successfully. Selected provider: Gemini. Tokens: Prompt=${promptTokens}, Completion=${completionTokens}. Response time: ${duration}ms`);
+        logger.info(`[AI Provider Manager] Google Gemini resolved successfully. Selected provider: Gemini. Tokens: Prompt=${promptTokens}, Completion=${completionTokens}. Total duration: ${duration}ms`);
 
         return {
           text,
@@ -99,16 +111,32 @@ class AIProviderManager {
         };
 
       } catch (err) {
-        logger.error(`[AI Provider Manager] Exception on Gemini attempt ${attempt}:`, {}, err.message);
+        clearTimeout(timeoutId);
+        const duration = Date.now() - startTime;
+        const requestEnd = new Date().toISOString();
+
+        let timeoutReason = err.message;
+        if (err.name === 'AbortError') {
+          timeoutReason = `Timeout after ${geminiTimeoutMs}ms`;
+        }
+
+        logger.error(`[AI Provider Manager] Request failed for Google Gemini at ${requestEnd} (Attempt ${attempt}/2). Duration: ${duration}ms. Failure reason: ${timeoutReason}`);
         lastError = err;
       }
     }
 
     // ─── FALLBACK PROVIDER: NVIDIA NIM ──────────────────────────────────────────
     logger.warn('[AI Provider Manager] Google Gemini failed after 2 attempts. Activating NVIDIA NIM fallback...');
+    
+    const requestStart = new Date().toISOString();
     const fallbackStartTime = Date.now();
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), nvidiaTimeoutMs);
+
     try {
+      logger.info(`[AI Provider Manager] Request started for NVIDIA NIM fallback at ${requestStart}. Timeout config: ${nvidiaTimeoutMs}ms`);
+
       const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -120,11 +148,15 @@ class AIProviderManager {
           messages,
           temperature,
           max_tokens: maxTokens
-        })
+        }),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
       const duration = Date.now() - fallbackStartTime;
-      logger.info(`[AI Provider Manager] NVIDIA NIM response status: ${response.status} | Fallback response time: ${duration}ms`);
+      const requestEnd = new Date().toISOString();
+
+      logger.info(`[AI Provider Manager] Request ended for NVIDIA NIM fallback at ${requestEnd}. Status: ${response.status} | Fallback response duration: ${duration}ms`);
 
       if (!response.ok) {
         const errText = await response.text();
@@ -141,7 +173,7 @@ class AIProviderManager {
       const promptTokens = data.usage?.prompt_tokens || 0;
       const completionTokens = data.usage?.completion_tokens || 0;
 
-      logger.info(`[AI Provider Manager] NVIDIA NIM resolved successfully. Selected provider: NVIDIA NIM. Tokens: Prompt=${promptTokens}, Completion=${completionTokens}. Response time: ${duration}ms`);
+      logger.info(`[AI Provider Manager] NVIDIA NIM resolved successfully. Selected provider: NVIDIA NIM. Tokens: Prompt=${promptTokens}, Completion=${completionTokens}. Total duration: ${duration}ms`);
 
       return {
         text,
@@ -152,7 +184,16 @@ class AIProviderManager {
       };
 
     } catch (err) {
-      logger.error('[AI Provider Manager] NVIDIA NIM fallback also failed:', {}, err.message);
+      clearTimeout(timeoutId);
+      const duration = Date.now() - fallbackStartTime;
+      const requestEnd = new Date().toISOString();
+
+      let timeoutReason = err.message;
+      if (err.name === 'AbortError') {
+        timeoutReason = `Timeout after ${nvidiaTimeoutMs}ms`;
+      }
+
+      logger.error(`[AI Provider Manager] NVIDIA NIM fallback also failed at ${requestEnd}. Duration: ${duration}ms. Failure reason: ${timeoutReason}`);
       throw new Error('The AI Consultant is temporarily overloaded. Please try again in a few moments.');
     }
   }
