@@ -5,6 +5,60 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || 'sk-or-v1-dummy-key
 const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes cache
 const REQUEST_TIMEOUT_MS = 15000;      // 15s timeout
 const MAX_RETRIES = 3;
+const FALLBACK_MODELS = [
+  'meta-llama/llama-3.2-3b-instruct:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'google/gemma-4-31b-it:free',
+  'qwen/qwen3-coder:free'
+];
+
+let activeOpenRouterModels = null;
+let lastModelsFetchTime = 0;
+const MODELS_FETCH_CACHE_MS = 60 * 60 * 1000; // 1 hour
+
+async function fetchActiveModels() {
+  if (activeOpenRouterModels && (Date.now() - lastModelsFetchTime < MODELS_FETCH_CACHE_MS)) {
+    return activeOpenRouterModels;
+  }
+  try {
+    logger.info('[AI Core] Fetching active models list from OpenRouter...');
+    const res = await fetch('https://openrouter.ai/api/v1/models');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.data)) {
+        activeOpenRouterModels = new Set(data.data.map(m => m.id));
+        lastModelsFetchTime = Date.now();
+        logger.info(`[AI Core] Successfully cached ${activeOpenRouterModels.size} active models.`);
+        return activeOpenRouterModels;
+      }
+    }
+    logger.warn(`[AI Core] Failed to fetch active models. Status: ${res.status}`);
+  } catch (err) {
+    logger.error('[AI Core] Exception fetching active models list:', {}, err.message);
+  }
+  return null;
+}
+
+async function getValidatedModel(requestedModel) {
+  const targetModel = requestedModel || process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free';
+  
+  // Fetch/Validate list of active models
+  const activeList = await fetchActiveModels();
+  if (activeList) {
+    if (activeList.has(targetModel)) {
+      return targetModel;
+    }
+    logger.warn(`[AI Core] Requested model "${targetModel}" is not in active OpenRouter list. Finding fallback...`);
+    for (const fallback of FALLBACK_MODELS) {
+      if (activeList.has(fallback)) {
+        logger.info(`[AI Core] Found active fallback model: "${fallback}"`);
+        return fallback;
+      }
+    }
+  }
+  
+  return targetModel || FALLBACK_MODELS[0];
+}
 
 // In-memory caching layer
 const aiResponseCache = new Map();
@@ -63,7 +117,13 @@ function timeoutPromise(ms) {
 }
 
 async function callOpenRouter(messages, model, options = {}) {
-  const modelName = model || 'meta-llama/llama-3-8b-instruct:free';
+  let modelName;
+  try {
+    modelName = await getValidatedModel(model);
+  } catch (err) {
+    logger.warn('[AI Core] Model validation threw, falling back:', err.message);
+    modelName = 'meta-llama/llama-3.2-3b-instruct:free';
+  }
   const temperature = options.temperature !== undefined ? options.temperature : 0.7;
   const maxTokens = options.maxTokens || 1000;
 
@@ -300,7 +360,7 @@ async function chatAssistant(userId, userInput, history = [], context = {}) {
     ...history,
     { role: "user", content: userInput }
   ];
-  return requestAICompletion(messages, 'meta-llama/llama-3-8b-instruct:free', { temperature: 0.85, maxTokens: 2048, context });
+  return requestAICompletion(messages, null, { temperature: 0.85, maxTokens: 2048, context });
 }
 
 async function generateRoadmap(userId, niche, timePeriodDays) {
@@ -317,5 +377,6 @@ module.exports = {
   generatePrompt,
   compileStrategy,
   chatAssistant,
-  generateRoadmap
+  generateRoadmap,
+  getValidatedModel
 };
