@@ -6,12 +6,13 @@ const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes cache
 const REQUEST_TIMEOUT_MS = 15000;      // 15s timeout
 const MAX_RETRIES = 3;
 const FALLBACK_MODELS = [
-  'meta-llama/llama-3.2-3b-instruct:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'google/gemma-4-31b-it:free',
-  'qwen/qwen3-coder:free'
+  "google/gemma-3-27b-it:free",
+  "qwen/qwen3-30b-a3b:free",
+  "deepseek/deepseek-r1-0528:free",
+  "meta-llama/llama-3.2-3b-instruct:free"
 ];
 
+let lastWorkingModel = null;
 let activeOpenRouterModels = null;
 let lastModelsFetchTime = 0;
 const MODELS_FETCH_CACHE_MS = 60 * 60 * 1000; // 1 hour
@@ -40,7 +41,7 @@ async function fetchActiveModels() {
 }
 
 async function getValidatedModel(requestedModel) {
-  const targetModel = requestedModel || process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.2-3b-instruct:free';
+  const targetModel = requestedModel || process.env.OPENROUTER_MODEL || FALLBACK_MODELS[0];
   
   // Fetch/Validate list of active models
   const activeList = await fetchActiveModels();
@@ -116,130 +117,184 @@ function timeoutPromise(ms) {
   });
 }
 
+function getRetryAfterMs(response) {
+  const retryAfter = response.headers.get('retry-after');
+  if (!retryAfter) return 0;
+  const seconds = parseInt(retryAfter, 10);
+  if (!isNaN(seconds)) {
+    return seconds * 1000;
+  }
+  const dateMs = Date.parse(retryAfter);
+  if (!isNaN(dateMs)) {
+    return Math.max(0, dateMs - Date.now());
+  }
+  return 0;
+}
+
+function generateDynamicMock(messages, modelName, options) {
+  const userPrompt = messages[messages.length - 1]?.content || '';
+  const ctx = options.context || {};
+  const businessName = ctx.businessName || 'Your Business';
+  const targetAudience = ctx.targetAudience || 'Target Audience';
+  const bottleneck = ctx.bottleneck || 'Bottleneck';
+  const workspace = ctx.workspace || 'grow';
+  const language = ctx.language || 'English';
+
+  const isHi = language === 'hi' || userPrompt.includes('हिंदी') || userPrompt.includes('hi');
+  const isHng = language === 'hinglish' || userPrompt.includes('hinglish');
+
+  let mockText = ``;
+
+  if (isHi) {
+    mockText = 
+      `<p style="margin-top:0;"><strong>1. छाया पूर्ण कदम (Shadow Move) - ${businessName} (निशे: ${workspace}):</strong>` +
+      `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+      `<li>${userPrompt} के लिए: तुरंत एक स्वचालित आउटरीच प्रणाली स्थापित करें।</li>` +
+      `<li>अपने लक्षित दर्शकों (${targetAudience}) को आकर्षित करने के लिए वैयक्तिकृत वीडियो संदेश भेजें।</li>` +
+      `</ul></p>` +
+      `<p><strong>2. विषम आक्रमण (Asymmetric Attack):</strong>` +
+      `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+      `<li>अनावश्यक खर्चों को कम करके सीधे ग्राहक अधिग्रहण पर ध्यान दें।</li>` +
+      `<li>मुख्य बाधा (${bottleneck}) को हल करने के लिए एआई ऑटोमेशन का उपयोग करें।</li>` +
+      `</ul></p>`;
+  } else if (isHng) {
+    mockText = 
+      `<p style="margin-top:0;"><strong>1. THE SHADOW MOVE - ${businessName} (Niche: ${workspace}):</strong>` +
+      `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+      `<li>${userPrompt} ke liye: Ek instant automated outreach funnel build karein.</li>` +
+      `<li>Target audience (${targetAudience}) ko highly personalized Loom videos send karein.</li>` +
+      `</ul></p>` +
+      `<p><strong>2. THE ASYMMETRIC ATTACK:</strong>` +
+      `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+      `<li>Pehle bottleneck (${bottleneck}) ko solve karne ke liye AI workflows trigger karein.</li>` +
+      `</ul></p>`;
+  } else {
+    mockText = 
+      `<p style="margin-top:0;"><strong>1. THE SHADOW MOVE - ${businessName} (Niche: ${workspace}):</strong>` +
+      `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+      `<li>Regarding "${userPrompt}": Spin up an automated client acquisition engine immediately.</li>` +
+      `<li>Pitch directly to your ideal client profile (${targetAudience}) using high-converting video audits.</li>` +
+      `</ul></p>` +
+      `<p><strong>2. THE ASYMMETRIC ATTACK:</strong>` +
+      `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
+      `<li>Solve the core bottleneck of "${bottleneck}" by implementing event-triggered webhook notifications.</li>` +
+      `</ul></p>`;
+  }
+
+  return {
+    text: mockText,
+    modelUsed: `${modelName}-DynamicMock`,
+    promptTokens: 15,
+    completionTokens: estimateTokenCount(mockText)
+  };
+}
+
 async function callOpenRouter(messages, model, options = {}) {
-  let modelName;
-  try {
-    modelName = await getValidatedModel(model);
-  } catch (err) {
-    logger.warn('[AI Core] Model validation threw, falling back:', err.message);
-    modelName = 'meta-llama/llama-3.2-3b-instruct:free';
-  }
-  const temperature = options.temperature !== undefined ? options.temperature : 0.7;
-  const maxTokens = options.maxTokens || 1000;
+  const activeList = await fetchActiveModels();
+  
+  let candidateModels = [
+    lastWorkingModel,
+    model,
+    process.env.OPENROUTER_MODEL,
+    ...FALLBACK_MODELS
+  ].filter(Boolean);
 
-  // Log the complete request payload
-  logger.info(`[AI Core] Request payload for model ${modelName}:`, {
-    model: modelName,
-    messages,
-    temperature,
-    maxTokens,
-    options
-  });
-
-  // Mock fallback logic for dummy keys or local verification runs
-  if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes('dummy') || OPENROUTER_API_KEY === 'sk-or-v1-dummy-key') {
-    logger.warn('[AI Core] Using mock completion fallback (dummy or missing OpenRouter key).');
-    
-    const userPrompt = messages[messages.length - 1]?.content || '';
-    const ctx = options.context || {};
-    const businessName = ctx.businessName || 'Your Business';
-    const targetAudience = ctx.targetAudience || 'Target Audience';
-    const bottleneck = ctx.bottleneck || 'Bottleneck';
-    const workspace = ctx.workspace || 'grow';
-    const language = ctx.language || 'English';
-
-    const isHi = language === 'hi' || userPrompt.includes('हिंदी') || userPrompt.includes('hi');
-    const isHng = language === 'hinglish' || userPrompt.includes('hinglish');
-
-    let mockText = ``;
-
-    if (isHi) {
-      mockText = 
-        `<p style="margin-top:0;"><strong>1. छाया पूर्ण कदम (Shadow Move) - ${businessName} (निशे: ${workspace}):</strong>` +
-        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>${userPrompt} के लिए: तुरंत एक स्वचालित आउटरीच प्रणाली स्थापित करें।</li>` +
-        `<li>अपने लक्षित दर्शकों (${targetAudience}) को आकर्षित करने के लिए वैयक्तिकृत वीडियो संदेश भेजें।</li>` +
-        `</ul></p>` +
-        `<p><strong>2. विषम आक्रमण (Asymmetric Attack):</strong>` +
-        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>अनावश्यक खर्चों को कम करके सीधे ग्राहक अधिग्रहण पर ध्यान दें।</li>` +
-        `<li>मुख्य बाधा (${bottleneck}) को हल करने के लिए एआई ऑटोमेशन का उपयोग करें।</li>` +
-        `</ul></p>`;
-    } else if (isHng) {
-      mockText = 
-        `<p style="margin-top:0;"><strong>1. THE SHADOW MOVE - ${businessName} (Niche: ${workspace}):</strong>` +
-        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>${userPrompt} ke liye: Ek instant automated outreach funnel build karein.</li>` +
-        `<li>Target audience (${targetAudience}) ko highly personalized Loom videos send karein.</li>` +
-        `</ul></p>` +
-        `<p><strong>2. THE ASYMMETRIC ATTACK:</strong>` +
-        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>Pehle bottleneck (${bottleneck}) ko solve karne ke liye AI workflows trigger karein.</li>` +
-        `</ul></p>`;
-    } else {
-      mockText = 
-        `<p style="margin-top:0;"><strong>1. THE SHADOW MOVE - ${businessName} (Niche: ${workspace}):</strong>` +
-        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>Regarding "${userPrompt}": Spin up an automated client acquisition engine immediately.</li>` +
-        `<li>Pitch directly to your ideal client profile (${targetAudience}) using high-converting video audits.</li>` +
-        `</ul></p>` +
-        `<p><strong>2. THE ASYMMETRIC ATTACK:</strong>` +
-        `<ul style="margin: 5px 0 0 0; padding-left: 20px;">` +
-        `<li>Solve the core bottleneck of "${bottleneck}" by implementing event-triggered webhook notifications.</li>` +
-        `</ul></p>`;
-    }
-
-    logger.info(`[AI Core] API response (Mock):`, { text: mockText });
-
-    return {
-      text: mockText,
-      modelUsed: `${modelName}-DynamicMock`,
-      promptTokens: 15,
-      completionTokens: estimateTokenCount(mockText)
-    };
+  if (activeList) {
+    candidateModels = candidateModels.filter(m => activeList.has(m));
   }
 
-  try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://ai-os.com',
-        'X-Title': 'AI-OS'
-      },
-      body: JSON.stringify({
-        model: modelName,
-        messages,
-        temperature,
-        max_tokens: maxTokens
-      })
-    });
+  // Get unique ordered list
+  candidateModels = [...new Set(candidateModels)];
 
-    if (!response.ok) {
-      const errText = await response.text();
-      logger.error(`[AI Core] API call returned non-200: ${errText}`);
-      throw new Error(`OpenRouter API error (Status ${response.status}): ${errText}`);
-    }
-
-    const data = await response.json();
-    if (!data.choices || data.choices.length === 0) {
-      throw new Error('OpenRouter response contains empty choices.');
-    }
-
-    const replyText = data.choices[0].message.content;
-    logger.info(`[AI Core] API response (Real):`, { text: replyText });
-
-    return {
-      text: replyText,
-      modelUsed: modelName,
-      promptTokens: data.usage?.prompt_tokens || estimateTokenCount(messages.map(m => m.content).join(' ')),
-      completionTokens: data.usage?.completion_tokens || estimateTokenCount(replyText)
-    };
-  } catch (err) {
-    logger.error('[AI Core Error] API exception during OpenRouter call:', {}, err.message);
-    throw err;
+  if (candidateModels.length === 0) {
+    candidateModels = [...FALLBACK_MODELS];
   }
+
+  logger.info('[AI Core] Prepared candidates for completion request:', candidateModels);
+
+  let lastError = null;
+
+  for (let i = 0; i < candidateModels.length; i++) {
+    const currentModel = candidateModels[i];
+    logger.info(`[AI Core] Attempting request using model: ${currentModel}`);
+
+    // If key is dummy, use the dynamic mock generator
+    if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes('dummy') || OPENROUTER_API_KEY === 'sk-or-v1-dummy-key') {
+      const result = generateDynamicMock(messages, currentModel, options);
+      lastWorkingModel = currentModel;
+      logger.info(`[AI Core] Request handled successfully by model (Mock): ${currentModel}`);
+      return result;
+    }
+
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://ai-os.com',
+          'X-Title': 'AI-OS'
+        },
+        body: JSON.stringify({
+          model: currentModel,
+          messages,
+          temperature: options.temperature !== undefined ? options.temperature : 0.7,
+          max_tokens: options.maxTokens || 1000
+        })
+      });
+
+      if (!response.ok) {
+        const status = response.status;
+        const errText = await response.text();
+        logger.warn(`[AI Core] Model "${currentModel}" returned non-200 status (${status}): ${errText}`);
+        
+        // Respect Retry-After header
+        const retryAfterMs = getRetryAfterMs(response);
+        if (retryAfterMs > 0) {
+          logger.info(`[AI Core] Respecting Retry-After header: delaying for ${retryAfterMs}ms`);
+          await new Promise(resolve => setTimeout(resolve, retryAfterMs));
+        }
+
+        // Apply exponential backoff delay based on candidate index
+        const backoffDelay = Math.pow(2, i) * 250;
+        logger.info(`[AI Core] Exponential backoff delay: ${backoffDelay}ms`);
+        await new Promise(resolve => setTimeout(resolve, backoffDelay));
+
+        lastError = new Error(`Status ${status}`);
+        continue;
+      }
+
+      const data = await response.json();
+      if (!data.choices || data.choices.length === 0) {
+        lastError = new Error('Empty choices returned');
+        continue;
+      }
+
+      // Successful request handling
+      lastWorkingModel = currentModel;
+      logger.info(`[AI Core] Request handled successfully by model: ${currentModel}`);
+
+      const replyText = data.choices[0].message.content;
+      return {
+        text: replyText,
+        modelUsed: currentModel,
+        promptTokens: data.usage?.prompt_tokens || estimateTokenCount(messages.map(m => m.content).join(' ')),
+        completionTokens: data.usage?.completion_tokens || estimateTokenCount(replyText)
+      };
+
+    } catch (err) {
+      logger.warn(`[AI Core] Exception during model "${currentModel}" attempt: ${err.message}`);
+      lastError = err;
+      
+      const backoffDelay = Math.pow(2, i) * 250;
+      await new Promise(resolve => setTimeout(resolve, backoffDelay));
+      continue;
+    }
+  }
+
+  // If we exhaust all models
+  logger.error('[AI Core] All candidate models failed to complete request.');
+  throw new Error('The AI Consultant is temporarily overloaded. Please try again in a few moments.');
 }
 
 /**
