@@ -63,7 +63,53 @@
     color: var(--teal);
     display: flex; align-items: center; gap: 8px;
   }
-  .nav-brand span { color: var(--text-muted); font-weight: 400; font-size: 0.85rem; }
+  
+  /* ── LOGO BRANDING ── */
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .logo-symbol {
+    font-size: 1.1rem;
+    color: #2EC5FF;
+    animation: pulse 3s infinite;
+  }
+  .logo-text-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    text-align: left;
+  }
+  .logo-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+  }
+  .logo-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: #2EC5FF;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.92); }
+  }
+  .nav-brand-wrap {
+    display: flex;
+    align-items: center;
+  }
+  .nav-brand-separator {
+    margin: 0 14px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    opacity: 0.5;
+  }
   .nav-links { display: flex; gap: 24px; }
   .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
   .nav-links a:hover { color: var(--teal); }
@@ -586,9 +632,18 @@
 
 <!-- NAV -->
 <nav>
-  <div class="nav-brand">
-    🧠 NotebookLM Guide
-    <span>· A.R. Labs</span>
+  <div class="nav-brand-wrap">
+    <a href="./index.html" class="logo">
+      <span class="logo-symbol">●</span>
+      <div class="logo-text-group">
+        <span class="logo-text">AI-OS</span>
+        <span class="logo-subtitle">Powered by A.R. Labs</span>
+      </div>
+    </a>
+    <span class="nav-brand-separator">|</span>
+    <div class="nav-brand">
+      🧠 NotebookLM Guide
+    </div>
   </div>
   <div class="nav-links">
     <a href="./index.html">Back to Hub</a>
