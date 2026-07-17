@@ -575,6 +575,7 @@ export function showProfileModal() {
     if (planName === 'Premium' || planName === 'Trial') {
       upgradeBtn.style.display = 'none';
       if (!cancelBtn) {
+        // Create only once — prevents duplicate listeners on re-open
         cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
         cancelBtn.id = 'btn-pf-cancel';
@@ -587,7 +588,8 @@ export function showProfileModal() {
           cancelBtn.style.cssText = 'padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; background: #e53e3e; color: white; border: none; cursor: pointer; font-weight: 600;';
         }
         upgradeBtn.parentNode.appendChild(cancelBtn);
-        cancelBtn.addEventListener('click', handleCancelSubscription);
+        // Use showCancelSubscriptionConfirm (styled modal) instead of raw handleCancelSubscription
+        cancelBtn.addEventListener('click', showCancelSubscriptionConfirm);
       }
       cancelBtn.style.display = 'inline-block';
     } else {
@@ -714,11 +716,41 @@ export async function handleCouponLogin(couponCode) {
   }
 }
 
-export async function handleCancelSubscription() {
-  if (!confirm('Are you sure you want to cancel your Premium subscription? You will lose all Premium features and digital modules immediately.')) {
+export function showCancelSubscriptionConfirm() {
+  // Styled confirmation instead of native confirm() dialog
+  const profileCard = document.querySelector('#profile-modal-overlay .auth-modal-card');
+  if (!profileCard) {
+    // Fallback if profile modal not available — still avoid native confirm()
+    handleCancelSubscription();
     return;
   }
 
+  // Remove any existing confirm overlay
+  document.getElementById('cancel-confirm-overlay')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'cancel-confirm-overlay';
+  overlay.style.cssText = 'position:absolute;inset:0;background:rgba(5,5,8,0.92);border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:100;padding:32px;text-align:center;backdrop-filter:blur(4px);';
+  overlay.innerHTML = `
+    <div style="font-size:2.5rem;">⚠️</div>
+    <h3 style="font-family:var(--font-title);font-size:1.3rem;color:#fff;margin:0;">Cancel Premium?</h3>
+    <p style="color:var(--text-secondary);font-size:0.88rem;line-height:1.6;margin:0;max-width:300px;">You will immediately lose all Premium features, digital modules, and priority support.</p>
+    <div style="display:flex;gap:12px;width:100%;max-width:280px;">
+      <button id="btn-cancel-confirm-no" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.88rem;">Keep Premium</button>
+      <button id="btn-cancel-confirm-yes" style="flex:1;padding:10px;background:#e53e3e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.88rem;">Yes, Cancel</button>
+    </div>
+  `;
+  profileCard.style.position = 'relative';
+  profileCard.appendChild(overlay);
+
+  document.getElementById('btn-cancel-confirm-no').onclick = () => overlay.remove();
+  document.getElementById('btn-cancel-confirm-yes').onclick = () => {
+    overlay.remove();
+    handleCancelSubscription();
+  };
+}
+
+export async function handleCancelSubscription() {
   try {
     const data = await apiCall('/api/payments/cancel', {
       method: 'DELETE'
@@ -757,6 +789,7 @@ export async function handleCancelSubscription() {
     showToast(err.message || "Failed to cancel subscription.", "error");
   }
 }
+
 
 export async function handlePremiumUpgrade(planLabel) {
   if (!state.user) {

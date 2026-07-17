@@ -250,10 +250,11 @@ async function redeemCoupon(req, res, next) {
   try {
     const code = couponCode.trim().toUpperCase();
     
-    // BUG-015: Coupon codes now read from COUPON_CODES env var (comma-separated).
+    // BUG-015: Coupon codes read from COUPON_CODES env var (comma-separated).
     // Rotate coupons by updating the deployment environment variable — no redeploy required.
-    // Falls back to 'VIP2026' if env var is not set for backwards compatibility.
-    const validCoupons = (process.env.COUPON_CODES || 'VIP2026')
+    // SECURITY: No hardcoded fallback — if COUPON_CODES is not set in env, NO coupon is valid.
+    const rawCouponEnv = process.env.COUPON_CODES || '';
+    const validCoupons = rawCouponEnv
       .split(',')
       .map(c => c.trim().toUpperCase())
       .filter(Boolean);

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aios-v3.1.0'; // Bumped for version 3.1.0
+const CACHE_NAME = 'aios-v3.1.1'; // Bumped for production audit fixes — 2026-07-17
 const ASSETS = [
   '/',
   '/index.html',

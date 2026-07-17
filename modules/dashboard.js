@@ -343,7 +343,7 @@ function renderDashboard() {
         <div class="lock-icon" style="font-size: 3rem; margin-bottom: 8px;">🔒</div>
         <h2 style="font-family: var(--font-title); font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0;">Gamification & Daily Missions Locked</h2>
         <p style="color: var(--text-secondary); max-width: 480px; line-height: 1.6; font-size: 0.95rem; margin: 0;">Sign in to unlock your daily learning tasks, earn XP, track streaks, and climb the leaderboard with personalized AI roadmaps.</p>
-        <button type="button" class="btn btn-primary" onclick="document.getElementById('btn-header-signin')?.click()" style="padding: 12px 32px; font-weight: 700; border-radius: 24px; border: none; cursor: pointer;">
+        <button type="button" class="btn btn-primary" onclick="const m=document.getElementById('auth-modal-overlay');if(m)m.style.display='flex';" style="padding: 12px 32px; font-weight: 700; border-radius: 24px; border: none; cursor: pointer;">
           🔑 Sign In to Unlock
         </button>
       </div>`;

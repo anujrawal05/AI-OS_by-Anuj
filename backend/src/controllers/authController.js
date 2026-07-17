@@ -560,7 +560,7 @@ async function forgotPassword(req, res, next) {
     // Build reset link pointing to the FRONTEND (not backend).
     // The frontend's initAuthSystem() reads ?action=reset-password&token=... from the URL
     // and opens the Reset Password modal. FRONTEND_URL must be set in .env in production.
-    const frontendUrl = process.env.FRONTEND_URL || process.env.BASE_URL || 'http://localhost:8080';
+    const frontendUrl = process.env.FRONTEND_URL || process.env.BASE_URL || 'https://ai-os-powerd-by-ar-labs.vercel.app';
     const resetLink = `${frontendUrl}/?action=reset-password&token=${resetToken}`;
     
     await sendEmail('forgotPassword', email, null, { RESET_LINK: resetLink });

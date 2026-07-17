@@ -52,23 +52,30 @@ export function initTrialClock() {
   if (!banner) return;
   if (isTrialActive()) {
     const timeRemaining = getTrialRemainingTime();
-    let text = "";
+    // Format expiry date for display
+    const expiryDate = state.user?.subscription?.currentPeriodEnd
+      ? new Date(state.user.subscription.currentPeriodEnd).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+      : null;
+    const expiryTag = expiryDate ? ` · Expires <strong>${expiryDate}</strong>` : '';
+
+    let text = '';
     if (timeRemaining) {
       if (timeRemaining.isLastDay) {
-        text = `⚠️ <strong>Less than 24 hours remaining</strong> (${timeRemaining.text})! Recommend upgrading before trial expires.`;
+        text = `⚠️ <strong>Less than 24 hours remaining</strong> (${timeRemaining.text})${expiryTag}! Recommend upgrading before trial expires.`;
       } else {
-        text = `🎉 You're currently using your FREE 3-Day Premium Trial (${timeRemaining.text}).`;
+        text = `🎉 You're currently using your FREE 3-Day Premium Trial (${timeRemaining.text})${expiryTag}.`;
       }
     } else {
-      text = `🎉 You're currently using your FREE 3-Day Premium Trial.`;
+      text = `🎉 You're currently using your FREE 3-Day Premium Trial${expiryTag}.`;
     }
     
-    banner.innerHTML = `<span>${text}</span> <button onclick="showPricingModal();" style="margin-left: 12px; background: linear-gradient(135deg, #00D084, #2EC5FF); border: none; border-radius: 4px; padding: 4px 10px; color: #000; font-family: monospace; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: transform 0.2s;">Upgrade Now</button>`;
+    banner.innerHTML = `<span>${text}</span> <button onclick="if(window.showPricingModal) window.showPricingModal();" style="margin-left: 12px; background: linear-gradient(135deg, #00D084, #2EC5FF); border: none; border-radius: 4px; padding: 4px 10px; color: #000; font-family: monospace; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: transform 0.2s;">Upgrade Now</button>`;
     banner.style.display = 'flex';
   } else {
     banner.style.display = 'none';
   }
 }
+
 
 export function closeTrialWelcomeModal() {
   const welcomeModal = document.getElementById('trial-welcome-modal-overlay');
@@ -79,8 +86,11 @@ export function closeTrialWelcomeModal() {
 }
 
 export function checkPromptLimit() {
+  // Limits MUST match backend quotaMiddleware.js PLAN_LIMITS:
+  //   Free: 5  |  Trial: 100  |  Premium: 100
+  // This client-side check is a UX fast-path only — the backend enforces authoritatively via HTTP 429.
   const isPremium = state.user && state.user.subscription && (state.user.subscription.plan === 'Premium' || state.user.subscription.plan === 'Trial');
-  const limit = isPremium ? 15 : 5;
+  const limit = isPremium ? 100 : 5;
   
   const today = new Date().toDateString();
   const countKey = `aios_prompt_count_${today}`;
@@ -88,7 +98,7 @@ export function checkPromptLimit() {
   
   if (currentCount >= limit) {
     showToast(`Daily prompt limit reached (${currentCount}/${limit}). Upgrade to Premium or wait until tomorrow.`, "warning");
-    showPricingModal();
+    if (window.showPricingModal) window.showPricingModal();
     return false;
   }
   return true;
