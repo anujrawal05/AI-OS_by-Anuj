@@ -314,15 +314,15 @@ function renderContentCards() {
 
       <!-- Monthly Tips & Tricks (desktop only, spans full width) -->
       <div class="gm-card gm-content-card gm-monthly-tips-card">
-        <div class="gm-card-kicker">📅 Monthly Tips & Tricks</div>
+        <div class="gm-card-kicker">📅 This Month's AI Tip</div>
         <div class="gm-tips-content">
           <div class="gm-tips-text-group">
-            <h3 class="gm-tips-title">Access Claude Fable 5 & Claude Sonnet 5 for Free</h3>
-            <p class="gm-tips-subtitle">Official method • Step-by-step guide for everyone</p>
-            <p class="gm-tips-desc">Learn the official workflow to access Claude Sonnet 5 and Claude Fable 5 for free with an easy step-by-step guide designed for beginners and non-technical users.</p>
+            <h3 class="gm-tips-title">NotebookLM Master Guide</h3>
+            <p class="gm-tips-subtitle">This Month's AI Tip</p>
+            <p class="gm-tips-desc">Learn how to use NotebookLM for research, study, content creation, business analysis, and AI-powered knowledge management.</p>
           </div>
           <div class="gm-tips-cta-group">
-            <a href="monthly-tips-and-tricks.html" class="gm-tips-cta-btn">Open Monthly Guide →</a>
+            <a href="notebooklm-guide.html" class="gm-tips-cta-btn">Open Monthly Guide →</a>
           </div>
         </div>
       </div>
@@ -360,14 +360,14 @@ function renderDashboard() {
     <div class="gm-dashboard-wrap">
 
       <!-- Mobile-only Monthly Tips Promotional Banner (above greeting) -->
-      <div class="mobile-tips-promo-card" onclick="window.location.href='./monthly-tips-and-tricks.html'">
+      <div class="mobile-tips-promo-card" onclick="window.location.href='./notebooklm-guide.html'">
         <div class="gm-tips-content" style="flex-direction: column; align-items: flex-start; gap: 8px;">
           <div class="gm-tips-text-group">
             <div class="gm-tips-subtitle" style="font-size: 0.75rem; color: var(--accent-color); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
-              <span>📅</span> Monthly Tips & Tricks
+              <span>📅</span> This Month's AI Tip
             </div>
-            <h3 class="gm-tips-title" style="font-family: var(--font-title); font-size: 1.05rem; font-weight: 800; color: #fff; margin: 4px 0 2px 0;">Access Claude Sonnet 5 & Claude Fable 5 for FREE</h3>
-            <p class="gm-tips-desc" style="font-family: var(--font-sans); font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin: 0;">using the official Anthropic + AeroLink method.</p>
+            <h3 class="gm-tips-title" style="font-family: var(--font-title); font-size: 1.05rem; font-weight: 800; color: #fff; margin: 4px 0 2px 0;">NotebookLM Master Guide</h3>
+            <p class="gm-tips-desc" style="font-family: var(--font-sans); font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin: 0;">Learn how to use NotebookLM for research, study, content creation, business analysis, and AI-powered knowledge management.</p>
           </div>
           <div class="gm-tips-cta-btn" style="align-self: flex-start; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-color), #a855f7); color: #fff; border-radius: 6px; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.2);">
             View Guide →
@@ -643,11 +643,11 @@ export function renderMobileUpdates() {
       </div>
 
       <!-- Monthly Tips & Tricks Link Card -->
-      <div class="updates-tips-card" onclick="window.location.href='./monthly-tips-and-tricks.html'">
+      <div class="updates-tips-card" onclick="window.location.href='./notebooklm-guide.html'">
         <div class="updates-tips-icon">💡</div>
         <div class="updates-tips-content">
-          <h4 class="updates-tips-title">Monthly Tips & Tricks</h4>
-          <p class="updates-tips-desc">Unlock advanced strategies, system prompting secrets, and workflow templates.</p>
+          <h4 class="updates-tips-title">NotebookLM Master Guide</h4>
+          <p class="updates-tips-desc">Learn how to use NotebookLM for research, study, content creation, business analysis, and AI-powered knowledge management.</p>
         </div>
         <span class="updates-tips-arrow">→</span>
       </div>
