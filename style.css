@@ -7754,6 +7754,34 @@ body.modal-open {
   to { transform: translateY(-6px); }
 }
 
+@keyframes auth-shake {
+  0%   { transform: translateX(0) scale(1); }
+  15%  { transform: translateX(-7px) scale(1); }
+  30%  { transform: translateX(7px) scale(1); }
+  45%  { transform: translateX(-5px) scale(1); }
+  60%  { transform: translateX(5px) scale(1); }
+  75%  { transform: translateX(-3px) scale(1); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+/* Auth field error state — red glow ring */
+#auth-email.field-error,
+#auth-password.field-error {
+  border: 1.5px solid #ff5a5a !important;
+  box-shadow: 0 0 0 3px rgba(255, 90, 90, 0.15) !important;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+#auth-modal-error:not(:empty) {
+  background: rgba(255, 90, 90, 0.08);
+  border: 1px solid rgba(255, 90, 90, 0.25);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: left !important;
+  line-height: 1.4;
+}
+
+
 /* ==========================================================================
    NEW PREMIUM PRICING REDESIGN (SaaS Layout)
    ========================================================================== */

@@ -1918,46 +1918,116 @@
     </div>
   </footer>
 
-  <!-- Mandatory First-Launch Language & Destination Onboarding Modal -->
-  <div id="business-onboarding-modal" class="business-popup-overlay" style="display: none;">
-    <div class="business-popup-card" style="max-width: 600px; text-align: left; padding: 28px;">
-      <h2 id="ob-title" class="business-popup-title" style="text-align: center; margin-bottom: 6px;" data-i18n="business.onboardingTitle">Welcome to AI-OS Business</h2>
-      <p id="ob-subtitle" class="business-popup-desc" style="text-align: center; font-size: 0.9rem; margin-bottom: 24px; color: var(--bus-text-secondary);" data-i18n="business.onboardingSubtitle">Configure your language and initial workspace destination:</p>
-      
-      <!-- Section 1: Language Selection -->
-      <div class="ob-section" style="margin-bottom: 24px;">
-        <h4 id="ob-lang-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-primary); margin-bottom: 12px; font-weight: 700;" data-i18n="business.langSectionTitle">1. Language / भाषा</h4>
-        <div style="display: flex; gap: 12px;">
-          <button class="business-popup-opt-btn lang-select-btn active" data-lang="en" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">English</button>
-          <button class="business-popup-opt-btn lang-select-btn" data-lang="hi" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">हिन्दी</button>
-          <button class="business-popup-opt-btn lang-select-btn" data-lang="hinglish" style="flex: 1; padding: 12px; font-weight: 700; text-align: center; justify-content: center;">Hinglish</button>
+  <!-- ==========================================
+       AI-OS Business — Premium Welcome Popup
+       2-Step: Language → Section Selection
+       Shows every visit unless 'Remember my choice' is checked
+       ========================================== -->
+  <div id="business-onboarding-modal" class="business-popup-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="ob-modal-title">
+    <div class="business-popup-card business-ob-card" style="max-width: 640px; width: 94%; padding: 0; overflow: hidden; border: 1px solid rgba(0, 208, 132, 0.2); box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(0,208,132,0.08);">
+
+      <!-- Step indicator bar -->
+      <div class="ob-step-bar">
+        <div class="ob-step-item ob-step-active" id="ob-step-dot-1">
+          <span class="ob-step-num">1</span>
+          <span class="ob-step-label">Language</span>
+        </div>
+        <div class="ob-step-connector"></div>
+        <div class="ob-step-item" id="ob-step-dot-2">
+          <span class="ob-step-num">2</span>
+          <span class="ob-step-label">Destination</span>
         </div>
       </div>
-      
-      <!-- Section 2: Destination Module Selection -->
-      <div class="ob-section">
-        <h4 id="ob-dest-title" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bus-accent); margin-bottom: 12px; font-weight: 700;" data-i18n="business.destSectionTitle">2. Module Destination / मॉड्यूल गंतव्य</h4>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <button class="business-popup-opt-btn dest-select-btn" data-workspace="dashboard" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
-            <strong class="dest-title" style="font-size: 1rem; color: #fff;">📊 Dashboard</strong>
-            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">Real-time market indices, currency rates, and curated tech business news feeds.</span>
-          </button>
-          <button class="business-popup-opt-btn dest-select-btn" data-workspace="learn" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
-            <strong class="dest-title" style="font-size: 1rem; color: #fff;">📚 Academy</strong>
-            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">First-principles business curriculum covering validation, pricing, margins, and contracts.</span>
-          </button>
-          <button class="business-popup-opt-btn dest-select-btn" data-workspace="build" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
-            <strong class="dest-title" style="font-size: 1rem; color: #fff;">🚀 Launchpad</strong>
-            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">Compile execution blueprints, estimated costs, and launch pathways tailored to budget.</span>
-          </button>
-          <button class="business-popup-opt-btn dest-select-btn" data-workspace="grow" style="display: flex; flex-direction: column; align-items: flex-start; padding: 14px; text-align: left;">
-            <strong class="dest-title" style="font-size: 1rem; color: #fff;">📈 Strategist</strong>
-            <span class="dest-desc" style="font-size: 0.8rem; color: var(--bus-text-secondary); margin-top: 4px; font-weight: normal;">Interactive strategic business scaling plans and roadmap generation with AI.</span>
+
+      <!-- Step 1: Language Selection -->
+      <div id="ob-step-1" class="ob-step-panel" style="display: block;">
+        <div class="ob-panel-inner">
+          <div class="ob-brand-icon">🌐</div>
+          <h2 id="ob-modal-title" class="business-popup-title" style="font-size: 1.6rem; margin-bottom: 8px;">Choose Your Language</h2>
+          <p class="business-popup-desc" style="margin-bottom: 28px; font-size: 0.9rem;">Select the language you want to use throughout AI-OS Business. You can change this anytime from the header.</p>
+
+          <div class="ob-lang-grid">
+            <button class="ob-lang-btn lang-select-btn active" data-lang="en" id="ob-lang-en">
+              <span class="ob-lang-flag">🇬🇧</span>
+              <span class="ob-lang-name">English</span>
+              <span class="ob-lang-native">Standard</span>
+              <span class="ob-lang-check">✓</span>
+            </button>
+            <button class="ob-lang-btn lang-select-btn" data-lang="hi" id="ob-lang-hi">
+              <span class="ob-lang-flag">🇮🇳</span>
+              <span class="ob-lang-name">Hindi</span>
+              <span class="ob-lang-native">हिन्दी</span>
+              <span class="ob-lang-check">✓</span>
+            </button>
+            <button class="ob-lang-btn lang-select-btn" data-lang="hinglish" id="ob-lang-hinglish">
+              <span class="ob-lang-flag">🔀</span>
+              <span class="ob-lang-name">Hinglish</span>
+              <span class="ob-lang-native">Mix</span>
+              <span class="ob-lang-check">✓</span>
+            </button>
+          </div>
+
+          <button id="ob-btn-next" class="ob-btn-primary" onclick="window._obGoStep2()">
+            Continue → Choose Destination
           </button>
         </div>
       </div>
+
+      <!-- Step 2: Section/Destination Selection -->
+      <div id="ob-step-2" class="ob-step-panel" style="display: none;">
+        <div class="ob-panel-inner">
+          <div class="ob-brand-icon">🚀</div>
+          <h2 class="business-popup-title" style="font-size: 1.5rem; margin-bottom: 8px;">What would you like to do today?</h2>
+          <p class="business-popup-desc" style="margin-bottom: 20px; font-size: 0.88rem;">Select your destination. You can switch workspaces anytime using the top navigation.</p>
+
+          <div class="ob-dest-grid">
+            <button class="business-popup-opt-btn dest-select-btn ob-dest-btn" data-workspace="dashboard">
+              <span class="ob-dest-icon">📊</span>
+              <span class="ob-dest-content">
+                <strong class="dest-title">Business Dashboard</strong>
+                <span class="dest-desc">Track your AI business progress, performance, tasks, analytics and daily goals.</span>
+              </span>
+              <span class="ob-dest-arrow">→</span>
+            </button>
+            <button class="business-popup-opt-btn dest-select-btn ob-dest-btn" data-workspace="learn">
+              <span class="ob-dest-icon">📚</span>
+              <span class="ob-dest-content">
+                <strong class="dest-title">Learn</strong>
+                <span class="dest-desc">Master AI business through structured courses, tutorials and practical guides.</span>
+              </span>
+              <span class="ob-dest-arrow">→</span>
+            </button>
+            <button class="business-popup-opt-btn dest-select-btn ob-dest-btn" data-workspace="build">
+              <span class="ob-dest-icon">🚀</span>
+              <span class="ob-dest-content">
+                <strong class="dest-title">Build</strong>
+                <span class="dest-desc">Create your own AI business step by step using ready-to-use frameworks, prompts and implementation guides.</span>
+              </span>
+              <span class="ob-dest-arrow">→</span>
+            </button>
+            <button class="business-popup-opt-btn dest-select-btn ob-dest-btn" data-workspace="grow">
+              <span class="ob-dest-icon">📈</span>
+              <span class="ob-dest-content">
+                <strong class="dest-title">Grow</strong>
+                <span class="dest-desc">Scale your business with advanced marketing, automation, branding and monetization strategies.</span>
+              </span>
+              <span class="ob-dest-arrow">→</span>
+            </button>
+          </div>
+
+          <div class="ob-footer-row">
+            <button class="ob-btn-back" onclick="window._obGoStep1()">← Back to Language</button>
+            <label class="ob-remember-label">
+              <input type="checkbox" id="ob-remember-choice">
+              <span>Remember my choice</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
+
 
   <script src="ad-manager.js?v=3.6"></script>
   <!-- ============================================================

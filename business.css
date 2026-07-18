@@ -1689,6 +1689,25 @@ body {
   color: var(--bus-text-secondary);
 }
 
+@keyframes auth-shake {
+  0%   { transform: translateX(0) scale(1); }
+  15%  { transform: translateX(-7px) scale(1); }
+  30%  { transform: translateX(7px) scale(1); }
+  45%  { transform: translateX(-5px) scale(1); }
+  60%  { transform: translateX(5px) scale(1); }
+  75%  { transform: translateX(-3px) scale(1); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+#auth-modal-error:not(:empty) {
+  background: rgba(255, 90, 90, 0.08);
+  border: 1px solid rgba(255, 90, 90, 0.25);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: left !important;
+  line-height: 1.4;
+}
+
 /* Modals overlays styling */
 .auth-modal-overlay {
   position: fixed;
@@ -3684,3 +3703,332 @@ body.no-scroll {
   to { transform: rotate(360deg); }
 }
 
+/* ================================================
+   PREMIUM BUSINESS ONBOARDING POPUP — 2-STEP WIZARD
+   ================================================ */
+
+/* Step indicator bar */
+.ob-step-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 32px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 12px;
+}
+
+.ob-step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.ob-step-item.ob-step-active {
+  opacity: 1;
+}
+
+.ob-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.ob-step-item.ob-step-active .ob-step-num {
+  background: linear-gradient(135deg, #00D084, #2EC5FF);
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(0, 208, 132, 0.4);
+  color: #000;
+}
+
+.ob-step-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ob-step-connector {
+  flex: 1;
+  height: 1px;
+  max-width: 60px;
+  background: linear-gradient(90deg, rgba(0,208,132,0.3), rgba(46,197,255,0.3));
+}
+
+/* Panel content */
+.ob-step-panel {
+  animation: obPanelIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes obPanelIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ob-panel-inner {
+  padding: 28px 36px 32px;
+  text-align: center;
+}
+
+.ob-brand-icon {
+  font-size: 2.8rem;
+  margin-bottom: 14px;
+  display: block;
+  filter: drop-shadow(0 0 16px rgba(0, 208, 132, 0.4));
+  animation: obIconFloat 3s ease-in-out infinite alternate;
+}
+
+@keyframes obIconFloat {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-6px); }
+}
+
+/* Language selection grid */
+.ob-lang-grid {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.ob-lang-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  color: #fff;
+}
+
+.ob-lang-btn:hover {
+  background: rgba(0, 208, 132, 0.06);
+  border-color: rgba(0, 208, 132, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 208, 132, 0.12);
+}
+
+.ob-lang-btn.active {
+  background: rgba(0, 208, 132, 0.1);
+  border-color: rgba(0, 208, 132, 0.5);
+  box-shadow: 0 0 0 2px rgba(0, 208, 132, 0.2), 0 8px 24px rgba(0, 208, 132, 0.15);
+}
+
+.ob-lang-flag {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.ob-lang-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  color: #fff;
+}
+
+.ob-lang-native {
+  font-size: 0.75rem;
+  color: var(--bus-text-secondary);
+  font-family: var(--font-mono);
+}
+
+.ob-lang-check {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #00D084;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ob-lang-btn.active .ob-lang-check {
+  opacity: 1;
+}
+
+/* Primary continue button */
+.ob-btn-primary {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #00D084 0%, #2EC5FF 100%);
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 20px rgba(0, 208, 132, 0.3);
+}
+
+.ob-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 208, 132, 0.45);
+}
+
+/* Destination cards */
+.ob-dest-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ob-dest-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 14px 18px !important;
+  text-align: left !important;
+  flex-direction: row !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ob-dest-btn:hover {
+  background: rgba(0, 208, 132, 0.07) !important;
+  border-color: rgba(0, 208, 132, 0.35) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 6px 20px rgba(0, 208, 132, 0.1) !important;
+}
+
+.ob-dest-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+}
+
+.ob-dest-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ob-dest-content .dest-title {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  font-family: var(--font-sans) !important;
+}
+
+.ob-dest-content .dest-desc {
+  font-size: 0.78rem !important;
+  color: var(--bus-text-secondary) !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  font-family: var(--font-sans) !important;
+}
+
+.ob-dest-arrow {
+  color: var(--bus-primary);
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.ob-dest-btn:hover .ob-dest-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+/* Footer row: back + remember */
+.ob-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.ob-btn-back {
+  background: none;
+  border: none;
+  color: var(--bus-text-secondary);
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.ob-btn-back:hover {
+  color: #fff;
+}
+
+.ob-remember-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--bus-text-secondary);
+  font-family: var(--font-mono);
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.ob-remember-label:hover {
+  color: #fff;
+}
+
+.ob-remember-label input[type="checkbox"] {
+  accent-color: #00D084;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* Mobile responsive */
+@media (max-width: 560px) {
+  .ob-panel-inner {
+    padding: 20px 20px 24px;
+  }
+  .ob-lang-grid {
+    flex-direction: column;
+  }
+  .ob-lang-btn {
+    flex-direction: row;
+    padding: 14px 16px;
+  }
+  .ob-lang-flag {
+    font-size: 1.4rem;
+  }
+  .ob-footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .ob-step-bar {
+    padding: 16px 20px 12px;
+  }
+}

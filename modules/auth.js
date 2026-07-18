@@ -230,16 +230,67 @@ export function updateAuthModalUI() {
   }
 }
 
-export async function handleEmailSignin() {
+/** Clears auth field error states (red borders + error text) */
+function clearAuthFieldErrors() {
   const emailEl = document.getElementById('auth-email');
   const passwordEl = document.getElementById('auth-password');
   const errorEl = document.getElementById('auth-modal-error');
+  const borderReset = '1px solid rgba(255,255,255,0.1)';
+  if (emailEl) emailEl.style.border = borderReset;
+  if (passwordEl) passwordEl.style.border = borderReset;
+  if (errorEl) { errorEl.textContent = ''; errorEl.style.display = 'none'; }
+}
+
+/** Sets a red border on the specified auth field and shows an error message */
+function setAuthFieldError(field, message) {
+  const errorEl = document.getElementById('auth-modal-error');
+  const emailEl = document.getElementById('auth-email');
+  const passwordEl = document.getElementById('auth-password');
+  const errorBorder = '1.5px solid #ff5a5a';
+
+  // Apply red border to the relevant field
+  if (field === 'email' && emailEl) emailEl.style.border = errorBorder;
+  if (field === 'password' && passwordEl) passwordEl.style.border = errorBorder;
+  if (field === 'both') {
+    if (emailEl) emailEl.style.border = errorBorder;
+    if (passwordEl) passwordEl.style.border = errorBorder;
+  }
+
+  // Show the inline error message
+  if (errorEl) {
+    errorEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;">⚠️ ${message}</span>`;
+    errorEl.style.display = 'block';
+  }
+
+  // Auto-shake the modal card for tactile feedback
+  const card = document.querySelector('#auth-modal-overlay .auth-modal-card');
+  if (card) {
+    card.style.animation = 'none';
+    requestAnimationFrame(() => {
+      card.style.animation = 'auth-shake 0.35s ease';
+    });
+  }
+}
+
+export async function handleEmailSignin() {
+  const emailEl = document.getElementById('auth-email');
+  const passwordEl = document.getElementById('auth-password');
   
   const email = emailEl ? emailEl.value.trim() : '';
   const password = passwordEl ? passwordEl.value : '';
+
+  clearAuthFieldErrors();
   
-  if (!email || !password) {
-    if (errorEl) { errorEl.textContent = 'Please enter email and password.'; errorEl.style.display = 'block'; }
+  if (!email && !password) {
+    setAuthFieldError('both', 'Please enter your email and password.');
+    return;
+  }
+  if (!email) {
+    setAuthFieldError('email', 'Please enter your email address.');
+    return;
+  }
+  if (!password) {
+    setAuthFieldError('password', 'Please enter your password.');
     return;
   }
   
@@ -250,6 +301,7 @@ export async function handleEmailSignin() {
     });
 
     if (data.success) {
+      clearAuthFieldErrors();
       // Re-fetch context to populate subscriptions & profile properties
       const context = await apiCall('/api/auth/me');
       state.user = context.user;
@@ -272,13 +324,19 @@ export async function handleEmailSignin() {
       showOtpScreen();
       showToast("Please verify the OTP code sent during registration.", "warning");
     } else if (err.message && err.message !== 'Unauthorized') {
-      if (errorEl) {
-        errorEl.textContent = err.message;
-        errorEl.style.display = 'block';
+      const msg = err.message.toLowerCase();
+      // Map backend error messages to specific field highlights
+      if (msg.includes('email') || msg.includes('account') || msg.includes('not found') || msg.includes('no account')) {
+        setAuthFieldError('email', err.message);
+      } else if (msg.includes('password') || msg.includes('incorrect') || msg.includes('invalid credential') || msg.includes('wrong')) {
+        setAuthFieldError('password', err.message);
+      } else {
+        setAuthFieldError('both', err.message);
       }
     }
   }
 }
+
 
 export async function handleEmailSignup() {
   const emailEl = document.getElementById('auth-email');

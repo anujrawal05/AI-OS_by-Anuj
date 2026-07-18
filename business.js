@@ -166,35 +166,83 @@ async function initBusiness() {
   // Translate UI initially
   await translateBusinessUI(currentLang);
 
-  // Setup Onboarding Modal Behavior
+  // ─── Premium 2-Step Business Welcome Popup ───────────────────────────────
+  // Shows every visit UNLESS the user checked 'Remember my choice' previously.
   const obModal = document.getElementById('business-onboarding-modal');
   if (obModal) {
-    const isVisited = localStorage.getItem('aios_business_visited') === 'true';
-    const isLangSet = localStorage.getItem('aios_business_lang') !== null;
-    if (!isVisited || !isLangSet) {
+    const remembered = localStorage.getItem('aios_business_remember') === 'true';
+    if (!remembered) {
+      // Mark modal as visible immediately
       obModal.style.display = 'flex';
       setTimeout(() => obModal.classList.add('active'), 10);
     }
-    
-    document.querySelectorAll('.lang-select-btn').forEach(btn => {
+
+    // Restore saved language selection visual state
+    const savedLang = localStorage.getItem('aios_business_lang') || 'en';
+    document.querySelectorAll('.ob-lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === savedLang);
+    });
+
+    // Language button selection (live preview)
+    document.querySelectorAll('.ob-lang-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const selectedLang = btn.getAttribute('data-lang');
-        translateBusinessUI(selectedLang);
+        document.querySelectorAll('.ob-lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        translateBusinessUI(btn.getAttribute('data-lang'));
       });
     });
-    
+
+    // Destination card selection (closes modal + switches workspace)
     document.querySelectorAll('.dest-select-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const workspace = btn.getAttribute('data-workspace');
+        const rememberCheckbox = document.getElementById('ob-remember-choice');
+        if (rememberCheckbox && rememberCheckbox.checked) {
+          localStorage.setItem('aios_business_remember', 'true');
+        }
         localStorage.setItem('aios_business_visited', 'true');
         obModal.classList.remove('active');
         setTimeout(() => { obModal.style.display = 'none'; }, 300);
         (window.switchBusinessWorkspace || switchBusinessWorkspace)(workspace);
       });
     });
+
+    // Also wire old .lang-select-btn class for compatibility
+    document.querySelectorAll('.lang-select-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const selectedLang = btn.getAttribute('data-lang');
+        if (selectedLang) translateBusinessUI(selectedLang);
+      });
+    });
   }
+
+  // ─── Step navigation (exposed globally for inline onclick handlers) ───────
+  window._obGoStep2 = function() {
+    const step1 = document.getElementById('ob-step-1');
+    const step2 = document.getElementById('ob-step-2');
+    const dot1  = document.getElementById('ob-step-dot-1');
+    const dot2  = document.getElementById('ob-step-dot-2');
+    if (step1) step1.style.display = 'none';
+    if (step2) step2.style.display = 'block';
+    if (dot1) dot1.classList.remove('ob-step-active');
+    if (dot2) dot2.classList.add('ob-step-active');
+  };
+
+  window._obGoStep1 = function() {
+    const step1 = document.getElementById('ob-step-1');
+    const step2 = document.getElementById('ob-step-2');
+    const dot1  = document.getElementById('ob-step-dot-1');
+    const dot2  = document.getElementById('ob-step-dot-2');
+    if (step2) step2.style.display = 'none';
+    if (step1) step1.style.display = 'block';
+    if (dot2) dot2.classList.remove('ob-step-active');
+    if (dot1) dot1.classList.add('ob-step-active');
+  };
+
+
 
   // Setup Language Swapper Dropdown in Top Nav
   const langBtnWrap = document.getElementById('language-dropdown-wrap');
