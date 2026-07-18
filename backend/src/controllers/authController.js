@@ -116,7 +116,8 @@ async function provisionUserDefaults(tx, userId, email, checkExisting = false, d
 
 // 1. SIGNUP ENDPOINT
 async function signup(req, res, next) {
-  const { email, password, name } = req.body; // BUG-022: accept optional name
+  const { email: rawEmail, password, name } = req.body; // BUG-022: accept optional name
+  const email = (rawEmail || '').trim().toLowerCase();
   const ipAddress = req.ip;
   const userAgent = req.headers['user-agent'];
 
@@ -178,7 +179,8 @@ async function signup(req, res, next) {
 
 // 2. VERIFY OTP ENDPOINT
 async function verifyOtp(req, res, next) {
-  const { email, otp, name } = req.body; // BUG-022: accept optional display name
+  const { email: rawEmail, otp, name } = req.body; // BUG-022: accept optional display name
+  const email = (rawEmail || '').trim().toLowerCase();
   const ipAddress = req.ip;
   const userAgent = req.headers['user-agent'];
 
@@ -267,7 +269,8 @@ async function verifyOtp(req, res, next) {
 
 // 3. RESEND OTP ENDPOINT
 async function resendOtp(req, res, next) {
-  const { email } = req.body;
+  const { email: rawEmail } = req.body;
+  const email = (rawEmail || '').trim().toLowerCase();
 
   try {
     const user = await prisma.user.findUnique({
@@ -316,7 +319,8 @@ async function resendOtp(req, res, next) {
 
 // 4. LOGIN ENDPOINT
 async function login(req, res, next) {
-  const { email, password } = req.body;
+  const { email: rawEmail, password } = req.body;
+  const email = (rawEmail || '').trim().toLowerCase();
   const ipAddress = req.ip;
   const userAgent = req.headers['user-agent'];
 
@@ -531,7 +535,8 @@ async function logoutAllDevices(req, res, next) {
 
 // 8. FORGOT PASSWORD
 async function forgotPassword(req, res, next) {
-  const { email } = req.body;
+  const { email: rawEmail } = req.body;
+  const email = (rawEmail || '').trim().toLowerCase();
   const ipAddress = req.ip;
   const userAgent = req.headers['user-agent'];
 

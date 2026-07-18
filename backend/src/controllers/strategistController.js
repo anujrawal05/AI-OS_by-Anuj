@@ -1,6 +1,7 @@
 const prisma = require('../lib/db');
+const logger = require('../utils/logger');
 const { incrementPromptUsage } = require('../middleware/quotaMiddleware');
-const { chatAssistant } = require('../services/aiService');
+const { chatAssistant, compileStrategy: compileStrategyAI } = require('../services/aiService');
 
 // Clean fallback templates representing the elite strategist compilation matrix
 function getFallbackStrategy(name, audience, bottleneck) {
@@ -33,8 +34,23 @@ async function compileStrategy(req, res, next) {
   }
 
   try {
-    // Generate strategy fallback template
-    const strategy = getFallbackStrategy(businessName, targetAudience, bottleneck);
+    let strategy = null;
+    try {
+      // Query the dynamic AI provider manager
+      const aiResult = await compileStrategyAI(req.user.id, businessName, targetAudience, bottleneck);
+      let text = aiResult.text.trim();
+      
+      // Clean potential markdown wrap
+      if (text.startsWith('```')) {
+        text = text.replace(/^```json\s*/, '').replace(/```$/, '').trim();
+      }
+      
+      strategy = JSON.parse(text);
+    } catch (aiErr) {
+      // Log failure and activate local fallback
+      logger.warn('[Strategist Controller] Dynamic strategy generation failed. Activating local template fallback:', aiErr.message);
+      strategy = getFallbackStrategy(businessName, targetAudience, bottleneck);
+    }
 
     // Save to AI History database table
     await prisma.aIHistory.create({

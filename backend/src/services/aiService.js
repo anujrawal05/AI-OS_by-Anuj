@@ -363,12 +363,26 @@ async function generatePrompt(userId, instructionPrompt) {
 }
 
 async function compileStrategy(userId, businessName, targetAudience, bottleneck) {
-  const systemPrompt = "You are an AI business strategist. Return strategic analyses for SaaS automation structures.";
+  const systemPrompt = 
+    "You are an elite AI business strategist. Compile a comprehensive, high-value startup strategy " +
+    "based on the user's business spec. You MUST return your response as a valid JSON object containing " +
+    "the following keys exactly, with no additional text or formatting outside the JSON:\n\n" +
+    "{\n" +
+    "  \"analysis\": \"Detail how this bottleneck is limiting growth.\",\n" +
+    "  \"opportunities\": \"3 high-value opportunities to unlock new revenue streams.\",\n" +
+    "  \"automation\": \"Exact step-by-step trigger/action workflow to automate operational bottlenecks.\",\n" +
+    "  \"marketing\": \"Actionable outbound/inbound marketing strategies tailored for their target audience.\",\n" +
+    "  \"leads\": \"Direct instructions on where and how to find and close leads.\",\n" +
+    "  \"revenue\": \"Pricing model and monetization strategy recommendations.\",\n" +
+    "  \"plan\": \"A 30-60-90 day milestone implementation roadmap.\"\n" +
+    "}\n\n" +
+    "Ensure all values contain HTML formatting (like <ul>, <li>, <strong>, <br>) for professional readability.";
+
   const messages = [
     { role: "system", content: systemPrompt },
-    { role: "user", content: `Business: ${businessName}, Audience: ${targetAudience}, Bottleneck: ${bottleneck}` }
+    { role: "user", content: `Business Name: ${businessName}\nTarget Audience: ${targetAudience}\nCore Bottleneck: ${bottleneck}` }
   ];
-  return requestAICompletion(messages, null, { temperature: 0.6 });
+  return requestAICompletion(messages, null, { temperature: 0.75, maxTokens: 2048 });
 }
 
 async function chatAssistant(userId, userInput, history = [], context = {}) {
