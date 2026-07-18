@@ -169,6 +169,12 @@ async function initBusiness() {
   // ─── Premium 2-Step Business Welcome Popup ───────────────────────────────
   // Shows every visit UNLESS the user checked 'Remember my choice' previously.
   const obModal = document.getElementById('business-onboarding-modal');
+  const abModal = document.getElementById('about-bus-modal-overlay');
+  
+  // Safely move modals to body to prevent them from being hidden by unclosed wrapper containers
+  if (obModal) document.body.appendChild(obModal);
+  if (abModal) document.body.appendChild(abModal);
+
   if (obModal) {
     const remembered = localStorage.getItem('aios_business_remember') === 'true';
     if (!remembered) {
