@@ -198,9 +198,12 @@ export async function loadLiveDashboardMetrics() {
     }
 
     const isLive = (status === 'online');
-    const badgeHtml = isLive 
+    const isWarm = (status === 'warming') || data.isMock;
+    const badgeHtml = isLive
       ? `<span class="badge-live" style="background: rgba(0, 208, 132, 0.15); color: #00D084; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; width: fit-content;">● LIVE</span>`
-      : `<span class="badge-cached" style="background: rgba(255, 165, 0, 0.15); color: #ffa500; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; width: fit-content;">● CACHED</span>`;
+      : isWarm
+        ? `<span class="badge-warming" style="background: rgba(46,197,255,0.12); color: #2EC5FF; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; width: fit-content;">⟳ WARMING UP</span>`
+        : `<span class="badge-cached" style="background: rgba(255, 165, 0, 0.15); color: #ffa500; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; width: fit-content;">● CACHED</span>`;
 
     // Bind values dynamically to ticker strip elements (with loop mirrors)
     const updateTickerItem = (key, valId, chgId, isUSD = false) => {
@@ -303,10 +306,32 @@ export async function loadLiveDashboardMetrics() {
 
   } catch (err) {
     console.error("[Live Market Metrics Load Error] Failed to retrieve live quote data:", err);
-    if (errorEl) {
-      errorEl.textContent = `Live market data temporarily unavailable: ${err.message}`;
-      errorEl.style.display = 'block';
+    // Graceful offline UI — show a premium-styled message, never a raw error string
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (contentEl) {
+      contentEl.style.display = 'block';
+      const tbody = document.getElementById('market-data-tbody');
+      if (tbody && !tbody.innerHTML.trim()) {
+        // Show placeholder rows with 'loading' shimmer text
+        const placeholders = ['NIFTY 50', 'Sensex', 'BTC (Bitcoin)', 'NVDA (NVIDIA)', 'Gold 24K (10g)'];
+        tbody.innerHTML = placeholders.map(name => `
+          <tr>
+            <td style="font-family: var(--font-mono); color: #fff;">${name}</td>
+            <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-secondary);">Refreshing...</td>
+            <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-secondary);">–</td>
+          </tr>`).join('');
+      }
+      // Update / create footer with offline badge
+      let footerEl = document.getElementById('market-data-footer');
+      if (!footerEl) {
+        footerEl = document.createElement('div');
+        footerEl.id = 'market-data-footer';
+        footerEl.style.cssText = 'margin-top: 12px; font-size: 0.72rem; color: var(--bus-text-secondary); font-family: var(--font-mono); border-top: 1px solid var(--bus-border); padding-top: 10px;';
+        contentEl.appendChild(footerEl);
+      }
+      footerEl.innerHTML = `<span style="background: rgba(255,74,74,0.12); color: #ff7070; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold;">● OFFLINE</span> <span>Markets temporarily unavailable — will retry shortly</span>`;
     }
+    if (errorEl) errorEl.style.display = 'none';
   }
 }
 

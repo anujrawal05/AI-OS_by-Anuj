@@ -6,7 +6,8 @@ const { checkPromptQuota, incrementPromptUsage } = require('../middleware/quotaM
 const { requestAICompletion } = require('../services/aiService');
 
 // POST /api/prompt/generate-aios-prompt
-router.post('/generate-aios-prompt', authenticateUser, requirePlan('Premium', 'Trial'), checkPromptQuota, async (req, res, next) => {
+// All authenticated users can generate prompts. Plan-based quota limits apply via checkPromptQuota.
+router.post('/generate-aios-prompt', authenticateUser, checkPromptQuota, async (req, res, next) => {
   const { taskName, userInput } = req.body;
 
   if (!taskName || !userInput) {

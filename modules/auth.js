@@ -1735,25 +1735,9 @@ export async function checkAndShowIcraOnboarding() {
 export function setupDeveloperPanel() {
   if (!state.user || state.user.email !== "admin@arlabs.aios.com") return;
 
-  // Add floating dev toggle button if not exists
-  let floatBtn = document.getElementById('dev-panel-floating-trigger');
-  if (!floatBtn) {
-    floatBtn = document.createElement('button');
-    floatBtn.id = 'dev-panel-floating-trigger';
-    floatBtn.innerHTML = '🛠️ Dev Panel';
-    floatBtn.style.cssText = 'position:fixed; bottom:80px; right:20px; z-index:99999; padding:12px 18px; font-family:var(--font-mono); font-weight:700; border-radius:30px; border:1px solid #2EC5FF; background:rgba(0,0,0,0.85); color:#2EC5FF; cursor:pointer; box-shadow:0 4px 15px rgba(46,197,255,0.3);';
-    floatBtn.onclick = () => {
-      const panel = document.getElementById('dev-control-panel-overlay');
-      if (panel) {
-        panel.style.display = 'flex';
-        updateDevIndicator();
-      }
-    };
-    document.body.appendChild(floatBtn);
-  }
-
-  const indicator = document.getElementById('dev-simulated-tier-indicator');
+  // Define updateDevIndicator FIRST so onclick closures below can safely reference it.
   const updateDevIndicator = () => {
+    const indicator = document.getElementById('dev-simulated-tier-indicator');
     if (indicator && state.user && state.user.subscription) {
       const tier = state.user.subscription.plan || 'Free';
       indicator.textContent = `${tier.toUpperCase()} ACTIVE`;
@@ -1772,14 +1756,29 @@ export function setupDeveloperPanel() {
     };
     state.user.plan_type = tier;
     localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-    
-    // Update Indicators
     updateDevIndicator();
     updateUserProfileHeader();
     showToast(`Developer Mode: Simulated account tier switched to ${tier}!`, "success");
   };
 
-  // Bind Buttons
+  // Add floating dev toggle button if not exists
+  let floatBtn = document.getElementById('dev-panel-floating-trigger');
+  if (!floatBtn) {
+    floatBtn = document.createElement('button');
+    floatBtn.id = 'dev-panel-floating-trigger';
+    floatBtn.innerHTML = '🛠️ Dev Panel';
+    floatBtn.style.cssText = 'position:fixed; bottom:80px; right:20px; z-index:99999; padding:12px 18px; font-family:var(--font-mono); font-weight:700; border-radius:30px; border:1px solid #2EC5FF; background:rgba(0,0,0,0.85); color:#2EC5FF; cursor:pointer; box-shadow:0 4px 15px rgba(46,197,255,0.3);';
+    floatBtn.onclick = () => {
+      const panel = document.getElementById('dev-control-panel-overlay');
+      if (panel) {
+        panel.style.display = 'flex';
+        updateDevIndicator();
+      }
+    };
+    document.body.appendChild(floatBtn);
+  }
+
+  // Bind Tier Buttons
   const btnStandard = document.getElementById('dev-set-standard');
   const btnTrial = document.getElementById('dev-set-trial');
   const btnPremium = document.getElementById('dev-set-premium');
@@ -1788,6 +1787,7 @@ export function setupDeveloperPanel() {
   if (btnTrial) btnTrial.onclick = () => setTier('Trial');
   if (btnPremium) btnPremium.onclick = () => setTier('Premium');
 
+  // Run once on setup to sync initial state
   updateDevIndicator();
 }
 

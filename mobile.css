@@ -1599,5 +1599,16 @@
     top: 24px !important;
     right: 24px !important;
   }
+
+  /* ── Developer Panel — Mobile Position Fix ───────────────────────────────
+     The floating dev panel button uses bottom:80px in JS inline styles.
+     On mobile, the bottom nav is ~60px tall, so push the button above it. */
+  #dev-panel-floating-trigger {
+    bottom: 80px !important;
+    right: 16px !important;
+    padding: 8px 14px !important;
+    font-size: 0.78rem !important;
+    border-radius: 20px !important;
+  }
 }
 

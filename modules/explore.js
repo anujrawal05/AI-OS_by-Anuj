@@ -3856,14 +3856,32 @@ export function renderPremiumToolCard(mapping) {
   const copyBtn = document.getElementById('btn-copy-premium-json');
   if (copyBtn) {
     copyBtn.addEventListener('click', () => {
-      const promptToCopy = state.generatedJSONPrompt || generateLocalJSONPrompt(state.goalText, state.userIdeaDescription || '');
+      const rawPrompt = state.generatedJSONPrompt || generateLocalJSONPrompt(state.goalText, state.userIdeaDescription || '');
+      let promptToCopy = rawPrompt;
+      
+      const isDebug = window.location.search.includes('debug=true') || state.aiosDebugMode;
+      if (!isDebug) {
+        try {
+          const parsed = JSON.parse(rawPrompt);
+          promptToCopy = (parsed.prompt_payload && parsed.prompt_payload.optimized_instruction)
+            ? parsed.prompt_payload.optimized_instruction
+            : (parsed.prompt_payload && parsed.prompt_payload.subject)
+              ? parsed.prompt_payload.subject
+              : (parsed.prompt_payload && parsed.prompt_payload.project_concept)
+                ? parsed.prompt_payload.project_concept
+                : rawPrompt;
+        } catch (e) {
+          promptToCopy = rawPrompt;
+        }
+      }
+      
       navigator.clipboard.writeText(promptToCopy).then(() => {
-        showToast("Copied JSON prompt to clipboard!");
+        showToast("Copied optimized prompt to clipboard!");
         if (window.gamification) {
           window.gamification.completeMissionTask('share');
         }
       }).catch(err => {
-        console.error("Failed to copy JSON: ", err);
+        console.error("Failed to copy prompt: ", err);
       });
     });
   }

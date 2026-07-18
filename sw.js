@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aios-v3.2.0'; // Bumped for premium navbar, popup and modal updates
+const CACHE_NAME = 'aios-v3.3.0'; // Bumped for production audit: market data fix, about modal fix, dev panel fix
 const ASSETS = [
   '/',
   '/index.html',

@@ -175,6 +175,35 @@ async function initBusiness() {
   if (obModal) document.body.appendChild(obModal);
   if (abModal) document.body.appendChild(abModal);
 
+  // ─── Wire About & Methodology button ─────────────────────────────────────
+  // The button exists in the nav but had no event listener — fixed here after
+  // the modals have been safely moved to document.body (prevents z-index traps).
+  const aboutTriggerBtn = document.getElementById('btn-about-trigger');
+  if (aboutTriggerBtn && abModal) {
+    aboutTriggerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      abModal.style.display = 'flex';
+      requestAnimationFrame(() => abModal.classList.add('active'));
+    });
+  }
+
+  // Wire close button inside the About modal (supports any .modal-close-btn inside it)
+  if (abModal) {
+    abModal.querySelectorAll('.modal-close-btn, .about-modal-close').forEach(closeBtn => {
+      closeBtn.addEventListener('click', () => {
+        abModal.classList.remove('active');
+        setTimeout(() => { abModal.style.display = 'none'; }, 300);
+      });
+    });
+    // Click backdrop to close
+    abModal.addEventListener('click', (e) => {
+      if (e.target === abModal) {
+        abModal.classList.remove('active');
+        setTimeout(() => { abModal.style.display = 'none'; }, 300);
+      }
+    });
+  }
+
   if (obModal) {
     const remembered = localStorage.getItem('aios_business_remember') === 'true';
     if (!remembered) {

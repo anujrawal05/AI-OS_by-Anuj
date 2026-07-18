@@ -8,16 +8,34 @@ function setCacheHeaders(res, duration) {
   res.setHeader('Cache-Control', `public, max-age=${duration}`);
 }
 
+// Static fallback values used on Vercel cold starts when in-memory cache is empty.
+// Reflects realistic market ranges as of 2026. Frontend will show these with a
+// "markets loading" indicator via the isMock flag.
+const MARKET_FALLBACK = {
+  quotes: {
+    NIFTY:     { priceINR: 25340,    changeINR: 112.5,  percentChange: 0.45,  isUSD: false },
+    BANKNIFTY: { priceINR: 54820,    changeINR: -210.0, percentChange: -0.38, isUSD: false },
+    SENSEX:    { priceINR: 83150,    changeINR: 320.0,  percentChange: 0.39,  isUSD: false },
+    BTC:       { priceUSD: 98500,    priceINR: 8229250, changeINR: 41500, percentChange: 0.51, isUSD: true },
+    NVDA:      { priceUSD: 136.80,   priceINR: 11432,   changeINR: 95,    percentChange: 0.84, isUSD: true }
+  },
+  usdInrRate: 83.5
+};
+
 // 1. GET /api/market
 router.get('/', (req, res) => {
   setCacheHeaders(res, 30);
   const quotesData = cache.quotes.data;
   if (!quotesData) {
-    return res.status(503).json({
-      success: false,
-      status: 'offline',
-      message: 'Market data is warming up or currently unavailable',
-      error: cache.quotes.error
+    // Cold start: return static fallback instead of 503 — market widget shows
+    // values with a subtle "markets loading" indicator via isMock flag
+    logger.warn('[Market Routes] Cache empty on cold start — serving static fallback');
+    return res.status(200).json({
+      success: true,
+      status: 'warming',
+      isMock: true,
+      timestamp: Date.now(),
+      ...MARKET_FALLBACK
     });
   }
   return res.json({
