@@ -2231,25 +2231,30 @@
         });
       }
 
-      // Device-specific video src swap on mobile devices
+      // Device-specific video src swap on mobile devices vs desktop
       const isMobile = window.matchMedia('(max-width: 767px)').matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (isMobile) {
-        // 1. Main system guide video
-        const guideVideo = document.getElementById('system-guide-video');
-        if (guideVideo) {
-          const source = guideVideo.querySelector('source');
-          if (source) {
-            source.setAttribute('src', 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784232558/lv_0_20260717001233_taor9g.mp4');
-            guideVideo.load();
-          }
+      
+      const mobileVideoUrl = 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784232558/lv_0_20260717001233_taor9g.mp4';
+      const desktopVideoUrl = 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784145947/lv_0_20260715231035_dywdpn.mp4';
+      
+      const targetUrl = isMobile ? mobileVideoUrl : desktopVideoUrl;
+
+      // 1. Main system guide video
+      const guideVideo = document.getElementById('system-guide-video');
+      if (guideVideo) {
+        const source = guideVideo.querySelector('source');
+        if (source && source.getAttribute('src') !== targetUrl) {
+          source.setAttribute('src', targetUrl);
+          guideVideo.load();
         }
-        // 2. ICRA replay video in modal
-        if (replayVideo) {
-          const source = replayVideo.querySelector('source');
-          if (source) {
-            source.setAttribute('src', 'https://res.cloudinary.com/x6vd3gvv/video/upload/v1784232558/lv_0_20260717001233_taor9g.mp4');
-            replayVideo.load();
-          }
+      }
+
+      // 2. ICRA replay video in modal
+      if (replayVideo) {
+        const source = replayVideo.querySelector('source');
+        if (source && source.getAttribute('src') !== targetUrl) {
+          source.setAttribute('src', targetUrl);
+          replayVideo.load();
         }
       }
     })();

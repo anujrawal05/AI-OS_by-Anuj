@@ -10,6 +10,7 @@ const strategistRoutes = require('./routes/strategistRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const marketRoutes = require('./routes/marketRoutes');
+const promptRoutes = require('./routes/promptRoutes');
 
 const { requestLogger } = require('./middleware/loggingMiddleware');
 const prisma = require('./lib/db');
@@ -88,6 +89,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/strategist', strategistRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/market', marketRoutes);
+app.use('/api/prompt', promptRoutes);
 app.use('/api', progressRoutes);
 
 // Serve frontend static assets from workspace root (e.g. index.html, modules/, locales/)

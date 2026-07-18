@@ -2826,7 +2826,8 @@ export function generateLocalJSONPrompt(goalText, description) {
       aesthetic_override: {
         neon_glow: "enabled",
         volumetric_smoke: "enabled"
-      }
+      },
+      optimized_instruction: `Create a cinematic, highly detailed video of ${desc}. Camera tracking shot with cinematic lighting, volumetric smoke, and neon glow effects. 16:9 aspect ratio, 30fps.`
     };
   } else if (goalLower.includes("image") || goalLower.includes("photo") || goalLower.includes("picture")) {
     jsonPrompt.prompt_payload = {
@@ -2838,7 +2839,8 @@ export function generateLocalJSONPrompt(goalText, description) {
       render_settings: {
         resolution: "4K",
         contrast: "high"
-      }
+      },
+      optimized_instruction: `Hyper-realistic professional photograph of ${desc}. Sharp focus with 85mm lens, f/1.8 aperture, soft lighting, 4K high contrast.`
     };
   } else if (goalLower.includes("code") || goalLower.includes("software") || goalLower.includes("assistant") || goalLower.includes("personal ai") || goalLower.includes("website") || goalLower.includes("web")) {
     jsonPrompt.prompt_payload = {
@@ -2858,7 +2860,8 @@ export function generateLocalJSONPrompt(goalText, description) {
         font_family: "Outfit, Inter, sans-serif",
         color_scheme: "HSL purple/blue dark gradient",
         animations: "smooth hover transitions, keyframe fades"
-      }
+      },
+      optimized_instruction: `Build a modern responsive website using Vanilla JS and Tailwind CSS. Concept: ${desc}. Implement premium dark mode, glassmorphism, responsive components including navigation header, hero visualizer, features grid, interactive dashboard, and a footer.`
     };
   } else if (goalLower.includes("logo") || goalLower.includes("design") || goalLower.includes("brand")) {
     jsonPrompt.prompt_payload = {
@@ -2867,7 +2870,8 @@ export function generateLocalJSONPrompt(goalText, description) {
       brand_concept: desc,
       palette: ["Deep Violet", "Electric Cyan", "Dark Slate"],
       typography_style: "Sans-serif, geometric, futuristic font",
-      elements: "Clean geometry, abstract logo mark, high contrast background"
+      elements: "Clean geometry, abstract logo mark, high contrast background",
+      optimized_instruction: `Design a clean, minimalist flat vector logo mark for ${desc}. Modern tech aesthetic with deep violet, electric cyan, and dark slate colors. High contrast layout.`
     };
   } else if (goalLower.includes("app") || goalLower.includes("android")) {
     jsonPrompt.prompt_payload = {
@@ -2879,6 +2883,7 @@ export function generateLocalJSONPrompt(goalText, description) {
         "Real-time push notifications",
         "Offline-first synchronization"
       ],
+      optimized_instruction: `Develop an Android mobile application built with Flutter. Concept: ${desc}. Features include user authentication, interactive dashboard, push notifications, and offline synchronization.`,
       description: desc,
       theme: "Material Design 3, dynamic color theme matching user wallpaper",
       architecture: "Clean architecture, MVVM pattern"
@@ -3783,9 +3788,20 @@ export function renderPremiumToolCard(mapping) {
           if (outputWrapper) {
             outputWrapper.style.display = 'block';
             const codeEl = outputWrapper.querySelector('pre code');
-            if (codeEl) codeEl.textContent = jsonStr;
+            if (codeEl) {
+              // Extract the final user-facing optimized prompt instruction. 
+              // Hide the packaging JSON unless debug mode is enabled.
+              const isDebug = window.location.search.includes('debug=true') || state.aiosDebugMode;
+              if (isDebug) {
+                codeEl.textContent = jsonStr;
+              } else {
+                codeEl.textContent = (data.prompt.prompt_payload && data.prompt.prompt_payload.optimized_instruction) 
+                  ? data.prompt.prompt_payload.optimized_instruction 
+                  : jsonStr;
+              }
+            }
           }
-          showToast("JSON Prompt generated via Llama 3.3 successfully!");
+          showToast("Optimized prompt generated successfully!");
         } else {
           throw new Error('Invalid response format');
         }
@@ -3808,9 +3824,27 @@ export function renderPremiumToolCard(mapping) {
         if (outputWrapper) {
           outputWrapper.style.display = 'block';
           const codeEl = outputWrapper.querySelector('pre code');
-          if (codeEl) codeEl.textContent = jsonStr;
+          if (codeEl) {
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const isDebug = window.location.search.includes('debug=true') || state.aiosDebugMode;
+              if (isDebug) {
+                codeEl.textContent = jsonStr;
+              } else {
+                codeEl.textContent = (parsed.prompt_payload && parsed.prompt_payload.optimized_instruction) 
+                  ? parsed.prompt_payload.optimized_instruction 
+                  : (parsed.prompt_payload && parsed.prompt_payload.subject)
+                    ? parsed.prompt_payload.subject
+                    : (parsed.prompt_payload && parsed.prompt_payload.project_concept)
+                      ? parsed.prompt_payload.project_concept
+                      : jsonStr;
+              }
+            } catch (e) {
+              codeEl.textContent = jsonStr;
+            }
+          }
         }
-        showToast("Generated static JSON prompt (Offline Fallback)");
+        showToast("Generated optimized prompt (Offline Fallback)");
       } finally {
         genBtn.disabled = false;
         genBtn.innerHTML = originalHTML;

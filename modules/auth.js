@@ -294,6 +294,41 @@ export async function handleEmailSignin() {
     return;
   }
   
+  // Developer Test Account Local Bypass
+  if (email === "admin@arlabs.aios.com" && password === "aios.arlab.secrate.entry") {
+    clearAuthFieldErrors();
+    
+    // Simulate user state
+    state.user = {
+      id: "DEV_MOCK_USER_ID",
+      email: "admin@arlabs.aios.com",
+      role: "Developer",
+      profile: { name: "Developer Panel", profession: "Developer" },
+      preferences: { onboardingCompleted: false, theme: "Dark", language: "English" },
+      subscription: { plan: "Premium", status: "Active", currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }
+    };
+    
+    localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+    sessionStorage.setItem('aios_new_signup', 'true'); // Forces onboarding video
+    
+    const authOverlay = document.getElementById('auth-modal-overlay');
+    if (authOverlay) authOverlay.style.display = 'none';
+    
+    // Enable Dev Panel
+    setupDeveloperPanel();
+    
+    updateUserProfileHeader();
+    if (window.initTrialClock) window.initTrialClock();
+    
+    // Show onboarding video immediately
+    if (typeof window.checkAndShowIcraOnboarding === 'function') {
+      window.checkAndShowIcraOnboarding();
+    }
+    
+    showToast("Logged in as Developer Test Account!", "success");
+    return;
+  }
+
   try {
     const data = await apiCall('/api/auth/login', {
       method: 'POST',
@@ -1643,21 +1678,35 @@ export async function checkAndShowIcraOnboarding() {
 
       // Clean up restrictions
       window.removeEventListener('keydown', preventKeys);
-      video.pause();
+      
+      // Stop and reset audio/video immediately
+      try {
+        video.pause();
+        video.currentTime = 0;
+        // Unmount sources to kill background downloads / audio leaks
+        const sources = video.querySelectorAll('source');
+        sources.forEach(src => src.removeAttribute('src'));
+        video.load(); 
+      } catch (err) {
+        console.warn("Failed to unmount video sources safely:", err);
+      }
+
       overlay.style.display = 'none';
       document.body.style.overflow = '';
       sessionStorage.removeItem('aios_new_signup');
 
-      // Update flag in backend DB
-      try {
-        const data = await apiCall('/api/auth/complete-onboarding', { method: 'POST' });
-        if (data.success) {
-          state.user.preferences = data.preferences;
-          localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
-          updateUserProfileHeader();
+      // Update flag in backend DB (skip for simulated developer account)
+      if (state.user && state.user.email !== "admin@arlabs.aios.com") {
+        try {
+          const data = await apiCall('/api/auth/complete-onboarding', { method: 'POST' });
+          if (data.success) {
+            state.user.preferences = data.preferences;
+            localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+            updateUserProfileHeader();
+          }
+        } catch (err) {
+          console.error("Failed to persist onboarding state in backend:", err);
         }
-      } catch (err) {
-        console.error("Failed to persist onboarding state in backend:", err);
       }
     };
 
@@ -1683,6 +1732,65 @@ export async function checkAndShowIcraOnboarding() {
   }
 }
 
+export function setupDeveloperPanel() {
+  if (!state.user || state.user.email !== "admin@arlabs.aios.com") return;
+
+  // Add floating dev toggle button if not exists
+  let floatBtn = document.getElementById('dev-panel-floating-trigger');
+  if (!floatBtn) {
+    floatBtn = document.createElement('button');
+    floatBtn.id = 'dev-panel-floating-trigger';
+    floatBtn.innerHTML = '🛠️ Dev Panel';
+    floatBtn.style.cssText = 'position:fixed; bottom:80px; right:20px; z-index:99999; padding:12px 18px; font-family:var(--font-mono); font-weight:700; border-radius:30px; border:1px solid #2EC5FF; background:rgba(0,0,0,0.85); color:#2EC5FF; cursor:pointer; box-shadow:0 4px 15px rgba(46,197,255,0.3);';
+    floatBtn.onclick = () => {
+      const panel = document.getElementById('dev-control-panel-overlay');
+      if (panel) {
+        panel.style.display = 'flex';
+        updateDevIndicator();
+      }
+    };
+    document.body.appendChild(floatBtn);
+  }
+
+  const indicator = document.getElementById('dev-simulated-tier-indicator');
+  const updateDevIndicator = () => {
+    if (indicator && state.user && state.user.subscription) {
+      const tier = state.user.subscription.plan || 'Free';
+      indicator.textContent = `${tier.toUpperCase()} ACTIVE`;
+      if (tier === 'Premium') indicator.style.color = '#00D084';
+      else if (tier === 'Trial') indicator.style.color = '#fbbf24';
+      else indicator.style.color = '#fff';
+    }
+  };
+
+  const setTier = (tier) => {
+    if (!state.user) return;
+    state.user.subscription = {
+      plan: tier,
+      status: 'Active',
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    };
+    state.user.plan_type = tier;
+    localStorage.setItem('aios_user_profile', JSON.stringify(state.user));
+    
+    // Update Indicators
+    updateDevIndicator();
+    updateUserProfileHeader();
+    showToast(`Developer Mode: Simulated account tier switched to ${tier}!`, "success");
+  };
+
+  // Bind Buttons
+  const btnStandard = document.getElementById('dev-set-standard');
+  const btnTrial = document.getElementById('dev-set-trial');
+  const btnPremium = document.getElementById('dev-set-premium');
+
+  if (btnStandard) btnStandard.onclick = () => setTier('Standard');
+  if (btnTrial) btnTrial.onclick = () => setTier('Trial');
+  if (btnPremium) btnPremium.onclick = () => setTier('Premium');
+
+  updateDevIndicator();
+}
+
 // Global exposure for backwards compatibility with inline HTML events
 window.isUserAuthenticated = isUserAuthenticated;
 window.updateUserProfileHeader = updateUserProfileHeader;
@@ -1700,10 +1808,21 @@ window.showProfileModal = showProfileModal;
 window.handleProfileSave = handleProfileSave;
 window.handleCouponLogin = handleCouponLogin;
 window.handlePremiumUpgrade = handlePremiumUpgrade;
-window.logoutUser = logoutUser;
+window.logoutUser = () => {
+  const floatBtn = document.getElementById('dev-panel-floating-trigger');
+  if (floatBtn) floatBtn.remove();
+  logoutUser();
+};
 window.hideAuthModals = hideAuthModals;
-window.initAuthSystem = initAuthSystem;
+window.initAuthSystem = () => {
+  initAuthSystem();
+  // Auto-restore Dev Panel if reloaded and still logged in as dev
+  if (state.user && state.user.email === "admin@arlabs.aios.com") {
+    setupDeveloperPanel();
+  }
+};
 window.showAdminModal = showAdminModal;
 window.updateUserTier = updateUserTier;
 window.toggleUserSuspension = toggleUserSuspension;
 window.checkAndShowIcraOnboarding = checkAndShowIcraOnboarding;
+window.setupDeveloperPanel = setupDeveloperPanel;
