@@ -9,8 +9,11 @@ export function verifyQuizAnswer(btnElement, radioGroupName, expectedValue, expl
   const feedbackBox = container.querySelector('.quiz-feedback-box');
   const selectedRadio = container.querySelector(`input[name="${radioGroupName}"]:checked`);
   
-  const isHi = state.language === 'hi';
-  const isHng = state.language === 'hinglish';
+  // BUG-LANG-001 fix: state.language does not exist on the state object.
+  // Language is stored in localStorage under 'aios_language' (set by ui.js).
+  const lang = localStorage.getItem('aios_language') || 'English';
+  const isHi = lang === 'Hindi';
+  const isHng = lang === 'Hinglish';
   
   let correctTitle = "✅ Correct!";
   let incorrectTitle = "❌ Incorrect.";

@@ -105,6 +105,33 @@ export async function loadLiveDashboardMetrics() {
     if (contentEl) contentEl.style.display = 'none';
   }
 
+  // BUG-026 fix: 8-second maximum wait — force offline fallback if API is hanging
+  const loadingTimeout = setTimeout(() => {
+    if (loadingEl && loadingEl.style.display === 'block') {
+      loadingEl.style.display = 'none';
+      if (contentEl) {
+        contentEl.style.display = 'block';
+        let footerEl = document.getElementById('market-data-footer');
+        if (!footerEl) {
+          footerEl = document.createElement('div');
+          footerEl.id = 'market-data-footer';
+          footerEl.style.cssText = 'margin-top: 12px; font-size: 0.72rem; color: var(--bus-text-secondary); font-family: var(--font-mono); border-top: 1px solid var(--bus-border); padding-top: 10px;';
+          contentEl.appendChild(footerEl);
+        }
+        footerEl.innerHTML = `<span style="background: rgba(255,74,74,0.12); color: #ff7070; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold;">● TIMEOUT</span> <span>Market data unavailable — backend may be cold-starting, will retry shortly</span>`;
+        if (tbody && !tbody.innerHTML.trim()) {
+          const placeholders = ['NIFTY 50', 'Sensex', 'BTC (Bitcoin)', 'NVDA (NVIDIA)', 'Gold 24K (10g)'];
+          tbody.innerHTML = placeholders.map(name => `
+            <tr>
+              <td style="font-family: var(--font-mono); color: #fff;">${name}</td>
+              <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-secondary);">—</td>
+              <td style="font-family: var(--font-mono); text-align: right; color: var(--bus-text-secondary);">—</td>
+            </tr>`).join('');
+        }
+      }
+    }
+  }, 8000);
+
   try {
     // 1. Fetch live stock/crypto quotes and exchange rate
     const data = await apiCall('/api/market');
@@ -300,11 +327,13 @@ export async function loadLiveDashboardMetrics() {
       `;
     }
 
+    clearTimeout(loadingTimeout); // cancel the 8s fallback since we succeeded
     if (loadingEl) loadingEl.style.display = 'none';
     if (errorEl) errorEl.style.display = 'none';
     if (contentEl) contentEl.style.display = 'block';
 
   } catch (err) {
+    clearTimeout(loadingTimeout); // cancel the 8s fallback since catch path handles UI
     console.error("[Live Market Metrics Load Error] Failed to retrieve live quote data:", err);
     // Graceful offline UI — show a premium-styled message, never a raw error string
     if (loadingEl) loadingEl.style.display = 'none';
@@ -342,7 +371,30 @@ export function initExpandSection() {
   const chatLogs = document.getElementById('chat-strategist-logs');
   const outputPanel = document.getElementById('strategist-tabs-panel');
   const btnAnalyze = document.getElementById('btn-strategist-analyze');
-  
+  const strategistChatInputBar = document.getElementById('strategist-chat-input-bar');
+  const expandPremiumLock = document.getElementById('expand-premium-lock');
+  const buildPremiumLock = document.getElementById('build-premium-lock');
+  const blueprintOutputContents = document.getElementById('blueprint-output-contents');
+
+  // ── Premium visibility guard (BUG-009 + BUG-007 fix) ──────────────────────
+  // Determine if this user has premium or trial access.
+  const isPremiumOrTrial = state.user && (
+    state.user.plan_type === 'Premium' ||
+    state.user.plan_type === 'Trial' ||
+    state.user.subscription?.plan === 'Premium' ||
+    state.user.subscription?.plan === 'Trial'
+  );
+
+  // Grow tab: show chat UI for premium; show lock for others
+  if (expandPremiumLock) expandPremiumLock.style.display = isPremiumOrTrial ? 'none' : 'flex';
+  if (chatLogs) chatLogs.style.display = isPremiumOrTrial ? 'flex' : 'none';
+  if (strategistChatInputBar) strategistChatInputBar.style.display = isPremiumOrTrial ? 'flex' : 'none';
+
+  // Build tab: show lock for non-premium; show empty state for premium
+  if (buildPremiumLock) buildPremiumLock.style.display = isPremiumOrTrial ? 'none' : 'flex';
+  if (blueprintOutputContents) blueprintOutputContents.style.display = isPremiumOrTrial ? 'block' : 'none';
+  // ───────────────────────────────────────────────────────────────────────────
+
   const strategTabBtns = document.querySelectorAll('.strategist-tab-btn');
   strategTabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -612,14 +664,21 @@ export function initExpandSection() {
   loadLiveDashboardMetrics();
   loadLiveBusinessNews();
 
-  // Prevent multiple intervals stacking by clearing any prior instance
+  // Prevent multiple intervals stacking by clearing any prior instances (BUG-002 fix)
   if (window.marketRefreshInterval) {
     clearInterval(window.marketRefreshInterval);
   }
-  // Setup 60-second auto-refresh
+  if (window.newsRefreshInterval) {
+    clearInterval(window.newsRefreshInterval);
+  }
+  // Setup 60-second auto-refresh for market data
   window.marketRefreshInterval = setInterval(() => {
     loadLiveDashboardMetrics();
   }, 60000);
+  // Setup 5-minute auto-refresh for news
+  window.newsRefreshInterval = setInterval(() => {
+    loadLiveBusinessNews();
+  }, 300000);
 }
 
 // Global exposure for backwards compatibility

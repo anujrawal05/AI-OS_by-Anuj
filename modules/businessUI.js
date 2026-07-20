@@ -62,6 +62,9 @@ export function switchBusinessWorkspace(workspaceName) {
 export function toggleBusinessSectionView() {
   const buildLock = document.getElementById('build-premium-lock');
   const expandLock = document.getElementById('expand-premium-lock');
+  const chatLogs = document.getElementById('chat-strategist-logs');
+  const chatInputBar = document.getElementById('strategist-chat-input-bar');
+  const blueprintOutputContents = document.getElementById('blueprint-output-contents');
   
   const isPremium = state.user && (
     state.user.plan_type === 'Premium' || 
@@ -72,37 +75,47 @@ export function toggleBusinessSectionView() {
     state.user.subscription?.plan === 'Trial'
   );
   
-  if (isPremium) {
+  const hasAccess = isPremium || isTrial;
+
+  if (hasAccess) {
     if (buildLock) buildLock.style.display = 'none';
     if (expandLock) expandLock.style.display = 'none';
+    // Show chat UI for premium/trial users (BUG-009 fix)
+    if (chatLogs) chatLogs.style.display = 'flex';
+    if (chatInputBar) chatInputBar.style.display = 'flex';
+    // Show blueprint output area for premium/trial (BUG-007 fix)
+    if (blueprintOutputContents) blueprintOutputContents.style.display = 'block';
     
-    // Disable strategist blur gate
-    const stratBlurGate = document.getElementById('strategist-blur-gate');
-    if (stratBlurGate) {
-      stratBlurGate.classList.remove('premium-blur-gate');
-      const blurContent = stratBlurGate.querySelector('.blur-content-wrapper');
-      if (blurContent) blurContent.classList.remove('blur-content');
-      const overlay = document.getElementById('strategist-gate-overlay');
-      if (overlay) overlay.style.display = 'none';
-    }
-  } else if (isTrial) {
-    // Hide main locks for trial users so they can compile/chat
-    if (buildLock) buildLock.style.display = 'none';
-    if (expandLock) expandLock.style.display = 'none';
-    
-    // Enable strategist blur gate
-    const stratBlurGate = document.getElementById('strategist-blur-gate');
-    if (stratBlurGate) {
-      stratBlurGate.classList.add('premium-blur-gate');
-      const blurContent = stratBlurGate.querySelector('.blur-content-wrapper');
-      if (blurContent) blurContent.classList.add('blur-content');
-      const overlay = document.getElementById('strategist-gate-overlay');
-      if (overlay) overlay.style.display = 'flex';
+    // Disable strategist blur gate for premium users
+    if (isPremium) {
+      const stratBlurGate = document.getElementById('strategist-blur-gate');
+      if (stratBlurGate) {
+        stratBlurGate.classList.remove('premium-blur-gate');
+        const blurContent = stratBlurGate.querySelector('.blur-content-wrapper');
+        if (blurContent) blurContent.classList.remove('blur-content');
+        const overlay = document.getElementById('strategist-gate-overlay');
+        if (overlay) overlay.style.display = 'none';
+      }
+    } else if (isTrial) {
+      // Enable strategist blur gate for trial users (partial access)
+      const stratBlurGate = document.getElementById('strategist-blur-gate');
+      if (stratBlurGate) {
+        stratBlurGate.classList.add('premium-blur-gate');
+        const blurContent = stratBlurGate.querySelector('.blur-content-wrapper');
+        if (blurContent) blurContent.classList.add('blur-content');
+        const overlay = document.getElementById('strategist-gate-overlay');
+        if (overlay) overlay.style.display = 'flex';
+      }
     }
   } else {
-    // Basic/Locked
+    // Basic/Locked — show locks, hide chat UI
     if (buildLock) buildLock.style.display = 'flex';
     if (expandLock) expandLock.style.display = 'flex';
+    // Hide chat UI for non-premium users
+    if (chatLogs) chatLogs.style.display = 'none';
+    if (chatInputBar) chatInputBar.style.display = 'none';
+    // Hide blueprint output area for non-premium
+    if (blueprintOutputContents) blueprintOutputContents.style.display = 'none';
     
     // Hide strategist blur gate overlay to prevent overlap with main locks
     const overlay = document.getElementById('strategist-gate-overlay');

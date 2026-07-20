@@ -3905,7 +3905,8 @@ select option {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100vh; /* fallback for browsers without dvh support */
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -3931,7 +3932,8 @@ select option {
     top: 0;
     right: -100%;
     width: 290px;
-    height: 100vh;
+    height: 100vh; /* fallback */
+    height: 100dvh;
     background-color: var(--bg-color);
     border-left: 1px solid var(--border-color);
     flex-direction: column;
@@ -4238,9 +4240,22 @@ html {
     margin: 20px 0 !important;
   }
 
-  /* --- Filter nav on roadmap --- */
+  /* --- Filter nav on roadmap: scrollable chips instead of hidden (BUG-008 fix) --- */
   .filter-nav {
-    display: none !important;
+    display: flex !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 6px !important;
+    padding-bottom: 4px !important;
+  }
+  .filter-nav::-webkit-scrollbar { display: none; }
+  .filter-nav .filter-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: 0.72rem !important;
+    padding: 5px 12px !important;
   }
 }
 
@@ -4317,9 +4332,19 @@ html {
     padding: 50px 0 !important;
   }
 
-  /* --- Filter nav on roadmap --- */
+  /* --- Filter nav on roadmap: scrollable chips on large phones (BUG-008) --- */
   .filter-nav {
-    display: none !important;
+    display: flex !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 8px !important;
+  }
+  .filter-nav::-webkit-scrollbar { display: none; }
+  .filter-nav .filter-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
 }
 
@@ -4527,10 +4552,14 @@ html {
     gap: 20px;
   }
 
-  /* --- Filter nav hide on small screens --- */
+  /* --- Filter nav on roadmap: scrollable chips on tablet (BUG-008) --- */
   .filter-nav {
-    display: none;
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
   }
+  .filter-nav::-webkit-scrollbar { display: none; }
 }
 
 /* -------------------------------------------------------------------------
@@ -10511,7 +10540,8 @@ body.modal-open {
 
 body.no-scroll {
   overflow: hidden !important;
-  height: 100vh !important;
+  height: 100vh !important; /* fallback */
+  height: 100dvh !important;
 }
 
 /* Mobile Comparison Cards Styling */

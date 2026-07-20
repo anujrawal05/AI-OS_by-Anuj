@@ -103,6 +103,9 @@ export function updateUserProfileHeader() {
           <a href="#" id="btn-header-logout" class="profile-dropdown-item logout">
             🔑 &nbsp; Sign Out
           </a>
+          <a href="#" id="btn-dropdown-replay-intro" class="profile-dropdown-item" style="font-size:0.85rem; color: #2EC5FF;">
+            ▶ &nbsp; Replay Introduction
+          </a>
         </div>
       </div>
     `;
@@ -139,6 +142,20 @@ export function updateUserProfileHeader() {
       directLogoutBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         logoutUser();
+      });
+    }
+
+    // Replay Introduction dropdown item
+    const replayIntroBtn = document.getElementById('btn-dropdown-replay-intro');
+    if (replayIntroBtn) {
+      replayIntroBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (dropdown) dropdown.classList.remove('active');
+        sessionStorage.setItem('aios_new_signup', 'true');
+        if (typeof checkAndShowIcraOnboarding === 'function') {
+          checkAndShowIcraOnboarding();
+        }
       });
     }
   } else {
@@ -1691,11 +1708,18 @@ export async function checkAndShowIcraOnboarding() {
         console.warn("Failed to unmount video sources safely:", err);
       }
 
+      // BUG-FIX: Always release the scroll-lock and hide overlay FIRST,
+      // before any async API call. If the API fails the user is never trapped.
       overlay.style.display = 'none';
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = ''; // clear html-level lock too
+      document.body.style.overflowY = '';
+      // Trigger a reflow so mobile browsers re-calculate scroll boundaries
+      window.dispatchEvent(new Event('resize'));
       sessionStorage.removeItem('aios_new_signup');
 
       // Update flag in backend DB (skip for simulated developer account)
+      // Wrapped in try/catch — failure here must never affect UX (scroll is already released above)
       if (state.user && state.user.email !== "admin@arlabs.aios.com") {
         try {
           const data = await apiCall('/api/auth/complete-onboarding', { method: 'POST' });
@@ -1705,7 +1729,8 @@ export async function checkAndShowIcraOnboarding() {
             updateUserProfileHeader();
           }
         } catch (err) {
-          console.error("Failed to persist onboarding state in backend:", err);
+          console.error("Failed to persist onboarding state in backend (non-fatal):", err);
+          // Intentionally no showToast here — user already has access, this is a background persistence failure
         }
       }
     };

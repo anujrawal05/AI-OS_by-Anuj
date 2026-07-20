@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aios-v3.3.0'; // Bumped for production audit: market data fix, about modal fix, dev panel fix
+const CACHE_NAME = 'aios-v3.4.0'; // Bumped: apiClient timeout, learn.js lang fix, auth autocomplete, businessUI premium gate, market loader timeout
 const ASSETS = [
   '/',
   '/index.html',

@@ -10,8 +10,8 @@
        Set this to your deployed backend URL (Railway/Render/etc.)
        The backend must be running and CORS must list this frontend origin. -->
   <meta name="api-base-url" content="">
-  <!-- Razorpay public key — replace rzp_test_* with rzp_live_* when going live -->
-  <meta name="razorpay-key-id" content="rzp_test_T4Mr1D3RBNpiEi">
+  <!-- Razorpay key is fetched securely at runtime from /api/payments/key — do NOT embed it in HTML -->
+  <!-- meta name="razorpay-key-id" removed for security (BUG-001 fix) -->
 
   <link rel="icon" type="image/png" href="aios_logo.png">
   <link rel="apple-touch-icon" href="aios_logo.png">
@@ -399,7 +399,7 @@
 
               <!-- Input 4: Language Selection -->
               <div class="control-group-input">
-                <label class="control-label-style" for="control-lang-select" data-i18n="dashboard.langLabel">2. Target
+                <label class="control-label-style" for="control-lang-select" data-i18n="dashboard.langLabel">4. Target
                   Language</label>
                 <div class="select-wrap">
                   <select id="control-lang-select" class="control-dropdown-select">
@@ -951,6 +951,7 @@
             Address</label>
           <input type="email" id="auth-email" placeholder="Enter your email"
             style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;"
+            autocomplete="email"
             required>
         </div>
         <!-- BUG-022: Name field shown only in signup mode (hidden in signin/forgot) -->
@@ -967,6 +968,7 @@
             style="display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; font-weight: 600;">Password</label>
           <input type="password" id="auth-password" placeholder="Enter your password"
             style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 0.9rem;"
+            autocomplete="current-password"
             required>
         </div>
         <div id="auth-modal-error"
@@ -1175,13 +1177,13 @@
             style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
             <option value="">Select Profession</option>
             <option value="Student">Student</option>
-            <option value="Job">Job</option>
+            <option value="Job">Job (Employed)</option>
             <option value="Intern">Intern</option>
-            <option value="Unemployed">Unemployed</option>
+            <option value="Freelancer">Freelancer</option>
+            <option value="Business">Business Owner</option>
+            <option value="Startup">Startup Founder</option>
             <option value="Homemaker">Homemaker</option>
-            <option value="Business">Business</option>
-            <option value="Startup">Startup</option>
-            <option value="Not Available">Not Available</option>
+            <option value="Prefer Not To Say">Prefer Not To Say</option>
           </select>
         </div>
 
@@ -1623,13 +1625,13 @@
                 style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #111; color: #fff;">
                 <option value="">Select Profession</option>
                 <option value="Student">Student</option>
-                <option value="Job">Job</option>
+                <option value="Job">Job (Employed)</option>
                 <option value="Intern">Intern</option>
-                <option value="Unemployed">Unemployed</option>
+                <option value="Freelancer">Freelancer</option>
+                <option value="Business">Business Owner</option>
+                <option value="Startup">Startup Founder</option>
                 <option value="Homemaker">Homemaker</option>
-                <option value="Business">Business</option>
-                <option value="Startup">Startup</option>
-                <option value="Not Available">Not Available</option>
+                <option value="Prefer Not To Say">Prefer Not To Say</option>
               </select>
             </div>
 
@@ -1673,6 +1675,36 @@
 
             <button type="submit" class="btn btn-primary"
               style="width: 100%; padding: 12px; font-weight: 600; margin-top: 10px;">Save Changes</button>
+
+            <!-- Settings Actions -->
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; gap: 10px;">
+              <button type="button" id="btn-pf-replay-intro"
+                onclick="sessionStorage.setItem('aios_new_signup','true'); document.getElementById('profile-modal-overlay').style.display='none'; if(typeof window.checkAndShowIcraOnboarding==='function') window.checkAndShowIcraOnboarding();"
+                style="flex: 1; padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(46,197,255,0.3); background: rgba(46,197,255,0.05); color: #2EC5FF; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                onmouseenter="this.style.background='rgba(46,197,255,0.12)'"
+                onmouseleave="this.style.background='rgba(46,197,255,0.05)'">
+                ▶ Replay Intro
+              </button>
+              <button type="button" id="btn-pf-share"
+                onclick="if(navigator.share){navigator.share({title:'AI-OS by A.R. Labs',text:'Check out AI-OS — your all-in-one AI workflow platform!',url:'https://ai-os-powerd-by-ar-labs.vercel.app'})}else{navigator.clipboard&&navigator.clipboard.writeText('https://ai-os-powerd-by-ar-labs.vercel.app').then(()=>alert('Link copied!'))}"
+                style="flex: 1; padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(0,208,132,0.3); background: rgba(0,208,132,0.05); color: #00D084; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                onmouseenter="this.style.background='rgba(0,208,132,0.12)'"
+                onmouseleave="this.style.background='rgba(0,208,132,0.05)'">
+                🔗 Share App
+              </button>
+            </div>
+
+            <!-- Delete Account — BUG-020 fix: ported from business hub profile modal -->
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,74,74,0.2);">
+              <button type="button" id="btn-pf-delete-account"
+                onclick="if(confirm('Are you sure you want to permanently delete your AI-OS account? This cannot be undone.')) { window.logoutUser && window.logoutUser(); window.location.href = '/'; }"
+                style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,74,74,0.4); background: rgba(255,74,74,0.05); color: #ff4a4a; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                onmouseenter="this.style.background='rgba(255,74,74,0.12)'"
+                onmouseleave="this.style.background='rgba(255,74,74,0.05)'">
+                🗑️ Delete Account
+              </button>
+              <p style="color: rgba(255,255,255,0.35); font-size: 0.72rem; margin-top: 6px; text-align: center;">This action is irreversible. All your data will be permanently removed.</p>
+            </div>
           </form>
         </div>
       </div>
@@ -2236,7 +2268,7 @@
               // Dynamically load the core website app modules only after loading completes
               const scriptEl = document.createElement('script');
               scriptEl.type = 'module';
-              scriptEl.src = 'app.js?v=3.1.0';
+              scriptEl.src = 'app.js?v=3.4.0';
               document.body.appendChild(scriptEl);
             },
             { once: true }

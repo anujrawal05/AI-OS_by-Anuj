@@ -83,9 +83,17 @@ export async function apiCall(endpoint, options = {}) {
 
   const url = `${API_BASE_URL}${endpoint}`;
   
+  // BUG-PERF-001 fix: Add AbortController-based timeout so no request can hang forever.
+  // Background session checks get 8s, all other requests get 15s.
+  const isBackgroundCheck = endpoint.includes('/api/auth/me');
+  const timeoutMs = isBackgroundCheck ? 8000 : 15000;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
   // Enforce session credentials sharing for cookies
   const defaultOptions = {
     ...options,
+    signal: controller.signal,
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {})
@@ -95,6 +103,7 @@ export async function apiCall(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, defaultOptions);
+    clearTimeout(timeoutId); // cancel timeout since we got a response
     
     // 1. Handling HTTP 401 Unauthorized
     if (response.status === 401) {
@@ -155,6 +164,16 @@ export async function apiCall(endpoint, options = {}) {
     return await response.json();
 
   } catch (err) {
+    clearTimeout(timeoutId); // always clean up the timer on any error path
+    // Handle AbortController timeout — show friendly message instead of raw AbortError
+    if (err.name === 'AbortError') {
+      const timeoutSec = timeoutMs / 1000;
+      const timeoutMsg = `Request timed out after ${timeoutSec}s. The server may be cold-starting — please try again.`;
+      // Only show toast for interactive (non-background) requests
+      if (!isBackgroundCheck) showToast(timeoutMsg, "warning");
+      console.warn(`[API Client Timeout] ${endpoint} did not respond within ${timeoutSec}s`);
+      throw new Error('Request timeout');
+    }
     if (err.message !== "Unauthorized" && err.message !== "Forbidden") {
       console.error(`[API Client Error] Call to ${endpoint} failed:`, err.message);
     }

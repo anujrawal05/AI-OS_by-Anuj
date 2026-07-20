@@ -16,8 +16,8 @@
        Set to your deployed backend HTTPS URL, e.g. https://ai-os-backend.up.railway.app
        Leave blank for localhost development or "Backend not connected" banner. -->
   <meta name="api-base-url" content="">
-  <!-- Razorpay public key — replace rzp_test_* with rzp_live_* when going live -->
-  <meta name="razorpay-key-id" content="rzp_test_T4Mr1D3RBNpiEi">
+  <!-- Razorpay key is fetched securely at runtime from /api/payments/key — do NOT embed it in HTML -->
+  <!-- meta name="razorpay-key-id" removed for security (BUG-001 fix) -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,32 +251,33 @@
           <div class="dashboard-card widget-funding">
             <div class="widget-header">
               <h4 class="widget-card-title">💰 Startup Funding Rounds</h4>
+              <span style="font-size: 0.62rem; color: var(--bus-text-secondary); font-family: var(--font-mono); opacity:0.7;">⚡ Curated highlights &mdash; updated periodically</span>
             </div>
             <ul class="funding-list">
               <li>
                 <div class="funding-meta">
-                  <span class="funding-date">TODAY</span>
+                  <span class="funding-date">JUN 2025</span>
                   <span class="funding-amount">₹500B ($6B)</span>
                 </div>
                 <span class="funding-title">xAI closes Series B for infrastructure scaling</span>
               </li>
               <li>
                 <div class="funding-meta">
-                  <span class="funding-date">YESTERDAY</span>
+                  <span class="funding-date">OCT 2024</span>
                   <span class="funding-amount">₹550B ($6.6B)</span>
                 </div>
                 <span class="funding-title">OpenAI secures round at $157B valuation</span>
               </li>
               <li>
                 <div class="funding-meta">
-                  <span class="funding-date">2 DAYS AGO</span>
+                  <span class="funding-date">JUN 2024</span>
                   <span class="funding-amount">₹53B ($640M)</span>
                 </div>
                 <span class="funding-title">Mistral AI finishes equity fundraising round</span>
               </li>
               <li>
                 <div class="funding-meta">
-                  <span class="funding-date">3 DAYS AGO</span>
+                  <span class="funding-date">MAY 2024</span>
                   <span class="funding-amount">₹83B ($1B)</span>
                 </div>
                 <span class="funding-title">Scale AI raises funds to scale model data engines</span>
@@ -287,35 +288,36 @@
           <!-- Widget 4: Top Tech Valuations -->
           <div class="dashboard-card widget-valuations">
             <div class="widget-header">
-              <h4 class="widget-card-title">🏢 Top Tech & AI Valuations</h4>
+              <h4 class="widget-card-title">🏢 Top Tech &amp; AI Valuations</h4>
+              <span style="font-size: 0.62rem; color: var(--bus-text-secondary); font-family: var(--font-mono); opacity:0.7;">⚡ Approximate &mdash; updated periodically</span>
             </div>
             <table class="valuations-table" id="valuations-table">
               <thead>
                 <tr>
                   <th>Company</th>
-                  <th>Market Cap</th>
+                  <th>Market Cap (est.)</th>
                   <th>Core Focus</th>
                 </tr>
               </thead>
               <tbody id="valuations-tbody">
                 <tr>
                   <td style="font-weight: 600;">NVIDIA (NVDA)</td>
-                  <td style="font-family: var(--font-mono);">₹270T ($3.24T)</td>
-                  <td><span class="badge-tag">GPU & Infrastructure</span></td>
+                  <td style="font-family: var(--font-mono);">~₹270T ($3.2T+)</td>
+                  <td><span class="badge-tag">GPU &amp; Infrastructure</span></td>
                 </tr>
                 <tr>
                   <td style="font-weight: 600;">Microsoft (MSFT)</td>
-                  <td style="font-family: var(--font-mono);">₹262T ($3.15T)</td>
-                  <td><span class="badge-tag">Copilot & Azure Cloud</span></td>
+                  <td style="font-family: var(--font-mono);">~₹262T ($3.1T+)</td>
+                  <td><span class="badge-tag">Copilot &amp; Azure Cloud</span></td>
                 </tr>
                 <tr>
                   <td style="font-weight: 600;">Apple (AAPL)</td>
-                  <td style="font-family: var(--font-mono);">₹267T ($3.21T)</td>
+                  <td style="font-family: var(--font-mono);">~₹267T ($3.2T+)</td>
                   <td><span class="badge-tag">On-Device Intelligence</span></td>
                 </tr>
                 <tr>
                   <td style="font-weight: 600;">Alphabet (GOOGL)</td>
-                  <td style="font-family: var(--font-mono);">₹177T ($2.12T)</td>
+                  <td style="font-family: var(--font-mono);">~₹177T ($2.1T+)</td>
                   <td><span class="badge-tag">Gemini Ecosystem</span></td>
                 </tr>
               </tbody>
@@ -325,14 +327,15 @@
           <!-- Widget 5: Economic Calendar -->
           <div class="dashboard-card widget-calendar">
             <div class="widget-header">
-              <h4 class="widget-card-title">📅 Economic & Tech Calendar</h4>
+              <h4 class="widget-card-title">📅 Economic &amp; Tech Calendar</h4>
             </div>
             <ul class="calendar-list" id="calendar-list">
-              <li>
-                <div class="cal-date-badge">JUL 15</div>
+              <!-- JUL 15 is past — styled as completed event -->
+              <li style="opacity: 0.45;">
+                <div class="cal-date-badge" style="text-decoration: line-through;">JUL 15</div>
                 <div class="cal-details">
-                  <strong>US CPI Inflation Release</strong>
-                  <span>Directly influences global interest rates & valuations</span>
+                  <strong style="color: var(--bus-text-secondary);">US CPI Inflation Release <span style="font-size:0.65rem; font-weight:400;">(Past)</span></strong>
+                  <span>Directly influences global interest rates &amp; valuations</span>
                 </div>
               </li>
               <li>
@@ -526,7 +529,7 @@
                   <p style="margin-bottom:10px;">Before writing any code or buying inventory, what is the best way to validate a problem?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="a"> <span>Build a complete MVP and post it in directory lists.</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="b"> <span>Interview 5 target users and verify if they currently spend time or money solving it. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="b"> <span>Interview 5 target users and verify if they currently spend time or money solving it.</span></label>
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz3" value="c"> <span>Run expensive marketing campaigns with a fake logo.</span></label>
                   </div>
                   <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz3', 'b', 'Correct! If users are not currently spending time or money solving a problem, it is not a painful or validated problem.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
@@ -621,7 +624,7 @@
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="a"> <span>Cost-plus pricing</span></label>
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="b"> <span>Hourly consulting rate</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="c"> <span>Value-based pricing (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz5" value="c"> <span>Value-based pricing</span></label>
                   </div>
                   <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz5', 'c', 'Correct! Charging based on value created allows you to break away from hourly rates and capture high margins.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
                   <div class="quiz-feedback-box" style="display:none; margin-top:8px; font-size:0.8rem; padding:8px; border-radius:6px;"></div>
@@ -684,7 +687,7 @@
                   <p style="margin-bottom:10px;">What is the primary objective of a consultative sales call?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="a"> <span>Pitch your product catalog immediately in the first 2 minutes.</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="b"> <span>Identify the client's biggest operational bottleneck and show how you fix it. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="b"> <span>Identify the client's biggest operational bottleneck and show how you fix it.</span></label>
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz7" value="c"> <span>Convince them to pay with a massive discount before they ask details.</span></label>
                   </div>
                   <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz7', 'b', 'Correct! Diagnosing pain points first builds authority and makes closing deals natural.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
@@ -788,7 +791,7 @@
                   <p style="margin-bottom:10px;">What is the most effective way for a solo creator to leverage AI?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="a"> <span>Hire an expensive consulting team to direct the models.</span></label>
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="b"> <span>Use AI coding and prompt agents to handle technical tasks in seconds. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="b"> <span>Use AI coding and prompt agents to handle technical tasks in seconds.</span></label>
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz10" value="c"> <span>Manually write all content and code from scratch to ensure quality.</span></label>
                   </div>
                   <button class="btn-submit-quiz" onclick="verifyQuizAnswer(this, 'quiz10', 'b', 'Correct! AI lets a solo developer act as a full product team.')" style="margin-top:12px; padding:6px 12px; font-size:0.75rem;">Submit Answer</button>
@@ -915,7 +918,7 @@
                   <div style="font-weight:700; color: var(--bus-accent); margin-bottom:8px;">📝 Concept Check-Quiz</div>
                   <p style="margin-bottom:10px;">Why should a scaling agency register as an LLC / Private Limited company?</p>
                   <div class="quiz-options-group" style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="a"> <span>To legally protect personal savings from business debts or claims. (Recommended)</span></label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="a"> <span>To legally protect personal savings from business debts or claims.</span></label>
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="b"> <span>To guarantee that customers never request refunds.</span></label>
                     <label style="display:flex; gap:8px; cursor:pointer;"><input type="radio" name="quiz14" value="c"> <span>To completely eliminate the need to pay tax.</span></label>
                   </div>
@@ -1034,13 +1037,13 @@
               <button class="btn-lock-upgrade" onclick="showPricingModal(true)">Upgrade Workspace</button>
             </div>
 
-            <!-- Dynamic Result Area -->
-            <div class="blueprint-result-body" id="blueprint-output-contents">
-              <div style="text-align: center; padding-top: 100px; color: var(--bus-text-secondary);">
-                <span style="font-size: 3rem; display: block; margin-bottom: 20px;">⚙️</span>
-                <p style="font-family: var(--font-mono); font-size: 0.9rem;">Select launch configurations and click "Compile Business Blueprint" to build your custom guide.</p>
-              </div>
+          <!-- Dynamic Result Area (hidden by default; JS shows it when user has compiled for premium or shows lock) -->
+          <div class="blueprint-result-body" id="blueprint-output-contents" style="display:none;">
+            <div style="text-align: center; padding-top: 100px; color: var(--bus-text-secondary);">
+              <span style="font-size: 3rem; display: block; margin-bottom: 20px;">⚙️</span>
+              <p style="font-family: var(--font-mono); font-size: 0.9rem;">Select launch configurations and click "Compile Business Blueprint" to build your custom guide.</p>
             </div>
+          </div>
 
           </div>
 
@@ -1086,15 +1089,15 @@
               <button class="btn-lock-upgrade" onclick="showPricingModal(true)">Unlock Workspace</button>
             </div>
 
-            <!-- Messages Logs -->
-            <div class="strategist-chat-messages" id="chat-strategist-logs">
+            <!-- Messages Logs (hidden for non-premium — JS shows it after isPremium check) -->
+            <div class="strategist-chat-messages" id="chat-strategist-logs" style="display:none;">
               <div class="chat-bubble bot">
                 Hello, I am the <strong>A.R. Business Strategist</strong>. I can analyze your acquisition channels, marketing funnels, and operational systems. How can I help you optimize or scale your business today?
               </div>
             </div>
 
-            <!-- Input bar -->
-            <div class="strategist-chat-input-bar">
+            <!-- Input bar (hidden for non-premium) -->
+            <div class="strategist-chat-input-bar" id="strategist-chat-input-bar" style="display:none;">
               <input type="text" id="chat-strategist-input" class="strategist-chat-input" aria-label="Ask the AI Strategist a question" placeholder="Ask about customer acquisition, conversion rates, or scaling...">
               <button class="btn-chat-send" id="btn-chat-strategist-send">Send</button>
             </div>
@@ -2107,7 +2110,7 @@
     </button>
   </nav>
 
-  <script type="module" src="business.js?v=3.1.0"></script>
+  <script type="module" src="business.js?v=3.4.0"></script>
 
 </body>
 </html>

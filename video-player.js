@@ -793,13 +793,19 @@
     clearInterval(saveInterval);
     video.pause();
     
+    // BUG-FIX: Immediately clear the video source to stop background audio/downloads
+    // (previously this happened inside the 300ms timeout allowing audio to continue briefly)
+    const closingSources = video.querySelectorAll('source');
+    closingSources.forEach(src => src.removeAttribute('src'));
+    video.removeAttribute('src');
+    video.load(); // abort any ongoing network request
+    
     // Save state on close
     saveProgress();
     
     overlay.classList.remove('active');
     setTimeout(() => {
       overlay.style.display = 'none';
-      video.src = '';
     }, 300);
     
     // Release fullscreen
